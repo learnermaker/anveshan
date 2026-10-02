@@ -1,25 +1,37 @@
 # Validation Findings
 
-**Status:** Initial document. No core product hypothesis should be marked validated until an experiment is actually performed.
+**Review checkpoint:** 2026-10-03
 
 ## Validated
 
-None yet.
+None.
 
 ## Partially Validated
 
-None yet.
+None.
 
-## Invalidated
+## Invalidated / Strategically Downgraded
 
-None yet.
+### AI interviews as novelty
+Downgraded. Current products already provide AI-guided expert interviews and memory capture.
 
-## Inconclusive
+### Tacit-knowledge capture as novelty
+Downgraded. Current products including Tacivo, Tacit/getAbstract and Accrete explicitly target expert/tacit knowledge capture.
 
-None yet.
+### AI apprenticeship as novelty
+Downgraded. 2026 research demonstrates active AI-assisted apprenticeship work.
+
+### Learner video assessment as novelty
+Downgraded. 2026 research and ProSkill/ProSkill++ show active procedural skill-assessment research.
+
+## Research-Supported Hypotheses
+
+- multimodal source analysis is technically feasible;
+- source-grounded video questions are technically feasible;
+- cross-modal embeddings are available;
+- agentic orchestration and evaluation are available;
+- source-grounded transmission is still a viable product hypothesis.
 
 ## Rule
 
-Research and competitive analysis are not substitutes for product validation.
-
-A documented competitor or academic paper can invalidate a differentiation hypothesis, but only real prototype testing can validate Anveshan's ability to perform the transmission loop.
+No prototype capability is marked validated until an experiment produces evidence.
