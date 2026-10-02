@@ -43,3 +43,10 @@ Every derived representation should preserve its relationship to source evidence
 ## Failure Boundary
 
 If source evidence is insufficient, the flow should stop at uncertainty rather than generate unsupported content.
+
+
+## 2026-10-03 Critical Path
+
+The MVP flow is explicitly: expert demonstration → source processing → candidate knowledge → evidence grounding → expert review → baseline learner attempt → teaching → second attempt → criterion-level evaluation → evidence-linked feedback → retry → measured change → transmission record → lineage.
+
+The baseline is important because without it the product cannot distinguish teaching from evaluation or claim transmission gain.
