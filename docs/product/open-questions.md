@@ -69,3 +69,8 @@
 
 - Product name remains TBD.
 - Team/repository name remains Anveshan.
+
+
+## 2026-10-03 Decision Priority
+
+Resolve in this order: (1) authentic expert and learner access; (2) bounded skill; (3) observable rubric; (4) evidence-grounding test; (5) learner evaluation test; (6) competitor falsification; (7) final theme. Architecture choices that depend on these should remain provisional.
