@@ -1,184 +1,142 @@
 # Anveshan Product Thesis
 
+**Review checkpoint:** 2026-10-03  
+**Status:** Current working thesis; validation pending.
+
 ## 1. Executive Thesis
 
-**Anveshan is exploring an AI-powered system for transmitting living, embodied human knowledge from one person to another.**
+**Anveshan helps one person transmit a real piece of expertise to another person.**
 
-The system captures what experts say and demonstrate, structures that knowledge with multimodal AI, preserves evidence and provenance, turns the knowledge into an adaptive apprenticeship, observes learner attempts, provides evidence-grounded feedback, and records how the knowledge is transmitted and adapted.
+It starts from an authentic expert demonstration, uses multimodal AI to structure observable knowledge, preserves source evidence, turns the result into a concise apprenticeship, observes the learner's attempt, provides evidence-linked feedback, measures improvement, and records transmission lineage.
 
 ### Core loop
 
-**DEMONSTRATE → UNDERSTAND → GROUND → TEACH → PRACTICE → VERIFY → EVOLVE**
+**DEMONSTRATE → UNDERSTAND → GROUND → TEACH → PRACTICE → VERIFY → TRANSMIT → EVOLVE**
 
-### Central product principle
+## 2. Problem
 
-**The product outcome is transmission, not preservation.**
+Some expertise is difficult to transfer through conventional documents because it includes timing, sensory/visual cues, conditional rules, exceptions, decision thresholds, sequence, tool/material interaction, environmental context and failure recognition.
 
-Preservation matters. A source recording, structured knowledge object, provenance chain, and lineage record all have archival value. But the product should not stop when information is stored.
+A transcript can preserve words while losing physical context. A video can preserve action while being difficult to search or teach from. A generic AI tutor can personalize instruction without preserving a particular expert's practice. A static archive can preserve information without producing a learner.
 
-The differentiating behavior is: **Can knowledge move from a human expert to another human, with evidence, feedback, verification, and lineage?**
+Anveshan connects these layers.
 
-## 2. The Problem
+## 3. Actionable Problem
 
-A large amount of valuable human knowledge is difficult to capture in conventional documents.
+> **When a person has valuable expertise but the expertise is difficult to explain, search, teach or verify, the next learner may not receive the parts that matter most.**
 
-People often know how something feels when it is ready; what a particular sound means; which visual cue matters; when a normal procedure should not be followed; how timing changes under different conditions; which exception matters; which shortcut is safe; how to recognize failure before it becomes obvious; why a sequence matters; how local context changes the correct decision; what they learned from years of experience; and which parts of a process are difficult to explain without demonstration.
+The first domain is intentionally not fixed.
 
-When that knowledge remains inside one person, it is fragile. If the person retires, moves, dies, stops practicing, or simply has no learner, the knowledge may stop being transmitted.
+## 4. Product Insight
 
-Traditional documentation has limitations: documents flatten context; checklists omit judgment; videos can be difficult to search; transcripts omit physical cues; AI summaries can obscure provenance; generic tutors can teach without authentic source evidence; and archives preserve information without necessarily creating transmission.
+Human expertise has a transmission lifecycle:
 
-## 3. The Insight
+**source → representation → teaching → attempt → feedback → improvement → lineage**
 
-Human knowledge has a transmission lifecycle.
+Anveshan makes that lifecycle explicit.
 
-A useful system should support discovery, capture, extraction, evidence grounding, teaching, practice, verification, transmission, adaptation, and lineage preservation.
+## 5. What It Does
 
-This transforms the product from an archive into a **knowledge transmission system**.
+Anveshan aims to make observable expertise capturable, structured, searchable, source-grounded, explainable, teachable, practiceable, verifiable, permission-aware, traceable and transmissible.
 
-## 4. What Anveshan Does
+It distinguishes:
 
-Anveshan aims to make the observable parts of human expertise capturable, searchable, structured, source-grounded, explainable, teachable, practiceable, verifiable, permission-aware, versioned, traceable, and transmissible.
+1. source statement;
+2. demonstrated evidence;
+3. AI interpretation;
+4. community interpretation;
+5. external evidence;
+6. unknown.
 
-The system should preserve a distinction between what the source explicitly said, what the source demonstrated, what AI inferred, what a community interpreted, what external evidence supports, and what remains uncertain.
+## 6. What It Does Not Claim
 
-## 5. What Anveshan Does Not Claim
+Anveshan does not claim to solve tacit knowledge generally.
 
-Anveshan should not claim that AI understands all tacit knowledge. A defensible formulation is: **Anveshan uses multimodal AI to make observable parts of tacit expertise explicit and source-grounded.**
+It makes **observable parts of context-sensitive expertise explicit and source-grounded**.
 
-It should not claim that one person's practice is universally correct, erase legitimate variants, fabricate knowledge, present an AI-generated avatar as the authoritative original person, or turn uncertain inference into fact.
+It does not claim that one expert is universally correct, that one video can always establish competency, or that AI can infer invisible reasoning with certainty.
 
-## 6. Product Outcome
+## 7. Product Unit: Transmission
 
-The desired outcome is a **successful knowledge transmission** containing, where applicable: knowledge holder, knowledge/practice, original demonstration, evidence, teaching experience, learner, practice task, learner attempt, feedback, learner improvement, expert/evidence-based verification, adaptation, and lineage.
+A Transmission connects:
 
-## 7. Knowledge Transmission Graph
+- expert;
+- knowledge/practice;
+- source evidence;
+- lesson;
+- learner;
+- practice task;
+- learner attempt;
+- feedback;
+- outcome;
+- adaptation;
+- lineage.
 
-The conceptual backbone is a **Multimodal Knowledge Transmission Graph** connecting people, communities, knowledge, evidence, context, transmission, and governance.
+## 8. Differentiation Boundary
 
-People include experts, learners, community members, teachers, students, and contributors.
+Current research shows that AI interviews, tacit-knowledge extraction, knowledge graphs, multimodal RAG, AI tutoring, apprenticeship assistance, learner video assessment and expert cognition modeling are all active areas.
 
-Knowledge includes skills, practices, techniques, traditions, procedures, heuristics, rules, exceptions, claims, observations, lessons, and experiences.
+The current differentiation hypothesis is:
 
-Evidence includes recordings, video, audio, images, documents, demonstrations, timestamps, and external references.
+> **authentic expert source → grounded representation → adaptive teaching → learner attempt → evidence-linked verification → measurable improvement → lineage**
 
-Context includes places, regions, communities, languages, historical periods, environmental conditions, tools, and materials.
+This is a hypothesis, not a market-wide claim of uniqueness.
 
-Transmission includes lessons, practice tasks, attempts, feedback, outcomes, and adaptations.
+## 9. MVP
 
-Governance includes permissions, consent, community approval, access policies, corrections, and revocation.
+The first proof should use one real expert, one bounded skill, one authentic demonstration, one learner, one practice task, one baseline attempt, one teaching interaction, one feedback loop, one retry, one measurable improvement, one transmission record and one lineage event.
 
-## 8. Product Lifecycle
+The exact skill must be selected from authentic access, observability, safety and judge comprehension.
 
-**Discover:** identify what knowledge exists and what is missing.
+## 10. Candidate Domains
 
-**Capture:** record the expert speaking, demonstrating, showing, or explaining.
+- traditional craft;
+- culinary technique;
+- agriculture;
+- local ecological practice;
+- music/dance;
+- skilled trades;
+- practical professional expertise.
 
-**Understand:** use multimodal AI to extract actions, objects, sequence, language, claims, context, visual cues, and temporal relationships.
+The domain is a proof context, not the product definition.
 
-**Structure:** turn raw material into structured knowledge objects and graph relationships.
+## 11. Flagship Metric
 
-**Ground:** connect important claims to source evidence.
+Candidate:
 
-**Verify:** identify direct statements, demonstrated facts, corroboration, contradictions, uncertainty, and unsupported inference.
+**Transmission Gain = post-transmission learner performance − baseline learner performance**
 
-**Teach:** create an adaptive apprenticeship.
+This is not validated. It must use a skill-specific rubric and should be compared with independent expert assessment.
 
-**Practice:** let the learner attempt the skill.
+## 12. Technical Hypothesis
 
-**Verify Again:** compare the learner's observable attempt with the source demonstration or agreed criteria.
+Three logical responsibilities:
 
-**Transmit:** record successful transfer.
+### Knowledge Agent
+Multimodal extraction, structuring, retrieval.
 
-**Evolve:** preserve learner adaptations, regional variants, corrections, and new evidence.
+### Evidence Agent
+Grounding, citation, contradiction, uncertainty, evidence sufficiency.
 
-## 9. Product Principles
+### Transmission Agent
+Teaching, practice, attempt analysis, feedback, transmission record.
 
-1. **Evidence over eloquence.** A polished AI answer is less important than an answer that can show where it came from.
-2. **Source before summary.** Original media should remain available wherever permissions allow.
-3. **Interpretation is not source truth.** AI interpretation must be visibly distinct from original source material.
-4. **Uncertainty is a valid result.** The system should be allowed to say that available evidence is insufficient.
-5. **Variants are knowledge.** Differences across experts, regions, generations, or conditions should not automatically be treated as errors.
-6. **Community control matters.** Communities and contributors should retain meaningful control over access, context, correction, and publication.
-7. **Transmission matters more than storage.** A knowledge object that nobody can learn from is incomplete from Anveshan's product perspective.
-8. **Human expertise remains authoritative within its context.** AI should assist interpretation and transmission, not silently replace the knowledge holder.
-9. **No fabricated authority.** No synthetic person should be represented as having said something they did not say.
-10. **Demonstration matters.** Where knowledge is embodied, showing can be more informative than telling.
+Every AI component must have a measurable job.
 
-## 10. Current Product Wedge
+## 13. Google Technical Fit
 
-The first proof should use one real expert, one bounded skill, one authentic demonstration, one learner, one practice task, one learner attempt, one evidence-grounded feedback loop, one measurable improvement, and one transmission/lineage record.
+Current research supports Gemini 3.5 Transcribe, Gemini video understanding, Gemini Embedding 2, ADK, Cloud Run and agent evaluation.
 
-The first domain should be chosen according to actual access and feasibility. Candidate domains include traditional craft, culinary technique, agriculture, local ecology, music/dance, skilled trades, and other bounded practical knowledge.
+Important current constraints must influence implementation. For example, current transcription documentation records feature incompatibilities between timestamps/diarization and custom vocabulary, and current video processing has different static/agentic modes. These are engineering choices, not marketing details.
 
-The domain itself is not the product. It is the first proof.
+## 14. Governance
 
-## 11. Long-Term Expansion
+Human knowledge must not become unreviewed machine-generated authority.
 
-If the core loop succeeds, Anveshan could extend to cultural knowledge, community knowledge, family knowledge, agriculture, skilled trades, enterprise, and research. These are future possibilities, not MVP requirements.
+For culturally sensitive or community knowledge, consent, contextual governance, access control, review and community authority must be real rather than merely described.
 
-## 12. Product Differentiation Hypothesis
+## 15. North Star
 
-The differentiation hypothesis is the combination of multimodal capture, tacit/conditional knowledge extraction, source-grounded evidence, knowledge graph representation, adaptive apprenticeship, observable learner practice, evidence-based verification, transmission measurement, knowledge lineage, community governance, and knowledge evolution.
+> **Can Anveshan help one human successfully pass a piece of real-world expertise to another human, while preserving evidence and lineage?**
 
-The key proposition is: **Anveshan does not merely remember what a person knows. It helps another person learn it, demonstrates whether transmission happened, and preserves how the knowledge changed.**
-
-## 13. Flagship Concept: Transmission Gain
-
-A possible flagship metric is **Transmission Gain = learner performance after Anveshan-guided transmission − learner baseline performance**.
-
-This remains a hypothesis until a defensible measurement protocol is designed.
-
-Potential supporting measures include extraction accuracy, evidence grounding accuracy, expert agreement, feedback correctness, learner improvement, successful transmission rate, time-to-competency, knowledge coverage, source diversity, and unresolved contradiction count.
-
-## 14. Flagship Technical Concept
-
-**Multimodal Knowledge Transmission Graph**.
-
-The graph is not simply a knowledge graph. It incorporates source evidence, multimodal observations, people, practices, context, learning, attempts, feedback, versions, adaptations, and lineage.
-
-It should eventually support questions such as: What is the knowledge? Who demonstrated it? Where is the evidence? Under what conditions? Who learned it? How did they perform? What changed when they adapted it? Who learned the adapted version?
-
-## 15. AI Architecture Hypothesis
-
-Three logical AI responsibilities are currently preferred.
-
-**Knowledge Agent:** multimodal extraction, knowledge structuring, semantic retrieval, knowledge questions, and knowledge graph updates.
-
-**Evidence Agent:** claim grounding, timestamp retrieval, source attribution, contradiction detection, uncertainty, evidence sufficiency, and provenance.
-
-**Transmission Agent:** learner profiling, lesson design, practice-task generation, learner-attempt analysis, feedback, retry loops, and transmission record creation.
-
-These responsibilities can eventually be implemented using multiple internal agents, workflows, or deterministic services.
-
-## 16. Product Risks
-
-**Generic AI tutor:** make authentic source evidence and expert demonstration central.
-
-**Generic RAG system:** add multimodal evidence, learner attempts, verification, and lineage.
-
-**Cultural archive without transmission:** make learning and practice first-class.
-
-**AI hallucination:** evidence grounding, provenance, confidence, uncertainty, and cannot-determine behavior.
-
-**Misrepresentation of expert knowledge:** expert review and source-linked representations.
-
-**Cultural extraction:** consent, community governance, access controls, contributor review.
-
-**Overly broad MVP:** one expert + one skill + one learner + one complete loop.
-
-**Competitive overlap:** continuously test the product against current competitors.
-
-**Technical theater:** measure real transmission outcomes rather than counting agents or model calls.
-
-## 17. Product North Star
-
-**Can Anveshan help one human successfully pass a piece of real-world expertise to another human, while preserving evidence and lineage?**
-
-If yes, the product has demonstrated its core value. If no, additional dashboards, agents, visualizations, or archives do not solve the fundamental problem.
-
-## 18. Naming
-
-The product name is intentionally not finalized. Katha was previously used as a working concept but is now considered too narrow because it strongly suggests stories, memories, and oral history.
-
-Anveshan remains the current team/repository/project identity. Product naming is a separate future decision.
+If not, additional agents, dashboards or archive features do not solve the core problem.
