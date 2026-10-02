@@ -1,259 +1,226 @@
 # System Design — Anveshan
 
+**Review checkpoint:** 2026-10-03
+
 ## 1. Architectural Objective
 
-Build a source-grounded multimodal system that can move through:
+Build a source-grounded multimodal system that can prove one complete transmission event:
 
-**Capture → Understand → Structure → Ground → Teach → Practice → Verify → Transmit → Evolve**
+**Capture → Understand → Structure → Ground → Teach → Practice → Verify → Measure → Transmit → Evolve**
 
-The architecture must support a narrow MVP while leaving room for future knowledge domains.
+## 2. Architecture
 
-## 2. High-Level Architecture
+### Experience
+- expert capture;
+- learner teaching;
+- practice submission;
+- evidence view;
+- verification/feedback;
+- transmission/lineage view.
 
-### Experience Layer
+### Orchestration
+- capture workflow;
+- extraction workflow;
+- evidence workflow;
+- teaching workflow;
+- practice workflow;
+- verification workflow;
+- transmission workflow;
+- permission workflow.
 
-- Expert capture interface
-- Learner interface
-- Knowledge exploration/search
-- Evidence view
-- Teaching/apprenticeship view
-- Practice submission
-- Verification/feedback view
-- Lineage view
-- Governance/review interface
+### AI
+- transcription;
+- multimodal video/audio/image understanding;
+- structured extraction;
+- semantic retrieval;
+- evidence reasoning;
+- teaching;
+- learner-attempt analysis;
+- agent/tool orchestration.
 
-### Application / Orchestration Layer
-
-- session orchestration
-- capture workflows
-- knowledge extraction workflow
-- evidence workflow
-- teaching workflow
-- practice workflow
-- verification workflow
-- transmission workflow
-- permissions workflow.
-
-### AI Layer
-
-- multimodal model inference
-- transcription
-- translation
-- video understanding
-- semantic embeddings
-- retrieval
-- reasoning
-- structured extraction
-- agentic orchestration.
-
-### Knowledge Layer
-
-- knowledge graph
-- source records
-- claims
-- evidence
-- people
-- practices
-- context
-- lessons
-- attempts
-- feedback
-- lineage
-- versions
+### Knowledge
+- source records;
+- claims;
+- evidence;
+- people;
+- practices;
+- context;
+- lessons;
+- attempts;
+- feedback;
+- transmissions;
+- variants;
+- lineage;
 - permissions.
 
-### Storage / Infrastructure
-
-- source media storage
-- structured data store
-- graph representation
-- vector/semantic index
-- metadata store
-- audit records
-- secrets and credentials
+### Infrastructure
+- Cloud Run;
+- source media storage;
+- metadata/transactional store;
+- semantic index;
+- audit records;
+- authentication/authorization;
 - observability.
 
-## 3. Core Logical Components
+## 3. Current Google Mapping
+
+### Gemini 3.5 Transcribe
+Use for source speech transcription where appropriate.
+
+Current documentation supports 85+ locales, code-switching, speaker diarization and word timestamps. It also documents incompatibilities between some timestamp/diarization configurations and custom vocabulary. The implementation must select a feature combination deliberately rather than assuming all features compose.
+
+### Gemini Video Understanding
+Use for timestamp-grounded source inspection, action/context extraction and difficult evidence queries.
+
+Current documentation supports timestamp references and multimodal audio/video analysis. Current video processing has static and agentic modes; fast action can be degraded by low frame sampling in static mode, so bounded demonstrations should be designed accordingly.
+
+### Gemini Embedding 2
+Use for cross-modal retrieval where needed. It supports a unified embedding space across text, image, video, audio and documents.
+
+### ADK
+Use only where agentic orchestration adds measurable value.
+
+### Cloud Run
+Use for the deployed prototype. Current Google documentation supports Cloud Run services, jobs and worker pools for different AI workloads and direct ADK deployment.
+
+## 4. Core Logical Components
 
 ### Knowledge Agent
 
-Purpose:
-Convert multimodal source material into useful, structured, searchable knowledge.
-
-Responsibilities:
-
-- inspect source material
-- transcribe
-- identify speakers
-- identify objects/actions
-- extract claims
-- extract steps
-- extract conditions
-- extract exceptions
-- extract cues
-- extract context
-- build/modify knowledge relationships
-- answer knowledge questions.
+- inspect source;
+- extract candidate knowledge;
+- identify conditions, sequence, cues and exceptions;
+- structure relationships;
+- retrieve related knowledge.
 
 ### Evidence Agent
 
-Purpose:
-Ensure that important answers and generated teaching material remain grounded.
-
-Responsibilities:
-
-- retrieve source evidence
-- locate timestamps
-- link claims to evidence
-- identify support
-- identify contradiction
-- assess evidence sufficiency
-- expose uncertainty
-- distinguish source from inference
-- generate evidence-aware answers.
+- retrieve source evidence;
+- locate timestamps;
+- support claims;
+- identify contradictions;
+- assess sufficiency;
+- expose uncertainty.
 
 ### Transmission Agent
 
-Purpose:
-Move knowledge from expert representation to learner capability.
+- create teaching sequence;
+- create practice task;
+- analyze learner evidence;
+- compare against explicit rubric/reference;
+- generate feedback;
+- record outcome and lineage.
 
-Responsibilities:
+These are logical boundaries, not necessarily separate deployed services.
 
-- understand learner level
-- select source material
-- create teaching sequence
-- generate practice task
-- inspect learner attempt
-- compare against source evidence/rubric
-- provide feedback
-- support retry
-- record transmission outcome
-- create lineage event.
+## 5. Deterministic Services
 
-## 4. Deterministic Services
+Keep these deterministic where possible:
 
-Not every capability should be agentic.
+- authentication;
+- authorization;
+- consent;
+- media upload;
+- source identifiers;
+- storage;
+- indexing;
+- permission filtering;
+- audit logging;
+- evaluation case management;
+- metric calculation.
 
-Deterministic or infrastructure services should handle:
-
-- authentication
-- authorization
-- consent
-- media upload
-- storage
-- transcription invocation
-- indexing
-- metadata persistence
-- permission filtering
-- audit logging
-- evaluation logging
-- deployment
-- monitoring.
-
-## 5. Source of Truth
-
-Original source media should remain authoritative for source content.
-
-Structured knowledge is a derived representation.
-
-AI-generated explanations are derived representations.
-
-A recommended hierarchy is:
+## 6. Source Hierarchy
 
 **Original source → observed evidence → structured claim → AI interpretation → generated teaching**
 
-Each layer should retain its relationship to the previous layer.
+A derived object must never overwrite the source.
 
-## 6. End-to-End Data Flow
+## 7. Evidence Model
 
-1. Expert starts a capture session.
-2. Source audio/video/images/documents enter the ingestion service.
-3. Source files receive stable identifiers and metadata.
-4. Speech is transcribed where applicable.
-5. Video/image/document analysis extracts multimodal observations.
-6. Knowledge Agent structures candidate knowledge objects.
-7. Evidence Agent links claims to exact source material.
-8. Knowledge representation is stored.
-9. Expert reviews candidate representation.
-10. Approved knowledge becomes available according to permissions.
-11. Transmission Agent creates a learner experience.
-12. Learner completes a practice task.
-13. Learner evidence is ingested.
-14. Transmission Agent evaluates observable performance.
-15. Evidence Agent links feedback to source/rubric.
-16. Learner retries.
-17. Improvement is measured.
-18. Transmission event is stored.
-19. Lineage graph is updated.
-20. New adaptations can later become new knowledge variants.
+A claim should carry:
 
-## 7. Knowledge Lifecycle
+- source ID;
+- timestamp;
+- speaker;
+- modality;
+- context;
+- original language;
+- support/contradiction state;
+- verification state.
 
-**Discover → Capture → Extract → Structure → Ground → Review → Govern → Teach → Practice → Verify → Transmit → Adapt → Preserve Lineage → Rediscover**
+## 8. Learner Evaluation Architecture
 
-## 8. Security Boundary
+Do not ask a general-purpose model to return an unconstrained "skill score."
 
-Source material may be more sensitive than generated summaries.
+Instead:
 
-Access checks should occur before retrieval and before generation.
+1. define a domain-specific rubric;
+2. identify observable criteria;
+3. collect learner evidence;
+4. identify relevant segments;
+5. compare against reference evidence/rubric;
+6. return criterion-level observations;
+7. attach evidence;
+8. mark ambiguous criteria uncertain;
+9. optionally route to expert review;
+10. aggregate only after criterion-level results exist.
 
-A generated answer must not reveal restricted source material merely because the model can technically retrieve it.
+This is a critical architectural boundary.
 
-## 9. Failure Handling
+## 9. Evaluation Infrastructure
 
-When evidence is missing:
+Every major AI workflow should have evaluation cases.
 
-- do not invent.
-- say evidence is insufficient.
-- identify what is missing.
-- recommend the next evidence or question.
+Track:
 
-When sources conflict:
+- input;
+- expected behavior;
+- model output;
+- evidence;
+- tool calls;
+- latency;
+- cost where relevant;
+- human rating;
+- automated rating;
+- failure category.
 
-- preserve both.
-- identify the conflict.
-- explain contextual differences if evidence supports them.
+Current Google Agent Platform evaluation supports trace-based evaluation, reference-based and reference-free metrics, and iterative optimization. Anveshan should adopt the same principle even if the final implementation uses a simpler local harness.
+
+## 10. Security Boundary
+
+Permission checks must happen before source retrieval and before model context construction.
+
+Technical model access is not authorization to disclose.
+
+## 11. Failure Handling
+
+If evidence is missing:
+- state insufficiency;
+- identify missing evidence;
+- ask for the next source/question.
+
+If sources conflict:
+- preserve both;
+- identify the conflict;
 - do not silently merge.
 
-When learner evidence is ambiguous:
+If learner evidence is ambiguous:
+- mark uncertain;
+- request another observation or human review.
 
-- mark uncertain.
-- ask for another angle, recording, or measurement where appropriate.
-- avoid overconfident competency judgments.
+## 12. MVP Architecture
 
-## 10. MVP Architecture Principle
+The first implementation should contain:
 
-The first implementation should be small.
+- one capture flow;
+- one multimodal ingestion path;
+- one source-grounded knowledge representation;
+- one evidence retrieval path;
+- one teaching flow;
+- one practice submission;
+- one criterion-level evaluation path;
+- one feedback loop;
+- one retry;
+- one transmission record.
 
-A practical MVP can be:
-
-- one capture flow
-- one multimodal ingestion pipeline
-- one knowledge representation
-- one evidence retrieval path
-- one teaching flow
-- one practice upload
-- one evaluation flow
-- one feedback loop
-- one lineage record.
-
-Do not build a generalized platform before the end-to-end loop works.
-
-## 11. Google Cloud Alignment
-
-The final implementation should use current supported Google Cloud and Google AI capabilities appropriate to the hackathon.
-
-Candidate technologies researched include:
-
-- Gemini multimodal models
-- Gemini transcription
-- Gemini Live
-- Gemini video understanding
-- Gemini Embedding 2
-- ADK
-- Cloud Run
-- agent evaluation tooling
-- managed memory where justified.
-
-Exact model names and API details must be verified against current documentation immediately before implementation.
-
+Do not build a generalized platform first.
