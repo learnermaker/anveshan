@@ -1,93 +1,61 @@
 # Demo Story
 
-## Goal
+**Review checkpoint:** 2026-10-03
 
-Demonstrate the complete knowledge transmission loop in the shortest understandable narrative.
+## Three-Minute Narrative
 
-## Narrative
+### 0:00–0:20 — Problem
 
-### Scene 1 — The Expert
+Show the expert and learner.
 
-Show a real expert demonstrating a bounded skill.
+> The hard part of expertise is often not the documented steps. It is the judgment, timing, conditions and cues an expert demonstrates.
 
-The expert should not merely talk.
+### 0:20–0:45 — Expert Demonstrates
 
-They should show:
+Show authentic expert video and one non-obvious moment.
 
-- tools
-- material
-- technique
-- sequence
-- a subtle cue
-- a condition or exception.
+### 0:45–1:05 — Anveshan Understands
 
-### Scene 2 — Anveshan Understands
+Show a condition, cue, exception or sequence extracted from the demonstration. Immediately reveal the source timestamp.
 
-Show extracted knowledge.
+### 1:05–1:25 — Evidence Query
 
-Highlight something non-obvious, such as:
+Ask a difficult question. Anveshan answers with source evidence.
 
-- a conditional rule
-- timing
-- sensory cue
-- exception
-- tool interaction.
+### 1:25–1:45 — Teach
 
-Immediately show the source evidence.
+Create a concise source-grounded practice task.
 
-### Scene 3 — Ask
+### 1:45–2:05 — Learner Attempts
 
-Ask a difficult question.
+Show an imperfect learner attempt.
 
-Example pattern:
+### 2:05–2:25 — Verify
 
-"How do I know when this is ready?"
+Show criterion-level feedback. Each issue should answer: what was observed, where it differs, and what source/rubric supports the observation.
 
-Anveshan answers and points to the relevant source timestamp.
+### 2:25–2:40 — Retry
 
-### Scene 4 — Teach
+Show measurable improvement.
 
-Switch to learner mode.
+### 2:40–2:55 — Transmission
 
-Anveshan creates a short practice task grounded in the expert demonstration.
+Show Expert → Knowledge → Learner → Attempt → Feedback → Improvement.
 
-### Scene 5 — Learner Attempts
+### 2:55–3:00 — Close
 
-Show a learner performing the task.
+> We are not just preserving what one person knows. We are making it possible for another person to learn it—and showing the evidence that the knowledge moved.
 
-The attempt should be imperfect enough to make verification meaningful.
+## Demo Rules
 
-### Scene 6 — Verify
+- one expert;
+- one skill;
+- one learner;
+- one non-obvious knowledge moment;
+- one evidence query;
+- one learner error;
+- one meaningful feedback item;
+- one visible improvement;
+- one lineage record.
 
-Anveshan identifies observable differences.
-
-Feedback should say what happened, where it differs, and which source evidence supports the recommendation.
-
-### Scene 7 — Retry
-
-Learner repeats the task.
-
-Show improvement.
-
-### Scene 8 — Transmission
-
-Show:
-
-**Expert → Learner → Skill → Attempt → Feedback → Improvement**
-
-Then show how the lineage can continue.
-
-## Closing Line
-
-> "We are not just preserving what one person knows. We are making it possible for another person to learn it—and proving that the knowledge moved."
-
-## Demo Constraints
-
-- Prefer one skill.
-- Prefer one expert.
-- Prefer one learner.
-- Avoid dashboard overload.
-- Avoid generic chatbot screens.
-- Keep source evidence visible.
-- Keep the human story visible.
-- Make improvement observable.
+Avoid dashboards, agent-count slides, generic chatbot screens, unsupported impact claims and long architecture narration.
