@@ -64,3 +64,8 @@
 4. Community approves, disputes, or restricts.
 5. Access policy is updated.
 6. Lineage records the governance event.
+
+
+## 2026-10-03 UX Rule
+
+The learner journey must contain a visible baseline, a bounded task, criterion-level feedback and a retry. The expert journey must contain review of the extracted representation. These are not optional polish; they are the product proof.
