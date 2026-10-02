@@ -1,67 +1,59 @@
 # Metrics Framework
 
-## Primary Metric
+**Review checkpoint:** 2026-10-03
+
+## Primary Outcome
 
 ### Transmission Gain
 
-**Transmission Gain = learner performance after Anveshan-guided transmission − learner baseline performance**
+**Transmission Gain = post-transmission learner performance − baseline learner performance**
 
-The scoring rubric must be defined for the selected skill.
+This is a candidate metric, not a validated universal measure.
 
-## Secondary Metrics
+It must use a skill-specific rubric.
+
+## Criterion-Level Measures
 
 ### Knowledge Fidelity
-
-Percentage of expert-reviewed extracted knowledge marked correct.
+Expert-reviewed extraction accuracy.
 
 ### Evidence Grounding Accuracy
+Fraction of generated claims whose evidence actually supports them.
 
-Percentage of generated claims whose cited evidence actually supports the claim.
+### Timestamp/Citation Accuracy
+Fraction of evidence references pointing to the correct source segment.
 
-### Citation Accuracy
+### Evaluation Agreement
+Agreement between Anveshan's criterion-level observations and independent expert assessment.
 
-Percentage of source/timestamp references that point to the correct material.
-
-### Expert Agreement
-
-Agreement between Anveshan's representation/evaluation and expert review.
-
-### Feedback Precision
-
-Percentage of feedback items judged actionable and evidence-based.
+### Feedback Actionability
+Fraction of feedback items judged specific, observable and useful.
 
 ### Learner Improvement
-
-Difference between baseline and subsequent attempts.
+Change between baseline and subsequent attempt.
 
 ### Transmission Completion
-
-Percentage of learners who complete the defined transmission loop.
+Fraction completing the full defined loop.
 
 ### Time to Competency
-
-Time or number of attempts required to meet the agreed skill rubric.
-
-### Knowledge Coverage
-
-Percentage of the selected skill's defined knowledge components represented.
-
-### Source Diversity
-
-Number and diversity of independent knowledge holders/evidence sources.
-
-### Contradiction Visibility
-
-Percentage of known contradictions correctly surfaced rather than silently merged.
+Time/attempts to reach the predefined rubric threshold.
 
 ### Uncertainty Calibration
+Whether uncertainty labels correlate with actual ambiguity/error.
 
-Whether confidence/uncertainty labels correspond to actual evidence quality.
+### Contradiction Recall
+Fraction of known material disagreements surfaced rather than silently merged.
 
-## Evaluation Principle
+## Metric Integrity Rules
 
-Do not optimize for model fluency.
+- Never report a headline metric without its rubric.
+- Never compare scores across unrelated skills without normalization.
+- Never treat model confidence as ground truth.
+- Report sample size.
+- Report expert-review methodology.
+- Preserve raw observations.
+- Distinguish automated evaluation from human evaluation.
 
-Optimize for:
+## Google AI Evaluation Alignment
 
-**fidelity + grounding + learning + verification + transmission.**
+Current Google Agent Platform evaluation uses trace-based evaluation with reference-based and reference-free metrics. Anveshan should use the same discipline: define eval cases, capture traces, score outputs, analyze failures and iterate.
