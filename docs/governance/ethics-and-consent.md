@@ -1,174 +1,65 @@
 # Ethics, Consent & Governance
 
-## 1. Principle
+**Review checkpoint:** 2026-10-03
 
-Anveshan deals with human knowledge, personal stories, demonstrations, community practices, and potentially sensitive cultural information.
+## Principle
 
-Governance is therefore part of the product architecture, not merely a legal footer.
+Human knowledge is not simply data. For community and culturally sensitive knowledge, authority over capture, representation, access and reuse can be collective. Current 2026 research on Indigenous data sovereignty, UNESCO data commons work and cultural-heritage guidance reinforces this distinction.
 
-## 2. Informed Consent
+## Consent
 
-Before capture, contributors should understand:
+Before capture, contributors should understand what is recorded, what AI processing occurs, what is extracted, who can access it, whether it is published, whether it is used for research/evaluation, how corrections work and how withdrawal works.
 
-- what will be recorded
-- what AI processing will occur
-- what will be extracted
-- how the output may be used
-- who may access it
-- whether it may be published
-- whether it may be used for research
-- how they can correct or withdraw material.
+## Consent Scope
 
-## 3. Consent Scope
+Potential scopes: capture only; private storage; family access; community access; approved learner access; institutional access; public access; research access; model/evaluation use where separately appropriate.
 
-Potential consent scopes:
+## Contributor Review
 
-- capture only
-- private storage
-- family access
-- community access
-- approved learner access
-- institutional access
-- public access
-- research access
-- model/evaluation use where separately appropriate.
+Where appropriate, contributors review the transcript, extracted claims, structured knowledge, AI interpretation, translations, generated lessons, access policy, linked entities and public representations. Actions: approve, correct, reject, add context, mark incomplete, restrict, revoke.
 
-## 4. Contributor Review
+## Community Governance
 
-Where appropriate, contributors should be able to review:
+For community knowledge, do not infer ownership from cultural association. If genuinely community-held knowledge is used, the relevant community should participate in deciding what is captured, what is restricted, who can learn it, whether AI processing is permitted, how derived representations may be reused, and how benefits return to the community.
 
-- transcript
-- extracted claims
-- structured knowledge
-- AI interpretations
-- translations
-- generated lessons
-- access policy
-- linked entities
-- public-facing representations.
+Do not call the product community-owned unless this governance exists in practice.
 
-Actions:
+## Data Sovereignty
 
-- approve
-- correct
-- reject
-- add context
-- mark incomplete
-- restrict
-- revoke.
+Relevant 2026 work emphasizes community authority, co-design, contextual governance, provenance, reciprocity and benefit sharing. For an MVP, the minimum defensible position is contributor-controlled and permission-aware design. A community-governed deployment is a future product requirement requiring actual co-design.
 
-## 5. Community Governance
+## Sensitive Knowledge
 
-For community-owned knowledge, governance may require:
+Potential categories include sacred/restricted practices, private family information, personally identifying information, culturally restricted knowledge, commercially sensitive expertise and dangerous procedures.
 
-- community approval
-- community-specific access
-- contextual notes
-- variant preservation
-- restrictions
-- review workflows
-- revocation.
+Technical capturability does not imply ethical publishability.
 
-## 6. Sensitive Knowledge
+## Source Integrity
 
-Potential sensitive categories:
+Original media is authoritative for what the source said/showed. AI-generated material must not overwrite source material.
 
-- sacred practices
-- restricted rituals
-- private family information
-- personal identifying information
-- culturally restricted knowledge
-- commercially sensitive expertise
-- dangerous procedures.
+## AI Interpretation
 
-The system should not assume that because knowledge is technically capturable, it is ethically appropriate to expose it.
+Generated text must be visibly distinguished from direct source statements, observed evidence, community interpretation and external evidence. No generated statement should be presented as if the source person said it.
 
-## 7. Original Source Integrity
+## Deceased People
 
-Preserve original source media whenever permitted.
+Do not create a synthetic deceased-person representation that implies unrecorded statements or memories.
 
-Generated summaries should never overwrite source material.
+## Variants and Disagreement
 
-## 8. AI Interpretation
+Preserve regional variants, generational variants, expert disagreements, contextual differences and unresolved disputes. Do not silently normalize them.
 
-AI-generated interpretation must be clearly distinguishable from source statements.
+## Access
 
-Generated text should not be represented as if the source person said it.
+Candidate levels: private; family; community; approved learner; institutional; public; research-only. Permission checks must occur before retrieval, tool access, model context construction and generation.
 
-## 9. Deceased People
+## Revocation
 
-Do not create a synthetic deceased-person representation that implies the person said something they did not say.
+Where the governance model permits withdrawal, revocation should affect access, retrieval, generated representations, sharing and future transmissions.
 
-If generated interfaces are ever used around historical material, the generated nature and source basis must be explicit.
+## Ethical Product Rule
 
-## 10. Cultural Context
+**Do not turn living knowledge into static machine authority.**
 
-Knowledge should retain:
-
-- who provided it
-- community
-- region
-- language
-- historical context
-- purpose
-- restrictions
-- variants
-- interpretation.
-
-Avoid declaring one person's practice universally correct.
-
-## 11. Uncertainty
-
-The system should explicitly represent:
-
-- unknown
-- insufficient evidence
-- disputed
-- inferred
-- unverified.
-
-## 12. Access Control
-
-Candidate levels:
-
-- private
-- family
-- community
-- approved learner
-- institution
-- public
-- research-only.
-
-Permission checks must occur before retrieval and generation.
-
-## 13. Revocation
-
-Where the governance model permits withdrawal, revocation should update:
-
-- access
-- retrieval
-- generated representations
-- sharing
-- future transmission.
-
-The system should retain an auditable record of governance events where legally and ethically appropriate.
-
-## 14. Community Benefit
-
-For community knowledge, the product should be designed around meaningful community benefit rather than extraction.
-
-Potential mechanisms:
-
-- community ownership
-- attribution
-- review
-- access control
-- benefit sharing
-- local interpretation
-- learner pathways.
-
-## 15. Ethical Principle
-
-**Do not turn living knowledge into a static digital fossil.**
-
-Preserve the ability of communities and contributors to change, contextualize, restrict, correct, and transmit their knowledge.
+The product should preserve the contributor's and relevant community's ability to contextualize, correct, restrict, evolve and transmit knowledge.
