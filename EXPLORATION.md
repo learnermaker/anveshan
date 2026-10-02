@@ -322,3 +322,45 @@ Learner: not yet selected.
 Technical feasibility: not yet fully validated.
 Feature universe: broad and preserved.
 Primary objective: build a technically impressive, demonstrably useful, source-grounded multimodal knowledge transmission prototype for the Google Cloud AI Builder Cup 2026.
+
+# 31. 2026-10-03 Red-Team Research Checkpoint
+
+A fresh panel review was conducted across product strategy, AI architecture, learning science, competitive intelligence, cultural governance, UX and hackathon judging.
+
+The review materially changed the project in four ways.
+
+## 31.1 Novelty Was Narrowed
+
+AI interviewing, tacit-knowledge extraction, knowledge graphs, multimodal RAG, AI tutoring, apprenticeship, learner video assessment and agentic architecture are all active areas.
+
+The project therefore no longer treats any of these as standalone novelty.
+
+The current differentiation hypothesis is the complete transmission event:
+
+**authentic expert source → grounded knowledge → teaching → learner attempt → evidence-linked verification → measurable improvement → lineage**
+
+## 31.2 Competitive Research Was Expanded
+
+Newly incorporated direct/adjacent competitors and research include Tacivo, Tacit/getAbstract, Accrete Knowledge Engine, AI Expert Twin and ProSkill/ProSkill++.
+
+This further weakens the case for a generic enterprise tacit-knowledge platform or generic AI apprenticeship product.
+
+## 31.3 Skill Evaluation Became a First-Class Research Problem
+
+Current 2026 research shows that procedural video skill assessment is possible but difficult. The product therefore should not return a single unconstrained AI skill score.
+
+Instead, the evaluation architecture should use observable criteria, source/reference segments, criterion-level evidence, uncertainty, and independent expert review.
+
+## 31.4 Governance Became More Explicit
+
+2026 work on Indigenous data sovereignty, community governance, UNESCO data commons and oral-history AI ethics reinforces that community authority cannot be claimed merely because a product contains permissions.
+
+If the MVP uses community-held knowledge, governance must be designed with the relevant community. Otherwise, the product should make a narrower contributor-controlled/permission-aware claim.
+
+## 31.5 Current Product Statement
+
+The strongest current formulation is:
+
+> **Anveshan turns an expert's real demonstration into evidence-grounded apprenticeship, watches the learner's attempt, and records whether the knowledge actually transferred.**
+
+This is now the primary product statement for further validation.
