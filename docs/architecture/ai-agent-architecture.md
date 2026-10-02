@@ -212,3 +212,12 @@ Prefer three logical components:
 **Knowledge + Evidence + Transmission**
 
 Only split further if testing demonstrates a concrete benefit.
+
+
+## 2026-10-03 Architecture Boundary
+
+Agentic behavior is justified only for multi-step reasoning or adaptive orchestration. Source ingestion, permissions, storage, deterministic scoring, audit records and evaluation case management should not be agents. Every agent responsibility must have an evaluation case. The current research supports three logical responsibilities: Knowledge, Evidence and Transmission.
+
+## Learner Evaluation Boundary
+
+The Transmission component must produce criterion-level observations tied to a rubric/reference. It should not emit an unexplained universal skill score.
