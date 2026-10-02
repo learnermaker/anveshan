@@ -49,3 +49,22 @@ This directory contains explicit technical decisions. Exploratory ideas should n
 **Decision:** One expert, one bounded skill, one learner, one practice attempt, one feedback loop, and one measurable outcome before broad expansion.
 
 **Reason:** Reduces scope and directly tests the product thesis.
+
+
+## ADR-007 — Criterion-Level Learner Evaluation
+
+**Status:** Accepted as MVP architecture principle.
+
+Do not use an unconstrained model-generated skill score. Evaluate explicit observable criteria and preserve evidence for each judgment.
+
+## ADR-008 — Transmission Requires a Baseline
+
+**Status:** Accepted as validation principle.
+
+A transmission claim requires a baseline and a subsequent attempt wherever the task permits. Without a baseline, improvement cannot be attributed to the intervention.
+
+## ADR-009 — Community Sovereignty Must Not Be Simulated
+
+**Status:** Accepted as governance principle.
+
+The product may provide contributor controls by default, but community sovereignty is claimed only when the relevant community actually governs the data and its use.
