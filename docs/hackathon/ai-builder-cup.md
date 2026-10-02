@@ -1,34 +1,13 @@
 # Google Cloud AI Builder Cup 2026 — Anveshan
 
-## Competition Record
+**Verified checkpoint:** 2026-10-03
 
-**Official site:** https://aibuildercup.com/
+## Official sources
 
-**Organizer:** Hack2skill
+- https://aibuildercup.com/
+- https://aibuildercup.com/themes.html
 
-**Sponsor:** Google Cloud
-
-**Working team/project identity:** Anveshan
-
-## Eligibility / Team
-
-- Working professionals are eligible.
-- Students are not eligible.
-- Team size: 2–4.
-- If shortlisted, only two team members travel to Singapore.
-
-## Timeline Recorded
-
-- Prototype submission deadline: October 18, 2026.
-- Evaluation period: October 19–November 6, 2026.
-- Finalists announced: November 7, 2026.
-- Grand Finale: December 4, 2026 in Singapore.
-
-## Prize
-
-Total cash prize pool recorded: USD 30,000.
-
-## Official Themes
+## Current official themes
 
 1. BFSI — Intelligent Risk, Fraud & Financial Experiences
 2. Retail & Commerce — Intelligent Customer and Business Experiences
@@ -37,55 +16,52 @@ Total cash prize pool recorded: USD 30,000.
 5. Future of Work & Enterprise Productivity
 6. Sustainability & Social Impact
 
-## Mandatory Technical Conditions
+## Current requirements
 
-The prototype must be working.
+The official themes page requires a working prototype using Google AI models such as Gemini/Gemma or supported agentic platforms, deployed on Google Cloud via Cloud Run or Firebase.
 
-The project must use Google AI models such as Gemini/Gemma or supported agentic platforms including Google Cloud agent tooling, AI Studio, or related official options specified by the competition.
+It also requires a clear proposal/deck as PDF, a functional prototype, comprehensive documentation including a public three-minute video, and English submission materials.
 
-The prototype must be deployed on Google Cloud using the competition-supported deployment route, including Cloud Run or Firebase as applicable.
+## Judging
 
-**Important:** Re-check the official competition site immediately before final submission for any changed rules.
+| Criterion | Weight |
+|---|---:|
+| Technical Merit & Gen AI Implementation | 40% |
+| Problem Alignment & Impact | 25% |
+| Innovation & Creativity | 25% |
+| User Experience & Solution Design | 10% |
 
-## Current Strategic Fit
+The official criteria explicitly evaluate meaningful GenAI use, technical implementation, scalability/sustainability, problem alignment, impact, originality/differentiation, creative GenAI use, usability/accessibility and cohesive integration.
 
-Anveshan can potentially align with:
+## Timeline
 
-- Sustainability & Social Impact
-- Future of Work & Enterprise Productivity
-- Media, Content & Digital Experiences
+Current official homepage:
 
-The final theme choice should be made only after the MVP domain is selected and the official theme descriptions are re-read.
+- registration/team formation: 1 Sep–11 Oct 2026;
+- prototype building/submission: 7 Sep–18 Oct 2026;
+- prototype submission deadline: 18 Oct 2026;
+- evaluation: 19 Oct–6 Nov 2026;
+- finalists: 7 Nov 2026;
+- Grand Finale: 4 Dec 2026, Singapore.
 
-## Technical Story
+The current homepage states teams may contain 1–4 members during the build phase, with only two attending the finale if shortlisted.
 
-The strongest technical story is not the number of model calls.
+## Strategic fit
 
-It is:
+Potential themes depend on the final problem:
 
-- multimodal capture
-- multimodal understanding
-- source-grounded extraction
-- knowledge representation
-- evidence retrieval
-- agentic teaching
-- learner video/audio/image analysis
-- evidence-based verification
-- transmission measurement
-- lineage.
+- Future of Work & Enterprise Productivity — strongest if the proof is skilled learning/knowledge accessibility/workforce continuity.
+- Sustainability & Social Impact — strongest if the proof is genuinely community/environmental.
+- Media, Content & Digital Experiences — possible if the primary problem is multimodal content understanding/transmission.
 
-## Deployment Principle
+Do not choose the theme before the domain and problem are fixed.
 
-The demo should be accessible through a stable deployed experience rather than requiring judges to understand local setup.
+## Technical story
 
-## Final Submission Must Show
+The Google stack should be visible through actual behavior: multimodal Gemini analysis, transcription, embeddings where needed, ADK where justified, Cloud Run deployment and evaluation/tracing.
 
-- working prototype
-- clear problem
-- authentic data
-- visible Google AI usage
-- meaningful Google Cloud deployment
-- technical depth
-- measurable outcome
-- clear user value
-- differentiated innovation.
+Do not add services solely to inflate the architecture diagram.
+
+## Submission principle
+
+The official site is authoritative when secondary listings conflict. Recheck the official pages immediately before submission.
