@@ -192,3 +192,18 @@ The surviving direction is:
 **Source-grounded multimodal transmission of living, embodied human knowledge.**
 
 The initial proof should be narrow enough to prove the loop, while the architecture preserves the ability to expand.
+
+
+## 17. 2026 Research Reconciliation
+
+The following directions are now explicitly considered strategically crowded rather than merely deferred:
+
+- generic AI expert interviewer;
+- generic tacit-knowledge capture;
+- LLM-wiki / organizational knowledge base;
+- generic AI apprenticeship;
+- standalone procedural video assessment.
+
+Current evidence includes Tacivo, Tacit/getAbstract, Accrete Knowledge Engine, AI Expert Twin research, and ProSkill/ProSkill++.
+
+The remaining product hypothesis is the end-to-end transmission event with source, learner, verification, improvement and lineage.
