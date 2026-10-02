@@ -1,241 +1,161 @@
 # Competitive Landscape
 
-**Purpose:** Preserve competitive research and the strategic lessons extracted from it. This is not a claim that competitors are static; it is a point-in-time research record and should be refreshed before submission.
+**Research checkpoint:** 2026-10-03
 
-## 1. Family Memory / Oral History
+## Strategic conclusion
+
+Anveshan is entering a crowded space. The following are already active:
+
+- AI-guided expert interviews;
+- tacit-knowledge capture;
+- LLM knowledge bases;
+- expert verification;
+- industrial knowledge transfer;
+- video-based training;
+- AI apprenticeship;
+- procedural skill assessment;
+- oral-history digitization;
+- cultural heritage AI.
+
+Therefore, Anveshan must not claim novelty for any one of those capabilities.
+
+## Family Memory / Oral History
 
 ### Storyworth
-
-Official sources:
-- https://help.storyworth.com/en_US/magic-interviews
-- https://help.storyworth.com/can-i-voice-record-my-stories
-
-Overlap:
-- AI-guided interviews
-- adaptive questions
-- voice capture
-- memory preservation
-- story generation
-
-Strategic lesson:
-- AI interviewing is not sufficient differentiation.
-- Voice-first memory capture is already commercial.
-- Memoir generation is not the core moat.
+AI-guided Magic Interviews and voice story capture.
+https://help.storyworth.com/en_US/magic-interviews
+https://help.storyworth.com/can-i-voice-record-my-stories
 
 ### Remento
-
-Official source:
-- https://www.remento.co/
-
-Overlap:
-- voice-first capture
-- spoken memories
-- book generation
-- original recordings
-
-Strategic lesson:
-- preserving original voice is valuable but not novel by itself.
-- family memoir remains too narrow.
+Voice-first memory capture and original recordings.
+https://www.remento.co/
 
 ### FamilySearch
-
-Official source:
-- https://www.familysearch.org/
-
-Overlap:
-- stories
-- photos
-- documents
-- audio
-- family relationships
-- searchable archive
-- family history
-
-Strategic lesson:
-- family archive and genealogy are mature categories.
-- an AI layer on top of a family archive is not enough.
+Stories, photos, documents, audio, family relationships and searchable family history.
+https://www.familysearch.org/
 
 ### StoryFile
+Conversational access to authentic recorded responses.
+https://www.storyfile.com/
 
-Official source:
-- https://www.storyfile.com/
+**Conclusion:** family memory, oral-history capture and conversational archive access are established.
 
-Overlap:
-- recorded human responses
-- conversational retrieval
-- institutional/historical knowledge
-- authentic source media
-
-Strategic lesson:
-- authentic source material matters.
-- synthetic personas should not be presented as the source.
-- conversational access to recorded knowledge is established.
-
-## 2. Industrial / Enterprise Knowledge
+## Industrial / Enterprise Knowledge
 
 ### SightCall
-
-Sources:
-- https://sightcall.com/solutions/field-service/
-- https://sightcall.com/blog/sightcall-expert-app-xk-integrations-launch/
-
-Overlap:
-- expert capture
-- visual support
-- AI structuring
-- reusable expert knowledge
-- service procedures
-
-Strategic lesson:
-- expert interaction → reusable knowledge is already a product category.
-- field-service expertise is not a clean novelty wedge.
+Expert capture, visual support, reusable knowledge, Xpert Knowledge APIs and MCP integrations.
+https://sightcall.com/solutions/field-service/
+https://sightcall.com/blog/sightcall-expert-app-xk-integrations-launch/
 
 ### Poka
-
-Sources:
-- https://www.poka.io/en/connected-worker-platform/
-- https://www.poka.io/blog/poka-plants-the-flag-on-industrial-ai-for-connected-work/
-
-Overlap:
-- operator knowledge
-- frontline learning
-- knowledge flywheel
-- industrial expertise
-
-Strategic lesson:
-- retiring-worker/operator knowledge transfer is crowded.
+Knowledge Flywheel and frontline operator knowledge transfer.
+https://www.poka.io/en/connected-worker-platform/
+https://www.poka.io/blog/poka-plants-the-flag-on-industrial-ai-for-connected-work/
 
 ### Dozuki
-
-Source:
-- https://www.dozuki.com/how-to-use-ai-standard-work
-
-Overlap:
-- demonstrations
-- AI-generated work instructions
-- learning pathways
-- visual verification
-
-Strategic lesson:
-- demonstration → instruction is already productized.
+AI conversion of demonstrations into work instructions and learning pathways.
+https://www.dozuki.com/how-to-use-ai-standard-work
 
 ### DeepHow
-
-Source:
-- https://deephow.com/use-cases/training-within-industry
-
-Overlap:
-- instruction
-- guided practice
-- verification
-- video training
-- process drift
-
-Strategic lesson:
-- AI apprenticeship and visual training alone are not enough.
+Instruction, guided practice and verified performance.
+https://deephow.com/use-cases/training-within-industry
 
 ### Mission Control / Bob
+First-person expert capture including video, audio and spatial context.
+https://www.usemissioncontrol.com/bob/manufacturing/
 
-Source:
-- https://www.usemissioncontrol.com/bob/manufacturing/
+### Tacivo
+Current product positioning includes AI-moderated expert interviews, LLM-wiki synthesis, knowledge transfer, onboarding, SOPs, training, decision trees, integrations and MCP.
+https://tacivo.com/
+https://tacivo.com/help
 
-Overlap:
-- first-person expert capture
-- video/audio
-- spatial information
-- expert reasoning
+### Tacit / getAbstract
+Current positioning includes AI-assisted expert interviews, micro-captures, claim-level verification, expert verification, structured knowledge and delivery into existing enterprise tools.
+https://www.getabstract.com/en/productivity/tacit
 
-Strategic lesson:
-- expert-in-context capture is an active category.
+### Accrete Knowledge Engine
+Current positioning emphasizes expert knowledge, context graphs and tacit organizational knowledge recovery for consequential work.
+https://www.accrete.ai/
 
-## 3. Cultural / Heritage Technology
+**Conclusion:** "capture expert knowledge and turn it into reusable organizational knowledge" is not a clean novelty wedge.
 
-### Government of India culture + AI initiatives
+## AI Apprenticeship / Skill Assessment Research
 
-Source:
-- https://culture.gov.in/events/ministry-culture-showcases-confluence-heritage-and-technology-india-ai-impact-summit-2026
+### AI-assisted apprenticeship
+2026 research finds that LLM-based guidance can support hands-on construction learning, but also reports limitations in conveying tacit knowledge and adapting tool use.
+https://journals.sagepub.com/doi/10.1177/14780771261454100
 
-Lesson:
-- cultural digitization, translation, access, and dissemination are active strategic areas.
-- a generic AI cultural archive is insufficiently differentiated.
+### Generative AI and apprenticeship
+2026 research reports improved competencies in an AI-augmented apprenticeship experiment.
+https://journals.sagepub.com/doi/10.1177/18724981251397523
+
+### AI Expert Twin
+2026 research proposes structured representations of expert procedural actions, concepts, decision processes, trade-offs and uncertainty for practice-based learning.
+https://arxiv.org/abs/2605.01401
+
+### ProSkill / ProSkill++
+2026 work provides segment-level procedural skill assessment benchmarks and highlights that current skill-assessment systems still struggle with diverse complex procedures.
+https://doi.org/10.1109/WACV61042.2026.00471
+https://fpv-iplab.github.io/ProSkill/
+
+### Video-language procedural assessment
+2026 research demonstrates video-language-model approaches for procedural analysis, deviation detection, temporal localization and explainable feedback in skills training.
+https://www.tandfonline.com/doi/full/10.1080/24725579.2026.2651352
+
+**Conclusion:** learner video assessment is technically meaningful but not itself sufficient differentiation.
+
+## Cultural / Heritage Technology
+
+### Government of India
+AI and cultural digitization initiatives include preservation, translation, access and dissemination.
+https://culture.gov.in/events/ministry-culture-showcases-confluence-heritage-and-technology-india-ai-impact-summit-2026
 
 ### AI4Bharat Smriti
-
-Source:
-- https://play.google.com/store/apps/details?hl=en_IN&id=org.ai4bharat.smriti
-
-Lesson:
-- multimodal cultural data collection already exists.
+Authorized digital archivists can collect multimodal cultural data.
+https://play.google.com/store/apps/details?hl=en_IN&id=org.ai4bharat.smriti
 
 ### Bharat Sanskriti
+Multimodal AI for cultural discovery/oral-history preservation.
+https://github.com/ShruthiPakanati/Bharat-Sankriti
 
-Source:
-- https://github.com/ShruthiPakanati/Bharat-Sankriti
+### Digital heritage research
+A 2026 scoping review of 102 studies identifies documentation, organization, recognition, restoration, education and cultural innovation as established digital safeguarding stages.
+https://www.nature.com/articles/s40494-026-02774-3
 
-Lesson:
-- multimodal cultural discovery and oral-history preservation are already being explored.
+**Conclusion:** generic AI cultural preservation is also an active field.
 
-### Multimodal RAG for traditional knowledge
+## Oral History / AI
 
-Source:
-- https://academic.oup.com/dsh/article-abstract/41/2/1138/8643957
+2026 scholarship explicitly examines AI, context and consent in oral history and argues for computational methods that deepen rather than replace close human engagement.
+https://www.tandfonline.com/doi/abs/10.1080/00940798.2026.2625663
+https://www.tandfonline.com/doi/full/10.1080/00940798.2026.2618281
 
-Lesson:
-- knowledge preservation/transmission through multimodal retrieval is an active research direction.
+## Data Sovereignty / Governance
 
-### Technology and community participation
+2026 research emphasizes Indigenous data sovereignty, community authority, co-design, contextual governance and non-extractive AI.
+https://doi.org/10.1007/s00146-026-03091-w
+https://link.springer.com/article/10.1007/s00146-026-02938-6
 
-Sources:
-- https://www.nature.com/articles/s40494-026-02458-y
-- https://iaiai.org/letters/index.php/liir/article/view/506
+UNESCO launched a 2026 Indigenous Language Data Commons Incubator emphasizing community-driven governance and benefit sharing.
+https://www.unesco.org/en/articles/call-applications-indigenous-language-data-commons-incubator
 
-Lesson:
-- technology-heavy heritage systems risk preserving artifacts without preserving living context if communities are not meaningfully involved.
+Creative Commons also published 2026 guidance on Indigenous collections/data and cultural authority.
+https://creativecommons.org/2026/09/04/guidance-for-indigenous-collections-and-data/
 
-## 4. Oral History / Governance
+**Conclusion:** governance cannot be a decorative feature.
 
-Sources:
-- https://oralhistory.org/oha-statement-on-ethics/
-- https://oralhistory.org/oha-core-principles/
-- https://oralhistory.org/best-practices/
-- https://oralhistory.org/wp-content/uploads/2025/10/2025-OHA-Principles-and-Best-Practices-Complete.pdf
+## Competitive Differentiation Hypothesis
 
-Relevant principles for Anveshan:
-- informed consent
-- narrator/contributor control
-- review
-- attribution
-- contextualization
-- access
-- source fidelity
-- avoiding unsupported interpretation.
+The remaining defensible hypothesis is not:
 
-## 5. Competitive Implication
+"we use AI to capture tacit knowledge."
 
-The competitive space suggests that no single feature is enough.
+It is:
 
-Anveshan's differentiation hypothesis must come from the **combination** of:
+> **We model a complete, source-grounded human-to-human transmission event: authentic expert source → structured knowledge → evidence → teaching → learner attempt → evidence-linked verification → measured improvement → lineage.**
 
-- multimodal expert capture
-- observable tacit/conditional knowledge extraction
-- source evidence
-- provenance
-- knowledge graph
-- adaptive teaching
-- learner practice
-- evidence-based learner verification
-- transmission measurement
-- knowledge lineage
-- community governance
-- evolution/variants.
+## Falsification Test
 
-## 6. Competitive Test
+Before submission, attempt to reproduce the exact MVP with the strongest relevant competitors.
 
-Before final submission, the team should refresh this landscape and test the actual MVP against:
-
-1. Does a competitor already perform the complete capture → ground → teach → practice → verify → lineage loop?
-2. Can a competitor demonstrate the same result with the same data?
-3. Is our differentiator technically visible rather than merely described?
-4. Is the initial domain-specific experience materially better because of the transmission model?
-5. Can judges understand the distinction in seconds?
-
+If one can reproduce the complete loop, revise the differentiation claim or change the wedge.
