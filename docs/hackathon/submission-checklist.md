@@ -81,3 +81,20 @@
 - [ ] Repository cleaned.
 - [ ] Secrets removed.
 - [ ] License/attribution checked.
+
+
+## 2026-10-03 Panel Gates
+
+- [ ] Direct competitor falsification completed.
+- [ ] Novelty claims reviewed against novelty-boundary.md.
+- [ ] Authentic expert and learner confirmed.
+- [ ] Skill-specific rubric approved by expert.
+- [ ] Baseline and retry captured.
+- [ ] Criterion-level evaluation tested.
+- [ ] Evidence/timestamp accuracy measured.
+- [ ] Expert fidelity measured.
+- [ ] Governance/consent scope documented.
+- [ ] Current Google model/API launch stages rechecked.
+- [ ] Official AI Builder Cup page rechecked immediately before submission.
+- [ ] Three-minute public video satisfies current official requirement.
+- [ ] Judge Q&A rehearsed without relying on unsupported claims.
