@@ -1495,3 +1495,60 @@ The feature universe is useful for three purposes:
 3. preventing repeated ideation and accidental loss of prior work.
 
 The MVP should be derived from validation and the BRD, not from the number of features listed here.
+
+
+# 2026 Research Reconciliation
+
+**Review checkpoint:** 2026-10-03
+
+The feature universe remains intentionally exhaustive, but the panel review changes how features are interpreted.
+
+## Features Downgraded from Novelty Claims
+
+The following remain valid features but are not product differentiation by themselves:
+
+- AI-guided interviewing;
+- tacit-knowledge extraction;
+- knowledge graphs;
+- multimodal RAG;
+- AI tutoring;
+- adaptive apprenticeship;
+- learner video assessment;
+- expert cognition modeling;
+- agent orchestration;
+- provenance/citations;
+- cultural archiving.
+
+## New Research-Derived Feature Requirements
+
+### Criterion-level skill assessment
+
+Learner evaluation should be decomposed into observable criteria rather than a single model-generated skill score.
+
+### Evidence-linked temporal assessment
+
+Feedback should identify relevant learner segments and compare them with reference segments where technically feasible.
+
+### Expert-reviewable evaluation
+
+The expert should be able to inspect the basis of important learner-evaluation judgments.
+
+### Evaluation traceability
+
+AI workflows should retain test cases, inputs, outputs, evidence, tool calls, ratings and failure categories.
+
+### Competitive falsification workflow
+
+The product development process should periodically attempt to reproduce the MVP using the strongest competing systems.
+
+### Community governance as a real control plane
+
+Where community knowledge is used, access, publication, derived representations and reuse should be governed rather than merely described.
+
+### Source/derived separation
+
+Original source, observed evidence, structured claims, AI interpretation and generated teaching remain distinct objects.
+
+## Research Boundary
+
+The feature universe must not be interpreted as a commitment to build everything. The MVP contract remains the controlling scope document.
