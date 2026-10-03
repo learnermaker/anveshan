@@ -1,0 +1,100 @@
+%% Anveshan AR-01 | System, Knowledge & Delivery Architecture
+%% Audience: humans, technical reviewers, coding agents
+%% Status: CURRENT / INDICATIVE MVP
+%% Canonical sources:
+%% - docs/architecture/system-design.md
+%% - docs/architecture/knowledge-model.md
+%% - docs/architecture/ai-agent-architecture.md
+%% - docs/product/product-vision.md
+
+flowchart TB
+  EXP[Expert] --> UX[Anveshan Experience Layer]
+  LRN[Learner] --> UX
+  COM[Community / Organization] --> UX
+  UX --> ORCH[Deterministic orchestration<br/>workflow state • permissions • audit]
+  ORCH --> AI
+
+  subgraph AI[AI responsibilities — logical, not necessarily separate services]
+    K[Knowledge<br/>Understand • Extract • Structure • Retrieve]
+    E[Evidence<br/>Ground • Cite • Verify • Expose uncertainty]
+    T[Transmission<br/>Teach • Practice • Evaluate • Feedback]
+  end
+  K <--> E
+  E <--> T
+  T <--> K
+  AI --> KNOW
+  AI --> EV
+  AI --> EVAL
+  AI --> LIN
+
+  subgraph DATA[Data & provenance boundary]
+    KNOW[(Knowledge store<br/>skills • practices • claims • lessons)]
+    EV[(Evidence store<br/>recordings • timestamps • artifacts)]
+    EVAL[(Evaluation store<br/>rubrics • observations • metrics)]
+    LIN[(Audit & lineage<br/>source → interpretation → transmission)]
+  end
+  KNOW --> RET[Semantic retrieval / knowledge graph]
+  EV --> RET
+  RET --> E
+  EVAL --> T
+  LIN --> T
+
+  subgraph GCP[Indicative Google Cloud delivery]
+    GEM[Gemini<br/>multimodal understanding + reasoning]
+    ADK[Google ADK<br/>agent orchestration where justified]
+    RUN[Cloud Run<br/>prototype services]
+    STR[Cloud Storage<br/>source media + artifacts]
+    SEC[Security / auth / observability]
+  end
+  GEM --> AI
+  ADK --> AI
+  RUN --> ORCH
+  STR --> EV
+  SEC --> ORCH
+
+  subgraph KO[Knowledge object — source + derived state]
+    SK[Skill]
+    CTX[Context]
+    PROC[Procedure / cues / exceptions]
+    CL[Claim]
+    REF[Source reference<br/>ID • timestamp • speaker • modality]
+    UNC[Uncertainty / review state]
+    LG[Lineage / version / variant]
+    SK --> PROC
+    CTX --> PROC
+    PROC --> CL
+    CL --> REF
+    CL --> UNC
+    CL --> LG
+  end
+  KNOW --> KO
+  EV --> REF
+  LIN --> LG
+
+  subgraph ROADMAP[Development path]
+    M0[M0 Validate capability<br/>1 expert • 1 learner • 1 skill]
+    M1[M1 Build vertical slice<br/>capture → teach → practice → verify]
+    M2[M2 Test & iterate<br/>baseline → retry → measured improvement]
+    M3[M3 Harden + demo<br/>replay • evidence • reliability • submission]
+    M0 --> M1 --> M2 --> M3
+  end
+  M0 --> ORCH
+  M1 --> AI
+  M2 --> EVAL
+  M3 --> RUN
+
+  V[Long-term vision<br/>Memory → Expertise → Capability<br/>CAPTURE → UNDERSTAND → GROUND → TRANSMIT → PRACTICE → VERIFY → EVOLVE]
+  V --> UX
+
+  classDef actor fill:#eef4ff,stroke:#3b82f6,color:#12203a
+  classDef aiNode fill:#eefbf5,stroke:#22a06b,color:#12203a
+  classDef dataNode fill:#fff5e8,stroke:#f59e0b,color:#12203a
+  classDef infraNode fill:#edf2f7,stroke:#64748b,color:#12203a
+  classDef roadNode fill:#f2edff,stroke:#7c3aed,color:#12203a
+  classDef visionNode fill:#e9f7f0,stroke:#15803d,color:#12203a
+  class EXP,LRN,COM actor
+  class K,E,T,UX,ORCH aiNode
+  class KNOW,EV,EVAL,LIN,KO,SK,CTX,PROC,CL,REF,UNC,LG dataNode
+  class GEM,ADK,RUN,STR,SEC,RET infraNode
+  class M0,M1,M2,M3 roadNode
+  class V visionNode
