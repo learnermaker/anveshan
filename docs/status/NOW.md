@@ -21,6 +21,13 @@ Anveshan helps an expert transmit a bounded piece of real-world expertise to ano
 5. Every PR requires an issue link, explicit scope, acceptance criteria, and validation evidence.
 6. Adding scope requires removing, reducing, or deferring other work.
 7. If work is not necessary for the current gate, stop and create a research or scope-change issue.
+8. Prefer automation over ceremony.
+
+## Operating target
+
+Reach the first credible product proof with the **minimum coordination overhead**:
+
+**validate the capability → lock a bounded use case → build the smallest vertical slice → measure transmission → harden only what the evidence requires → demo → submit**
 
 ## Gates
 
@@ -32,6 +39,10 @@ Anveshan helps an expert transmit a bounded piece of real-world expertise to ano
 - M5 — Submission
 
 Do not spend materially on a later gate while an earlier gate is failing unless the work is explicitly exploratory.
+
+## Team execution rule
+
+Three people and their agents may work in parallel when ownership boundaries are clear. Optimize for independent workstreams, short integration loops, and early evidence rather than formal ceremonies.
 
 ## Scope buckets
 
