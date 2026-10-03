@@ -5,17 +5,58 @@
 > Hackathon: Google Cloud AI Builder Cup 2026  
 > Research checkpoint: 2026-10-03
 
-## Current thesis
+## Product vision
 
-Anveshan is exploring an AI-powered system for **making a specific piece of human expertise transmissible from one person to another, while preserving its source, evidence, uncertainty, and lineage**.
+Anveshan is a **living intelligence layer for human expertise, experience, and memory**.
 
-> **Anveshan turns an expert's authentic demonstration into source-grounded apprenticeship, observes the learner's attempt, provides evidence-linked feedback, measures whether performance improved, and records the transmission lineage.**
+Its long-term purpose is to make human knowledge **discoverable, preservable, transferable, verifiable, and continuously evolving** across people, generations, communities, and organizations.
 
-This is deliberately narrower than "preserve all human knowledge." The broad vision remains important, but the MVP must prove one complete transmission event.
+The product is not defined by video, a chatbot, an LMS, a family archive, or an enterprise knowledge base. Those are possible applications and interfaces. The underlying system supports:
 
-### Core loop
+**CAPTURE → UNDERSTAND → GROUND → TRANSMIT → PRACTICE → VERIFY → EVOLVE**
 
-**DEMONSTRATE → UNDERSTAND → GROUND → TEACH → PRACTICE → VERIFY → TRANSMIT → EVOLVE**
+### Core layers
+
+**Memory** — What happened?  
+**Expertise** — What does someone know, and how did they come to know it?  
+**Capability** — Can another person actually use it?
+
+### Product surfaces
+
+- **Personal** — accumulated individual knowledge;
+- **Social / Family / Elders** — intergenerational memory and living knowledge;
+- **Community / Culture** — community-held practices, traditions, languages, and local knowledge;
+- **Education / Apprenticeship** — teaching, practice, and skill transfer;
+- **Enterprise** — institutional expertise, expert-to-worker transfer, and knowledge continuity;
+- **Research** — exploration and synthesis of accumulated human experience.
+
+### Multimodality
+
+**Video is one modality, not the product.**
+
+Anveshan can combine video, audio, text, images, documents, conversations, demonstrations, simulations, operational data, and learner attempts.
+
+### Long-term vision
+
+> **Anveshan makes human expertise discoverable, preservable, transferable, verifiable, and continuously evolving across people, generations, communities, and organizations.**
+
+See `docs/product/product-vision.md` for the full product vision.
+
+## Current competition thesis
+
+For the Google Cloud AI Builder Cup 2026, the broad product vision is being narrowed into a single demonstrable use case.
+
+The current working direction remains:
+
+> **Anveshan helps an expert transmit a bounded piece of real-world expertise to another person, grounded in authentic evidence, with observable practice and verification of whether the knowledge transferred.**
+
+This is a prototype wedge, not the definition of the company.
+
+### Prototype loop
+
+**DEMONSTRATE → UNDERSTAND → GROUND → TEACH → PRACTICE → VERIFY → EVOLVE**
+
+The exact domain and skill remain open until authentic access and feasibility validation are confirmed.
 
 ## What is and is not novel
 
