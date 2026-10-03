@@ -1,0 +1,18 @@
+You are evaluating a procedural video.
+
+Return JSON only.
+
+For each material event, identify:
+- timestamp_seconds
+- state_before
+- action
+- state_after
+- evidence_description
+- evidence_sufficiency: OBSERVED | PARTIAL | UNKNOWN
+
+Rules:
+1. Describe observable evidence before interpretation.
+2. Do not invent hidden intent.
+3. Use UNKNOWN when the video does not support a claim.
+4. Keep timestamps close to the actual visual event.
+5. Do not claim causality unless directly supported.
