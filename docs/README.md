@@ -4,14 +4,19 @@
 
 ## Start Here
 
-1. README
-2. Full Exploration Record
-3. Panel Review
-4. Product Thesis
-5. BRD
-6. MVP Contract
-7. Novelty Boundary
-8. Feature Universe
+Read in this order:
+
+1. `README.md` — repository orientation and current status.
+2. `docs/product/product-vision.md` — **canonical long-term product vision**.
+3. `docs/product/product-thesis.md` — **current competition/MVP wedge**.
+4. `docs/product/BRD.md` — MVP requirements.
+5. `docs/product/mvp-contract.md` — implementation boundary.
+6. `docs/validation/` — what has actually been validated.
+7. `docs/architecture/` — implementation design.
+8. `docs/research/` and `EXPLORATION.md` — research and historical reasoning.
+9. `docs/product/feature-universe.md` — exhaustive possibility inventory, not scope.
+
+For coding-agent operating rules, read `AGENTS.md` first.
 
 ## Product
 
@@ -62,6 +67,8 @@
 - Submission Checklist
 
 ## Documentation Rule
+
+The repository has a strict source-of-truth hierarchy. Do not infer implementation scope from research or feature inventories.
 
 The repository separates:
 
