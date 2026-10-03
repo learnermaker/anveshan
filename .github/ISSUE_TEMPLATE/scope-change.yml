@@ -1,0 +1,57 @@
+name: Scope change / exception
+description: Explicitly change current scope. Use only when existing plans must change.
+title: "[Scope Change] "
+body:
+  - type: textarea
+    id: change
+    attributes:
+      label: Requested change
+      description: What should enter, leave, or change in NOW scope?
+    validations:
+      required: true
+  - type: textarea
+    id: reason
+    attributes:
+      label: Reason and evidence
+    validations:
+      required: true
+  - type: textarea
+    id: trade
+    attributes:
+      label: Explicit trade-off
+      description: What existing NOW work is removed, reduced, or deferred? No free scope additions.
+      placeholder: Add X; remove/defer Y.
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: Timeline, architecture, evaluation, UX, cost, security, and submission impact.
+    validations:
+      required: true
+  - type: textarea
+    id: rollback
+    attributes:
+      label: Rollback / exit condition
+    validations:
+      required: true
+  - type: dropdown
+    id: decision
+    attributes:
+      label: Proposed decision
+      options:
+        - DECIDED
+        - DEFERRED
+        - REJECTED
+    validations:
+      required: true
+  - type: checkboxes
+    id: scope_firewall
+    attributes:
+      label: Scope firewall
+      options:
+        - label: Technical feasibility alone is not justification for scope expansion.
+          required: true
+        - label: I identified work that will be cut or deferred if this is accepted.
+          required: true

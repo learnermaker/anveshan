@@ -1,0 +1,54 @@
+name: Validation / experiment
+description: Define an experiment or evaluation that can produce evidence for a decision.
+title: "[Validation] "
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Validation question
+    validations:
+      required: true
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: Hypothesis
+    validations:
+      required: true
+  - type: textarea
+    id: protocol
+    attributes:
+      label: Protocol
+      description: Dataset or participants, procedure, model/configuration, and controls.
+    validations:
+      required: true
+  - type: textarea
+    id: metrics
+    attributes:
+      label: Metrics and thresholds
+      description: Define success criteria before running.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence artifact
+      description: Where raw results and interpretation will be recorded.
+    validations:
+      required: true
+  - type: textarea
+    id: decision
+    attributes:
+      label: Decision after experiment
+    validations:
+      required: true
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight
+      options:
+        - label: I defined the success threshold before running.
+          required: true
+        - label: I will preserve enough evidence to reproduce or audit the result.
+          required: true
+        - label: Validation does not automatically expand product scope.
+          required: true

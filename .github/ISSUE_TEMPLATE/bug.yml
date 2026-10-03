@@ -1,0 +1,45 @@
+name: Bug / defect
+description: Report a reproducible defect in existing behavior.
+title: "[Bug] "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Exact steps, inputs, environment, expected and actual behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope boundary
+      description: Smallest fix. Exclude unrelated cleanup and refactoring.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+    validations:
+      required: true
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight
+      options:
+        - label: I checked AGENTS.md and relevant canonical documentation.
+          required: true
+        - label: I searched for an existing issue describing this defect.
+          required: true
