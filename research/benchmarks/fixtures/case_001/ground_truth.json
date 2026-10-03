@@ -30,3 +30,27 @@
     "state_after": null
   }
 }
+{
+  "case_id": "case_001",
+  "status": "template_only",
+  "task": "placeholder_procedural_task",
+  "source": "self_recorded_or_licensed",
+  "duration_seconds": 60.0,
+  "note": "This fixture is scaffolding, not evidence. Replace with a real annotated case before claiming benchmark performance.",
+  "keysteps": [
+    {"id": "k1", "name": "step_one", "start": 5.0, "end": 12.0},
+    {"id": "k2", "name": "step_two", "start": 15.0, "end": 28.0}
+  ],
+  "first_divergence": {
+    "timestamp": 22.0,
+    "action": "placeholder_incorrect_action",
+    "state_before": "placeholder_state",
+    "state_after": "placeholder_failed_state"
+  },
+  "recovery": {
+    "timestamp": null,
+    "action": null,
+    "state_before": null,
+    "state_after": null
+  }
+}
