@@ -1,0 +1,29 @@
+schema_version: 1
+project:
+  name: anveshan
+  phase: validation
+  default_branch: main
+  current_gate: M0
+  work_states: [BACKLOG, READY, IN_PROGRESS, IN_REVIEW, VALIDATING, DONE, BLOCKED, DEFERRED, REJECTED, SUPERSEDED]
+  decision_states: [EXPLORATION, PROPOSED, DECIDED, VALIDATED, IMPLEMENTED, SUPERSEDED]
+  scope_buckets:
+    NOW: current gate or explicitly approved MVP work
+    NEXT: post-gate possibilities
+    EXPLORE: research only
+    REJECTED: rejected or superseded work
+  rules:
+    implementation_requires_issue: true
+    explicit_scope_boundary: true
+    pull_request_requires_issue: true
+    scope_change_requires_trade: true
+    research_does_not_authorize_implementation: true
+    technical_capability_does_not_authorize_product_scope: true
+    ai_changes_require_evaluation: true
+    validation_claims_require_evidence: true
+  current_mvp:
+    exact_domain: OPEN
+    exact_skill: OPEN
+    expert: OPEN
+    learner: OPEN
+    rubric: OPEN
+  progress_unit: product_capability
