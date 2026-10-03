@@ -1,6 +1,7 @@
 # Business Requirements Document — Anveshan
 
-**Status:** Draft for product definition  
+**Status:** Draft competition/MVP requirements  
+**Scope:** This BRD defines the current prototype wedge, not the complete Anveshan product vision. See `docs/product/product-vision.md`.
 **Product name:** TBD  
 **Working project/team/repository:** Anveshan  
 **Hackathon:** Google Cloud AI Builder Cup 2026
