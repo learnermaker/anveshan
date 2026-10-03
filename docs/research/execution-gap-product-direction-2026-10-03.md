@@ -1,4 +1,6 @@
-# Product Direction Exploration — Execution Gap / Closed-Loop Operations
+# SUPERSEDED — Product Direction Exploration: Execution Gap / Closed-Loop Operations
+
+> **Status: SUPERSEDED / RESEARCH ONLY.** This document records an alternative product direction explored on 2026-10-03. It is preserved for competitive and strategic learning, but it is **not** the current Anveshan product direction and must not be used as implementation authority. See `docs/product/product-vision.md` and `docs/product/product-thesis.md`.
 ## 2026-10-03
 
 ## Strategic premise
