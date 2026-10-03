@@ -35,6 +35,7 @@ This file records decisions that materially affect scope, architecture, validati
 **Consequences:** Agents must not invent a domain or build a large app before the validation gate.
 
 **Revisit trigger:** A validation artifact records a supported bounded direction.
+
 ## 2026-10-03 — GitHub/agent operating standard
 **Status:** DECIDED
 
@@ -45,3 +46,18 @@ This file records decisions that materially affect scope, architecture, validati
 **Context:** The repository is a hackathon project with three people working concurrently, mostly through coding agents. The objective is maximum parallelism with minimum coordination tax while preserving scope integrity, reproducibility, provenance, and integration safety.
 
 **Revisit trigger:** Team size, GitHub plan, collaboration model, or product-development phase changes materially.
+
+## 2026-10-03 — Parallel development uses a frozen contract seam
+**Status:** DECIDED
+
+**Decision:** When two developers work on the transmission MVP in parallel, split work into two independently testable proof surfaces: Track A — Expert Intelligence & Grounding; Track B — Practice, Evaluation & Transmission. The tracks must use a small, explicit contract seam and replay fixtures so either track can build and validate without waiting for the other's implementation. Integration occurs only after each track has independent proof.
+
+**Context:** A product/platform split creates sequential dependencies disguised as parallel work. The team needs genuine parallel execution with minimal synchronization.
+
+**Shared seam:** `KnowledgePackage`, `EvidenceRef`, `PracticeTask`, `LearnerAttempt`, `Evaluation`, `Feedback`, and `TransmissionRecord`. These names define the handoff concept; they do not authorize implementation of every object.
+
+**Alternatives considered:** A sequential product/evidence track plus platform/engineering track; rejected because most work remained dependency-ordered. A broad shared-service architecture; rejected because it increases synchronization and prematurely commits architecture.
+
+**Consequences:** Work ownership can remain disjoint. Fixture/replay tests become first-class validation seams. Real expert/learner evidence is an explicit integration concern rather than an implicit runtime dependency.
+
+**Revisit trigger:** The bounded domain and actual implementation interfaces are selected, or the team size/work allocation changes materially.
