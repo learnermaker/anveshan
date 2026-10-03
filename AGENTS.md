@@ -75,7 +75,7 @@ Every coding agent MUST obey these rules:
 13. **Deterministic where auditable.** Permissions, provenance, scoring, evaluation aggregation, state transitions, and audit behavior must not depend on unconstrained model output.
 14. **Update durable docs.** If a change alters product scope, architecture, evaluation semantics, or agent rules, update the canonical document/ADR in the same change.
 15. **Stop conditions matter.** Stop when acceptance criteria are met. Do not keep expanding the task because adjacent work is interesting.
-16. **Do not bypass governance.** Do not push directly to main, bypass required review/checks, or weaken governance files to make a change easier.
+16. **Do not bypass governance.** Do not push directly to main as part of normal development, falsify CI evidence, or weaken governance files to make a change easier.
 
 ## Required work lifecycle
 
