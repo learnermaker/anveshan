@@ -134,6 +134,10 @@ The exact domain, skill, expert, learner and evaluation rubric remain open until
 
 See docs/README.md for the complete map. The repository separates EXPLORED, DECIDED, VALIDATED and IMPLEMENTED material so research does not silently become product scope. See `AGENTS.md` for the source-of-truth hierarchy used by coding agents.
 
+### Parallel implementation workspaces
+
+Once M0 authorizes implementation, two developers can work independently under `tracks/track-a/` and `tracks/track-b/`, using the contract and replay-fixture boundary documented in `docs/architecture/parallel-work-contract.md` and `docs/diagrams/DP-01-parallel-development-roadmap.mmd`.
+
 ## Implementation Status
 
 The repository is currently a **research/validation workspace**, not yet the runnable competition prototype. Application source, deployment configuration and CI are intentionally added only after the capability-validation gate produces a supported product direction.
