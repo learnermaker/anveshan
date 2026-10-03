@@ -1,0 +1,20 @@
+Compare a successful reference execution with an attempt execution of the same task.
+
+Return JSON only:
+
+{
+  "first_material_divergence": {
+    "reference_timestamp_seconds": 0,
+    "attempt_timestamp_seconds": 0,
+    "reference_action": "",
+    "attempt_action": "",
+    "observable_difference": "",
+    "evidence_sufficiency": "OBSERVED | PARTIAL | UNKNOWN"
+  }
+}
+
+A material divergence is the earliest difference that changes the procedural state or violates a required step.
+
+Do not choose a later visible failure merely because it is more obvious.
+Do not infer intent.
+Do not claim downstream causality unless the evidence supports it.
