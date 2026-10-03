@@ -132,7 +132,7 @@ The exact domain, skill, expert, learner and evaluation rubric remain open until
 
 ## Documentation
 
-See docs/README.md for the complete map. The repository separates EXPLORED, DECIDED and IMPLEMENTED material so research does not silently become product scope.
+See docs/README.md for the complete map. The repository separates EXPLORED, DECIDED, VALIDATED and IMPLEMENTED material so research does not silently become product scope. See `AGENTS.md` for the source-of-truth hierarchy used by coding agents.
 
 ## Implementation Status
 
