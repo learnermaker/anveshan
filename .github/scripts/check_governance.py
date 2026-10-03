@@ -11,6 +11,7 @@ required = [
     "docs/status/project.yaml",
     ".github/pull_request_template.md",
     ".github/CODEOWNERS",
+    ".github/copilot-instructions.md",
     ".github/ISSUE_TEMPLATE/feature.yml",
     ".github/ISSUE_TEMPLATE/bug.yml",
     ".github/ISSUE_TEMPLATE/research.yml",
@@ -40,6 +41,12 @@ if missing_rules:
     print("AGENTS.md is missing mandatory rules:")
     print("\n".join(missing_rules))
     sys.exit(1)
+
+copilot = (ROOT / ".github/copilot-instructions.md").read_text()
+for token in ("AGENTS.md", "docs/status/NOW.md", "one bounded outcome", "Closes/Fixes/Resolves #N"):
+    if token not in copilot:
+        print(f"copilot-instructions.md missing required context: {token}")
+        sys.exit(1)
 
 project = (ROOT / "docs/status/project.yaml").read_text()
 for token in ("implementation_requires_issue", "pull_request_requires_issue", "scope_change_requires_trade"):
