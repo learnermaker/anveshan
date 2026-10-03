@@ -43,7 +43,15 @@ For coding-agent operating rules, read `AGENTS.md` first.
 - Knowledge Model
 - AI Agent Architecture
 - Data Flow
+- Parallel Work Contract
 - Architecture Decision Records
+
+## Parallel implementation workspaces
+
+- `tracks/` — disjoint starter workspaces for the two concurrent transmission tracks.
+- `tracks/track-a/` — Expert Intelligence & Grounding.
+- `tracks/track-b/` — Practice, Evaluation & Transmission.
+
 
 ## Validation
 
