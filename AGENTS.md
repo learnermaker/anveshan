@@ -103,8 +103,8 @@ A validation result can invalidate a proposal; it does not automatically authori
 - Before editing a file another agent may be touching, inspect current branch/PR state and coordinate rather than overwrite.
 - Prefer disjoint directories and clear ownership boundaries.
 - Agents must leave durable handoff information in the issue/PR, not only in chat.
-
-For parallel implementation, use a stable contract boundary and replay fixtures so independent workstreams can build and validate without waiting on another implementation. Cross-track dependencies must be explicit; do not create hidden synchronization through shared files or runtime assumptions.
+- For parallel implementation, use a stable contract boundary and replay fixtures so independent workstreams can build and validate without waiting on another implementation.
+- Cross-track dependencies must be explicit; do not create hidden synchronization through shared files or runtime assumptions.
 - If two agents reach conflicting product or architecture conclusions, stop implementation and create/update a decision record.
 - Merge order must follow dependency order; do not resolve conflicts by silently choosing whichever branch is newest.
 
