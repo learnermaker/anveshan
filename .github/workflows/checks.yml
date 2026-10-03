@@ -31,16 +31,23 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - name: Require linked issue
+      - name: Validate PR contract
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
         run: |
           python - <<'PY'
           import os
           import re
+
           body = os.environ.get("PR_BODY", "")
-          pattern = r"(?im)^\s*-?\s*(closes|fixes|resolves)\s+#\d+\s*$"
-          if not re.search(pattern, body):
-              raise SystemExit("PR must link a GitHub issue using Closes/Fixes/Resolves #N.")
-          print("PR issue linkage: PASS")
+          checks = {
+              "issue linkage": re.search(r"(?im)^\s*(?:-\s*)?(?:closes|fixes|resolves)\s+#\d+\s*$", body),
+              "scope included section": re.search(r"(?im)^\s*\*\*Included\*\*\s*$", body),
+              "scope excluded section": re.search(r"(?im)^\s*\*\*Not included\*\*\s*$", body),
+              "validation section": re.search(r"(?im)^\s*##\s+Validation\s*$", body),
+          }
+          missing = [name for name, match in checks.items() if not match]
+          if missing:
+              raise SystemExit("Missing PR contract: " + ", ".join(missing))
+          print("PR contract: PASS")
           PY
