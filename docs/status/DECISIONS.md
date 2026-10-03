@@ -45,15 +45,3 @@ This file records decisions that materially affect scope, architecture, validati
 **Context:** The repository is a hackathon project with three people working concurrently, mostly through coding agents. The objective is maximum parallelism with minimum coordination tax while preserving scope integrity, reproducibility, provenance, and integration safety.
 
 **Revisit trigger:** Team size, GitHub plan, collaboration model, or product-development phase changes materially.
-
-
-## 2026-10-03 — Parallel development split
-**Status:** DECIDED
-
-**Decision:** During implementation, work is organized into two disjoint verticals: Part A Product/Evidence and Part B Platform/Engineering. They share explicit data/provenance/evaluation contracts and converge at integration and validation gates. This optimizes parallel work for two developers/agents without adding recurring ceremonies.
-
-**Part A:** source capture, knowledge extraction, grounding, teaching, learner observation, criterion-level evaluation/feedback, transmission proof.
-
-**Part B:** app/UX contracts, model gateway/replay, data contracts, deterministic permissions/state/audit, evaluation harness, deployment, reliability/reproducibility.
-
-**Revisit trigger:** team size, product scope, architecture boundary, or validated workflow changes materially.
