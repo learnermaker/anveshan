@@ -31,19 +31,19 @@ jobs:
           body = os.environ.get("PR_BODY", "")
           checks = {
               "issue linkage": re.search(
-                  r"(?im)^\\s*(?:-\\s*)?(?:closes|fixes|resolves)\\s+#\\d+\\s*$",
+                  r"(?im)^\s*(?:-\s*)?(?:closes|fixes|resolves)\s+#\\d+\s*$",
                   body,
               ),
               "scope included section": re.search(
-                  r"(?im)^\\s*\\*\\*Included\\*\\*\\s*$",
+                  r"(?im)^\s*\*\*Included\*\*\s*$",
                   body,
               ),
               "scope excluded section": re.search(
-                  r"(?im)^\\s*\\*\\*Not included\\*\\*\\s*$",
+                  r"(?im)^\s*\*\*Not included\*\*\s*$",
                   body,
               ),
               "validation section": re.search(
-                  r"(?im)^\\s*##\\s+Validation\\s*$",
+                  r"(?im)^\s*##\\s+Validation\s*$",
                   body,
               ),
           }
@@ -52,7 +52,7 @@ jobs:
               raise SystemExit("Missing PR contract: " + ", ".join(missing))
 
           issue_numbers = re.findall(
-              r"(?im)^\\s*(?:-\\s*)?(?:closes|fixes|resolves)\\s+#(\\d+)\\s*$",
+              r"(?im)^\s*(?:-\s*)?(?:closes|fixes|resolves)\s+#(\\d+)\s*$",
               body,
           )
           if len(issue_numbers) != 1:
