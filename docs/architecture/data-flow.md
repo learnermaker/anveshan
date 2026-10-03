@@ -44,6 +44,16 @@ Every derived representation should preserve its relationship to source evidence
 
 If source evidence is insufficient, the flow should stop at uncertainty rather than generate unsupported content.
 
+## Parallel development boundary
+
+The two implementation tracks use a deliberately small handoff surface so they can build and validate independently:
+
+- Track A produces source-grounded `KnowledgePackage` and `EvidenceRef` information plus a `PracticeTask`.
+- Track B consumes a frozen replay version of those inputs and produces `LearnerAttempt`, `Evaluation`, `Feedback`, and `TransmissionRecord` information.
+- The replay boundary is a test seam, not a requirement for a particular storage or service architecture.
+- Real expert/learner evidence replaces fixtures only at the integration point.
+
+This boundary should remain contract-first and implementation-agnostic until the bounded domain and actual interfaces are decided.
 
 ## 2026-10-03 Critical Path
 

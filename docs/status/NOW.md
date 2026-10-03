@@ -44,6 +44,10 @@ Do not spend materially on a later gate while an earlier gate is failing unless 
 
 Three people and their agents may work in parallel when ownership boundaries are clear. Optimize for independent workstreams, short integration loops, and early evidence rather than formal ceremonies.
 
+For two-developer parallel delivery, use the DP-01 execution map: Track A owns expert intelligence and grounding; Track B owns practice, evaluation, and transmission. Both work against frozen cross-track contracts and replay fixtures, so neither track requires the other's implementation to make progress. Integration occurs only after both tracks have independent proof.
+
+The shared seam is intentionally small: `KnowledgePackage`, `EvidenceRef`, `PracticeTask`, `LearnerAttempt`, `Evaluation`, `Feedback`, and `TransmissionRecord`. These names describe the execution boundary, not a commitment to implement every object immediately.
+
 ## Scope buckets
 
 - **NOW:** required for the current gate or explicitly approved MVP work.

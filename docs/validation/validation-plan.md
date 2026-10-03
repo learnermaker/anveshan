@@ -25,6 +25,7 @@ If this gate fails, do not invent a synthetic domain.
 ## Gate 1 — Knowledge Fidelity
 
 ### Test
+
 Give Anveshan an authentic demonstration.
 
 Extract:
@@ -36,6 +37,7 @@ Extract:
 - failure modes.
 
 ### Expert rubric
+
 Each item:
 - correct;
 - incomplete;
@@ -44,7 +46,12 @@ Each item:
 - missing context.
 
 ### Pass condition
+
 High-value extracted items receive strong expert agreement and no material invented claims.
+
+### Track A evidence
+
+Track A can establish this gate with replayable source fixtures before real integration. Its independent proof is knowledge fidelity, evidence linkage, and expert-review usability.
 
 ## Gate 2 — Evidence Grounding
 
@@ -59,7 +66,12 @@ Include:
 - inferred vs observed.
 
 ### Pass condition
+
 Answers point to correct evidence/timestamps and identify uncertainty where appropriate.
+
+### Track A evidence
+
+Track A owns the grounding proof and should preserve claim → evidence references in its fixtures/replay cases.
 
 ## Gate 3 — Teaching Quality
 
@@ -71,6 +83,10 @@ Expert and learner rate:
 - clarity;
 - appropriateness;
 - source linkage.
+
+### Shared boundary
+
+Track A produces the lesson/practice-task inputs. Track B may consume frozen versions of those inputs while building its learner loop; neither implementation should block the other.
 
 ## Gate 4 — Learner Evaluation
 
@@ -84,7 +100,12 @@ Compare:
 - learner second attempt.
 
 ### Pass condition
+
 Expert judges criterion-level feedback materially useful and not misleading.
+
+### Track B evidence
+
+Track B owns attempt representation, rubric application, feedback traceability, retry handling, and replay validation of evaluation behavior.
 
 ## Gate 5 — Transmission Gain
 
@@ -102,6 +123,10 @@ Metric:
 **Transmission Gain = post-training score − baseline score**
 
 Also record the full score distribution, not only the headline metric.
+
+### Track B evidence
+
+Track B owns the measurement path and must demonstrate gain against replay fixtures before real integration.
 
 ## Gate 6 — Competitive Falsification
 

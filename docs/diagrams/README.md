@@ -1,19 +1,21 @@
 # Anveshan Diagrams
 
-Two canonical diagrams are maintained as Mermaid source so humans can read them and agents can parse them.
+Three canonical diagrams are maintained as Mermaid source so humans can read them and agents can parse them.
 
 ## Files
 
 - `TX-01-transmission-evidence-loop.mmd` — bounded MVP proof: expert evidence → grounded teaching → learner practice → rubric-based verification → measured improvement → transmission lineage.
 - `AR-01-system-knowledge-architecture.mmd` — indicative system context, logical AI responsibilities, data/provenance boundaries, knowledge-object shape, Google Cloud mapping, roadmap, and long-term vision.
+- `DP-01-parallel-development-roadmap.mmd` — current execution map for two developers working independently through a frozen contract seam and replay fixtures, followed by explicit integration.
 
 ## Source of truth
 
-These diagrams summarize canonical product and architecture documents. They do not define new scope.
+These diagrams summarize canonical product, architecture, validation, and execution documents. They do not define new product scope.
 
 - Product: `docs/product/mvp-contract.md`, `docs/product/product-vision.md`
 - Architecture: `docs/architecture/system-design.md`, `docs/architecture/knowledge-model.md`, `docs/architecture/ai-agent-architecture.md`, `docs/architecture/data-flow.md`
-- Validation: `docs/validation/metrics.md`
+- Validation: `docs/validation/metrics.md`, `docs/validation/validation-plan.md`
+- Execution: `docs/status/NOW.md`
 
 ## Maintenance
 
