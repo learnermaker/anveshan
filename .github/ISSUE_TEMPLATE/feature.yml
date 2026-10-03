@@ -1,0 +1,78 @@
+name: Feature / product change
+description: Propose a bounded implementation change that is already aligned with current product scope.
+title: "[Feature] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Rule:** do not use this form to introduce an unvalidated adjacent capability. If this changes MVP scope, use the Scope Change form.
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What single outcome should change?
+      placeholder: One bounded outcome, not a feature bundle.
+    validations:
+      required: true
+  - type: textarea
+    id: alignment
+    attributes:
+      label: Product alignment
+      description: Cite the canonical product/BRD/MVP source that authorizes this work.
+      placeholder: docs/product/mvp-contract.md
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: In scope
+      description: Exact files, behavior, and user-visible behavior included.
+    validations:
+      required: true
+  - type: textarea
+    id: out_scope
+    attributes:
+      label: Out of scope
+      description: Explicit exclusions.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Testable conditions for completion.
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation / evidence
+      description: Existing evidence, experiment, metric, or test supporting the change. State none yet if appropriate.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and risks
+    validations:
+      required: true
+  - type: dropdown
+    id: status
+    attributes:
+      label: Decision status
+      options:
+        - DECIDED
+        - VALIDATED
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Preflight
+      options:
+        - label: I checked AGENTS.md and the canonical product documents.
+          required: true
+        - label: I searched for conflicting or superseded definitions.
+          required: true
+        - label: This issue does not expand MVP scope without an explicit scope-change decision.
+          required: true
