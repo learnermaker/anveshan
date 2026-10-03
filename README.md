@@ -92,3 +92,14 @@ The exact domain, skill, expert, learner and evaluation rubric remain open until
 ## Documentation
 
 See docs/README.md for the complete map. The repository separates EXPLORED, DECIDED and IMPLEMENTED material so research does not silently become product scope.
+
+## Implementation Status
+
+The repository is currently a **research/validation workspace**, not yet the runnable competition prototype. Application source, deployment configuration and CI are intentionally added only after the capability-validation gate produces a supported product direction.
+
+For contributors, treat:
+- `docs/research/` as exploration and competitive/technical evidence;
+- `docs/validation/` as experiment protocol and results;
+- `research/benchmarks/` as reproducible evaluation infrastructure;
+- `docs/product/` as hypotheses and scope contracts pending validation;
+- `docs/hackathon/` as submission/readiness material.
