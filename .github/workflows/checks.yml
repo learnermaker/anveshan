@@ -4,6 +4,9 @@ on:
   pull_request:
   merge_group:
 
+permissions:
+  contents: read
+
 jobs:
   repo-checks:
     runs-on: ubuntu-latest
@@ -12,10 +15,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: pip
       - name: Check repository governance invariants
         run: python .github/scripts/check_governance.py
       - name: Syntax-check benchmark scripts
-        run: python -m compileall research/benchmarks/scripts
+        run: python -m compileall -q research/benchmarks/scripts
       - name: Run temporal scorer smoke test
         run: python research/benchmarks/scripts/score_temporal.py --truth 22 --pred 22.5 --tolerance 2
       - name: Run event scorer smoke test
