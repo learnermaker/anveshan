@@ -1,0 +1,20 @@
+name: checks
+on:
+  push:
+  pull_request:
+jobs:
+  repo-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Syntax-check benchmark scripts
+        run: python -m compileall research/benchmarks/scripts
+      - name: Run temporal scorer smoke test
+        run: python research/benchmarks/scripts/score_temporal.py --truth 22 --pred 22.5 --tolerance 2
+      - name: Run event scorer smoke test
+        run: |
+          printf '%s\n' '{"truth":[{"timestamp":10,"action":"open"}],"pred":[{"timestamp":10.5,"action":"open"}]}' > /tmp/events.json
+          python research/benchmarks/scripts/score_events.py /tmp/events.json
