@@ -1,7 +1,7 @@
 # Anveshan Product Thesis
 
 **Review checkpoint:** 2026-10-03  
-**Status:** Current working thesis; validation pending.
+**Status:** Current competition/MVP thesis; validation pending. The broader company/product vision is defined in `docs/product/product-vision.md`. This document must not be interpreted as the complete Anveshan vision.
 
 ## 1. Executive Thesis
 
