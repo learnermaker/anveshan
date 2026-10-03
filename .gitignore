@@ -1,0 +1,34 @@
+# Local secrets / credentials
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Node
+node_modules/
+.next/
+dist/
+build/
+
+# Local model/media artifacts
+research/benchmarks/results/
+research/benchmarks/media/
+research/runs/
+*.mp4
+*.mov
+*.wav
+*.m4a
+*.zip
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
