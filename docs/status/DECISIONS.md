@@ -61,3 +61,14 @@ This file records decisions that materially affect scope, architecture, validati
 **Consequences:** Work ownership can remain disjoint. Fixture/replay tests become first-class validation seams. Real expert/learner evidence is an explicit integration concern rather than an implicit runtime dependency.
 
 **Revisit trigger:** The bounded domain and actual implementation interfaces are selected, or the team size/work allocation changes materially.
+## 2026-10-03 — Parallel track workspace ownership
+**Status:** DECIDED
+
+**Decision:** Implementation work for the current transmission wedge is organized into two disjoint workspaces: `tracks/track-a/` for Expert Intelligence & Grounding and `tracks/track-b/` for Practice, Evaluation & Transmission. Shared contracts, integration adapters, and cross-track tests stay outside both ownership folders and require explicit assignment.
+
+**Context:** The team needs parallel execution without shared-file collisions or hidden runtime dependencies.
+
+**Consequences:** An agent can start from either track using its local README, replay fixtures, and the shared contract document. Cross-track work is introduced only through explicit issues.
+
+**Revisit trigger:** The bounded domain is selected and the implementation topology requires a material change in ownership boundaries.
+
