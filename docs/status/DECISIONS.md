@@ -35,3 +35,13 @@ This file records decisions that materially affect scope, architecture, validati
 **Consequences:** Agents must not invent a domain or build a large app before the validation gate.
 
 **Revisit trigger:** A validation artifact records a supported bounded direction.
+## 2026-10-03 — GitHub/agent operating standard
+**Status:** DECIDED
+
+**Decision:** Anveshan uses a low-ceremony, automation-first operating model for three concurrent people/agents. Root `AGENTS.md` is the cross-agent contract; `.github/copilot-instructions.md` supplies GitHub/Copilot-specific context; CI enforces machine-checkable repository and PR invariants; GitHub Free/private limitations are treated as hard constraints; paid-only branch protection, rulesets, required reviews, and native auto-merge are not dependencies.
+
+**Operating path:** Issue → short-lived branch → implementation → PR → CI → merge. Agents make ordinary implementation decisions autonomously. Only product scope, material architecture/security/cost implications, ownership collisions, and unresolved cross-agent conflicts require human intervention.
+
+**Context:** The repository is a hackathon project with three people working concurrently, mostly through coding agents. The objective is maximum parallelism with minimum coordination tax while preserving scope integrity, reproducibility, provenance, and integration safety.
+
+**Revisit trigger:** Team size, GitHub plan, collaboration model, or product-development phase changes materially.
