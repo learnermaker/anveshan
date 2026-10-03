@@ -1,0 +1,44 @@
+%% Anveshan TX-01 | Transmission & Evidence Loop
+%% Audience: humans, judges, coding agents
+%% Status: CURRENT / MVP
+%% Canonical sources:
+%% - docs/product/mvp-contract.md
+%% - docs/architecture/data-flow.md
+%% - docs/validation/metrics.md
+
+flowchart LR
+  EX[Expert<br/>Authentic expertise] --> DEMO[1. Demonstrate<br/>Video / audio / context]
+  DEMO --> UND[2. Understand<br/>Actions • conditions • cues • exceptions]
+  UND --> GND[3. Ground<br/>Claims linked to source evidence]
+  GND --> LES[4. Teach<br/>Concise, source-grounded lesson]
+  LES --> BASE[Baseline<br/>Learner attempt]
+  BASE --> PRACT[5. Practice<br/>Real or simulated task]
+  PRACT --> ATT1[Observed attempt<br/>Video / audio / image / text]
+  ATT1 --> VER[6. Verify<br/>Rubric + reference evidence]
+  VER --> FB[Evidence-linked feedback<br/>Strengths • gaps • next step]
+  FB --> RETRY[Retry]
+  RETRY --> ATT2[Observed second attempt]
+  ATT2 --> MEAS[Measured change<br/>Criterion-level improvement]
+  MEAS --> TX[7. Evolve<br/>Transmission record + lineage]
+  TX --> NEXT[Future learner / adaptation]
+  NEXT -. new evidence .-> UND
+  SRC[(Source evidence<br/>immutable / provenance)] -. supports .-> GND
+  SRC -. supports .-> VER
+  RUB[(Skill-specific rubric)] -. defines criteria .-> VER
+
+  subgraph TRUST[Trust boundary]
+    SRC
+    GND
+    VER
+    RUB
+  end
+
+  classDef human fill:#eef4ff,stroke:#3b82f6,color:#12203a
+  classDef ai fill:#eefbf5,stroke:#22a06b,color:#12203a
+  classDef evidence fill:#fff5e8,stroke:#f59e0b,color:#12203a
+  classDef outcome fill:#f2edff,stroke:#7c3aed,color:#12203a
+  class EX,BASE,PRACT,NEXT human
+  class UND,LES,FB,MEAS ai
+  class DEMO,GND,ATT1,ATT2,SRC,RUB evidence
+  class VER,RETRY,TX outcome
+  style TRUST fill:#fafafa,stroke:#b7c2d6,stroke-dasharray:5 5
