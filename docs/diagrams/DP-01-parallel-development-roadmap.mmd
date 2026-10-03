@@ -1,0 +1,69 @@
+%% Anveshan DP-01 | Parallel Development Roadmap
+%% Status: CURRENT / MVP execution
+%% Audience: humans + coding agents
+%% Objective: maximize parallel work while preserving integration boundaries
+%%
+%% Part A = Evidence/Product vertical
+%% Part B = Platform/Engineering vertical
+%% Shared merge gates are explicit integration points, not ceremonies.
+
+flowchart LR
+  M0["M0 • Shared Gate<br/>Lock expert + learner + bounded skill + rubric + authentic source"]
+
+  M0 --> A1
+  M0 --> B1
+
+  subgraph A["PART A — PRODUCT / EVIDENCE VERTICAL"]
+    direction TB
+    A1["A1 • Source capture<br/>ingest demo + metadata"]
+    A2["A2 • Knowledge extraction<br/>steps • cues • conditions • exceptions"]
+    A3["A3 • Evidence grounding<br/>claim → source ID / timestamp"]
+    A4["A4 • Teaching flow<br/>lesson + practice task"]
+    A5["A5 • Learner observation<br/>baseline + attempt artifacts"]
+    A6["A6 • Evaluation + feedback<br/>criterion-level rubric observations"]
+    A7["A7 • Transmission proof<br/>retry + measured improvement + lineage"]
+    A1 --> A2 --> A3 --> A4 --> A5 --> A6 --> A7
+  end
+
+  subgraph B["PART B — PLATFORM / ENGINEERING VERTICAL"]
+    direction TB
+    B1["B1 • App shell + UX contracts<br/>expert / learner flows"]
+    B2["B2 • Model gateway<br/>Gemini adapter + replay mode"]
+    B3["B3 • Data contracts<br/>source • knowledge • evidence • attempt"]
+    B4["B4 • Deterministic services<br/>permissions • state • audit"]
+    B5["B5 • Evaluation harness<br/>fixtures • scorers • trace capture"]
+    B6["B6 • Deployment<br/>Cloud Run + storage + observability"]
+    B7["B7 • Reliability hardening<br/>failure paths + reproducibility"]
+    B1 --> B3
+    B2 --> B3
+    B3 --> B4
+    B4 --> B5
+    B5 --> B6
+    B6 --> B7
+  end
+
+  A2 -. contract .-> B3
+  A3 -. evidence schema .-> B3
+  B5 -. evaluation API .-> A6
+  A6 -. feedback contract .-> B4
+
+  A7 --> G1["G1 • Integration Gate<br/>one authentic end-to-end transmission"]
+  B7 --> G1
+
+  G1 --> G2["G2 • Independent Validation<br/>expert review + baseline vs retry + adversarial grounding"]
+  G2 --> G3["G3 • Demo Readiness<br/>replayable path + evidence visible + judge comprehension"]
+  G3 --> G4["G4 • Submission<br/>prototype + docs + video + deck"]
+
+  M0 -->|blocks downstream claims| G1
+  G2 -. fail .-> R["Return only to failing branch<br/>harden against evidence"]
+  R -. branch-specific fix .-> A6
+  R -. branch-specific fix .-> B7
+
+  classDef gate fill:#fff4d8,stroke:#c58a00,color:#2d2300
+  classDef product fill:#eaf4ff,stroke:#2878c8,color:#10233f
+  classDef platform fill:#edf9f1,stroke:#269b5a,color:#10233f
+  classDef integrate fill:#f3edff,stroke:#7048c8,color:#10233f
+  class M0,G1,G2,G3,G4 gate
+  class A1,A2,A3,A4,A5,A6,A7 product
+  class B1,B2,B3,B4,B5,B6,B7 platform
+  class R integrate
