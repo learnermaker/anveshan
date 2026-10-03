@@ -2,6 +2,8 @@ name: checks
 on:
   push:
   pull_request:
+  merge_group:
+
 jobs:
   repo-checks:
     runs-on: ubuntu-latest
@@ -10,6 +12,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Check repository governance invariants
+        run: python .github/scripts/check_governance.py
       - name: Syntax-check benchmark scripts
         run: python -m compileall research/benchmarks/scripts
       - name: Run temporal scorer smoke test
@@ -18,3 +22,21 @@ jobs:
         run: |
           printf '%s\n' '{"truth":[{"timestamp":10,"action":"open"}],"pred":[{"timestamp":10.5,"action":"open"}]}' > /tmp/events.json
           python research/benchmarks/scripts/score_events.py /tmp/events.json
+
+  pr-governance:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require linked issue
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          python - <<'PY'
+          import os
+          import re
+          body = os.environ.get("PR_BODY", "")
+          pattern = r"(?im)^\s*-?\s*(closes|fixes|resolves)\s+#\d+\s*$"
+          if not re.search(pattern, body):
+              raise SystemExit("PR must link a GitHub issue using Closes/Fixes/Resolves #N.")
+          print("PR issue linkage: PASS")
+          PY
