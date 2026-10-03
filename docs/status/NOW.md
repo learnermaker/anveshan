@@ -29,6 +29,15 @@ Reach the first credible product proof with the **minimum coordination overhead*
 
 **validate the capability → lock a bounded use case → build the smallest vertical slice → measure transmission → harden only what the evidence requires → demo → submit**
 
+## Parallel execution rule
+
+The current implementation can proceed on two disjoint verticals once M0 inputs are locked:
+
+- **Part A — Product/Evidence:** source capture → knowledge extraction → grounding → teaching → learner observation → criterion-level evaluation → transmission proof.
+- **Part B — Platform/Engineering:** app/UX contracts → model gateway/replay → data contracts → deterministic state/permissions/audit → evaluation harness → deployment → reliability.
+
+Both branches must converge at an explicit integration gate and share stable data/provenance/evaluation contracts. Failure returns only to the branch responsible for the failing contract or evidence.
+
 ## Gates
 
 - M0 — Capability validation
