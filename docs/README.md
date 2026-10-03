@@ -103,8 +103,13 @@ The repository currently contains the research, product-definition, architecture
 - final proposal/deck PDF and public three-minute demo link before submission.
 - final submission evidence mapping each judging criterion to working prototype behavior.
 
-### Important scope correction
+### Current scope rule
 
-The current product documents describe **source-grounded human knowledge transmission**, while the research documents explicitly reopen the product search around **state → action → outcome**, first divergence, recovery, intervention verification and related phenomena.
+The canonical product direction is defined by:
 
-Until experiments validate a direction, the product thesis and MVP contract should be treated as **working hypotheses**, not implementation instructions.
+- `docs/product/product-vision.md` — long-term vision;
+- `docs/product/product-thesis.md` — current competition/MVP wedge;
+- `docs/product/BRD.md` and `docs/product/mvp-contract.md` — current implementation boundary;
+- `docs/validation/` — evidence that can promote a hypothesis to validated status.
+
+Alternative directions in research, including operational state/action/outcome concepts, remain research unless explicitly promoted into the current thesis.
