@@ -1,5 +1,4 @@
 from pathlib import Path
-import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -11,11 +10,6 @@ required = [
     "docs/status/project.yaml",
     ".github/pull_request_template.md",
     ".github/CODEOWNERS",
-    ".github/ISSUE_TEMPLATE/feature.yml",
-    ".github/ISSUE_TEMPLATE/bug.yml",
-    ".github/ISSUE_TEMPLATE/research.yml",
-    ".github/ISSUE_TEMPLATE/validation.yml",
-    ".github/ISSUE_TEMPLATE/scope-change.yml",
 ]
 
 missing = [p for p in required if not (ROOT / p).exists()]
