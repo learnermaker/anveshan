@@ -1,34 +1,104 @@
-# Local secrets / credentials
+# Environment / secrets
 .env
 .env.*
 !.env.example
 *.key
 *.pem
+*.crt
+*.p12
+*.pfx
+service-account*.json
+credentials*.json
 
 # Python
 __pycache__/
 *.py[cod]
+*$py.class
+*.so
 .pytest_cache/
+.mypy_cache/
+.pyright/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.pytype/
+.ipynb_checkpoints/
 .venv/
 venv/
+env/
+ENV/
 
-# Node
+# Node / frontend tooling
 node_modules/
+.npm/
+.pnpm-store/
+.yarn/
+.yarn-cache/
 .next/
+.nuxt/
+.svelte-kit/
 dist/
 build/
+out/
+coverage/
 
-# Local model/media artifacts
+# Local caches / tooling
+.cache/
+.parcel-cache/
+.turbo/
+.eslintcache
+
+# Local benchmark / model / media artifacts
 research/benchmarks/results/
 research/benchmarks/media/
 research/runs/
 *.mp4
 *.mov
+*.avi
+*.mkv
+*.webm
 *.wav
+*.mp3
 *.m4a
+*.flac
 *.zip
+*.tar
+*.tar.gz
 
-# IDE / OS
+# Google Cloud / local deployment artifacts
+.gcloud/
+.firebase/
+.firebase-debug.log
+firestore-debug.log
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# IDE / editor
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
+.history/
+
+# OS
 .DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+
+# Logs / local runtime output
+*.log
+logs/
+tmp/
+temp/
+
+# Secrets accidentally exported by local tooling
+secrets/
+.local/
