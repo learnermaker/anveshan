@@ -1,49 +1,24 @@
-## Summary
-<!-- One bounded outcome. -->
+## Outcome
+<!-- One bounded outcome. What changes for the user/system? -->
 
-## Related issue
-- Closes #
+Closes #
 
-## Work state
-- [ ] IN PROGRESS
-- [ ] IN REVIEW
-- [ ] VALIDATING
-- [ ] DONE
+## Scope
+**Included**
+- 
 
-## Scope contract
-### Included
--
+**Not included**
+- 
 
-### Not included
--
-
-### Scope change
-- [ ] No change to NOW scope.
-- [ ] Covered by a linked Scope Change issue.
-
-If scope changed, identify the explicit trade:
-> Add/remove/defer: ...
-
-## Product / architecture alignment
-- Canonical product source:
-- MVP/BRD source:
-- Architecture/ADR if applicable:
-
-## Validation evidence
+## Validation
 - Tests:
-- Evaluation/benchmark:
-- Manual verification:
-- AI/model changes: model, prompt/config version, fixtures, expected behavior.
+- Manual / benchmark evidence:
+- AI changes (model/prompt/config/fixtures), or "none":
 
-## Documentation
-- [ ] Durable docs updated where behavior or decisions changed.
-- [ ] No stale documentation introduced.
+## Alignment
+Canonical source: 
+Architecture/ADR: N/A if not applicable
 
-## Agent safety checks
-- [ ] I read AGENTS.md.
-- [ ] I searched for conflicting or superseded definitions.
-- [ ] No unrelated refactor, feature, abstraction, or cleanup is included.
-- [ ] The smallest coherent implementation is represented here.
-
-## Reviewer focus
--
+## Scope check
+- [ ] No unrelated work.
+- [ ] No NOW-scope expansion without a linked Scope Change issue.
