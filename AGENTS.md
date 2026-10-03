@@ -46,11 +46,21 @@ Work state is separate:
 
 Do not silently promote research into product scope.
 
+## Hackathon operating principle
+
+Optimize for **maximum parallel execution with minimum coordination tax**.
+
+The team is three people working concurrently, mostly through coding agents. GitHub is the durable coordination system; chat is not.
+
+Agents should make ordinary implementation decisions autonomously. Humans step in for product-scope changes, materially different architecture/security/cost implications, ownership collisions, or unresolved product/architecture conflicts.
+
+Do not add process merely because a larger software organization might use it.
+
 ## Mandatory agent operating contract
 
 Every coding agent MUST obey these rules:
 
-1. **Issue before implementation.** Do not start implementation work without a GitHub issue unless the user explicitly directs a one-off repository repair. If the request is not bounded, create or request a bounded issue first.
+1. **Issue before implementation.** Do not start meaningful implementation work without a GitHub issue unless the user explicitly directs a one-off repository repair. Tiny local repairs may use the same issue rather than creating multiple issues. If the request is not bounded, create or request a bounded issue first.
 2. **One issue, one outcome.** Do not bundle unrelated features, refactors, cleanup, migrations, or abstractions.
 3. **Read before edit.** Read AGENTS.md, docs/status/NOW.md, the relevant canonical product documents, and relevant validation evidence before changing behavior.
 4. **Search before deciding.** Search the repository for conflicting, duplicate, or superseded definitions before introducing a new concept.
@@ -124,6 +134,14 @@ Use these buckets:
 - REJECTED/SUPERSEDED — do not resurrect silently.
 
 If work cannot be justified as necessary to the current gate, stop. Create a research issue or scope-change issue instead.
+
+## GitHub plan constraint
+
+This repository is currently private and uses a GitHub personal Free account.
+
+Do **not** assume paid-only repository controls such as protected branches, rulesets, required reviews, or auto-merge. The operating model must remain safe and useful without them.
+
+GitHub Actions CI, issue/PR templates, CODEOWNERS, explicit issue/PR linkage, and human merge discipline are the primary enforcement mechanisms under the current plan.
 
 ## Progress tracking
 
