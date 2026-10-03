@@ -1,61 +1,73 @@
 name: checks
+
 on:
   push:
   pull_request:
-  merge_group:
 
 permissions:
   contents: read
 
 jobs:
-  repo-checks:
+  checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
+
       - name: Check repository governance invariants
         run: python .github/scripts/check_governance.py
-      - name: Syntax-check benchmark scripts
-        run: python -m compileall -q research/benchmarks/scripts
-      - name: Run temporal scorer smoke test
-        run: python research/benchmarks/scripts/score_temporal.py --truth 22 --pred 22.5 --tolerance 2
-      - name: Run event scorer smoke test
-        run: |
-          printf '%s\n' '{"truth":[{"timestamp":10,"action":"open"}],"pred":[{"timestamp":10.5,"action":"open"}]}' > /tmp/events.json
-          python research/benchmarks/scripts/score_events.py /tmp/events.json
 
-  pr-governance:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: read
-    steps:
       - name: Validate PR contract
+        if: github.event_name == 'pull_request'
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
-          PR_BASE_REPO: ${{ github.event.pull_request.base.repo.full_name }}
-          PR_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
         run: |
           python - <<'PY'
           import os
           import re
 
           body = os.environ.get("PR_BODY", "")
-          base_repo = os.environ.get("PR_BASE_REPO", "")
-          head_repo = os.environ.get("PR_HEAD_REPO", "")
           checks = {
-              "issue linkage": re.search(r"(?im)^\s*(?:-\s*)?(?:closes|fixes|resolves)\s+#\d+\s*$", body),
-              "scope included section": re.search(r"(?im)^\s*\*\*Included\*\*\s*$", body),
-              "scope excluded section": re.search(r"(?im)^\s*\*\*Not included\*\*\s*$", body),
-              "validation section": re.search(r"(?im)^\s*##\s+Validation\s*$", body),
+              "issue linkage": re.search(
+                  r"(?im)^\\s*(?:-\\s*)?(?:closes|fixes|resolves)\\s+#\\d+\\s*$",
+                  body,
+              ),
+              "scope included section": re.search(
+                  r"(?im)^\\s*\\*\\*Included\\*\\*\\s*$",
+                  body,
+              ),
+              "scope excluded section": re.search(
+                  r"(?im)^\\s*\\*\\*Not included\\*\\*\\s*$",
+                  body,
+              ),
+              "validation section": re.search(
+                  r"(?im)^\\s*##\\s+Validation\\s*$",
+                  body,
+              ),
           }
           missing = [name for name, match in checks.items() if not match]
           if missing:
               raise SystemExit("Missing PR contract: " + ", ".join(missing))
-          issue_numbers = re.findall(r"(?im)^\s*(?:-\s*)?(?:closes|fixes|resolves)\s+#(\d+)\s*$", body)
+
+          issue_numbers = re.findall(
+              r"(?im)^\\s*(?:-\\s*)?(?:closes|fixes|resolves)\\s+#(\\d+)\\s*$",
+              body,
+          )
           if len(issue_numbers) != 1:
               raise SystemExit("PR must link exactly one GitHub issue.")
+
           print(f"PR contract: PASS (linked issue #{issue_numbers[0]})")
           PY
+
+      - name: Syntax-check benchmark scripts
+        run: python -m compileall -q research/benchmarks/scripts
+
+      - name: Run temporal scorer smoke test
+        run: python research/benchmarks/scripts/score_temporal.py --truth 22 --pred 22.5 --tolerance 2
+
+      - name: Run event scorer smoke test
+        run: |
+          printf '%s\n' '{"truth":[{"timestamp":10,"action":"open"}],"pred":[{"timestamp":10.5,"action":"open"}]}' > /tmp/events.json
+          python research/benchmarks/scripts/score_events.py /tmp/events.json
