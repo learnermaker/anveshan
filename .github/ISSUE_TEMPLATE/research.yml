@@ -1,0 +1,52 @@
+name: Research / exploration
+description: Investigate an uncertain question without silently committing it to product scope.
+title: "[Research] "
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Research question
+      description: State one falsifiable question.
+    validations:
+      required: true
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: Hypothesis / competing hypotheses
+    validations:
+      required: true
+  - type: textarea
+    id: decision_relevance
+    attributes:
+      label: Decision relevance
+      description: What future decision could this research inform?
+    validations:
+      required: true
+  - type: textarea
+    id: method
+    attributes:
+      label: Method
+    validations:
+      required: true
+  - type: textarea
+    id: stop
+    attributes:
+      label: Stop condition
+    validations:
+      required: true
+  - type: textarea
+    id: promotion
+    attributes:
+      label: Promotion rule
+      description: Evidence required before this can become DECIDED or VALIDATED.
+    validations:
+      required: true
+  - type: checkboxes
+    id: scope_firewall
+    attributes:
+      label: Scope firewall
+      options:
+        - label: This issue is research only and does not authorize implementation.
+          required: true
+        - label: Any resulting product change will use a separate decision or scope-change issue.
+          required: true
