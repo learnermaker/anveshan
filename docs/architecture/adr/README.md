@@ -2,6 +2,17 @@
 
 This directory contains explicit technical decisions. Exploratory ideas should not be treated as decisions until recorded here.
 
+## Canonical product boundary
+
+Architecture decisions are subordinate to:
+1. `docs/product/product-vision.md`;
+2. `docs/product/product-thesis.md`;
+3. `docs/product/BRD.md`;
+4. `docs/product/mvp-contract.md`;
+5. `docs/validation/`.
+
+Research documents can propose alternatives, but they do not silently change implementation scope.
+
 ## ADR-001 — Keep Source and Derived Knowledge Separate
 
 **Status:** Accepted as design principle.
@@ -12,11 +23,11 @@ This directory contains explicit technical decisions. Exploratory ideas should n
 
 ## ADR-002 — Use Transmission as the Core Product Unit
 
-**Status:** Accepted as product architecture hypothesis.
+**Status:** Accepted as current product/architecture hypothesis, bounded by the MVP Contract.
 
 **Decision:** Model knowledge transfer between people as a first-class event.
 
-**Reason:** Differentiates the product from static archives and generic tutors.
+**Reason:** Makes transmission measurable and differentiates the current MVP from static preservation workflows.
 
 ## ADR-003 — Prefer Three Logical AI Responsibilities
 
@@ -48,8 +59,7 @@ This directory contains explicit technical decisions. Exploratory ideas should n
 
 **Decision:** One expert, one bounded skill, one learner, one practice attempt, one feedback loop, and one measurable outcome before broad expansion.
 
-**Reason:** Reduces scope and directly tests the product thesis.
-
+**Reason:** Reduces scope and directly tests the current MVP hypothesis.
 
 ## ADR-007 — Criterion-Level Learner Evaluation
 
