@@ -102,3 +102,7 @@ temp/
 # Secrets accidentally exported by local tooling
 secrets/
 .local/
+
+#local Logs for antigravity
+generated/
+tasks/
