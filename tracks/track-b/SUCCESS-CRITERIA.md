@@ -570,3 +570,25 @@ A result surface may report:
 baseline → retry → deterministic gain → criteria improved → lineage
 
 For replay, describe this as a replay/configured-rubric result. Do not use the result to imply certification, mastery, or verified real-world transfer.
+
+## M0 interpretation — measured improvement versus transmission claim
+
+Track B engineering replay proves the practice/evaluation/retry machinery is executable and deterministic. A bounded capability case can prove that the evaluator and intervention mechanism work. **Product validation of the original transmission wedge additionally requires an authentic accountable expert/source path connected to the learner event.**
+
+A positive `retry_score - baseline_score` is an observed improvement within the configured rubric frame. It must not be described as causal transfer, mastery, certification, or generalization on its own.
+
+## Intervention-to-retry traceability
+
+When feedback targets a specific failed or uncertain criterion, the retry evaluation must retain that criterion so the system can determine whether the targeted deficiency changed. This is a core proof of the adaptive transmission mechanism, not a UI concern.
+
+## Adaptive retry comparability
+
+A narrowed micro-practice is allowed, but the baseline and retry must remain interpretable under the same rubric. Record the scope change; do not use an easier retry or altered scoring semantics to manufacture gain.
+
+## Observability change versus skill improvement
+
+Treat `UNCERTAIN → SATISFIED` or similar evidence-quality transitions cautiously. Improved observability alone is not sufficient to label the criterion as skill improvement. Preserve the evidence state and distinguish observability change from substantive performance change where the data permits.
+
+## Model-independent success
+
+Track B success is defined by evidence-linked criterion evaluation, deterministic scoring/gain, and reproducible lineage—not by Gemini-specific behavior. Provider/model choices are implementation details behind the bounded gateway.
