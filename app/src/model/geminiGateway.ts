@@ -74,7 +74,7 @@ export class GeminiGateway {
           latencyMs: Math.round(performance.now() - startTime),
         };
       } catch (err) {
-        console.warn('Live Gemini call failed; falling back gracefully to verified replay fixture:', err);
+        console.warn('Live Gemini call failed; falling back gracefully to replay fixture:', err);
       }
     }
 
@@ -82,7 +82,7 @@ export class GeminiGateway {
     return {
       observations: this.getReplayObservations(capCase),
       stateTransitions: this.getReplayStateTransitions(capCase),
-      summary: `Multimodal analysis of ${capCase.expertName}'s authentic demonstration: Identified ${capCase.bundle.knowledge_package.claims.length} verified physical claims across ${capCase.primaryModalities.join(' + ')} modalities.`,
+      summary: `Multimodal replay analysis for ${capCase.title}: Identified ${capCase.bundle.knowledge_package.claims.length} verified physical claims across ${capCase.primaryModalities.join(' + ')} modalities.`,
       isLive: false,
       latencyMs: 14,
     };
@@ -107,7 +107,7 @@ export class GeminiGateway {
           latencyMs: Math.round(performance.now() - startTime),
         };
       } catch (err) {
-        console.warn('Live Gemini call failed; falling back to verified replay divergence:', err);
+        console.warn('Live Gemini call failed; falling back to replay divergence:', err);
       }
     }
 
