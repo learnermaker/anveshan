@@ -1,152 +1,44 @@
 # Track Common — The 8 Shared Contracts
 
-**Status:** DECIDED & IMPLEMENTED frozen contract seam  
+**Status:** DECIDED & IMPLEMENTED frozen contract seam
 **Scope:** Shared execution contracts for the current transmission MVP.
 
----
+> This seam is deliberately **domain-agnostic and small**. It describes the proof boundary, not a particular skill, industry, framework, or deployment architecture.
 
-## 1. Purpose
+## Start here
+Track A, Track B, UI, fixture, and integration agents should read README.md, CONTRACT-USAGE.md, schemas/*.py, validator.py, tests/, and tests/fixtures/transmission_case_001/.
 
-`tracks/common/` is the authoritative single source of truth for the data contracts shared between:
-- **Track A (Track 1):** Expert Intelligence & Grounding (`tracks/track-a/`)
-- **Track B (Track 2):** Practice, Evaluation & Transmission (`tracks/track-b/`)
+## The 8 contracts
+1. EvidenceRef — source/attempt evidence locator.
+2. KnowledgePackage — structured expert-derived claims with provenance, consent, and review.
+3. RubricDefinition — observable criteria and scoring policy.
+4. PracticeTask — bounded learner exercise tied to package and rubric.
+5. LearnerAttempt — observable learner submission; explicitly BASELINE or RETRY.
+6. Evaluation — criterion-level observations and scores.
+7. Feedback — evidence-grounded corrective guidance.
+8. TransmissionRecord — proof artifact with deterministic gain and lineage.
 
-It provides type-safe Pydantic v2 models directly compatible with the Google Gemini API (`google-genai`), deterministic validation logic, and automated tests.
+## Domain-agnostic boundary
+Do not put domain-specific assumptions into these schemas. Domain code may define terminology, source/media adapters, extraction prompts, observable criteria, modality-specific observation logic, task instructions, and UI presentation. Those details normalize into the shared contracts.
 
----
+If a proposed change only makes one domain or one UI easier to implement, prefer an adapter instead of changing the seam.
 
-## 2. The 8 Shared Contracts
+## Authoritative data flow
+source/evidence → track-local DTO or Gemini response → normalization adapter → tracks.common contract → deterministic validation → replay/integration/UI
 
-```text
-Track A (Expert Grounding)
--------------------------
-Expert Demonstration
-        ↓
-1. EvidenceRef
-        ↓
-2. KnowledgePackage (with embedded consent & expert review)
-        ↓
-3. RubricDefinition (explicit observable criteria & scoring weights)
-        ↓
-4. PracticeTask (bounded learner exercise referencing package & rubric)
-        │
-        └──────────────────── shared seam ────────────────────┐
-                                                              ↓
-Track B (Practice & Evaluation)                         5. LearnerAttempt (baseline & retry)
-------------------------------                                ↓
-                                                        6. Evaluation (criterion-level scoring)
-                                                              ↓
-                                                        7. Feedback (evidence-grounded coaching)
-                                                              ↓
-                                                        Retry Attempt
-                                                              ↓
-                                                        8. TransmissionRecord (deterministic gain & lineage)
-```
+Provider-specific JSON is not the canonical Anveshan model.
 
-### Contract Summary
+## UI / derived JSON rule
+A UI may consume a derived JSON/view-model representation, but it remains downstream of validated common contracts. Preferred flow: common contract → adapter/view-model JSON → UI. Every major UI object should be traceable to common-contract identifiers.
 
-| # | Contract | Primary Producer | Key Role & Invariants |
-|---|---|---|---|
-| **1** | **`EvidenceRef`** | Track A / B | Multimodal locator (`video/audio/image/text/sensor`). Enforces `end_sec >= start_sec >= 0.0`. |
-| **2** | **`KnowledgePackage`** | Track A | Structured claims, cues, conditions, and failure modes. Embeds `ConsentMetadata` and `ExpertReview`. |
-| **3** | **`RubricDefinition`** | Track A / Expert | **The source of truth for scoring.** List of `RubricCriterion` with observable indicators and weights. |
-| **4** | **`PracticeTask`** | Track A | Bounded learner assignment linking `package_id` and `rubric_id`. |
-| **5** | **`LearnerAttempt`** | Track B Intake | Observable submission recording. Explicitly distinguishes `BASELINE` from `RETRY`. |
-| **6** | **`Evaluation`** | Track B Engine | Criterion-level observations. Enforces `total_score == sum(criterion scores)`. Explicit `UNCERTAIN` status. |
-| **7** | **`Feedback`** | Track B Coach | Actionable coaching contrasting learner attempt with expert evidence. |
-| **8** | **`TransmissionRecord`** | Track B / Integration | Immutable proof event. Enforces deterministic math: `transmission_gain == retry_score - baseline_score`. |
-
----
-
-## 3. How to Use in Track A
-
-Track A generates structured knowledge, the target rubric, and the practice task:
-
-```python
-from tracks.common.schemas import (
-    KnowledgePackage,
-    KnowledgeClaim,
-    ClaimType,
-    EvidenceRef,
-    Modality,
-    ConsentMetadata,
-    RubricDefinition,
-    RubricCriterion,
-    PracticeTask,
-)
-
-# Example: Validating a generated knowledge package
-pkg = KnowledgePackage(
-    package_id="PKG-001",
-    skill_id="SKILL-SOLDER",
-    title="SMD Soldering Prep",
-    summary="Clean surface with isopropyl alcohol.",
-    claims=[...],
-    consent=ConsentMetadata(contributor_name="Jane Doe", consent_scope="demo"),
-)
-```
-
----
-
-## 4. How to Use in Track B
-
-Track B consumes the frozen `PracticeTask` and `RubricDefinition`, and emits learner evaluations and transmission records:
-
-```python
-from tracks.common.schemas import (
-    PracticeTask,
-    RubricDefinition,
-    LearnerAttempt,
-    AttemptType,
-    Evaluation,
-    CriterionResult,
-    CriterionStatus,
-    Feedback,
-    TransmissionRecord,
-)
-
-# Deterministic transmission gain calculation
-gain = round(retry_eval.total_score - baseline_eval.total_score, 4)
-
-record = TransmissionRecord(
-    transmission_id="TX-001",
-    skill_id="SKILL-SOLDER",
-    package_id=task.package_id,
-    rubric_id=rubric.rubric_id,
-    expert_id="Jane Doe",
-    learner_id="Alice",
-    baseline_attempt_id=baseline_attempt.attempt_id,
-    retry_attempt_id=retry_attempt.attempt_id,
-    baseline_score=baseline_eval.total_score,
-    retry_score=retry_eval.total_score,
-    transmission_gain=gain,
-    criteria_improved=["CRIT-02"],
-    lineage={"recorded_at": "2026-10-04T12:00:00Z"},
-)
-```
-
----
-
-## 5. Offline Contract Validator CLI
-
-Validate any mock JSON fixture or model response against the contracts:
-
-```bash
-# Validate against auto-detected contract type
-python -m tracks.common.validator path/to/fixture.json
-
-# Validate against a specific contract
-python -m tracks.common.validator path/to/fixture.json --type KnowledgePackage
-```
-
----
-
-## 6. Running Tests & Cross-Contract Verification
-
-Prerequisites: standard repository environment with `pydantic>=2.0` and `pytest>=8.0`.
-
-Run the unit and cross-contract validation test suite:
-
-```bash
+## Offline validation
 python -m pytest tracks/common/tests
-```
+python -m tracks.common.validator path/to/fixture.json
+python -m tracks.common.validator tracks/common/tests/fixtures/transmission_case_001/ --bundle
+
+Live Gemini is never required for deterministic contract/replay tests.
+
+## Change policy
+Do not reshape the eight contracts for convenience. If a genuine cross-track invariant is missing, open an issue, prove an adapter is insufficient, propose the smallest change, update tests/docs, and treat it as an explicit cross-track architecture decision.
+
+See CONTRACT-USAGE.md for detailed guidance.
