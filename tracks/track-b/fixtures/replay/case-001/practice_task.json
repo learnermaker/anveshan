@@ -1,0 +1,24 @@
+{
+  "task_id": "task-kolam-3x3-01",
+  "package_id": "pkg-kolam-001",
+  "rubric_id": "rubric-kolam-001",
+  "title": "Practice 3x3 Continuous Sikku Kolam",
+  "instructions": "Place 9 equidistant dots in a 3x3 grid on the board. Then, in a single continuous flowing stroke, weave loops around the outer dots, ensuring no dot is intersected and maintaining quadrant symmetry.",
+  "constraints": [
+    {
+      "constraint_type": "time_limit",
+      "description": "Complete the full pattern within 60 seconds",
+      "value": "60s"
+    },
+    {
+      "constraint_type": "material_spec",
+      "description": "Chalk on slate or rice flour on dark mat",
+      "value": "chalk_or_flour"
+    }
+  ],
+  "target_criteria_ids": [
+    "C01",
+    "C02",
+    "C03"
+  ]
+}

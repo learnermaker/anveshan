@@ -1,0 +1,63 @@
+{
+  "evaluation_id": "eval-kolam-retry-002",
+  "attempt_id": "att-kolam-retry-002",
+  "rubric_id": "rubric-kolam-001",
+  "total_score": 95.0,
+  "passed": true,
+  "evaluator_type": "model_assisted",
+  "uncertainty_flags": [],
+  "evaluated_at": "2026-10-04T18:17:00Z",
+  "criterion_results": [
+    {
+      "criterion_id": "C01",
+      "status": "satisfied",
+      "score": 20.0,
+      "observed_finding": "Grid maintained clean 3x3 layout with equidistant dot spacing.",
+      "deviation_analysis": "Exact match to reference grid.",
+      "evidence_ref": {
+        "evidence_id": "ev-eval-retry-c01",
+        "source_id": "learner_retry_attempt.mp4",
+        "modality": "video",
+        "start_sec": 2.0,
+        "end_sec": 7.0,
+        "cue_excerpt": "Nine equidistant dots clearly visible",
+        "verification_state": "observed",
+        "confidence": 1.0
+      }
+    },
+    {
+      "criterion_id": "C02",
+      "status": "satisfied",
+      "score": 40.0,
+      "observed_finding": "Learner successfully widened loop curvature around Dot #4, maintaining continuous 1.2cm clearance without intersection.",
+      "deviation_analysis": "Corrected the center intersection observed in baseline; loop now smoothly envelopes all outer dots.",
+      "evidence_ref": {
+        "evidence_id": "ev-eval-retry-c02",
+        "source_id": "learner_retry_attempt.mp4",
+        "modality": "video",
+        "start_sec": 14.0,
+        "end_sec": 20.0,
+        "cue_excerpt": "Smooth outer arc wrapping Dot 4 with proper clearance",
+        "verification_state": "observed",
+        "confidence": 0.99
+      }
+    },
+    {
+      "criterion_id": "C03",
+      "status": "satisfied",
+      "score": 35.0,
+      "observed_finding": "Bilateral symmetry significantly improved: both left and right quadrant loops now match within 8% area variance.",
+      "deviation_analysis": "Reflective balance across central vertical axis is visually coherent and balanced.",
+      "evidence_ref": {
+        "evidence_id": "ev-eval-retry-c03",
+        "source_id": "learner_retry_attempt.mp4",
+        "modality": "video",
+        "start_sec": 22.0,
+        "end_sec": 30.0,
+        "cue_excerpt": "Harmonious symmetrical loops on both quadrants",
+        "verification_state": "observed",
+        "confidence": 0.96
+      }
+    }
+  ]
+}

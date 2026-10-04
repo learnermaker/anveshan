@@ -1,0 +1,63 @@
+{
+  "evaluation_id": "eval-kolam-baseline-001",
+  "attempt_id": "att-kolam-baseline-001",
+  "rubric_id": "rubric-kolam-001",
+  "total_score": 45.0,
+  "passed": false,
+  "evaluator_type": "model_assisted",
+  "uncertainty_flags": [],
+  "evaluated_at": "2026-10-04T18:02:00Z",
+  "criterion_results": [
+    {
+      "criterion_id": "C01",
+      "status": "satisfied",
+      "score": 20.0,
+      "observed_finding": "Learner placed 9 clear dots in a 3x3 pattern with uniform spacing within 10% variance.",
+      "deviation_analysis": "Grid matches expert reference layout closely.",
+      "evidence_ref": {
+        "evidence_id": "ev-eval-base-c01",
+        "source_id": "learner_baseline_attempt.mp4",
+        "modality": "video",
+        "start_sec": 2.0,
+        "end_sec": 8.0,
+        "cue_excerpt": "Nine dots visible on slate in 3x3 arrangement",
+        "verification_state": "observed",
+        "confidence": 1.0
+      }
+    },
+    {
+      "criterion_id": "C02",
+      "status": "not_satisfied",
+      "score": 10.0,
+      "observed_finding": "At timestamp 00:18, learner line crosses directly through the center of Dot #4 instead of circling around its perimeter.",
+      "deviation_analysis": "Violates fundamental Sikku Kolam rule where lines must never intersect dot markers.",
+      "evidence_ref": {
+        "evidence_id": "ev-eval-base-c02",
+        "source_id": "learner_baseline_attempt.mp4",
+        "modality": "video",
+        "start_sec": 17.0,
+        "end_sec": 21.0,
+        "cue_excerpt": "Chalk cuts through Dot 4 center",
+        "verification_state": "observed",
+        "confidence": 0.98
+      }
+    },
+    {
+      "criterion_id": "C03",
+      "status": "partially_satisfied",
+      "score": 15.0,
+      "observed_finding": "Right loop quadrant is circular and smooth, but left loop has an abrupt angular bend causing 35% area asymmetry.",
+      "deviation_analysis": "Lacks the bilateral reflection shown in the master demonstration.",
+      "evidence_ref": {
+        "evidence_id": "ev-eval-base-c03",
+        "source_id": "learner_baseline_attempt.mp4",
+        "modality": "video",
+        "start_sec": 24.0,
+        "end_sec": 32.0,
+        "cue_excerpt": "Left quadrant arc noticeably flatter than right arc",
+        "verification_state": "observed",
+        "confidence": 0.95
+      }
+    }
+  ]
+}
