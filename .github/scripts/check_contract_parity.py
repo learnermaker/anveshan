@@ -168,11 +168,15 @@ def main() -> int:
             if field_name not in ts_fields:
                 continue
             ts_optional, ts_expr = ts_fields[field_name]
-            py_required = field.is_required()
-            if py_required == ts_optional:
+            # Pydantic's `is_required()` describes input omission rules.
+            # The UI mirror represents the canonical serialized contract, so fields
+            # with concrete defaults (including default_factory) remain required;
+            # only fields whose canonical default is None are optional in TS.
+            py_optional = (not field.is_required()) and field.default is None
+            if py_optional != ts_optional:
                 failures.append(
                     f"{name}.{field_name}: requiredness drift "
-                    f"(python required={py_required}, ts optional={ts_optional})"
+                    f"(python optional={py_optional}, ts optional={ts_optional})"
                 )
 
             expected = py_shape(field.annotation)
