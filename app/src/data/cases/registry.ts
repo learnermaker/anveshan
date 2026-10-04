@@ -293,7 +293,7 @@ const kolamBundle = normalizeTransmissionBundle({
   },
 });
 
-const kolamSpecSpec: WorkspaceSpecification = {
+const kolamSpec: WorkspaceSpecification = {
   workspaceType: 'spatial_canvas',
   title: 'Spatial Practice Canvas',
   tagline: 'Vector trajectory tracking, dot lattice coordinate guides, and symmetry overlay',
@@ -574,7 +574,7 @@ const bikeBundle = normalizeTransmissionBundle({
   },
 });
 
-const bikeSpecSpec: WorkspaceSpecification = {
+const bikeSpec: WorkspaceSpecification = {
   workspaceType: 'diagnostic_workspace',
   title: 'Diagnostic Workspace',
   tagline: 'Observation -> Diagnosis -> Action -> Outcome causal decision tree',
@@ -855,7 +855,7 @@ const weavingBundle = normalizeTransmissionBundle({
   },
 });
 
-const weavingSpecSpec: WorkspaceSpecification = {
+const weavingSpec: WorkspaceSpecification = {
   workspaceType: 'state_transition',
   title: 'State Transition Workspace',
   tagline: 'Material state evolution: Warp shed matrix, shuttle pass, and pick interlocking',
@@ -1136,7 +1136,7 @@ const tablaBundle = normalizeTransmissionBundle({
   },
 });
 
-const tablaSpecSpec: WorkspaceSpecification = {
+const tablaSpec: WorkspaceSpecification = {
   workspaceType: 'rhythm_instrument',
   title: 'Rhythm Practice Instrument',
   tagline: 'Audio onset envelope, bimanual strike sync, and millisecond timing drift analysis',
@@ -1417,7 +1417,7 @@ const origamiBundle = normalizeTransmissionBundle({
   },
 });
 
-const origamiSpecSpec: WorkspaceSpecification = {
+const origamiSpec: WorkspaceSpecification = {
   workspaceType: 'spatial_sequence',
   title: 'Spatial Sequence Workspace',
   tagline: 'Multi-step folding timeline, mountain/valley vector indicators, and vertex tolerance',
@@ -1699,7 +1699,7 @@ const knotBundle = normalizeTransmissionBundle({
   },
 });
 
-const knotSpecSpec: WorkspaceSpecification = {
+const knotSpec: WorkspaceSpecification = {
   workspaceType: 'first_divergence',
   title: 'First-Divergence Workspace',
   tagline: 'Topological cord crossing selector, parallel exit bights, and tensile lock test',
