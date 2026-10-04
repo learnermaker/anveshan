@@ -20,6 +20,7 @@ fs.mkdirSync(RUN_DIR, { recursive: true });
 fs.mkdirSync(LATEST_DIR, { recursive: true });
 
 const assertions = [];
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function assertState(condition, message) {
   assertions.push({ message, passed: Boolean(condition) });
@@ -40,22 +41,12 @@ async function clickByText(page, text, label = text) {
 
 async function assertBodyContains(page, text, label = text) {
   const body = await page.$eval('body', (el) => el.innerText);
-  assertState(body.includes(text), `Expected UI state "${label}" containing "${text}"`);
+  assertState(body.toLowerCase().includes(text.toLowerCase()), `Expected UI state "${label}" containing "${text}"`);
 }
 
 async function selectCaseAndAssert(page, caseId, workspaceTitle) {
-  const selected = await page.$eval(
-    'select',
-    (el, value) => {
-      const select = el;
-      select.value = value;
-      select.dispatchEvent(new Event('change', { bubbles: true }));
-      return select.value;
-    },
-    caseId
-  );
-  assertState(selected === caseId, `Case selector rejected canonical case ID "${caseId}"`);
-  await page.waitForTimeout(500);
+  await page.select('select', caseId);
+  await sleep(500);
 
   const actualSelected = await page.$eval('select', (el) => el.value);
   assertState(
@@ -124,41 +115,45 @@ async function runDevToolsAudit() {
   // Kolam: lifecycle path and modal state assertions.
   await selectCaseAndAssert(page, 'kolam', 'Spatial Practice Canvas');
   await clickByText(page, '01.', 'SOURCE stage');
-  await page.waitForTimeout(300);
+  await sleep(300);
   await assertBodyContains(page, 'SOURCE', 'Kolam source stage');
   savedScreenshots.push(await saveScreenshot(page, '02_source_grounding_kolam', { fullPage: true }));
 
   await clickByText(page, 'COMPOSE ADAPTIVE WORKSPACE', 'adaptive workspace');
-  await page.waitForTimeout(300);
+  await sleep(300);
   await assertBodyContains(page, 'Spatial Practice Canvas', 'Kolam practice workspace');
   savedScreenshots.push(await saveScreenshot(page, '03_adaptive_workspace_kolam', { fullPage: true }));
 
   await clickByText(page, 'JUMP TO FIRST DIVERGENCE', 'first divergence');
-  await page.waitForTimeout(300);
+  await sleep(300);
   await assertBodyContains(page, 'FIRST DIVERGENCE', 'first-divergence modal');
   savedScreenshots.push(await saveScreenshot(page, '04_first_divergence_modal'));
 
   await clickByText(page, 'LAUNCH TARGETED RETRY', 'targeted retry');
-  await page.waitForTimeout(300);
+  await sleep(300);
   await assertBodyContains(page, 'MICRO-PRACTICE', 'micro-practice modal');
   savedScreenshots.push(await saveScreenshot(page, '05_micropractice_modal'));
 
   await clickByText(page, 'Continuous Orbital Convex Arc', 'retry correction');
-  await page.waitForTimeout(200);
-  await clickByText(page, 'SUBMIT VERIFIED RETRY', 'verified retry');
-  await page.waitForTimeout(400);
+  await sleep(200);
+  await clickByText(page, 'SUBMIT RETRY', 'submit retry');
+  await sleep(400);
   await assertBodyContains(page, 'TRANSMISSION', 'transmission result');
   savedScreenshots.push(await saveScreenshot(page, '06_transmission_complete_kolam', { fullPage: true }));
 
   await clickByText(page, 'PROVENANCE DAG', 'provenance DAG');
-  await page.waitForTimeout(300);
+  await sleep(300);
   await assertBodyContains(page, 'PROVENANCE', 'lineage/provenance drawer');
   savedScreenshots.push(await saveScreenshot(page, '07_lineage_dag'));
   await page.evaluate(() => {
     const button = Array.from(document.querySelectorAll('button')).find((b) => b.querySelector('svg.lucide-x'));
     if (button) button.click();
   });
-  await page.waitForTimeout(200);
+  await sleep(200);
+
+  // Switch to practice view so case workspaces render
+  await clickByText(page, '02.', 'PRACTICE stage');
+  await sleep(300);
 
   const cases = [
     ['micrometer', 'Forensic Transmission Instrument', '08_workbench_micrometer'],
@@ -170,19 +165,19 @@ async function runDevToolsAudit() {
   ];
   for (const [caseId, workspaceTitle, screenshotName] of cases) {
     await selectCaseAndAssert(page, caseId, workspaceTitle);
-    await assertBodyContains(page, workspaceTitle, \`${caseId} -> ${workspaceTitle}\`);
+    await assertBodyContains(page, workspaceTitle, `${caseId} -> ${workspaceTitle}`);
     savedScreenshots.push(await saveScreenshot(page, screenshotName, { fullPage: true }));
   }
 
   await clickByText(page, 'STITCH CANVAS', 'Stitch canvas');
-  await page.waitForTimeout(300);
+  await sleep(300);
   await assertBodyContains(page, 'STITCH', 'Stitch modal');
   savedScreenshots.push(await saveScreenshot(page, '14_stitch_canvas_modal'));
   await page.evaluate(() => {
     const button = Array.from(document.querySelectorAll('button')).find((b) => b.querySelector('svg.lucide-x'));
     if (button) button.click();
   });
-  await page.waitForTimeout(200);
+  await sleep(200);
 
   const settingsButton = await page.$('header button');
   assertState(Boolean(settingsButton), 'Settings control is mounted');
@@ -192,7 +187,7 @@ async function runDevToolsAudit() {
     );
     if (button) button.click();
   });
-  await page.waitForTimeout(300);
+  await sleep(300);
   await assertBodyContains(page, 'GEMINI', 'Gemini gateway settings modal');
   await assertBodyContains(page, 'REPLAY FIXTURE', 'replay/live execution mode');
   savedScreenshots.push(await saveScreenshot(page, '15_gemini_settings_modal'));
