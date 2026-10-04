@@ -32,9 +32,9 @@ tracks/track-b/ contains README.md, CODING-AGENT-GUIDE.md, SUCCESS-CRITERIA.md, 
 Before creating case-local artifacts, read:
 - `tracks/common/CASE-DATA-CONVENTIONS.md`
 - `tracks/common/MODEL-GATEWAY-CONVENTIONS.md`
-- `data/README.md`
+- `tracks/cases/README.md`
 
-Use `data/cases/<case_id>/manifest.yaml` as the entry point for implementation-ready cases. Do not infer validation status from folder presence.
+Use `tracks/cases/<case_id>/manifest.json` as the entry point for implementation-ready cases. Do not infer validation status from folder presence.
 
 ## Worktree
 
