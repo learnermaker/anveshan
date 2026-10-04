@@ -24,7 +24,7 @@ REQUIRED_MANIFEST = {
     "source_posture",
     "epistemic_status",
     "data_status",
-    "pack_version",
+    "pack_version",\n    "bundle_case_id",
 }
 REQUIRED_BUNDLE = {
     "case_id",
