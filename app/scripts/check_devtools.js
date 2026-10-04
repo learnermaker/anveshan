@@ -106,53 +106,24 @@ async function runDevToolsAudit() {
   const headerBrand = await page.$eval('header', (el) => el.innerText);
   console.log(`Header Mounted: ${headerBrand.includes('ANVESHAN') ? 'PASS' : 'FAIL'}`);
 
-  const decks = await page.$$eval('div', (els) =>
-    els.filter((e) => e.innerText && e.innerText.includes('EXPERT REFERENCE') && e.innerText.includes('LEARNER ATTEMPT')).length
-  );
-  console.log(`Dual-Deck Player Mounted: ${decks > 0 ? 'PASS' : 'FAIL'}`);
+  const hasHeadline = await page.$eval('h1', (el) => el.innerText);
+  console.log(`Landing Headline: "${hasHeadline}"`);
 
   const images = await page.$$eval('img', (imgs) =>
     imgs.map((img) => ({ src: img.src, complete: img.complete, naturalWidth: img.naturalWidth }))
   );
   console.log(`Images Verified on Page (${images.length}): all loaded = ${images.every((i) => i.complete && i.naturalWidth > 0)}`);
 
-  // 5. CAPTURING COMPREHENSIVE 15-SCREEN GALLERY
-  console.log('\n--- CAPTURING COMPREHENSIVE SCREEN GALLERY ---');
+  // 5. CAPTURING COMPREHENSIVE 15-SCREEN GALLERY IN EXACT PRODUCT LIFECYCLE ORDER
+  console.log('\n--- CAPTURING COMPREHENSIVE SCREEN GALLERY (CHRONOLOGICAL LIFECYCLE ORDER) ---');
 
-  // Screen 1: Canonical Forensic Transmission Instrument (Micrometer)
-  console.log('\n[Screen 1/15] Capturing Forensic Transmission Instrument Workbench...');
-  const ss1 = await saveScreenshot(page, '01_workbench_micrometer', { fullPage: true });
+  // Screen 1: Discovery / Capability Portfolio Landing (Stage 00)
+  console.log('\n[Screen 1/15] Capturing 00. PORTFOLIO & Discovery Landing View...');
+  const ss1 = await saveScreenshot(page, '01_landing_discovery', { fullPage: true });
   savedScreenshots.push(ss1);
 
-  // Screen 2: Lineage Merkle Provenance DAG Drawer
-  console.log('\n[Screen 2/15] Opening Cryptographic Lineage DAG Drawer...');
-  await page.evaluate(() => {
-    const btn = Array.from(document.querySelectorAll('button, a')).find((b) => b.innerText.includes('VIEW PROVENANCE DAG'));
-    if (btn) btn.click();
-  });
-  await new Promise((r) => setTimeout(r, 600));
-  const ss2 = await saveScreenshot(page, '02_lineage_dag');
-  savedScreenshots.push(ss2);
-
-  // Close Lineage Drawer
-  await page.evaluate(() => {
-    const xBtn = Array.from(document.querySelectorAll('button')).find((b) => b.querySelector('svg.lucide-x'));
-    if (xBtn) xBtn.click();
-  });
-  await new Promise((r) => setTimeout(r, 400));
-
-  // Screen 3: Discovery / Capability Portfolio Landing
-  console.log('\n[Screen 3/15] Navigating to 00. PORTFOLIO (Discovery View)...');
-  await page.evaluate(() => {
-    const btn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('00.') && b.innerText.includes('PORTFOLIO'));
-    if (btn) btn.click();
-  });
-  await new Promise((r) => setTimeout(r, 600));
-  const ss3 = await saveScreenshot(page, '03_portfolio_discovery', { fullPage: true });
-  savedScreenshots.push(ss3);
-
-  // Screen 4: Stage 01 Source & Grounding (Kolam Case)
-  console.log('\n[Screen 4/15] Selecting Kolam and inspecting 01. SOURCE & Grounding...');
+  // Screen 2: Stage 01 Source & Grounding (Kolam Case)
+  console.log('\n[Screen 2/15] Navigating to Kolam -> 01. SOURCE & Grounding...');
   await page.evaluate(() => {
     const sel = document.querySelector('select');
     if (sel) {
@@ -163,41 +134,41 @@ async function runDevToolsAudit() {
     if (sourceBtn) sourceBtn.click();
   });
   await new Promise((r) => setTimeout(r, 600));
-  const ss4 = await saveScreenshot(page, '04_source_grounding_kolam', { fullPage: true });
-  savedScreenshots.push(ss4);
+  const ss2 = await saveScreenshot(page, '02_source_grounding_kolam', { fullPage: true });
+  savedScreenshots.push(ss2);
 
-  // Screen 5: Adaptive Spatial Practice Canvas (Kolam Case)
-  console.log('\n[Screen 5/15] Composing Adaptive Spatial Practice Canvas for Kolam...');
+  // Screen 3: Adaptive Spatial Practice Canvas (Kolam Case, Stage 02)
+  console.log('\n[Screen 3/15] Composing Adaptive Spatial Practice Canvas for Kolam...');
   await page.evaluate(() => {
     const practiceBtn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('COMPOSE ADAPTIVE WORKSPACE') || (b.innerText.includes('02.') && b.innerText.includes('PRACTICE')));
     if (practiceBtn) practiceBtn.click();
   });
   await new Promise((r) => setTimeout(r, 600));
-  const ss5 = await saveScreenshot(page, '05_adaptive_workspace_kolam', { fullPage: true });
-  savedScreenshots.push(ss5);
+  const ss3 = await saveScreenshot(page, '03_adaptive_workspace_kolam', { fullPage: true });
+  savedScreenshots.push(ss3);
 
-  // Screen 6: First Divergence Modal (Kolam Case)
-  console.log('\n[Screen 6/15] Opening Forensic First Divergence Modal (Dot 3,4)...');
+  // Screen 4: First Divergence Modal (Kolam Case)
+  console.log('\n[Screen 4/15] Opening Forensic First Divergence Modal (Dot 3,4)...');
   await page.evaluate(() => {
     const btn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('JUMP TO FIRST DIVERGENCE'));
     if (btn) btn.click();
   });
   await new Promise((r) => setTimeout(r, 600));
-  const ss6 = await saveScreenshot(page, '06_first_divergence_modal');
-  savedScreenshots.push(ss6);
+  const ss4 = await saveScreenshot(page, '04_first_divergence_modal');
+  savedScreenshots.push(ss4);
 
-  // Screen 7: Bounded Micro-Practice Retry Modal
-  console.log('\n[Screen 7/15] Launching Bounded Micro-Practice Retry Modal...');
+  // Screen 5: Bounded Micro-Practice Retry Modal
+  console.log('\n[Screen 5/15] Launching Bounded Micro-Practice Retry Modal...');
   await page.evaluate(() => {
     const btn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('LAUNCH TARGETED RETRY'));
     if (btn) btn.click();
   });
   await new Promise((r) => setTimeout(r, 600));
-  const ss7 = await saveScreenshot(page, '07_micropractice_modal');
-  savedScreenshots.push(ss7);
+  const ss5 = await saveScreenshot(page, '05_micropractice_modal');
+  savedScreenshots.push(ss5);
 
-  // Perform retry correction and advance
-  console.log('Executing Micro-Practice Retry Action (Option B)...');
+  // Perform retry correction and advance to Transmission Event
+  console.log('Executing Micro-Practice Retry Action (Option B: Convex Arc)...');
   await page.evaluate(() => {
     const optB = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('Continuous Orbital Convex Arc'));
     if (optB) optB.click();
@@ -210,9 +181,41 @@ async function runDevToolsAudit() {
   });
   await new Promise((r) => setTimeout(r, 600));
 
-  // Screen 8: Transmission Complete View (Kolam Case)
-  console.log('\n[Screen 8/15] Capturing Transmission Complete View (+4.3 PTS GAIN)...');
-  const ss8 = await saveScreenshot(page, '08_transmission_complete_kolam', { fullPage: true });
+  // Screen 6: Transmission Complete View (Stage 03)
+  console.log('\n[Screen 6/15] Capturing Stage 03 Transmission Complete View (+4.3 PTS GAIN)...');
+  const ss6 = await saveScreenshot(page, '06_transmission_complete_kolam', { fullPage: true });
+  savedScreenshots.push(ss6);
+
+  // Screen 7: Cryptographic Lineage & Merkle Provenance DAG Drawer
+  console.log('\n[Screen 7/15] Opening Cryptographic Lineage DAG Drawer...');
+  await page.evaluate(() => {
+    const btn = Array.from(document.querySelectorAll('button, a')).find((b) => b.innerText.includes('INSPECT PROVENANCE DAG') || b.innerText.includes('VIEW PROVENANCE DAG'));
+    if (btn) btn.click();
+  });
+  await new Promise((r) => setTimeout(r, 600));
+  const ss7 = await saveScreenshot(page, '07_lineage_dag');
+  savedScreenshots.push(ss7);
+
+  // Close Lineage Drawer
+  await page.evaluate(() => {
+    const xBtn = Array.from(document.querySelectorAll('button')).find((b) => b.querySelector('svg.lucide-x'));
+    if (xBtn) xBtn.click();
+  });
+  await new Promise((r) => setTimeout(r, 400));
+
+  // Screen 8: Mechanical Micrometer Zeroing (Forensic Transmission Instrument)
+  console.log('\n[Screen 8/15] Switching to Mechanical Micrometer -> Forensic Transmission Instrument...');
+  await page.evaluate(() => {
+    const sel = document.querySelector('select');
+    if (sel) {
+      sel.value = 'micrometer-calibration';
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    const practiceBtn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('02.') && b.innerText.includes('PRACTICE'));
+    if (practiceBtn) practiceBtn.click();
+  });
+  await new Promise((r) => setTimeout(r, 600));
+  const ss8 = await saveScreenshot(page, '08_workbench_micrometer', { fullPage: true });
   savedScreenshots.push(ss8);
 
   // Screen 9: Diagnostic Workspace (Bicycle Repair Case)
@@ -223,8 +226,6 @@ async function runDevToolsAudit() {
       sel.value = 'bicycle_repair';
       sel.dispatchEvent(new Event('change', { bubbles: true }));
     }
-    const practiceBtn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('02.') && b.innerText.includes('PRACTICE'));
-    if (practiceBtn) practiceBtn.click();
   });
   await new Promise((r) => setTimeout(r, 600));
   const ss9 = await saveScreenshot(page, '09_diagnostic_workspace_bike', { fullPage: true });

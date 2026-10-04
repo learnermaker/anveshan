@@ -1,5 +1,11 @@
 [
   {
+    "run_timestamp": "2026-10-04T12-08-33Z",
+    "report_file": "runs/2026-10-04T12-08-33Z/audit_report.json",
+    "audit_passed": true,
+    "screenshots_count": 15
+  },
+  {
     "run_timestamp": "2026-10-04T11-56-19Z",
     "report_file": "runs/2026-10-04T11-56-19Z/audit_report.json",
     "audit_passed": true,

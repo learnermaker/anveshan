@@ -1,0 +1,88 @@
+{
+  "run_timestamp": "2026-10-04T12-08-33Z",
+  "execution_time_iso": "2026-10-04T12:08:47.457Z",
+  "navigation_duration_ms": 1489,
+  "resources_loaded_count": 49,
+  "console_messages_count": 3,
+  "console_errors_count": 0,
+  "uncaught_exceptions_count": 0,
+  "failed_requests_count": 0,
+  "audit_passed": true,
+  "screenshots": [
+    {
+      "name": "01_landing_discovery",
+      "timestamped_file": "01_landing_discovery_2026-10-04T12-08-33Z.png",
+      "relative_path": "runs/2026-10-04T12-08-33Z/01_landing_discovery_2026-10-04T12-08-33Z.png"
+    },
+    {
+      "name": "02_source_grounding_kolam",
+      "timestamped_file": "02_source_grounding_kolam_2026-10-04T12-08-33Z.png",
+      "relative_path": "runs/2026-10-04T12-08-33Z/02_source_grounding_kolam_2026-10-04T12-08-33Z.png"
+    },
+    {
+      "name": "03_adaptive_workspace_kolam",
+      "timestamped_file": "03_adaptive_workspace_kolam_2026-10-04T12-08-33Z.png",
+      "relative_path": "runs/2026-10-04T12-08-33Z/03_adaptive_workspace_kolam_2026-10-04T12-08-33Z.png"
+    },
+    {
+      "name": "04_first_divergence_modal",
+      "timestamped_file": "04_first_divergence_modal_2026-10-04T12-08-33Z.png",
+      "relative_path": "runs/2026-10-04T12-08-33Z/04_first_divergence_modal_2026-10-04T12-08-33Z.png"
+    },
+    {
+      "name": "05_micropractice_modal",
+      "timestamped_file": "05_micropractice_modal_2026-10-04T12-08-33Z.png",
+      "relative_path": "runs/2026-10-04T12-08-33Z/05_micropractice_modal_2026-10-04T12-08-33Z.png"
+    },
+    {
+      "name": "06_transmission_complete_kolam",
+      "timestamped_file": "06_transmission_complete_kolam_2026-10-04T12-08-33Z.png",
+      "relative_path": "runs/2026-10-04T12-08-33Z/06_transmission_complete_kolam_2026-10-04T12-08-33Z.png"
+    },
+    {
+      "name": "07_lineage_dag",
+      "timestamped_file": "07_lineage_dag_2026-10-04T12-08-33Z.png",
+      "relative_path": "runs/2026-10-04T12-08-33Z/07_lineage_dag_2026-10-04T12-08-33Z.png"
+    },
+    {
+      "name": "08_workbench_micrometer",
+      "timestamped_file": "08_workbench_micrometer_2026-10-04T12-08-33Z.png",
+      "relative_path": "runs/2026-10-04T12-08-33Z/08_workbench_micrometer_2026-10-04T12-08-33Z.png"
+    },
+    {
+      "name": "09_diagnostic_workspace_bike",
+      "timestamped_file": "09_diagnostic_workspace_bike_2026-10-04T12-08-33Z.png",
+      "relative_path": "runs/2026-10-04T12-08-33Z/09_diagnostic_workspace_bike_2026-10-04T12-08-33Z.png"
+    },
+    {
+      "name": "10_rhythm_workspace_tabla",
+      "timestamped_file": "10_rhythm_workspace_tabla_2026-10-04T12-08-33Z.png",
+      "relative_path": "runs/2026-10-04T12-08-33Z/10_rhythm_workspace_tabla_2026-10-04T12-08-33Z.png"
+    },
+    {
+      "name": "11_state_transition_weaving",
+      "timestamped_file": "11_state_transition_weaving_2026-10-04T12-08-33Z.png",
+      "relative_path": "runs/2026-10-04T12-08-33Z/11_state_transition_weaving_2026-10-04T12-08-33Z.png"
+    },
+    {
+      "name": "12_spatial_sequence_origami",
+      "timestamped_file": "12_spatial_sequence_origami_2026-10-04T12-08-33Z.png",
+      "relative_path": "runs/2026-10-04T12-08-33Z/12_spatial_sequence_origami_2026-10-04T12-08-33Z.png"
+    },
+    {
+      "name": "13_first_divergence_knot",
+      "timestamped_file": "13_first_divergence_knot_2026-10-04T12-08-33Z.png",
+      "relative_path": "runs/2026-10-04T12-08-33Z/13_first_divergence_knot_2026-10-04T12-08-33Z.png"
+    },
+    {
+      "name": "14_stitch_canvas_modal",
+      "timestamped_file": "14_stitch_canvas_modal_2026-10-04T12-08-33Z.png",
+      "relative_path": "runs/2026-10-04T12-08-33Z/14_stitch_canvas_modal_2026-10-04T12-08-33Z.png"
+    },
+    {
+      "name": "15_gemini_settings_modal",
+      "timestamped_file": "15_gemini_settings_modal_2026-10-04T12-08-33Z.png",
+      "relative_path": "runs/2026-10-04T12-08-33Z/15_gemini_settings_modal_2026-10-04T12-08-33Z.png"
+    }
+  ]
+}

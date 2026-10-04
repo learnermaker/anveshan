@@ -17,10 +17,45 @@ import type { AppView } from './types/workspace';
 import type { GeminiConfig } from './types/gemini';
 import type { LifecycleStage } from './components/LifecycleInspectorModal';
 
+const getInitialView = (): AppView => {
+  if (typeof window !== 'undefined') {
+    const params = new URLSearchParams(window.location.search);
+    const v = params.get('view') as AppView;
+    if (v && ['discovery', 'source', 'practice', 'transmission'].includes(v)) {
+      return v;
+    }
+  }
+  return 'discovery';
+};
+
+const getInitialCaseId = (): string => {
+  if (typeof window !== 'undefined') {
+    const params = new URLSearchParams(window.location.search);
+    const c = params.get('case');
+    if (c && getCapabilityCase(c)) {
+      return c;
+    }
+  }
+  return DEFAULT_CASE_ID;
+};
+
 export function App() {
-  const [currentView, setCurrentView] = useState<AppView>('practice');
-  const [selectedCaseId, setSelectedCaseId] = useState<string>(DEFAULT_CASE_ID);
+  const [currentView, setCurrentView] = useState<AppView>(getInitialView);
+  const [selectedCaseId, setSelectedCaseId] = useState<string>(getInitialCaseId);
   const [geminiConfig, setGeminiConfig] = useState<GeminiConfig>(getStoredGeminiConfig());
+
+  // Synchronize view & case to URL search params for deep linking and history
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('view') !== currentView || params.get('case') !== selectedCaseId) {
+        params.set('view', currentView);
+        params.set('case', selectedCaseId);
+        const newUrl = `${window.location.pathname}?${params.toString()}`;
+        window.history.replaceState({}, '', newUrl);
+      }
+    }
+  }, [currentView, selectedCaseId]);
 
   // Dynamic Case state
   const capCase = getCapabilityCase(selectedCaseId);
