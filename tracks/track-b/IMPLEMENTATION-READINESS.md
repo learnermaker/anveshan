@@ -38,3 +38,13 @@ Use this as the coding-agent gate. It complements SUCCESS-CRITERIA.md.
 
 ## Stop conditions
 Stop if success requires changing a frozen contract, guessing unobservable learner behavior, coupling evaluation to the UI, choosing a domain merely because a model supports it, or adding generic LMS/analytics infrastructure.
+
+## Operational readiness
+
+- [ ] Read `tracks/common/CASE-DATA-CONVENTIONS.md` and `tracks/common/MODEL-GATEWAY-CONVENTIONS.md`.
+- [ ] Case has a stable `case_id`, explicit version, source mode, runtime class, and status.
+- [ ] Shared case content is under `tracks/cases/<case_id>/` and discoverable from `manifest.json`; track-local data is only for implementation-specific fixtures.
+- [ ] Materially changed rubric, prompt/model configuration, attempt fixture, or evaluation behavior is versioned rather than silently overwritten.
+- [ ] Model-backed runs retain model/configuration, prompt version, input fixture, run ID, and runtime class.
+- [ ] Missing/ambiguous evidence uses the shared failure taxonomy and escalates to human review where required.
+- [ ] Replay command and expected result are documented in the case metadata.

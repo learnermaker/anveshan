@@ -16,8 +16,20 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install Python test dependencies
+        run: python -m pip install "pydantic>=2,<3" pytest
+
       - name: Check repository governance invariants
         run: python .github/scripts/check_governance.py
+
+      - name: Check capability case-pack structure
+        run: python .github/scripts/check_case_packs.py
+
+      - name: Check canonical Python -> UI contract parity
+        run: python .github/scripts/check_contract_parity.py
+
+      - name: Run common contract tests
+        run: python -m pytest tracks/common/tests
 
       - name: Validate PR contract
         if: github.event_name == 'pull_request'
@@ -71,3 +83,7 @@ jobs:
         run: |
           printf '%s\n' '{"truth":[{"timestamp":10,"action":"open"}],"pred":[{"timestamp":10.5,"action":"open"}]}' > /tmp/events.json
           python research/benchmarks/scripts/score_events.py /tmp/events.json
+
+      - name: Build frontend
+        working-directory: app
+        run: npm install --no-audit --no-fund && npm run build

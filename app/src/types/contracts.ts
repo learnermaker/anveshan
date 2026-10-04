@@ -1,42 +1,55 @@
 /**
- * Anveshan Shared Contracts — TypeScript Definitions
- * 1:1 Seam mapping from tracks/common/schemas/
+ * Anveshan frontend view of the frozen common-contract seam.
+ *
+ * SOURCE OF TRUTH:
+ *   tracks/common/schemas/
+ *
+ * This file is intentionally field/enumeration-compatible with the eight
+ * Python contracts. It is not a second product contract. UI-only composites
+ * (for example TransmissionBundle) are downstream views, not shared seams.
+ *
+ * If a field or enum must change here, change the canonical Python contract
+ * first and then update this downstream representation/adapter.
  */
+
+export type Modality = 'video' | 'audio' | 'image' | 'text' | 'sensor';
+export type VerificationState = 'observed' | 'inferred' | 'unverified';
 
 export interface EvidenceRef {
   evidence_id: string;
   source_id: string;
-  modality: 'video' | 'audio' | 'sensor' | 'document' | 'composite';
+  modality: Modality;
   start_sec?: number;
   end_sec?: number;
-  uri?: string;
   cue_excerpt?: string;
-  verification_state: 'raw' | 'extracted' | 'observed' | 'disputed';
-  confidence: number; // 0.0 - 1.0
-  metadata?: Record<string, unknown>;
+  verification_state: VerificationState;
+  confidence: number;
 }
 
-export interface Claim {
-  claim_id: string;
-  claim_type: 'step' | 'cue' | 'condition' | 'pitfall' | 'principle';
-  statement: string;
-  evidence_refs: EvidenceRef[];
-  is_observed: boolean;
-}
+export type ClaimType = 'step' | 'cue' | 'condition' | 'exception' | 'failure_mode';
+export type ReviewStatus = 'pending' | 'approved' | 'revised' | 'rejected';
 
-export interface ConsentRecord {
+export interface ConsentMetadata {
   contributor_name: string;
   consent_scope: string;
   revocable: boolean;
-  granted_at: string;
+  granted_at?: string;
   notes?: string;
 }
 
-export interface ExpertReviewRecord {
+export interface ExpertReview {
   reviewer_name: string;
-  status: 'pending' | 'approved' | 'rejected' | 'revisions_requested';
+  status: ReviewStatus;
   reviewed_at?: string;
   notes?: string;
+}
+
+export interface KnowledgeClaim {
+  claim_id: string;
+  claim_type: ClaimType;
+  statement: string;
+  is_observed: boolean;
+  evidence_refs: EvidenceRef[];
 }
 
 export interface KnowledgePackage {
@@ -44,11 +57,9 @@ export interface KnowledgePackage {
   skill_id: string;
   title: string;
   summary: string;
-  claims: Claim[];
-  consent: ConsentRecord;
-  expert_review: ExpertReviewRecord;
-  version?: string;
-  created_at?: string;
+  claims: KnowledgeClaim[];
+  consent: ConsentMetadata;
+  expert_review?: ExpertReview;
 }
 
 export interface RubricCriterion {
@@ -64,16 +75,15 @@ export interface RubricDefinition {
   rubric_id: string;
   skill_id: string;
   title: string;
-  description: string;
+  description?: string;
   criteria: RubricCriterion[];
   passing_score?: number;
-  created_at?: string;
 }
 
 export interface TaskConstraint {
   constraint_type: string;
   description: string;
-  value?: string | null;
+  value?: string;
 }
 
 export interface PracticeTask {
@@ -82,67 +92,74 @@ export interface PracticeTask {
   rubric_id: string;
   title: string;
   instructions: string;
-  constraints?: TaskConstraint[];
-  target_criteria_ids?: string[];
+  constraints: TaskConstraint[];
+  target_criteria_ids: string[];
 }
 
-export interface AttemptEvidenceRef {
-  evidence_id: string;
-  source_id: string;
-  modality: string;
-  start_sec?: number;
-  end_sec?: number;
-  uri?: string;
+export type AttemptType = 'baseline' | 'retry';
+
+export interface ParticipantRef {
+  participant_id: string;
+  name: string;
+  role: string;
+  notes?: string;
 }
 
 export interface LearnerAttempt {
   attempt_id: string;
   task_id: string;
-  learner_id: string;
-  attempt_type: 'baseline' | 'retry';
+  learner: ParticipantRef;
+  attempt_type: AttemptType;
   attempt_number: number;
-  evidence_refs: AttemptEvidenceRef[];
-  notes?: string;
-  created_at?: string;
+  submitted_at?: string;
+  evidence: EvidenceRef;
 }
+
+export type CriterionStatus =
+  | 'satisfied'
+  | 'partially_satisfied'
+  | 'not_satisfied'
+  | 'uncertain';
+
+export type EvaluatorType = 'deterministic' | 'model_assisted' | 'human_expert';
 
 export interface CriterionResult {
   criterion_id: string;
+  status: CriterionStatus;
   score: number;
-  status: 'satisfied' | 'partial' | 'divergent' | 'not_observed';
-  divergence_type?: 'omission' | 'incorrect_execution' | 'excessive_motion' | 'timing_fault' | 'safety_hazard';
+  observed_finding: string;
+  deviation_analysis?: string;
   evidence_ref?: EvidenceRef;
-  observation_notes?: string;
 }
 
 export interface Evaluation {
   evaluation_id: string;
   attempt_id: string;
   rubric_id: string;
-  evaluator_type: 'gemini' | 'expert_human' | 'consensus';
   criterion_results: CriterionResult[];
   total_score: number;
-  max_possible_score: number;
   passed: boolean;
-  model_id?: string;
+  evaluator_type: EvaluatorType;
+  uncertainty_flags: string[];
   evaluated_at?: string;
 }
 
 export interface FeedbackItem {
-  feedback_id: string;
   criterion_id: string;
-  divergence_observed: string;
-  corrective_instruction: string;
+  what_was_observed: string;
+  what_differed: string;
+  corrective_advice: string;
   expert_evidence_ref?: EvidenceRef;
-  priority: number; // 1 = highest
+  learner_evidence_ref?: EvidenceRef;
 }
 
 export interface Feedback {
   feedback_id: string;
   evaluation_id: string;
   attempt_id: string;
+  summary: string;
   items: FeedbackItem[];
-  created_at?: string;
+  recommended_retry_focus: string[];
 }
 
 export interface LineageMetadata {
@@ -164,10 +181,11 @@ export interface TransmissionRecord {
   baseline_score: number;
   retry_score: number;
   transmission_gain: number;
-  criteria_improved?: string[];
+  criteria_improved: string[];
   lineage: LineageMetadata;
 }
 
+/** Downstream UI composite; not one of the eight shared contracts. */
 export interface TransmissionBundle {
   case_id: string;
   domain: string;

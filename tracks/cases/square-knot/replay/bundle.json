@@ -1,0 +1,248 @@
+{
+  "case_id": "knot_case_007",
+  "domain": "Surgical & Maritime Ropework Mechanics",
+  "skill": "Surgical / Maritime Square Knot Tying & Capsize Prevention",
+  "knowledge_package": {
+    "package_id": "pkg-knot-007",
+    "skill_id": "skill-knot-square",
+    "title": "Reef (Square) Knot Dual-Throw Topology & Anti-Granny Rule",
+    "summary": "Binding two rope ends by crossing Right-over-Left followed by Left-over-Right to form symmetrical interlocking bights that lock under tension.",
+    "claims": [
+      {
+        "claim_id": "claim-throw-one",
+        "claim_type": "step",
+        "statement": "Cross active working end right-over-left and wrap under once to create the foundational half-knot.",
+        "is_observed": true,
+        "evidence_refs": [
+          {
+            "evidence_id": "ev-knot-first",
+            "source_id": "src-knot-01",
+            "modality": "video",
+            "start_sec": 2,
+            "end_sec": 6.5,
+            "verification_state": "observed",
+            "confidence": 0.99
+          }
+        ]
+      },
+      {
+        "claim_id": "claim-throw-two",
+        "claim_type": "step",
+        "statement": "The second throw must cross Left-over-Right (the exact reverse of throw 1). Repeating right-over-left produces an unstable Granny Knot.",
+        "is_observed": true,
+        "evidence_refs": [
+          {
+            "evidence_id": "ev-knot-second",
+            "source_id": "src-knot-01",
+            "modality": "video",
+            "start_sec": 7,
+            "end_sec": 12,
+            "verification_state": "observed",
+            "confidence": 0.99
+          }
+        ]
+      }
+    ],
+    "consent": {
+      "contributor_name": "Synthetic Fixture Contributor",
+      "consent_scope": "engineering_replay_only",
+      "revocable": true,
+      "granted_at": "2026-09-05T10:00:00Z"
+    },
+    "expert_review": {
+      "reviewer_name": "Replay Fixture Reviewer",
+      "status": "pending",
+      "reviewed_at": "2026-09-14T15:00:00Z"
+    }
+  },
+  "rubric": {
+    "rubric_id": "rubric-knot-007",
+    "skill_id": "skill-knot-square",
+    "title": "Square Knot Bight Topology & Tensile Lock Rubric",
+    "description": "Deterministic scoring of throw crossing sequence, bight symmetry, and capsize resistance under 20N load.",
+    "passing_score": 7,
+    "criteria": [
+      {
+        "criterion_id": "CRIT-BASE-THROW",
+        "name": "First throw overhand orientation (Right-over-Left)",
+        "description": "First half-knot correctly crossed and dressed flat.",
+        "observable_indicator": "Right cord wraps under left cord with even tail lengths.",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "criterion_id": "CRIT-CROSS-DIR",
+        "name": "Second throw reversal (Left-over-Right Anti-Granny Rule)",
+        "description": "Second throw reverses crossing direction so both working ends emerge parallel.",
+        "observable_indicator": "Working ends exit through same bight parallel to standing ends.",
+        "weight": 4,
+        "required": true
+      },
+      {
+        "criterion_id": "CRIT-TENSILE-LOCK",
+        "name": "Tensile load locking test (zero slip at 20N)",
+        "description": "Knot tightens uniformly when standing ends pulled; does not capsize into slip knot.",
+        "observable_indicator": "Zero knot displacement or untying under 20N bilateral tensile load.",
+        "weight": 3,
+        "required": true
+      }
+    ]
+  },
+  "practice_task": {
+    "task_id": "task-knot-tie",
+    "package_id": "pkg-knot-007",
+    "rubric_id": "rubric-knot-007",
+    "title": "Tie True Square Knot Under Tension Load",
+    "instructions": "Tie two colored 10mm marine lines into a true square knot. Dress the knot and pull standing ends to verify anti-capsize lock.",
+    "constraints": [
+      {
+        "constraint_type": "load",
+        "description": "Withstand 20N tensile pull without slippage"
+      }
+    ],
+    "target_criteria_ids": [
+      "CRIT-BASE-THROW",
+      "CRIT-CROSS-DIR",
+      "CRIT-TENSILE-LOCK"
+    ]
+  },
+  "baseline_attempt": {
+    "attempt_id": "attempt-knot-base",
+    "task_id": "task-knot-tie",
+    "learner": {
+      "participant_id": "learner-replay",
+      "name": "learner-replay",
+      "role": "learner"
+    },
+    "attempt_type": "baseline",
+    "attempt_number": 1,
+    "evidence": {
+      "evidence_id": "ev-sarah-base",
+      "source_id": "src-sarah-knot-01",
+      "modality": "video",
+      "start_sec": 0,
+      "end_sec": 14,
+      "verification_state": "observed",
+      "confidence": 1
+    }
+  },
+  "baseline_evaluation": {
+    "evaluation_id": "eval-knot-base",
+    "attempt_id": "attempt-knot-base",
+    "rubric_id": "rubric-knot-007",
+    "evaluator_type": "model_assisted",
+    "criterion_results": [
+      {
+        "criterion_id": "CRIT-BASE-THROW",
+        "score": 3,
+        "status": "satisfied",
+        "observed_finding": "Right-over-Left initial throw executed correctly."
+      },
+      {
+        "criterion_id": "CRIT-CROSS-DIR",
+        "score": 0.5,
+        "status": "not_satisfied",
+        "observed_finding": "Second throw repeated Right-over-Left. Produced an asymmetric Granny knot with tails protruding perpendicular.",
+        "deviation_analysis": "incorrect_execution"
+      },
+      {
+        "criterion_id": "CRIT-TENSILE-LOCK",
+        "score": 0.5,
+        "status": "not_satisfied",
+        "observed_finding": "Under 12N tension, knot capsized into a slipping half-hitch and untied completely.",
+        "deviation_analysis": "safety_hazard"
+      }
+    ],
+    "total_score": 4,
+    "passed": false,
+    "uncertainty_flags": []
+  },
+  "feedback": {
+    "feedback_id": "fb-knot-001",
+    "evaluation_id": "eval-knot-base",
+    "attempt_id": "attempt-knot-base",
+    "summary": "Targeted corrective feedback for the next attempt.",
+    "items": [
+      {
+        "criterion_id": "CRIT-CROSS-DIR",
+        "what_was_observed": "Threw Right-over-Left twice consecutively, creating a Granny Knot.",
+        "what_differed": "Threw Right-over-Left twice consecutively, creating a Granny Knot.",
+        "corrective_advice": "If throw #1 was Right-over-Left, throw #2 MUST be Left-over-Right. The working ends must exit parallel to the standing lines."
+      }
+    ],
+    "recommended_retry_focus": [
+      "CRIT-CROSS-DIR"
+    ]
+  },
+  "retry_attempt": {
+    "attempt_id": "attempt-knot-retry",
+    "task_id": "task-knot-tie",
+    "learner": {
+      "participant_id": "learner-replay",
+      "name": "learner-replay",
+      "role": "learner"
+    },
+    "attempt_type": "retry",
+    "attempt_number": 2,
+    "evidence": {
+      "evidence_id": "ev-sarah-retry",
+      "source_id": "src-sarah-knot-02",
+      "modality": "video",
+      "start_sec": 0,
+      "end_sec": 12,
+      "verification_state": "observed",
+      "confidence": 1
+    }
+  },
+  "retry_evaluation": {
+    "evaluation_id": "eval-knot-retry",
+    "attempt_id": "attempt-knot-retry",
+    "rubric_id": "rubric-knot-007",
+    "evaluator_type": "model_assisted",
+    "criterion_results": [
+      {
+        "criterion_id": "CRIT-BASE-THROW",
+        "score": 3,
+        "status": "satisfied",
+        "observed_finding": "First throw dressed flat."
+      },
+      {
+        "criterion_id": "CRIT-CROSS-DIR",
+        "score": 4,
+        "status": "satisfied",
+        "observed_finding": "Second throw cleanly reversed (Left-over-Right); working ends exit strictly parallel."
+      },
+      {
+        "criterion_id": "CRIT-TENSILE-LOCK",
+        "score": 3,
+        "status": "satisfied",
+        "observed_finding": "Withstood 25N static tension with zero capsize or rope creep."
+      }
+    ],
+    "total_score": 10,
+    "passed": true,
+    "uncertainty_flags": []
+  },
+  "transmission_record": {
+    "transmission_id": "tx-knot-007",
+    "skill_id": "skill-knot-square",
+    "package_id": "pkg-knot-007",
+    "rubric_id": "rubric-knot-007",
+    "expert_id": "reference-expert-replay",
+    "learner_id": "learner-replay",
+    "baseline_attempt_id": "attempt-knot-base",
+    "retry_attempt_id": "attempt-knot-retry",
+    "baseline_score": 4,
+    "retry_score": 10,
+    "transmission_gain": 6,
+    "criteria_improved": [
+      "CRIT-CROSS-DIR",
+      "CRIT-TENSILE-LOCK"
+    ],
+    "lineage": {
+      "recorded_at": "2026-10-04T15:00:00Z",
+      "provenance_hash": "sha256-knot-merkle-7a6b5c4d",
+      "adaptation_notes": "First-divergence crossing topology visualizer cleanly differentiated Square Knot from Granny Knot."
+    }
+  }
+}

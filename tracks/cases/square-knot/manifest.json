@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "case_id": "square-knot",
+  "bundle_case_id": "knot_case_007",
+  "title": "Surgical & Maritime Square Knot",
+  "domain": "Surgical & Maritime Ropework Mechanics",
+  "archetype": "first-divergence-verification",
+  "workspace_type": "knot_crossing",
+  "transmission_mode": "corrective",
+  "source_posture": "synthetic_replay",
+  "epistemic_status": "REPLAY_FIXTURE_NOT_AUTHENTIC_VALIDATION",
+  "data_status": "prototype_replay",
+  "pack_version": "1.0",
+  "case_version": "1.0",
+  "status": "ENGINEERING_FIXTURE",
+  "source_mode": "CORRECTIVE",
+  "runtime_class": "REPLAY"
+}

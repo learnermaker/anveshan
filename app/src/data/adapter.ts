@@ -10,10 +10,206 @@ import type {
   TransmissionRecord,
   CriterionResult,
   FeedbackItem,
+  ClaimType,
+  ReviewStatus,
+  Modality,
+  VerificationState,
+  CriterionStatus,
+  EvaluatorType,
+  EvidenceRef,
 } from '../types/contracts';
 
 // Type assertion for bundle
-export const canonicalBundle = rawBundle as unknown as TransmissionBundle;
+/**
+ * Normalize legacy UI fixture payloads into the canonical eight-contract shape.
+ *
+ * Existing seven-case replay data predates the frozen Python seam. Keep that
+ * fixture vocabulary at the edge only; everything consumed by the workbench
+ * below is canonical. New case data must be authored in canonical shape.
+ */
+type LegacyEvidence = {
+  evidence_id: string;
+  source_id: string;
+  modality?: string;
+  start_sec?: number;
+  end_sec?: number;
+  cue_excerpt?: string;
+  verification_state?: string;
+  confidence?: number;
+};
+
+type LegacyBundle = any;
+
+function normalizeModality(value: unknown): Modality {
+  switch (value) {
+    case 'audio': return 'audio';
+    case 'image': return 'image';
+    case 'text': return 'text';
+    case 'sensor': return 'sensor';
+    case 'video': return 'video';
+    default: return 'video';
+  }
+}
+
+function normalizeEvidence(input: LegacyEvidence): EvidenceRef {
+  return {
+    evidence_id: input.evidence_id,
+    source_id: input.source_id,
+    modality: normalizeModality(input.modality),
+    start_sec: input.start_sec,
+    end_sec: input.end_sec,
+    cue_excerpt: input.cue_excerpt,
+    verification_state:
+      input.verification_state === 'inferred'
+        ? 'inferred'
+        : input.verification_state === 'unverified'
+          ? 'unverified'
+          : 'observed',
+    confidence: typeof input.confidence === 'number' ? input.confidence : 1,
+  };
+}
+
+function normalizeClaimType(value: unknown): ClaimType {
+  if (value === 'cue' || value === 'condition' || value === 'exception' || value === 'failure_mode') {
+    return value;
+  }
+  return 'step';
+}
+
+function normalizeReviewStatus(value: unknown): ReviewStatus {
+  if (value === 'approved' || value === 'revised' || value === 'rejected') return value;
+  return 'pending';
+}
+
+function normalizeCriterionStatus(value: unknown): CriterionStatus {
+  switch (value) {
+    case 'satisfied': return 'satisfied';
+    case 'partial':
+    case 'partially_satisfied': return 'partially_satisfied';
+    case 'divergent':
+    case 'not_satisfied': return 'not_satisfied';
+    default: return 'uncertain';
+  }
+}
+
+function normalizeEvaluatorType(value: unknown): EvaluatorType {
+  if (value === 'deterministic') return 'deterministic';
+  if (value === 'human_expert' || value === 'expert_human') return 'human_expert';
+  return 'model_assisted';
+}
+
+export function normalizeTransmissionBundle(input: LegacyBundle): TransmissionBundle {
+  const normalizeAttempt = (attempt: any): LearnerAttempt => {
+    const legacyEvidence = attempt.evidence_refs?.[0] ?? attempt.evidence;
+    const evidence = normalizeEvidence({
+      evidence_id: legacyEvidence.evidence_id,
+      source_id: legacyEvidence.source_id,
+      modality: legacyEvidence.modality,
+      start_sec: legacyEvidence.start_sec,
+      end_sec: legacyEvidence.end_sec,
+      cue_excerpt: legacyEvidence.cue_excerpt,
+      verification_state: legacyEvidence.verification_state,
+      confidence: legacyEvidence.confidence,
+    });
+    const learnerId = attempt.learner_id ?? attempt.learner?.participant_id;
+    return {
+      attempt_id: attempt.attempt_id,
+      task_id: attempt.task_id,
+      learner: attempt.learner ?? {
+        participant_id: learnerId,
+        name: learnerId,
+        role: 'learner',
+      },
+      attempt_type: attempt.attempt_type,
+      attempt_number: attempt.attempt_number,
+      submitted_at: attempt.submitted_at ?? attempt.created_at,
+      evidence,
+    };
+  };
+
+  const normalizeEvaluation = (evaluation: any): Evaluation => ({
+    evaluation_id: evaluation.evaluation_id,
+    attempt_id: evaluation.attempt_id,
+    rubric_id: evaluation.rubric_id,
+    evaluator_type: normalizeEvaluatorType(evaluation.evaluator_type),
+    criterion_results: evaluation.criterion_results.map((result: any) => ({
+      criterion_id: result.criterion_id,
+      score: result.score,
+      status: normalizeCriterionStatus(result.status),
+      observed_finding: result.observed_finding ?? result.observation_notes ?? '',
+      deviation_analysis: result.deviation_analysis ?? result.divergence_type,
+      evidence_ref: result.evidence_ref ? normalizeEvidence(result.evidence_ref) : undefined,
+    })),
+    total_score: evaluation.total_score,
+    passed: evaluation.passed,
+    uncertainty_flags: evaluation.uncertainty_flags ?? [],
+    evaluated_at: evaluation.evaluated_at,
+  });
+
+  const normalizeFeedback = (feedbackInput: any): Feedback => ({
+    feedback_id: feedbackInput.feedback_id,
+    evaluation_id: feedbackInput.evaluation_id,
+    attempt_id: feedbackInput.attempt_id,
+    summary: feedbackInput.summary ?? 'Targeted corrective feedback for the next attempt.',
+    items: feedbackInput.items.map((item: any) => ({
+      criterion_id: item.criterion_id,
+      what_was_observed: item.what_was_observed ?? item.divergence_observed ?? '',
+      what_differed: item.what_differed ?? item.divergence_observed ?? '',
+      corrective_advice: item.corrective_advice ?? item.corrective_instruction ?? '',
+      expert_evidence_ref: item.expert_evidence_ref
+        ? normalizeEvidence(item.expert_evidence_ref)
+        : undefined,
+      learner_evidence_ref: item.learner_evidence_ref
+        ? normalizeEvidence(item.learner_evidence_ref)
+        : undefined,
+    })),
+    recommended_retry_focus: feedbackInput.recommended_retry_focus ??
+      feedbackInput.items.map((item: any) => item.criterion_id),
+  });
+
+  const kp = input.knowledge_package;
+  return {
+    case_id: input.case_id,
+    domain: input.domain,
+    skill: input.skill,
+    knowledge_package: {
+      package_id: kp.package_id,
+      skill_id: kp.skill_id,
+      title: kp.title,
+      summary: kp.summary,
+      claims: kp.claims.map((claim: any) => ({
+        claim_id: claim.claim_id,
+        claim_type: normalizeClaimType(claim.claim_type),
+        statement: claim.statement,
+        is_observed: claim.is_observed,
+        evidence_refs: claim.evidence_refs.map((ref: LegacyEvidence) => normalizeEvidence(ref)),
+      })),
+      consent: kp.consent,
+      expert_review: kp.expert_review
+        ? {
+            reviewer_name: kp.expert_review.reviewer_name,
+            status: normalizeReviewStatus(kp.expert_review.status),
+            reviewed_at: kp.expert_review.reviewed_at,
+            notes: kp.expert_review.notes,
+          }
+        : undefined,
+    },
+    rubric: input.rubric,
+    practice_task: {
+      ...input.practice_task,
+      constraints: input.practice_task.constraints ?? [],
+      target_criteria_ids: input.practice_task.target_criteria_ids ?? [],
+    },
+    baseline_attempt: normalizeAttempt(input.baseline_attempt),
+    baseline_evaluation: normalizeEvaluation(input.baseline_evaluation),
+    feedback: normalizeFeedback(input.feedback),
+    retry_attempt: normalizeAttempt(input.retry_attempt),
+    retry_evaluation: normalizeEvaluation(input.retry_evaluation),
+    transmission_record: input.transmission_record,
+  };
+}
+
+export const canonicalBundle = normalizeTransmissionBundle(rawBundle);
 
 export interface SensoryCueAnnotation {
   id: string;
@@ -31,10 +227,10 @@ export interface CriterionComparison {
   required: boolean;
   observableIndicator: string;
   baselineScore: number;
-  baselineStatus: 'satisfied' | 'partial' | 'divergent' | 'not_observed';
+  baselineStatus: CriterionStatus;
   baselineNotes?: string;
   retryScore: number;
-  retryStatus: 'satisfied' | 'partial' | 'divergent' | 'not_observed';
+  retryStatus: CriterionStatus;
   retryNotes?: string;
   feedback?: FeedbackItem;
   expertEvidenceSec?: number;
@@ -112,11 +308,11 @@ export function getTransmissionTelemetry(
       required: c.required,
       observableIndicator: c.observable_indicator,
       baselineScore: bScore,
-      baselineStatus: base?.status ?? 'divergent',
-      baselineNotes: base?.observation_notes,
+      baselineStatus: base?.status ?? 'uncertain',
+      baselineNotes: base?.observed_finding,
       retryScore: rScore,
-      retryStatus: retry?.status ?? 'satisfied',
-      retryNotes: retry?.observation_notes,
+      retryStatus: retry?.status ?? 'uncertain',
+      retryNotes: retry?.observed_finding,
       feedback: fb,
       expertEvidenceSec: fb?.expert_evidence_ref?.start_sec ?? 18.0,
       isFirstDivergence,

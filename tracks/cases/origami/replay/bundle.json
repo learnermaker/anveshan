@@ -1,0 +1,248 @@
+{
+  "case_id": "origami_case_006",
+  "domain": "Mathematical Origami & Computational Paper Geometry",
+  "skill": "Traditional Origami Crane: Petal Fold & Corner Alignment",
+  "knowledge_package": {
+    "package_id": "pkg-origami-006",
+    "skill_id": "skill-origami-crane",
+    "title": "Bird Base Petal Fold Crease Inversion Sequence",
+    "summary": "Transform square paper base through precision preliminary folds into the inverted petal fold bird base.",
+    "claims": [
+      {
+        "claim_id": "claim-prelim-square",
+        "claim_type": "step",
+        "statement": "Crease diagonal valley folds and orthogonal mountain folds, then collapse into a 1/4 size preliminary square with open corner facing learner.",
+        "is_observed": true,
+        "evidence_refs": [
+          {
+            "evidence_id": "ev-origami-base",
+            "source_id": "src-origami-01",
+            "modality": "video",
+            "start_sec": 10,
+            "end_sec": 22,
+            "verification_state": "observed",
+            "confidence": 0.98
+          }
+        ]
+      },
+      {
+        "claim_id": "claim-petal-inversion",
+        "claim_type": "step",
+        "statement": "Lift top flap upward while simultaneously reversing lateral mountain creases into valley folds along the central symmetry axis.",
+        "is_observed": true,
+        "evidence_refs": [
+          {
+            "evidence_id": "ev-origami-petal",
+            "source_id": "src-origami-01",
+            "modality": "video",
+            "start_sec": 25,
+            "end_sec": 38,
+            "verification_state": "observed",
+            "confidence": 0.96
+          }
+        ]
+      }
+    ],
+    "consent": {
+      "contributor_name": "Synthetic Fixture Contributor",
+      "consent_scope": "engineering_replay_only",
+      "revocable": true,
+      "granted_at": "2026-09-08T11:00:00Z"
+    },
+    "expert_review": {
+      "reviewer_name": "Replay Fixture Reviewer",
+      "status": "pending",
+      "reviewed_at": "2026-09-16T12:00:00Z"
+    }
+  },
+  "rubric": {
+    "rubric_id": "rubric-origami-006",
+    "skill_id": "skill-origami-crane",
+    "title": "Origami Geometric Alignment & Fold Direction Rubric",
+    "description": "Deterministic scoring of corner vertex alignment, mountain/valley fold fidelity, and paper bias.",
+    "passing_score": 7,
+    "criteria": [
+      {
+        "criterion_id": "CRIT-CORNER-ALIGN",
+        "name": "Corner vertex tolerance (< 1.0mm)",
+        "description": "Opposite paper corners align within 1.0mm tolerance during diagonal creases.",
+        "observable_indicator": "Visible gap between overlaying paper corners <= 1.0mm.",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "criterion_id": "CRIT-VALLEY-FOLD",
+        "name": "Mountain vs valley crease vector fidelity",
+        "description": "Petal fold side creases are reversed cleanly into valley folds without tearing paper fibers.",
+        "observable_indicator": "Crease polarity matches diagram: convex ridge vs concave trough.",
+        "weight": 4,
+        "required": true
+      },
+      {
+        "criterion_id": "CRIT-BONE-CREASE",
+        "name": "Crease sharpness & paper flatness",
+        "description": "Folds burnished with fingernail or bone folder to 180-degree flat profile.",
+        "observable_indicator": "Flap thickness profile compressed; zero springback.",
+        "weight": 3,
+        "required": false
+      }
+    ]
+  },
+  "practice_task": {
+    "task_id": "task-origami-crane",
+    "package_id": "pkg-origami-006",
+    "rubric_id": "rubric-origami-006",
+    "title": "Fold Perfect Crane Bird Base",
+    "instructions": "Using 15cm kami paper, fold preliminary square, pre-crease side wings, and open into diamond bird base with symmetrical petal flaps.",
+    "constraints": [
+      {
+        "constraint_type": "material",
+        "description": "Standard 150mm square kami paper"
+      }
+    ],
+    "target_criteria_ids": [
+      "CRIT-CORNER-ALIGN",
+      "CRIT-VALLEY-FOLD",
+      "CRIT-BONE-CREASE"
+    ]
+  },
+  "baseline_attempt": {
+    "attempt_id": "attempt-origami-base",
+    "task_id": "task-origami-crane",
+    "learner": {
+      "participant_id": "learner-replay",
+      "name": "learner-replay",
+      "role": "learner"
+    },
+    "attempt_type": "baseline",
+    "attempt_number": 1,
+    "evidence": {
+      "evidence_id": "ev-chloe-base",
+      "source_id": "src-chloe-origami-01",
+      "modality": "video",
+      "start_sec": 0,
+      "end_sec": 45,
+      "verification_state": "observed",
+      "confidence": 1
+    }
+  },
+  "baseline_evaluation": {
+    "evaluation_id": "eval-origami-base",
+    "attempt_id": "attempt-origami-base",
+    "rubric_id": "rubric-origami-006",
+    "evaluator_type": "model_assisted",
+    "criterion_results": [
+      {
+        "criterion_id": "CRIT-CORNER-ALIGN",
+        "score": 2,
+        "status": "partially_satisfied",
+        "observed_finding": "Initial preliminary square corners had 2.2mm offset."
+      },
+      {
+        "criterion_id": "CRIT-VALLEY-FOLD",
+        "score": 1,
+        "status": "not_satisfied",
+        "observed_finding": "Left wing crease kept as mountain fold instead of popping into valley trough, crumpling central apex.",
+        "deviation_analysis": "incorrect_execution"
+      },
+      {
+        "criterion_id": "CRIT-BONE-CREASE",
+        "score": 2,
+        "status": "partially_satisfied",
+        "observed_finding": "Folds left unburnished, flap springing open 25 degrees."
+      }
+    ],
+    "total_score": 5,
+    "passed": false,
+    "uncertainty_flags": []
+  },
+  "feedback": {
+    "feedback_id": "fb-origami-001",
+    "evaluation_id": "eval-origami-base",
+    "attempt_id": "attempt-origami-base",
+    "summary": "Targeted corrective feedback for the next attempt.",
+    "items": [
+      {
+        "criterion_id": "CRIT-VALLEY-FOLD",
+        "what_was_observed": "Did not reverse the lateral fold polarity; paper fought the fold and crumpled.",
+        "what_differed": "Did not reverse the lateral fold polarity; paper fought the fold and crumpled.",
+        "corrective_advice": "Pinch the side edges inward while pressing index finger behind paper to invert the mountain ridge into an inward valley."
+      }
+    ],
+    "recommended_retry_focus": [
+      "CRIT-VALLEY-FOLD"
+    ]
+  },
+  "retry_attempt": {
+    "attempt_id": "attempt-origami-retry",
+    "task_id": "task-origami-crane",
+    "learner": {
+      "participant_id": "learner-replay",
+      "name": "learner-replay",
+      "role": "learner"
+    },
+    "attempt_type": "retry",
+    "attempt_number": 2,
+    "evidence": {
+      "evidence_id": "ev-chloe-retry",
+      "source_id": "src-chloe-origami-02",
+      "modality": "video",
+      "start_sec": 0,
+      "end_sec": 42,
+      "verification_state": "observed",
+      "confidence": 1
+    }
+  },
+  "retry_evaluation": {
+    "evaluation_id": "eval-origami-retry",
+    "attempt_id": "attempt-origami-retry",
+    "rubric_id": "rubric-origami-006",
+    "evaluator_type": "model_assisted",
+    "criterion_results": [
+      {
+        "criterion_id": "CRIT-CORNER-ALIGN",
+        "score": 3,
+        "status": "satisfied",
+        "observed_finding": "Corner alignment error reduced to 0.4mm."
+      },
+      {
+        "criterion_id": "CRIT-VALLEY-FOLD",
+        "score": 4,
+        "status": "satisfied",
+        "observed_finding": "Both lateral folds cleanly inverted into concave valley troughs; zero crinkling."
+      },
+      {
+        "criterion_id": "CRIT-BONE-CREASE",
+        "score": 2.8,
+        "status": "satisfied",
+        "observed_finding": "Crisply burnished flat baseline profile."
+      }
+    ],
+    "total_score": 9.8,
+    "passed": true,
+    "uncertainty_flags": []
+  },
+  "transmission_record": {
+    "transmission_id": "tx-origami-006",
+    "skill_id": "skill-origami-crane",
+    "package_id": "pkg-origami-006",
+    "rubric_id": "rubric-origami-006",
+    "expert_id": "reference-expert-replay",
+    "learner_id": "learner-replay",
+    "baseline_attempt_id": "attempt-origami-base",
+    "retry_attempt_id": "attempt-origami-retry",
+    "baseline_score": 5,
+    "retry_score": 9.8,
+    "transmission_gain": 4.8,
+    "criteria_improved": [
+      "CRIT-VALLEY-FOLD",
+      "CRIT-CORNER-ALIGN",
+      "CRIT-BONE-CREASE"
+    ],
+    "lineage": {
+      "recorded_at": "2026-10-04T14:30:00Z",
+      "provenance_hash": "sha256-origami-merkle-6f5e4d3c",
+      "adaptation_notes": "Sequential step-by-step 3D origami vector state sequence prevented fold crinkling."
+    }
+  }
+}

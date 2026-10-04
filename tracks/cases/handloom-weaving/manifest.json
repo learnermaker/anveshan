@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "case_id": "handloom-weaving",
+  "bundle_case_id": "weaving_case_004",
+  "title": "Handloom Shed & Warp Weaving",
+  "domain": "Artisanal Textile Engineering & Material Science",
+  "archetype": "state-transition",
+  "workspace_type": "state_matrix",
+  "transmission_mode": "forward",
+  "source_posture": "synthetic_replay",
+  "epistemic_status": "REPLAY_FIXTURE_NOT_AUTHENTIC_VALIDATION",
+  "data_status": "prototype_replay",
+  "pack_version": "1.0",
+  "case_version": "1.0",
+  "status": "ENGINEERING_FIXTURE",
+  "source_mode": "FORWARD",
+  "runtime_class": "REPLAY"
+}

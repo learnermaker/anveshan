@@ -388,3 +388,21 @@ These are capability archetypes, not seven separate product architectures.
 Track A must never fabricate evidence, timestamps, expert approval, calibration, certification, or live-model status to make a workspace appear complete. Replay/synthetic data must remain explicitly labeled downstream.
 
 For target-first cases, the UI may render UNVERIFIED as UNKNOWN, but the underlying evidence semantics must remain unchanged.
+
+## M0 interpretation — capability versus product validation
+
+Track A engineering replay proves the extraction/grounding pipeline is executable and deterministic. A bounded multimodal case can prove a capability. **Product M0 for the original transmission wedge requires an authentic, accountable expert source and expert review of the derived knowledge.**
+
+Goal-conditioned and corrective source modes are supported capability extensions; they must not be counted as expert-transfer product validation unless an appropriate accountable expert/source path independently establishes the knowledge being transmitted.
+
+## Handoff completeness
+
+The Track A → Track B handoff is the complete frozen input set:
+
+`KnowledgePackage + EvidenceRef[] + RubricDefinition + PracticeTask`
+
+Track B must not need Track A implementation internals.
+
+## Model-independent success
+
+Success is defined by the correctness and auditability of Track A outputs, not by use of a particular Gemini model. Model/provider choices may change without invalidating the acceptance criteria.

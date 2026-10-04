@@ -91,6 +91,21 @@ export interface MicroPracticeChallenge {
   successThresholdLabel: string;
 }
 
+export interface SourceProvenance {
+  sourceId: string;
+  title: string;
+  creator: string;
+  sourceUrl?: string;
+  license: string;
+  sourceRole: 'external_reference' | 'authentic_expert' | 'owned_source' | 'synthetic_replay';
+  mediaAvailability: 'external_network' | 'local_asset' | 'replay_only' | 'target_image';
+  runtimeSeconds?: number;
+  dimensions?: string;
+  localPosterPath?: string;
+  notes?: string;
+  timestampMappingStatus?: 'verified' | 'unverified' | 'not_applicable';
+}
+
 export interface CapabilityCase {
   id: string;
   title: string;
@@ -113,4 +128,5 @@ export interface CapabilityCase {
     state: CertaintyState;
     rationale: string;
   }>;
+  sourceProvenance?: SourceProvenance;
 }

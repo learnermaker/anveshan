@@ -14,9 +14,22 @@ When documents disagree, use this order:
 6. docs/validation/ — evidence about what has actually been validated.
 7. docs/architecture/ — implementation architecture, subject to product and validation constraints.
 8. docs/research/ and EXPLORATION.md — research, alternatives, and historical reasoning; not implementation authority unless explicitly promoted into a current decision.
-9. docs/product/feature-universe.md — exhaustive possibility inventory; never treat presence as commitment.
-10. docs/status/NOW.md and docs/status/project.yaml — concise execution state derived from the hierarchy above; they do not override it.
-11. docs/status/DECISIONS.md — durable governance decisions.
+9. docs/status/NOW.md and docs/status/project.yaml — concise execution scope/state derived from the hierarchy above; they do not override product or validation truth.
+10. docs/status/DECISIONS.md — durable governance decisions where applicable.
+11. docs/product/feature-universe.md — exhaustive possibility inventory; never treat presence as commitment.
+
+
+### Contract single-source rule
+
+The eight shared contracts have exactly one authoritative source: `tracks/common/schemas/`. This includes field names, enum values, required/optional semantics, and validation meaning.
+
+- UI/TypeScript must not invent, rename, broaden, or narrow the eight contract shapes.
+- `app/src/types/contracts.ts` is a downstream type mirror only; it is never an independent product contract.
+- UI fixture payloads may use legacy/internal shapes only at a clearly named adapter boundary and must normalize immediately into the canonical seam before consumption.
+- New UI case data should be authored directly in canonical contract shape whenever possible.
+- If canonical and UI types disagree, stop and reconcile the adapter/types before adding more UI logic; do not make the UI type more permissive just to compile.
+- Contract changes require an explicit common-seam issue and must not be hidden inside a UI task.
+- Before closing UI work, search for drift markers such as `learner_id`, `evidence_refs`, legacy criterion statuses, provider-specific evaluator names, or duplicate contract interfaces.
 
 ## Product hierarchy
 
@@ -198,3 +211,17 @@ The repository is the durable record. Chat, screenshots, PDFs, and generated pro
 The repository is currently a research/validation workspace. Do not assume a runnable application exists unless the current tree and implementation-status documents show it.
 
 The current competition domain, skill, expert, learner, and evaluation rubric remain open until the validation gate records a decision.
+
+
+## Canonical case-pack boundary
+
+Shared capability-case content lives under `tracks/cases/<case_id>/`, discovered through `tracks/cases/index.json`, with `manifest.json` as the case entry point.
+
+Track A and Track B may keep track-local implementation fixtures under their own `data/` directories, but must not duplicate or silently redefine the shared case pack.
+
+For case-data work, read:
+- `tracks/cases/README.md`
+- `docs/architecture/case-packs.md`
+- `tracks/common/CASE-DATA-CONVENTIONS.md`
+
+Do not introduce a database or service solely to make seven prototype cases appear scalable. Keep versioned case content separate from future mutable runtime state and large media.

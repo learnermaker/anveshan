@@ -52,3 +52,11 @@ The current workspace archetypes include Spatial Practice, Forensic Multimodal, 
 Runtime/epistemic states are also downstream concerns. Replay fixtures may be labeled REPLAY, SYNTHETIC, or ILLUSTRATIVE; live Gemini may be labeled LIVE. Never encode UI-only runtime state into the eight contracts.
 
 For target-first cases, EvidenceRef may point to a target image and its derived evidence. Visible target properties and inferred candidate procedures must remain distinguishable. The common seam does not assert creator intent or historical procedure.
+
+## Operational conventions
+
+For scalable case data, artifact identity, versioning, failure taxonomy, human-review escalation, and replay metadata, use `CASE-DATA-CONVENTIONS.md`.
+
+For model/provider boundaries, run metadata, provider failure handling, and replay discipline, use `MODEL-GATEWAY-CONVENTIONS.md`.
+
+These conventions do not add contracts or require a database/service. They make the existing frozen seam executable and discoverable for parallel coding agents.

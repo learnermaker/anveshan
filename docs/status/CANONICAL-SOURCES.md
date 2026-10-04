@@ -17,15 +17,12 @@ When documents disagree, use this order:
 3. `docs/product/product-vision.md` — long-term product vision.
 4. `docs/product/product-thesis.md` — current competition/MVP thesis and differentiation hypothesis.
 5. `docs/product/mvp-contract.md` — minimum MVP behavior.
-6. `docs/status/NOW.md` and `docs/status/project.yaml` — current execution scope/state.
-7. `docs/validation/` — what has and has not actually been validated.
-8. `docs/architecture/` — implementation architecture and boundaries.
-9. `tracks/common/` — frozen common seam and validation rules.
-10. `tracks/track-a/` and `tracks/track-b/` — track-specific execution guidance.
-11. `app/` — current prototype/UI implementation and UI-specific decisions.
-12. `docs/research/` — research findings and experiments; research is not implementation authorization unless explicitly promoted.
-13. `docs/status/DECISIONS.md` — durable governance/decision record where applicable.
-14. `docs/product/feature-universe.md` — possibility inventory, not scope.
+6. `docs/validation/` — evidence about what has actually been validated.
+7. `docs/architecture/` — implementation architecture, subject to product and validation constraints.
+8. `docs/research/` and `EXPLORATION.md` — research, alternatives, and historical reasoning; not implementation authority unless explicitly promoted into a current decision.
+9. `docs/status/NOW.md` and `docs/status/project.yaml` — concise execution scope/state derived from the hierarchy above; they do not override product or validation truth.
+10. `docs/status/DECISIONS.md` — durable governance decisions where applicable.
+11. `docs/product/feature-universe.md` — exhaustive possibility inventory; never treat presence as commitment.
 
 Where two documents have different roles, both can remain true. For example, product vision can remain broad while the MVP contract is narrow.
 

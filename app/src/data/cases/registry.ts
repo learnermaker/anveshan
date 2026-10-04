@@ -2,12 +2,17 @@
  * Anveshan Multimodal Capability Cases Registry
  * Houses the 7 canonical capability cases representing diverse multimodal reasoning archetypes.
  * Each case is strictly grounded in the 8-contract common seam and includes declarative workspace specifications.
+ *
+ * Transitional ownership rule:
+ * - Canonical case content lives in tracks/cases/<case_id>/.
+ * - This file is a downstream UI projection and may contain UI-only workspace/telemetry
+ *   configuration, but must not silently diverge from the canonical case-pack bundle.
+ * - Origami presentation assets are UI assets only; they are never evidence of expert provenance.
  */
 
-import { canonicalBundle } from '../adapter';
+import { canonicalBundle, normalizeTransmissionBundle } from '../adapter';
 import type { CapabilityCase, WorkspaceSpecification, FirstDivergenceDetail, MicroPracticeChallenge } from '../../types/workspace';
 import { getTransmissionTelemetry } from '../adapter';
-import type { TransmissionBundle } from '../../types/contracts';
 
 // ============================================================================
 // CASE 1: MECHANICAL MICROMETER (REFERENCE CASE - FORENSIC INSTRUMENT)
@@ -70,7 +75,7 @@ const micrometerMicroPractice: MicroPracticeChallenge = {
 // ============================================================================
 // CASE 2: SIKKU KOLAM (SPATIAL CANVAS)
 // ============================================================================
-const kolamBundle: TransmissionBundle = {
+const kolamBundle = normalizeTransmissionBundle({
   case_id: 'kolam_case_002',
   domain: 'Traditional Indian Geometric Art & Spatial Mathematics',
   skill: 'Sikku Kolam Continuous Knot Drawing & Radial Symmetry',
@@ -292,7 +297,7 @@ const kolamBundle: TransmissionBundle = {
       adaptation_notes: 'Spatial trajectory corrected via interactive perimeter overlay practice.',
     },
   },
-};
+});
 
 const kolamSpec: WorkspaceSpecification = {
   workspaceType: 'spatial_canvas',
@@ -352,7 +357,7 @@ const kolamMicroPractice: MicroPracticeChallenge = {
 // ============================================================================
 // CASE 3: BICYCLE PUNCTURE REPAIR (DIAGNOSTIC WORKSPACE)
 // ============================================================================
-const bikeBundle: TransmissionBundle = {
+const bikeBundle = normalizeTransmissionBundle({
   case_id: 'bike_case_003',
   domain: 'Mechanical Field Diagnostics & Pneumatic Systems',
   skill: 'Bicycle Tube Puncture Localization & Cold-Vulcanizing Patch',
@@ -573,7 +578,7 @@ const bikeBundle: TransmissionBundle = {
       adaptation_notes: 'Diagnostic sequence reinforced via causal state decision tree.',
     },
   },
-};
+});
 
 const bikeSpec: WorkspaceSpecification = {
   workspaceType: 'diagnostic_workspace',
@@ -633,7 +638,7 @@ const bikeMicroPractice: MicroPracticeChallenge = {
 // ============================================================================
 // CASE 4: HANDLOOM WEAVING (STATE TRANSITION WORKSPACE)
 // ============================================================================
-const weavingBundle: TransmissionBundle = {
+const weavingBundle = normalizeTransmissionBundle({
   case_id: 'weaving_case_004',
   domain: 'Artisanal Textile Engineering & Material Science',
   skill: 'Handloom Warp Shedding & Selvage Tension Control',
@@ -854,7 +859,7 @@ const weavingBundle: TransmissionBundle = {
       adaptation_notes: 'State machine sequence synchronization reinforced through state snapshot matrix.',
     },
   },
-};
+});
 
 const weavingSpec: WorkspaceSpecification = {
   workspaceType: 'state_transition',
@@ -914,7 +919,7 @@ const weavingMicroPractice: MicroPracticeChallenge = {
 // ============================================================================
 // CASE 5: TABLA RHYTHM (RHYTHM PRACTICE INSTRUMENT)
 // ============================================================================
-const tablaBundle: TransmissionBundle = {
+const tablaBundle = normalizeTransmissionBundle({
   case_id: 'tabla_case_005',
   domain: 'Indian Classical Percussion & Acoustic Science',
   skill: 'Tabla "Dha" Compound Syllable & Synchronized Resonance',
@@ -1135,7 +1140,7 @@ const tablaBundle: TransmissionBundle = {
       adaptation_notes: 'Millisecond acoustic onset envelope visualization allowed immediate tactile correction.',
     },
   },
-};
+});
 
 const tablaSpec: WorkspaceSpecification = {
   workspaceType: 'rhythm_instrument',
@@ -1195,7 +1200,7 @@ const tablaMicroPractice: MicroPracticeChallenge = {
 // ============================================================================
 // CASE 6: ORIGAMI FOLDING (SPATIAL SEQUENCE WORKSPACE)
 // ============================================================================
-const origamiBundle: TransmissionBundle = {
+const origamiBundle = normalizeTransmissionBundle({
   case_id: 'origami_case_006',
   domain: 'Mathematical Origami & Computational Paper Geometry',
   skill: 'Traditional Origami Crane: Petal Fold & Corner Alignment',
@@ -1416,7 +1421,7 @@ const origamiBundle: TransmissionBundle = {
       adaptation_notes: 'Sequential step-by-step 3D origami vector state sequence prevented fold crinkling.',
     },
   },
-};
+});
 
 const origamiSpec: WorkspaceSpecification = {
   workspaceType: 'spatial_sequence',
@@ -1476,7 +1481,7 @@ const origamiMicroPractice: MicroPracticeChallenge = {
 // ============================================================================
 // CASE 7: SQUARE KNOT (FIRST DIVERGENCE WORKSPACE)
 // ============================================================================
-const knotBundle: TransmissionBundle = {
+const knotBundle = normalizeTransmissionBundle({
   case_id: 'knot_case_007',
   domain: 'Surgical & Maritime Ropework Mechanics',
   skill: 'Surgical / Maritime Square Knot Tying & Capsize Prevention',
@@ -1698,7 +1703,7 @@ const knotBundle: TransmissionBundle = {
       adaptation_notes: 'First-divergence crossing topology visualizer cleanly differentiated Square Knot from Granny Knot.',
     },
   },
-};
+});
 
 const knotSpec: WorkspaceSpecification = {
   workspaceType: 'first_divergence',
@@ -1776,6 +1781,17 @@ export const CAPABILITY_CASES: Record<string, CapabilityCase> = {
     telemetry: getTransmissionTelemetry(canonicalBundle),
     firstDivergence: micrometerFirstDivergence,
     microPractice: micrometerMicroPractice,
+    sourceProvenance: {
+      sourceId: 'src-micrometer-telemetry-01',
+      title: 'Forensic Mechanical Metrology Calibration Telemetry',
+      creator: 'Metrology Reference Demonstrator',
+      license: 'Engineering Replay Spec',
+      sourceRole: 'synthetic_replay',
+      mediaAvailability: 'replay_only',
+      runtimeSeconds: 35,
+      notes: 'Dual-deck synchronized audiovisual spindle wipe and ratchet clutch audio spectrum.',
+      timestampMappingStatus: 'verified',
+    },
     uncertainties: [
       {
         aspect: 'Mechanical Contact Force in Newtons',
@@ -1801,31 +1817,41 @@ export const CAPABILITY_CASES: Record<string, CapabilityCase> = {
     archetype: 'Spatial Transformation',
     transmissionMode: 'goal_conditioned',
     shortDescription: 'Continuous knot drawing trajectory around a 5x5 pulli dot matrix preserving 4-fold radial symmetry.',
-    expertName: 'Reference Expert (Synthetic Fixture)',
-    expertRole: 'Traditional Kolam Master Artisan, Madurai',
+    expertName: 'Reference Demonstrator (Goal Reconstruction)',
+    expertRole: 'Kolam Pattern Reference (Replay Fixture)',
     learnerName: 'Learner (Replay Fixture)',
-    learnerBackground: 'Design Student & Visual Practitioner',
+    learnerBackground: 'Spatial Pattern Learner (Replay Fixture)',
     primaryModalities: ['spatial', 'video', 'state'],
     workspaceSpec: kolamSpec,
     bundle: kolamBundle,
     telemetry: getTransmissionTelemetry(kolamBundle, undefined, 'CRIT-KOLAM-LOOP', 14.2),
     firstDivergence: kolamFirstDivergence,
     microPractice: kolamMicroPractice,
+    sourceProvenance: {
+      sourceId: 'src-kolam-target-01',
+      title: 'Sikku Kolam 5x5 Pulli Lattice Pattern',
+      creator: 'Traditional Indian Geometric Art Form',
+      license: 'Public Domain / Cultural Heritage Reference',
+      sourceRole: 'external_reference',
+      mediaAvailability: 'target_image',
+      notes: 'Goal-conditioned target pattern; evaluates continuous loop topology and 4-fold radial symmetry.',
+      timestampMappingStatus: 'not_applicable',
+    },
     uncertainties: [
       {
-        aspect: 'Continuous Loop Closure',
+        aspect: 'Visible Lattice & Symmetry Geometry',
         state: 'OBSERVED',
-        rationale: 'Chalk line coordinate trace establishes geometric loop path around all 25 dots.',
+        rationale: 'Target image directly establishes the 5x5 dot lattice, continuous loop topology, and 4-fold radial symmetry.',
       },
       {
-        aspect: 'Substrate Contact Pressure',
+        aspect: 'Candidate Construction Trajectory',
+        state: 'INFERRED',
+        rationale: 'Inferred construction ordering and stroke sequence; target image establishes desired geometry but cannot establish original creator intent or historical procedure.',
+      },
+      {
+        aspect: 'Historical Creator Kinematics & Tacit Stroke Order',
         state: 'UNKNOWN',
-        rationale: 'Finger pressure against stone floor substrate is unmeasured by video camera.',
-      },
-      {
-        aspect: 'Mathematical Symmetry Congruence',
-        state: 'SOURCE_DERIVED_FACT',
-        rationale: 'Geometric cross-correlation across 4 quadrants yields 91% mathematical congruence.',
+        rationale: 'Original artisan stroke order, hand velocity, finger pressure, and tacit technique cannot be recovered from the static target image alone.',
       },
     ],
   },
@@ -1940,32 +1966,51 @@ export const CAPABILITY_CASES: Record<string, CapabilityCase> = {
     domain: 'Mathematical Origami & Computational Paper Geometry',
     archetype: 'Sequential Spatial Transformation',
     transmissionMode: 'corrective',
-    shortDescription: 'Preliminary square base collapse, mountain-to-valley crease inversion, and vertex tolerance.',
-    expertName: 'Reference Expert (Synthetic Fixture)',
-    expertRole: 'Origami Master, Kyoto',
+    shortDescription: 'Ordered fold-state progression from external demonstration to diamond bird base, isolating mountain-to-valley crease inversion divergence.',
+    expertName: 'Reference Demonstrator (External Source: Tavin)',
+    expertRole: 'Origami Video Demonstrator (Wikimedia CC BY 3.0)',
     learnerName: 'Learner (Replay Fixture)',
-    learnerBackground: 'Architecture Student',
+    learnerBackground: 'Paper Folding Practitioner (Replay Fixture)',
     primaryModalities: ['spatial', 'video', 'state'],
     workspaceSpec: origamiSpec,
     bundle: origamiBundle,
     telemetry: getTransmissionTelemetry(origamiBundle, undefined, 'CRIT-VALLEY-FOLD', 22.0),
     firstDivergence: origamiFirstDivergence,
     microPractice: origamiMicroPractice,
+    sourceProvenance: {
+      sourceId: 'src-origami-tavin-2010',
+      title: 'OrigamiCrane.ogv',
+      creator: 'Tavin (Wikimedia Commons)',
+      sourceUrl: 'https://commons.wikimedia.org/wiki/File:OrigamiCrane.ogv',
+      license: 'Creative Commons Attribution 3.0 Unported (CC BY 3.0)',
+      sourceRole: 'external_reference',
+      mediaAvailability: 'local_asset',
+      runtimeSeconds: 335,
+      dimensions: '400 × 226',
+      localPosterPath: '/assets/origami-tavin-poster.jpg',
+      notes: 'External video demonstration of paper crane folding catalogued as source evidence; replay bundle provides deterministic evaluation for crease inversion.',
+      timestampMappingStatus: 'unverified',
+    },
     uncertainties: [
       {
         aspect: 'Corner Vertex Alignment (mm)',
         state: 'OBSERVED',
-        rationale: 'Optical macro frames record 0.4mm corner coincidence.',
+        rationale: 'Optical macro inspection records 0.4mm corner coincidence on folded paper.',
       },
       {
-        aspect: 'Paper Fiber Hysteresis & Crease Memory',
+        aspect: 'Mountain vs Valley Crease Inversion Vector',
         state: 'INFERRED',
-        rationale: 'Assessed from flat resting angle of flap post-burnishing.',
+        rationale: 'Spatial fold polarity (-180 deg concave vs +180 deg convex) is inferred from flap resting profile.',
       },
       {
-        aspect: 'Wood Pulp Grain Direction Across Sheet',
+        aspect: 'Original Creator Kinematics & Internal Fiber Grain',
         state: 'UNKNOWN',
-        rationale: 'Manufacturer sheet fiber grain orientation was not tested prior to folding.',
+        rationale: 'Original operator finger pressure, hand velocity, and internal sheet fiber grain orientation are not established by video recording alone.',
+      },
+      {
+        aspect: 'Source Timestamp Mapping to Fold States',
+        state: 'UNVERIFIED',
+        rationale: 'External video is catalogued, but exact alignment of each fold step to millisecond video timestamps has not yet undergone manual temporal verification. Replay evaluation remains deterministic.',
       },
     ],
   },
@@ -2008,6 +2053,10 @@ export const CAPABILITY_CASES: Record<string, CapabilityCase> = {
 
 export const ALL_CAPABILITY_IDS = Object.keys(CAPABILITY_CASES);
 export const DEFAULT_CASE_ID = 'micrometer';
+
+export function hasCapabilityCase(id: string): boolean {
+  return Object.prototype.hasOwnProperty.call(CAPABILITY_CASES, id);
+}
 
 export function getCapabilityCase(id: string): CapabilityCase {
   return CAPABILITY_CASES[id] ?? CAPABILITY_CASES[DEFAULT_CASE_ID];

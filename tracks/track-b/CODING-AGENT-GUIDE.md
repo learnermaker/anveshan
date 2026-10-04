@@ -268,3 +268,17 @@ In replay mode, downstream UI should say REPLAY EVALUATION / REPLAY TRANSMISSION
 ### Goal-conditioned cases
 
 For target-first Kolam, evaluate the learner against observable target criteria. Do not score whether the learner reproduced an alleged original artist procedure unless that procedure is independently evidenced. Candidate construction strategy remains an inference, not the rubric's hidden ground truth.
+
+## Case data and model-run discipline
+
+Before implementing a case, read:
+- `tracks/common/CASE-DATA-CONVENTIONS.md`
+- `tracks/common/MODEL-GATEWAY-CONVENTIONS.md`
+
+Use `tracks/cases/<case_id>/manifest.json` as the canonical shared case entry point. Keep Track-B-only learner/evaluation fixtures under `tracks/track-b/data/`; do not duplicate the shared case definition.
+
+Every materially outcome-affecting model run must retain model/configuration, prompt ID/version, input fixture/artifact, runtime class, run ID, and expected behavior. Provider output remains quarantined until normalization and deterministic validation.
+
+Use the shared failure taxonomy for structured failures. Escalate to `HUMAN_REVIEW_REQUIRED` instead of converting insufficient or conflicting evidence into a guessed score.
+
+Do not silently overwrite materially changed rubric, prompt/model configuration, attempt fixture, or evaluation behavior. Version the artifact so prior replay remains reconstructable.

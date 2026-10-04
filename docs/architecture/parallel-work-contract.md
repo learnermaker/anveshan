@@ -54,4 +54,4 @@ Do not widen this seam merely to make integration convenient. A new shared objec
 - Track B source code, prompts, tests, and fixtures live under `tracks/track-b/`.
 - Shared contracts, integration adapters, and cross-track tests belong outside the two ownership folders and require explicit assignment.
 
-See DP-01 for the visual execution map.
+See `docs/status/NOW.md` for current execution gates and this document for the authoritative parallel ownership and handoff boundary.

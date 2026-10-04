@@ -223,3 +223,17 @@ The prototype supports replay fixtures and a live Gemini path. Track A model out
 ### Target-first Kolam guardrail
 
 For a target image, extract visible target properties separately from inferred construction strategy. A final image does not prove original creator sequence, intent, cultural meaning, or hand motion. Preserve the inference boundary in the data handed downstream.
+
+## Case data and model-run discipline
+
+Before implementing a case, read:
+- `tracks/common/CASE-DATA-CONVENTIONS.md`
+- `tracks/common/MODEL-GATEWAY-CONVENTIONS.md`
+
+Use `tracks/cases/<case_id>/manifest.json` as the canonical shared case entry point. Keep Track-A-only derived fixtures under `tracks/track-a/data/`; do not duplicate the shared case definition.
+
+Every materially outcome-affecting model run must retain model/configuration, prompt ID/version, input fixture/artifact, runtime class, run ID, and expected behavior. Provider output remains quarantined until normalization and deterministic validation.
+
+Use the shared failure taxonomy for structured failures. Escalate to `HUMAN_REVIEW_REQUIRED` instead of guessing when evidence is materially insufficient/conflicting or expert review is required.
+
+Do not silently overwrite materially changed source, extraction, rubric, prompt/model configuration, or normalized knowledge. Version the artifact so prior replay/review remains reconstructable.

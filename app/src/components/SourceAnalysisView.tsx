@@ -73,23 +73,53 @@ export function SourceAnalysisView({
               </span>
             </div>
 
-            <div className="h-64 bg-zinc-950 rounded-lg border border-outline/50 flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
+            <div className="h-64 bg-zinc-950 rounded-lg border border-outline/50 flex flex-col items-center justify-center p-6 text-center relative overflow-hidden group">
+              {capCase.sourceProvenance?.localPosterPath ? (
+                <img
+                  src={capCase.sourceProvenance.localPosterPath}
+                  alt={capCase.sourceProvenance.title}
+                  className="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:opacity-65 transition-opacity"
+                />
+              ) : null}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/30" />
               <div className="w-12 h-12 rounded-full bg-surface-elevated/80 border border-outline flex items-center justify-center text-transmission-emerald z-10 mb-3 shadow-lg">
                 <Video className="w-6 h-6" />
               </div>
               <div className="z-10 space-y-1">
                 <div className="text-sm font-semibold text-on-surface">
-                  Expert: {capCase.expertName}
+                  {capCase.sourceProvenance?.creator ? capCase.sourceProvenance.creator : `Expert: ${capCase.expertName}`}
                 </div>
                 <div className="text-xs font-mono text-on-surface-variant">
                   {capCase.expertRole}
                 </div>
               </div>
-              <div className="absolute bottom-3 left-3 text-[10px] font-mono text-zinc-400 z-10">
-                SOURCE ID: {kp.claims[0]?.evidence_refs[0]?.source_id ?? 'src-auth-01'}
+              <div className="absolute bottom-3 left-3 text-[10px] font-mono text-zinc-300 z-10 flex items-center gap-2">
+                <span>SOURCE ID: {capCase.sourceProvenance?.sourceId ?? kp.claims[0]?.evidence_refs[0]?.source_id ?? 'src-auth-01'}</span>
+                {capCase.sourceProvenance?.license && (
+                  <>
+                    <span>•</span>
+                    <span className="text-zinc-400">{capCase.sourceProvenance.license}</span>
+                  </>
+                )}
               </div>
+              {capCase.sourceProvenance?.sourceUrl && (
+                <a
+                  href={capCase.sourceProvenance.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="absolute top-3 right-3 z-10 px-2.5 py-1 rounded bg-black/80 hover:bg-black text-[10px] font-mono text-caliper-cyan border border-caliper-cyan/40 shadow"
+                >
+                  SOURCE REF ↗
+                </a>
+              )}
             </div>
+
+            {capCase.sourceProvenance?.notes && (
+              <div className="p-2.5 bg-surface-dim rounded-lg border border-outline/40 text-[11px] font-mono text-on-surface-variant flex items-start gap-2">
+                <span className="text-cadmium-amber font-bold shrink-0">PROVENANCE:</span>
+                <span>{capCase.sourceProvenance.notes}</span>
+              </div>
+            )}
 
             {/* Extracted Grounded Claims */}
             <div className="space-y-3 pt-2">
