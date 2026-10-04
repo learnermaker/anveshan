@@ -30,6 +30,19 @@ Reach the first credible product proof with the **minimum coordination overhead*
 
 **validate the capability → lock a bounded use case → build the smallest vertical slice → measure transmission → harden only what the evidence requires → demo → submit**
 
+## Canonical decision references
+
+For current research/product/prototype direction, use `docs/status/CANONICAL-SOURCES.md` as the index into the authoritative documents.
+
+Current promoted prototype research includes:
+- seven-case capability portfolio;
+- forward, goal-conditioned, and corrective transmission modes;
+- target-image-first Kolam as a proposed goal-conditioned case;
+- research-source vs shippable-asset distinction;
+- adaptive source-to-workspace composition as an unvalidated GenUI hypothesis.
+
+These do not change the frozen common seam or, by themselves, authorize unrelated implementation.
+
 ## Gates
 
 - M0 — Capability validation
