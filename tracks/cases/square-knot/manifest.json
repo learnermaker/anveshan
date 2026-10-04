@@ -1,6 +1,7 @@
 {
   "schema_version": "1.0",
   "case_id": "square-knot",
+  "bundle_case_id": "knot_case_007",
   "title": "Surgical & Maritime Square Knot",
   "domain": "Surgical & Maritime Ropework Mechanics",
   "archetype": "first-divergence-verification",
