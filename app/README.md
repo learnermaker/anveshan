@@ -4,7 +4,7 @@ The high-precision, documentary-grade UI/UX for **Anveshan**, built for the Goog
 
 ## Core Architectural Seam
 
-The frontend consumes the frozen **8-contract shared data seam** defined in `tracks/common/schemas/`:
+The frontend consumes the frozen **8-contract shared data seam** defined only in `tracks/common/schemas/`. The UI type file is a downstream mirror; legacy replay fixture shapes are normalized at `app/src/data/adapter.ts` and must never become a second contract vocabulary:
 
 ```text
 Track A (Expert Grounding)
@@ -76,3 +76,7 @@ npm run audit:devtools
 
 
 > **Replay boundary:** current fixture identities, consent metadata, review state, scores, and provenance displays are engineering fixtures unless explicitly replaced by authorized real evidence.
+
+## Contract authority
+
+**Single source of truth:** `tracks/common/schemas/`. Do not add or rename fields/enums in the UI contract mirror to accommodate case fixtures. Normalize legacy case data at the adapter boundary instead. The UI composite `TransmissionBundle` is a downstream view model, not a ninth shared contract.
