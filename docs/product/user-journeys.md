@@ -1,11 +1,11 @@
 # User Journeys
 
-## Journey 1 — Expert Captures Knowledge
+## Journey 1 — Source Captures Knowledge
 
-1. Expert starts a new knowledge session.
-2. Anveshan asks context questions.
-3. Expert explains and demonstrates.
-4. Expert can show tools, materials, environment, and exceptions.
+1. A source session begins.
+2. Anveshan establishes context and source provenance.
+3. The source may be an expert explanation/demonstration, a desired target state/image, a learner attempt, or a combination.
+4. When applicable, the source can include tools, materials, environment, and exceptions.
 5. Source media is preserved.
 6. AI transcribes and analyzes.
 7. Candidate knowledge is extracted.
@@ -18,9 +18,9 @@
 
 1. Learner chooses a skill.
 2. System checks prerequisites.
-3. Learner sees source-grounded explanation.
-4. Learner watches authentic demonstration.
-5. Learner can ask questions.
+3. Learner receives a source-grounded experience appropriate to the source mode.
+4. This may be a demonstration, target-conditioned workspace, or corrective explanation.
+5. Learner can inspect evidence and ask questions.
 6. Evidence-linked answers are shown.
 7. System creates a bounded practice task.
 8. Learner attempts the task.
