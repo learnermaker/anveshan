@@ -4,10 +4,9 @@
  * Each case is strictly grounded in the 8-contract common seam and includes declarative workspace specifications.
  */
 
-import { canonicalBundle } from '../adapter';
+import { canonicalBundle, normalizeTransmissionBundle } from '../adapter';
 import type { CapabilityCase, WorkspaceSpecification, FirstDivergenceDetail, MicroPracticeChallenge } from '../../types/workspace';
 import { getTransmissionTelemetry } from '../adapter';
-import type { TransmissionBundle } from '../../types/contracts';
 
 // ============================================================================
 // CASE 1: MECHANICAL MICROMETER (REFERENCE CASE - FORENSIC INSTRUMENT)
@@ -70,7 +69,7 @@ const micrometerMicroPractice: MicroPracticeChallenge = {
 // ============================================================================
 // CASE 2: SIKKU KOLAM (SPATIAL CANVAS)
 // ============================================================================
-const kolamBundle: TransmissionBundle = {
+const kolamBundleBundle = normalizeTransmissionBundle({
   case_id: 'kolam_case_002',
   domain: 'Traditional Indian Geometric Art & Spatial Mathematics',
   skill: 'Sikku Kolam Continuous Knot Drawing & Radial Symmetry',
@@ -292,9 +291,9 @@ const kolamBundle: TransmissionBundle = {
       adaptation_notes: 'Spatial trajectory corrected via interactive perimeter overlay practice.',
     },
   },
-};
+});
 
-const kolamSpec: WorkspaceSpecification = {
+const kolamSpecSpec: WorkspaceSpecification = {
   workspaceType: 'spatial_canvas',
   title: 'Spatial Practice Canvas',
   tagline: 'Vector trajectory tracking, dot lattice coordinate guides, and symmetry overlay',
@@ -352,7 +351,7 @@ const kolamMicroPractice: MicroPracticeChallenge = {
 // ============================================================================
 // CASE 3: BICYCLE PUNCTURE REPAIR (DIAGNOSTIC WORKSPACE)
 // ============================================================================
-const bikeBundle: TransmissionBundle = {
+const bikeBundleBundle = normalizeTransmissionBundle({
   case_id: 'bike_case_003',
   domain: 'Mechanical Field Diagnostics & Pneumatic Systems',
   skill: 'Bicycle Tube Puncture Localization & Cold-Vulcanizing Patch',
@@ -573,9 +572,9 @@ const bikeBundle: TransmissionBundle = {
       adaptation_notes: 'Diagnostic sequence reinforced via causal state decision tree.',
     },
   },
-};
+});
 
-const bikeSpec: WorkspaceSpecification = {
+const bikeSpecSpec: WorkspaceSpecification = {
   workspaceType: 'diagnostic_workspace',
   title: 'Diagnostic Workspace',
   tagline: 'Observation -> Diagnosis -> Action -> Outcome causal decision tree',
@@ -633,7 +632,7 @@ const bikeMicroPractice: MicroPracticeChallenge = {
 // ============================================================================
 // CASE 4: HANDLOOM WEAVING (STATE TRANSITION WORKSPACE)
 // ============================================================================
-const weavingBundle: TransmissionBundle = {
+const weavingBundleBundle = normalizeTransmissionBundle({
   case_id: 'weaving_case_004',
   domain: 'Artisanal Textile Engineering & Material Science',
   skill: 'Handloom Warp Shedding & Selvage Tension Control',
@@ -854,9 +853,9 @@ const weavingBundle: TransmissionBundle = {
       adaptation_notes: 'State machine sequence synchronization reinforced through state snapshot matrix.',
     },
   },
-};
+});
 
-const weavingSpec: WorkspaceSpecification = {
+const weavingSpecSpec: WorkspaceSpecification = {
   workspaceType: 'state_transition',
   title: 'State Transition Workspace',
   tagline: 'Material state evolution: Warp shed matrix, shuttle pass, and pick interlocking',
@@ -914,7 +913,7 @@ const weavingMicroPractice: MicroPracticeChallenge = {
 // ============================================================================
 // CASE 5: TABLA RHYTHM (RHYTHM PRACTICE INSTRUMENT)
 // ============================================================================
-const tablaBundle: TransmissionBundle = {
+const tablaBundleBundle = normalizeTransmissionBundle({
   case_id: 'tabla_case_005',
   domain: 'Indian Classical Percussion & Acoustic Science',
   skill: 'Tabla "Dha" Compound Syllable & Synchronized Resonance',
@@ -1135,9 +1134,9 @@ const tablaBundle: TransmissionBundle = {
       adaptation_notes: 'Millisecond acoustic onset envelope visualization allowed immediate tactile correction.',
     },
   },
-};
+});
 
-const tablaSpec: WorkspaceSpecification = {
+const tablaSpecSpec: WorkspaceSpecification = {
   workspaceType: 'rhythm_instrument',
   title: 'Rhythm Practice Instrument',
   tagline: 'Audio onset envelope, bimanual strike sync, and millisecond timing drift analysis',
@@ -1195,7 +1194,7 @@ const tablaMicroPractice: MicroPracticeChallenge = {
 // ============================================================================
 // CASE 6: ORIGAMI FOLDING (SPATIAL SEQUENCE WORKSPACE)
 // ============================================================================
-const origamiBundle: TransmissionBundle = {
+const origamiBundleBundle = normalizeTransmissionBundle({
   case_id: 'origami_case_006',
   domain: 'Mathematical Origami & Computational Paper Geometry',
   skill: 'Traditional Origami Crane: Petal Fold & Corner Alignment',
@@ -1416,9 +1415,9 @@ const origamiBundle: TransmissionBundle = {
       adaptation_notes: 'Sequential step-by-step 3D origami vector state sequence prevented fold crinkling.',
     },
   },
-};
+});
 
-const origamiSpec: WorkspaceSpecification = {
+const origamiSpecSpec: WorkspaceSpecification = {
   workspaceType: 'spatial_sequence',
   title: 'Spatial Sequence Workspace',
   tagline: 'Multi-step folding timeline, mountain/valley vector indicators, and vertex tolerance',
@@ -1476,7 +1475,7 @@ const origamiMicroPractice: MicroPracticeChallenge = {
 // ============================================================================
 // CASE 7: SQUARE KNOT (FIRST DIVERGENCE WORKSPACE)
 // ============================================================================
-const knotBundle: TransmissionBundle = {
+const knotBundleBundle = normalizeTransmissionBundle({
   case_id: 'knot_case_007',
   domain: 'Surgical & Maritime Ropework Mechanics',
   skill: 'Surgical / Maritime Square Knot Tying & Capsize Prevention',
@@ -1698,9 +1697,9 @@ const knotBundle: TransmissionBundle = {
       adaptation_notes: 'First-divergence crossing topology visualizer cleanly differentiated Square Knot from Granny Knot.',
     },
   },
-};
+});
 
-const knotSpec: WorkspaceSpecification = {
+const knotSpecSpec: WorkspaceSpecification = {
   workspaceType: 'first_divergence',
   title: 'First-Divergence Workspace',
   tagline: 'Topological cord crossing selector, parallel exit bights, and tensile lock test',
