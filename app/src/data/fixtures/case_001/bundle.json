@@ -16,7 +16,7 @@
         "evidence_refs": [
           {
             "evidence_id": "EV-EXP-01",
-            "source_id": "expert_micrometer_zeroing.mp4",
+            "source_id": "replay_micrometer_zeroing.mp4",
             "modality": "video",
             "start_sec": 4.5,
             "end_sec": 12.0,
@@ -34,7 +34,7 @@
         "evidence_refs": [
           {
             "evidence_id": "EV-EXP-02",
-            "source_id": "expert_micrometer_zeroing.mp4",
+            "source_id": "replay_micrometer_zeroing.mp4",
             "modality": "video",
             "start_sec": 18.0,
             "end_sec": 22.5,
@@ -52,7 +52,7 @@
         "evidence_refs": [
           {
             "evidence_id": "EV-EXP-03",
-            "source_id": "expert_micrometer_zeroing.mp4",
+            "source_id": "replay_micrometer_zeroing.mp4",
             "modality": "video",
             "start_sec": 26.0,
             "end_sec": 31.0,
@@ -64,15 +64,15 @@
       }
     ],
     "consent": {
-      "contributor_name": "Marcus Vance",
-      "consent_scope": "hackathon_prototype",
+      "contributor_name": "Reference Expert (Synthetic Fixture)",
+      "consent_scope": "engineering_replay_only",
       "revocable": true,
       "granted_at": "2026-10-04T08:00:00Z",
-      "notes": "Approved for Google Cloud AI Builder Cup demonstration."
+      "notes": "Engineering replay metadata only; no real-world expert approval."
     },
     "expert_review": {
-      "reviewer_name": "Marcus Vance",
-      "status": "approved",
+      "reviewer_name": "Replay Fixture Reviewer",
+      "status": "pending",
       "reviewed_at": "2026-10-04T09:30:00Z",
       "notes": "Step sequence and 3-click ratchet cadence are accurate."
     }
@@ -139,7 +139,7 @@
     "task_id": "TASK-OPT-001",
     "learner": {
       "participant_id": "LRN-ELENA-01",
-      "name": "Elena Rostova",
+      "name": "Learner (Replay Fixture)",
       "role": "learner",
       "notes": "Novice technician trainee"
     },
@@ -203,7 +203,7 @@
         "corrective_advice": "Place paper between anvils, close gently, and pull paper straight out in one continuous movement.",
         "expert_evidence_ref": {
           "evidence_id": "EV-EXP-01",
-          "source_id": "expert_micrometer_zeroing.mp4",
+          "source_id": "replay_micrometer_zeroing.mp4",
           "modality": "video",
           "start_sec": 4.5,
           "end_sec": 12.0
@@ -216,7 +216,7 @@
         "corrective_advice": "Use thumb and forefinger on the small ratchet knurl only, counting 'click-one, click-two, click-three' then stop.",
         "expert_evidence_ref": {
           "evidence_id": "EV-EXP-02",
-          "source_id": "expert_micrometer_zeroing.mp4",
+          "source_id": "replay_micrometer_zeroing.mp4",
           "modality": "video",
           "start_sec": 18.0,
           "end_sec": 22.5
@@ -229,7 +229,7 @@
         "corrective_advice": "Wait 1 full second after 3rd click. Ensure needle is stable before rotating the lock lever.",
         "expert_evidence_ref": {
           "evidence_id": "EV-EXP-03",
-          "source_id": "expert_micrometer_zeroing.mp4",
+          "source_id": "replay_micrometer_zeroing.mp4",
           "modality": "video",
           "start_sec": 26.0,
           "end_sec": 31.0
@@ -247,7 +247,7 @@
     "task_id": "TASK-OPT-001",
     "learner": {
       "participant_id": "LRN-ELENA-01",
-      "name": "Elena Rostova",
+      "name": "Learner (Replay Fixture)",
       "role": "learner",
       "notes": "Novice technician trainee - 2nd attempt"
     },
@@ -303,7 +303,7 @@
     "skill_id": "SKILL-OPT-CALIB",
     "package_id": "PKG-OPT-001",
     "rubric_id": "RUBRIC-OPT-001",
-    "expert_id": "Marcus Vance",
+    "expert_id": "Reference Expert (Synthetic Fixture)",
     "learner_id": "LRN-ELENA-01",
     "baseline_attempt_id": "ATT-OPT-BASE-01",
     "retry_attempt_id": "ATT-OPT-RETRY-01",
