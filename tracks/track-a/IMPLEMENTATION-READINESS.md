@@ -8,6 +8,14 @@ Use this as the coding-agent gate. It complements SUCCESS-CRITERIA.md.
 - [ ] Identify EvidenceRef, KnowledgePackage, RubricDefinition, and PracticeTask as Track A outputs.
 - [ ] Keep learner evaluation, retry orchestration, transmission gain, and UI implementation outside Track A.
 - [ ] Define fixtures and expected evidence/uncertainty before live Gemini work.
+- [ ] Define whether each fixture is LIVE, REPLAY, SYNTHETIC, or ILLUSTRATIVE.
+
+## Prototype-aware readiness
+- [ ] Source mode is explicit: FORWARD, GOAL_CONDITIONED, or CORRECTIVE.
+- [ ] Target-first outputs distinguish visible target facts from inferred candidate procedures.
+- [ ] OBSERVED / INFERRED / UNVERIFIED semantics are preserved through normalization.
+- [ ] Replay/fixture outputs are never represented as live Gemini or real-world validation.
+- [ ] Any workspace-composition information is exposed through downstream adapters, not common-contract changes.
 
 ## During implementation
 - [ ] Keep model/provider DTOs behind a normalization adapter.
