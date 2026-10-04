@@ -1,6 +1,7 @@
 {
   "schema_version": "1.0",
   "case_id": "kolam",
+  "bundle_case_id": "kolam_case_002",
   "title": "Sikku Kolam Geometric Drawing",
   "domain": "Traditional Indian Geometric Art & Spatial Mathematics",
   "archetype": "spatial-transformation",
@@ -9,6 +10,5 @@
   "source_posture": "synthetic_replay",
   "epistemic_status": "REPLAY_FIXTURE_NOT_AUTHENTIC_VALIDATION",
   "data_status": "prototype_replay",
-  "pack_version": "1.0",
-  "bundle_case_id": "kolam_case_002"
+  "pack_version": "1.0"
 }
