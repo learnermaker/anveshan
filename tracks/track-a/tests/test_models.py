@@ -58,7 +58,7 @@ def test_artifact_id_generators() -> None:
 def test_forward_mode_normalization() -> None:
     run_meta = RunMetadataDTO(
         provider="google",
-        model_id="gemini-2.5-flash",
+        model_id="gemini-3.8-flash",
         prompt_id="expert_extraction",
         prompt_version="v1",
         input_artifact_id="micrometer_video",
@@ -112,7 +112,7 @@ def test_forward_mode_normalization() -> None:
 def test_goal_conditioned_mode_normalization() -> None:
     run_meta = RunMetadataDTO(
         provider="google",
-        model_id="gemini-2.5-flash",
+        model_id="gemini-3.8-flash",
         prompt_id="goal_conditioned_extraction",
         prompt_version="v1",
         input_artifact_id="kolam_target_photo",

@@ -203,7 +203,7 @@ class GeminiProviderAdapter(BaseProviderAdapter):
     ) -> None:
         self.cases_root = cases_root
         self.api_key = api_key or os.environ.get("GEMINI_API_KEY")
-        self.model_id = model_id or os.environ.get("GEMINI_MODEL_ID", "gemini-2.5-flash")
+        self.model_id = model_id or os.environ.get("GEMINI_MODEL_ID", "gemini-3.8-flash")
         self._client: Optional[Any] = None
 
     def _ensure_client(self) -> Any:
