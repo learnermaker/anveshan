@@ -116,11 +116,11 @@ export const DualDeckPlayer: React.FC<DualDeckPlayerProps> = ({
                 EXPERT REFERENCE
               </span>
               <span className="text-[11px] font-sans text-on-surface-variant">
-                Elena Rostova (Master Metrologist)
+                Reference Expert (Synthetic Fixture)
               </span>
             </div>
             <div className="font-mono text-[10px] text-transmission-emerald bg-transmission-emerald/10 border border-transmission-emerald/30 px-2 py-0.5 rounded">
-              VERIFIED BENCHMARK
+              REPLAY REFERENCE
             </div>
           </div>
 
@@ -129,7 +129,7 @@ export const DualDeckPlayer: React.FC<DualDeckPlayerProps> = ({
             {/* Authentic Photographic Benchmark Background from Stitch */}
             <img
               src="/assets/expert-reference.jpg"
-              alt="Elena Rostova master micrometer zeroing reference"
+              alt="Synthetic micrometer reference replay"
               className="absolute inset-0 w-full h-full object-cover opacity-75 mix-blend-luminosity filter contrast-125 brightness-95"
             />
             {/* Subtle darkroom optics vignette */}
@@ -257,7 +257,7 @@ export const DualDeckPlayer: React.FC<DualDeckPlayerProps> = ({
                 LEARNER ATTEMPT
               </span>
               <span className="text-[11px] font-sans text-on-surface-variant">
-                Marcus Vance (Apprentice)
+                Learner (Replay Fixture)
               </span>
             </div>
 
@@ -291,7 +291,7 @@ export const DualDeckPlayer: React.FC<DualDeckPlayerProps> = ({
             {/* Authentic Photographic Learner Background from Stitch */}
             <img
               src="/assets/learner-attempt.jpg"
-              alt="Marcus Vance apprentice micrometer trial"
+              alt="Learner micrometer replay fixture"
               className={`absolute inset-0 w-full h-full object-cover transition-all duration-300 ${
                 learnerMode === 'baseline'
                   ? 'opacity-65 mix-blend-luminosity filter sepia-[0.35] hue-rotate-[315deg] contrast-125'
@@ -443,7 +443,7 @@ export const DualDeckPlayer: React.FC<DualDeckPlayerProps> = ({
           {/* Diagnostic Note */}
           <div className="mt-2 text-xs font-sans bg-surface-container p-2 rounded border border-outline flex items-start gap-2">
             <span className={`font-mono text-[10px] uppercase font-bold shrink-0 mt-0.5 ${learnerMode === 'baseline' ? 'text-divergence-crimson' : 'text-transmission-emerald'}`}>
-              {learnerMode === 'baseline' ? 'DIAGNOSTIC FAULT:' : 'VERIFIED RETRY:'}
+              {learnerMode === 'baseline' ? 'DIAGNOSTIC FAULT:' : 'REPLAY RETRY:'}
             </span>
             <span className="text-on-surface-variant">
               {learnerMode === 'baseline'
