@@ -2,11 +2,13 @@
 
 ## Mission
 
-Prove that an authentic expert demonstration can become a **faithful, source-grounded, reviewable, bounded teaching input**.
+Prove that an appropriate source can become a **faithful, source-grounded, reviewable, bounded teaching input**.
 
 The Track A proof is:
 
-`authentic expert source → multimodal understanding → structured knowledge → evidence grounding → expert review → teaching/practice input`
+source → multimodal understanding → structured knowledge → evidence grounding → review/uncertainty handling → teaching/practice input
+
+The source may be a demonstration, desired target state/image, learner attempt, or combination. Do not invent a historical procedure from a final image.
 
 Do not optimize for generic knowledge extraction. Optimize for fidelity and auditability.
 
