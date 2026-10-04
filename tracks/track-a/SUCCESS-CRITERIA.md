@@ -7,7 +7,9 @@
 
 Track A — **Expert Intelligence & Grounding** owns the expert-side half of the transmission proof.
 
-The objective is not to build a generic knowledge platform. The objective is to prove that one authentic expert demonstration can be transformed into a **faithful, source-grounded, reviewable teaching input** that another person can practice.
+The objective is not to build a generic knowledge platform. The objective is to prove that an appropriate source can be transformed into a **faithful, source-grounded, reviewable teaching input** that another person can practice.
+
+For the original expert-transfer wedge, the source should be an authentic expert demonstration. Target-first and attempt-first source modes are documented research extensions.
 
 Track A is successful only when it preserves the chain:
 
