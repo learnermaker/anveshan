@@ -196,3 +196,33 @@ For a desired-state/image source:
 ### Transmission result rule
 
 The common seam can prove deterministic improvement in the configured rubric frame. It cannot, by itself, prove real-world mastery, generalization, certification, or causal transfer.
+
+## Proof levels — mandatory interpretation
+
+Do not conflate three different kinds of success:
+
+1. **Engineering proof** — contracts, normalization, validation, replay, failure handling, and deterministic aggregation work correctly.
+2. **Capability proof** — a bounded case demonstrates that the relevant multimodal grounding, observation, reasoning, or adaptation capability works on appropriate evidence.
+3. **Product proof** — an authentic accountable expert-to-learner transmission event demonstrates grounded teaching, observable practice, evidence-linked correction, retry, and measured change.
+
+A replay/synthetic fixture can satisfy engineering proof and support capability development. It cannot by itself satisfy product proof or justify claims of real-world knowledge transmission.
+
+For goal-conditioned or corrective cases, capability success does not automatically establish the original expert-transfer wedge. Those cases need an appropriate accountable source and evidence path before being treated as product validation.
+
+## Improvement versus transmission claim
+
+`TransmissionRecord.transmission_gain` measures change within the configured rubric frame. It is an observed outcome, not by itself proof of mastery, generalization, or causal transfer from the expert.
+
+A stronger product claim requires the surrounding provenance chain: accountable source → grounded knowledge/practice input → learner baseline → evidence-grounded intervention → comparable retry → observed change → lineage.
+
+## Adaptive retry comparability
+
+A downstream retry may narrow practice to a failed criterion, but it must remain comparable to the baseline under the same rubric and must not create artificial gain by materially lowering evaluation difficulty. The system should preserve what changed in scope and evidence between attempts.
+
+## Uncertainty versus improvement
+
+A transition such as `UNCERTAIN → SATISFIED` may reflect improved observability rather than improved skill. Do not automatically characterize such a change as skill improvement without sufficient comparable evidence.
+
+## Intervention traceability
+
+When feedback targets a criterion, the retry evaluation should preserve that criterion so the system can determine whether the targeted deficiency changed. This supports the prototype's first-divergence → micro-practice → retry loop without adding a UI-specific contract.
