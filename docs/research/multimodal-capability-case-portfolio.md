@@ -54,7 +54,7 @@ The evidence states remain mandatory: SOURCE-DERIVED FACT, OBSERVED, INFERRED, U
 
 | # | Case | Primary multimodal signal | What Gemini should understand | Candidate generated workspace | Strategic role |
 |---|---|---|---|---|---|
-| 1 | **Kolam drawing** | Vision + spatial + temporal + text/context | Geometry, trajectory, symmetry, sequence | **Spatial Practice Canvas** | India/JAPAC relevance + GenUI showcase |
+| 1 | **Kolam drawing** | Vision + spatial + target image | Geometry, symmetry, topology, candidate sequence | **Spatial Reconstruction Workspace** | India/JAPAC relevance + goal-conditioned GenUI |
 | 2 | **Bicycle puncture repair** | Vision + temporal + diagnostic + contextual | Observation -> diagnosis -> action -> outcome | **Diagnostic Workspace** | Practical impact + reasoning |
 | 3 | **Micrometer zeroing / measurement** | Vision + audio + temporal + numeric | Visual state + sound cues + measurement + sequence | **Forensic Transmission Instrument** | Technical depth; preserves the current UI strength |
 | 4 | **Handloom / paper weaving** | Vision + spatial + temporal + state | Over/under state, sequence, alignment, emerging pattern | **State Transition Workspace** | Domain generality + state reasoning |
