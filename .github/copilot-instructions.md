@@ -33,3 +33,14 @@ Do not infer product authorization from research findings, available APIs/models
 ## Pull requests
 
 PRs should link the issue with `Closes/Fixes/Resolves #N`, state one bounded outcome, identify included/excluded scope, and report validation. Do not add ceremony or duplicate information already enforced by CI.
+
+
+## Completion rule
+
+Use the minimum lifecycle:
+
+**Issue → branch → implement → validate → PR → merge → verify main**
+
+A PR is an intermediate state, not completion. When acceptance criteria and validation pass and no real decision remains unresolved, merge the PR if permitted. Then verify `main` contains the change.
+
+Keep `main` as the latest completed integrated baseline for parallel agents.
