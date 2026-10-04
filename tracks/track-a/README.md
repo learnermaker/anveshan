@@ -8,7 +8,9 @@ Read CODING-AGENT-GUIDE.md, SUCCESS-CRITERIA.md, tracks/common/README.md, tracks
 The domain/skill is intentionally **not fixed yet**. Keep implementation domain-agnostic until M0 selects the bounded authentic case.
 
 ## Objective
-Prove that an authentic expert demonstration can become a source-grounded knowledge representation and bounded teaching/practice input without material invention.
+Prove that an appropriate source can become a source-grounded knowledge representation and bounded teaching/practice input without material invention.
+
+Source modes include demonstration-first, goal-conditioned target-first, and corrective attempt-first. The selected case determines which mode is valid.
 
 ## Boundary
 Own source/media representation, multimodal understanding, structured steps/cues/conditions/exceptions/failure modes, claim→evidence links, grounded teaching, rubric/practice-task generation, expert review, replay, and deterministic validation.
