@@ -12,3 +12,13 @@ Keep asset references stable and distinguish:
 When a Stitch asset is checked into the app, reference it from the UI layer and record its origin/role in the case metadata. Prefer local app assets for deterministic rendering rather than remote transient URLs.
 
 For future production media, resolve stable media/evidence IDs to Cloud Storage objects and preserve object generation/version information when media participates in evidence or lineage.
+## Current external source
+
+The case currently catalogs the Wikimedia Commons demonstration `File:OrigamiCrane.ogv` as `source_evidence` under `src-origami-tavin-2010`.
+
+- Source page: https://commons.wikimedia.org/wiki/File:OrigamiCrane.ogv
+- License: CC BY 3.0
+- Runtime: 5 min 35 s
+- Original dimensions: 400 × 226
+
+Do not commit the full source video to Git. The app may use an external source reference or a compliant lightweight local derivative/poster, but CI and screenshot audits must not depend on network media.
