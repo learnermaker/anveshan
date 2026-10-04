@@ -44,3 +44,9 @@ Use the minimum lifecycle:
 A PR is an intermediate state, not completion. When acceptance criteria and validation pass and no real decision remains unresolved, merge the PR if permitted. Then verify `main` contains the change.
 
 Keep `main` as the latest completed integrated baseline for parallel agents.
+
+## Canonical case-pack boundary
+
+For capability-case work, the shared case authority is `tracks/cases/<case_id>/`, discovered through `tracks/cases/index.json`, with `manifest.json` as the case entry point. Track-local `tracks/track-a/data/` and `tracks/track-b/data/` are implementation-specific only and must not duplicate canonical case definitions.
+
+Read `tracks/cases/README.md` and `docs/architecture/case-packs.md` before changing case fixtures, replay bundles, or case registries.
