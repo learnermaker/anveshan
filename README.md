@@ -54,7 +54,9 @@ This is a prototype wedge, not the definition of the company.
 
 ### Prototype loop
 
-**DEMONSTRATE → UNDERSTAND → GROUND → TEACH → PRACTICE → VERIFY → EVOLVE**
+**SOURCE → UNDERSTAND → GROUND → TRANSMIT → PRACTICE → VERIFY → EVOLVE**
+
+Source can be a demonstration, desired state, learner attempt, or combination. The transmission direction follows the capability and available evidence.
 
 The exact domain and skill remain open until authentic access and feasibility validation are confirmed.
 
@@ -72,13 +74,15 @@ See docs/product/novelty-boundary.md.
 
 The MVP must prove:
 
-> **one real expert + one bounded skill + one authentic demonstration + one source-grounded knowledge representation + one learner + one practice task + one learner attempt + one evidence-grounded feedback loop + one retry + one measurable improvement + one transmission record + one lineage event**
+> **one accountable source + one bounded skill + one source-grounded knowledge representation + one learner + one practice task + one learner attempt + one evidence-grounded feedback loop + one retry + one measurable improvement + one transmission record + one lineage event**
+
+For the original expert-transfer wedge, the accountable source should be a real expert. Goal-conditioned target-first cases are a documented research extension, not validated expert-procedure recovery.
 
 See docs/product/mvp-contract.md.
 
 ## Current conceptual architecture
 
-1. Capture authentic demonstrations and context.
+1. Capture or ingest an appropriate source and context.
 2. Understand speech, actions, objects, sequence, conditions and cues.
 3. Represent candidate knowledge and relationships.
 4. Ground claims in source evidence.
@@ -140,7 +144,7 @@ Once M0 authorizes implementation, two developers can work independently under `
 
 ## Implementation Status
 
-The repository is currently a **research/validation workspace**, not yet the runnable competition prototype. Application source, deployment configuration and CI are intentionally added only after the capability-validation gate produces a supported product direction.
+The repository is currently a **research/validation workspace with an implemented frontend prototype**. The app workspace is a clickable prototype/reference implementation; it is not evidence that the product thesis or fixture claims are validated. Application source, deployment configuration and CI are intentionally added only after the capability-validation gate produces a supported product direction.
 
 For contributors, treat:
 - `docs/research/` as exploration and competitive/technical evidence;
