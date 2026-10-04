@@ -33,6 +33,23 @@ This is also the core GenUI principle:
 
 ---
 
+
+---
+
+# Transmission Modes
+
+The seven cases are not required to use the same source type. The source may be a demonstration, a desired outcome, a learner attempt, or a combination of these.
+
+| Mode | Direction | Example cases | Core question |
+|---|---|---|---|
+| **Forward** | Demonstration → capability | Bicycle, Micrometer, Tabla, Origami | How can the learner reproduce what the source demonstrates? |
+| **Goal-conditioned** | Desired state → plausible capability path | **Kolam** | How can the learner reach the desired outcome? |
+| **Corrective** | Learner attempt → divergence → capability | Knot, Origami, Bicycle, Micrometer | What must change for the next attempt to improve? |
+
+**Important:** goal-conditioned reconstruction is a research hypothesis, not a validated capability. A final image can establish visible target properties but generally cannot establish the original artist's exact procedure, intent, or historical context.
+
+The evidence states remain mandatory: SOURCE-DERIVED FACT, OBSERVED, INFERRED, UNVERIFIED, UNKNOWN.
+
 # The 7 Multimodal Capability Tests
 
 | # | Case | Primary multimodal signal | What Gemini should understand | Candidate generated workspace | Strategic role |
@@ -51,77 +68,107 @@ This is also the core GenUI principle:
 
 ## Capability archetype
 
-**Spatial transformation**
+**Spatial reconstruction / goal-conditioned transmission**
+
+## Source pattern
+
+Kolam is intentionally different from the video-first cases. A strong prototype path can begin with a **target Kolam image** rather than a demonstration video.
+
+The target becomes the desired state:
+
+~~~text
+TARGET IMAGE → STRUCTURE → PLAUSIBLE CONSTRUCTION PATH → PRACTICE → TARGET VERIFICATION
+~~~
+
+This is not a claim that the original artist's exact procedure can be recovered from the final image.
 
 ## Why it is useful
 
-Kolam provides a visually distinctive Indian/JAPAC-rooted case while exercising spatial reasoning rather than generic text instruction.
+Kolam provides India/JAPAC relevance while testing a genuinely different transmission direction: the system starts from an outcome and reasons toward a candidate path to achieve it.
 
-Useful signals include:
-
-- drawing trajectory;
-- spatial relationships;
-- symmetry;
-- repeated motifs;
-- geometric structure;
-- sequence of drawing actions;
-- learner/reference comparison;
-- source/context text where available.
+Research on Kolam treats the form as structured geometry. Recent work covers image-based digital preservation/classification, one-stroke generation, Pulli Kolam structure, and computational pattern systems.
 
 ## What Gemini should reason about
 
-The interesting task is not simply:
+From the target image, the system may analyze:
 
-> "Does the final drawing look correct?"
+1. pulli/dot-grid structure;
+2. symmetry;
+3. repeated motifs;
+4. line continuity and crossings;
+5. geometric relationships;
+6. candidate intermediate states;
+7. a plausible construction sequence.
 
-Instead, the system should be able to reason about:
+The output must distinguish visible observations from inferred construction strategy.
 
-1. what spatial structure the reference establishes;
-2. how the learner's trajectory evolves;
-3. where the learner first materially diverges;
-4. what geometric property was affected;
-5. what targeted corrective explanation or practice would address that divergence.
+### Evidence boundary
+
+Valid:
+
+> **OBSERVED:** the target exhibits bilateral symmetry.
+
+Potentially valid:
+
+> **INFERRED:** establishing the central symmetry before completing repeated motifs is a plausible construction strategy.
+
+Not valid without source evidence:
+
+> **The original artist first drew the left loop and mirrored it.**
+
+The last statement requires an actual demonstration or other authoritative source.
 
 ## Candidate UI
 
-### Spatial Practice Canvas
+### Spatial Reconstruction Workspace
 
-Conceptual structure:
+~~~text
+TARGET IMAGE
+     ↓
+STRUCTURE MAP
+     ↓
+CANDIDATE CONSTRUCTION
+     ↓
+INTERACTIVE PRACTICE
+     ↓
+CURRENT STATE
+     ↓
+TARGET COMPARISON
+     ↓
+DIVERGENCE
+     ↓
+CORRECTION
+     ↓
+RETRY
+~~~
 
-```text
-reference pattern
-        +
-learner trajectory
-        +
-geometry / symmetry analysis
-        ↓
-first meaningful divergence
-        ↓
-targeted practice
-```
+Useful primitives:
 
-The generated interface may include:
-
-- trace/overlay view;
-- grid or coordinate representation;
-- symmetry guides;
+- target image;
+- pulli/grid representation;
+- symmetry overlay;
+- line/topology view;
+- candidate construction stages;
+- interactive drawing canvas;
+- target/current overlay;
 - divergence marker;
-- small corrective practice area.
+- corrective micro-practice;
+- uncertainty panel;
+- provenance/evidence drawer.
 
-## Multimodal caution
+This should be composed through the same bounded GenUI component catalog as the other workspaces.
 
-Do not invent cultural meaning from the visual pattern.
+## Strategic role
 
-Keep separate:
+Kolam is the strongest demonstration that **the interface changes because the reasoning problem changes**.
 
-- observed geometry;
-- model inference;
-- source-derived cultural/contextual claims;
-- unresolved/unknown claims.
+It should not become another copy of the existing Transmission Instrument.
 
-Cultural authenticity must come from authoritative source material or clearly labeled attribution, not from model confidence.
+## Source guidance
 
----
+Prefer an Anveshan-owned target image for the public prototype. Public/research Kolam datasets can support exploration and benchmarking, but they should not be treated as authoritative cultural/procedural sources without attribution and verification.
+
+See docs/research/source-strategy-and-transmission-modes-2026-10-04.md for source and licensing notes.
 
 # Case 2 — Bicycle Puncture Repair
 
@@ -501,6 +548,22 @@ Internally, treat the seven cases as different multimodal reasoning archetypes r
 The portfolio is stronger because each case stresses a different reasoning shape.
 
 ---
+
+# Source Strategy
+
+The seven cases should use a **source portfolio**, not one dataset.
+
+| Case | Preferred source strategy | Public prototype posture |
+|---|---|---|
+| Kolam | research images + Anveshan-owned target | target-image / goal-conditioned |
+| Bicycle repair | Ego-Exo4D + ProSkill research | selected approved subset or owned recording |
+| Micrometer | Anveshan-controlled recording | primary owned case |
+| Handloom / weaving | Anveshan-controlled recording | primary owned case |
+| Tabla | IIT Bombay research source + owned recording | audio-temporal case |
+| Origami | EvoStruggle + FoldingAgent research | research-backed spatial case |
+| Square knot | EvoStruggle + procedural-skill research | verification/retry case |
+
+Research source and shippable prototype asset are different categories. Do not redistribute restricted research media merely because it is useful for benchmarking.
 
 # GenUI Relationship
 
