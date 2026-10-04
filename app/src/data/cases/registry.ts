@@ -69,7 +69,7 @@ const micrometerMicroPractice: MicroPracticeChallenge = {
 // ============================================================================
 // CASE 2: SIKKU KOLAM (SPATIAL CANVAS)
 // ============================================================================
-const kolamBundleBundle = normalizeTransmissionBundle({
+const kolamBundle = normalizeTransmissionBundle({
   case_id: 'kolam_case_002',
   domain: 'Traditional Indian Geometric Art & Spatial Mathematics',
   skill: 'Sikku Kolam Continuous Knot Drawing & Radial Symmetry',
@@ -351,7 +351,7 @@ const kolamMicroPractice: MicroPracticeChallenge = {
 // ============================================================================
 // CASE 3: BICYCLE PUNCTURE REPAIR (DIAGNOSTIC WORKSPACE)
 // ============================================================================
-const bikeBundleBundle = normalizeTransmissionBundle({
+const bikeBundle = normalizeTransmissionBundle({
   case_id: 'bike_case_003',
   domain: 'Mechanical Field Diagnostics & Pneumatic Systems',
   skill: 'Bicycle Tube Puncture Localization & Cold-Vulcanizing Patch',
@@ -632,7 +632,7 @@ const bikeMicroPractice: MicroPracticeChallenge = {
 // ============================================================================
 // CASE 4: HANDLOOM WEAVING (STATE TRANSITION WORKSPACE)
 // ============================================================================
-const weavingBundleBundle = normalizeTransmissionBundle({
+const weavingBundle = normalizeTransmissionBundle({
   case_id: 'weaving_case_004',
   domain: 'Artisanal Textile Engineering & Material Science',
   skill: 'Handloom Warp Shedding & Selvage Tension Control',
@@ -913,7 +913,7 @@ const weavingMicroPractice: MicroPracticeChallenge = {
 // ============================================================================
 // CASE 5: TABLA RHYTHM (RHYTHM PRACTICE INSTRUMENT)
 // ============================================================================
-const tablaBundleBundle = normalizeTransmissionBundle({
+const tablaBundle = normalizeTransmissionBundle({
   case_id: 'tabla_case_005',
   domain: 'Indian Classical Percussion & Acoustic Science',
   skill: 'Tabla "Dha" Compound Syllable & Synchronized Resonance',
@@ -1194,7 +1194,7 @@ const tablaMicroPractice: MicroPracticeChallenge = {
 // ============================================================================
 // CASE 6: ORIGAMI FOLDING (SPATIAL SEQUENCE WORKSPACE)
 // ============================================================================
-const origamiBundleBundle = normalizeTransmissionBundle({
+const origamiBundle = normalizeTransmissionBundle({
   case_id: 'origami_case_006',
   domain: 'Mathematical Origami & Computational Paper Geometry',
   skill: 'Traditional Origami Crane: Petal Fold & Corner Alignment',
@@ -1475,7 +1475,7 @@ const origamiMicroPractice: MicroPracticeChallenge = {
 // ============================================================================
 // CASE 7: SQUARE KNOT (FIRST DIVERGENCE WORKSPACE)
 // ============================================================================
-const knotBundleBundle = normalizeTransmissionBundle({
+const knotBundle = normalizeTransmissionBundle({
   case_id: 'knot_case_007',
   domain: 'Surgical & Maritime Ropework Mechanics',
   skill: 'Surgical / Maritime Square Knot Tying & Capsize Prevention',
