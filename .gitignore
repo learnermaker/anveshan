@@ -21,6 +21,8 @@ __pycache__/
 .ruff_cache/
 .coverage
 .coverage.*
+temp_*
+*.wav
 htmlcov/
 .tox/
 .nox/
