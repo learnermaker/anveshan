@@ -170,6 +170,7 @@ async function runDevToolsAudit() {
   ];
   for (const [caseId, workspaceTitle, screenshotName] of cases) {
     await selectCaseAndAssert(page, caseId, workspaceTitle);
+    await assertBodyContains(page, workspaceTitle, \`${caseId} -> ${workspaceTitle}\`);
     savedScreenshots.push(await saveScreenshot(page, screenshotName, { fullPage: true }));
   }
 
