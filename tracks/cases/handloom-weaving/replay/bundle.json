@@ -1,0 +1,248 @@
+{
+  "case_id": "weaving_case_004",
+  "domain": "Artisanal Textile Engineering & Material Science",
+  "skill": "Handloom Warp Shedding & Selvage Tension Control",
+  "knowledge_package": {
+    "package_id": "pkg-weave-004",
+    "skill_id": "skill-weave-shed",
+    "title": "Two-Shaft Plain Weave Shed Transition & Selvage Control",
+    "summary": "Coordinate foot treadles for warp shed alternation, shuttle transit, and uniform reed beat-up tension.",
+    "claims": [
+      {
+        "claim_id": "claim-treadle-shed",
+        "claim_type": "step",
+        "statement": "Depress treadle #1 fully to separate odd and even warp threads into a clean 45mm open shed before throwing shuttle.",
+        "is_observed": true,
+        "evidence_refs": [
+          {
+            "evidence_id": "ev-weave-shed",
+            "source_id": "src-weave-01",
+            "modality": "video",
+            "start_sec": 5,
+            "end_sec": 11,
+            "verification_state": "observed",
+            "confidence": 0.97
+          }
+        ]
+      },
+      {
+        "claim_id": "claim-shuttle-beat",
+        "claim_type": "step",
+        "statement": "The reed must beat the newly laid weft pick into the cloth fell only after the treadles alternate to lock the thread in place.",
+        "is_observed": true,
+        "evidence_refs": [
+          {
+            "evidence_id": "ev-weave-beat",
+            "source_id": "src-weave-01",
+            "modality": "video",
+            "start_sec": 14,
+            "end_sec": 22,
+            "verification_state": "observed",
+            "confidence": 0.95
+          }
+        ]
+      }
+    ],
+    "consent": {
+      "contributor_name": "Synthetic Fixture Contributor",
+      "consent_scope": "engineering_replay_only",
+      "revocable": true,
+      "granted_at": "2026-09-12T08:30:00Z"
+    },
+    "expert_review": {
+      "reviewer_name": "Replay Fixture Reviewer",
+      "status": "pending",
+      "reviewed_at": "2026-09-19T16:00:00Z"
+    }
+  },
+  "rubric": {
+    "rubric_id": "rubric-weave-004",
+    "skill_id": "skill-weave-shed",
+    "title": "Handloom Plain Weave Shed & Tension Rubric",
+    "description": "Deterministic scoring of shed clarity, pick locking sequence, and edge selvage straightness.",
+    "passing_score": 7,
+    "criteria": [
+      {
+        "criterion_id": "CRIT-SHED-CLEAR",
+        "name": "Warp shed separation clearance (> 40mm)",
+        "description": "Treadle depression separates upper and lower warp layers without clinging threads.",
+        "observable_indicator": "Minimum 40mm vertical aperture through entire shuttle flight path.",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "criterion_id": "CRIT-SHED-CHANGE",
+        "name": "Pick alternation & beat-up sequence locking",
+        "description": "Treadles must alternate before reed strikes to interlock weft pick.",
+        "observable_indicator": "Reed contact occurs while shed is crossed in counter-position.",
+        "weight": 4,
+        "required": true
+      },
+      {
+        "criterion_id": "CRIT-SELVAGE-TENS",
+        "name": "Selvage edge tension uniformity",
+        "description": "Left and right edge warp yarns maintain linear alignment within +/-2mm.",
+        "observable_indicator": "Edge deviation across 10 picks <= 2mm; no hourglassing or loops.",
+        "weight": 3,
+        "required": false
+      }
+    ]
+  },
+  "practice_task": {
+    "task_id": "task-weave-picks",
+    "package_id": "pkg-weave-004",
+    "rubric_id": "rubric-weave-004",
+    "title": "Weave 12 Picks of Balanced Plain Weave",
+    "instructions": "Alternate treadles 1 and 2, pass wooden boat shuttle smoothly across open shed, and beat weft pick evenly into cloth fell.",
+    "constraints": [
+      {
+        "constraint_type": "tension",
+        "description": "Maintain selvage width constant at 300mm"
+      }
+    ],
+    "target_criteria_ids": [
+      "CRIT-SHED-CLEAR",
+      "CRIT-SHED-CHANGE",
+      "CRIT-SELVAGE-TENS"
+    ]
+  },
+  "baseline_attempt": {
+    "attempt_id": "attempt-weave-base",
+    "task_id": "task-weave-picks",
+    "learner": {
+      "participant_id": "learner-replay",
+      "name": "learner-replay",
+      "role": "learner"
+    },
+    "attempt_type": "baseline",
+    "attempt_number": 1,
+    "evidence": {
+      "evidence_id": "ev-kieran-base",
+      "source_id": "src-kieran-weave-01",
+      "modality": "video",
+      "start_sec": 0,
+      "end_sec": 50,
+      "verification_state": "observed",
+      "confidence": 1
+    }
+  },
+  "baseline_evaluation": {
+    "evaluation_id": "eval-weave-base",
+    "attempt_id": "attempt-weave-base",
+    "rubric_id": "rubric-weave-004",
+    "evaluator_type": "model_assisted",
+    "criterion_results": [
+      {
+        "criterion_id": "CRIT-SHED-CLEAR",
+        "score": 2,
+        "status": "partially_satisfied",
+        "observed_finding": "Shuttle snagged two loose warp threads on left flank due to 28mm shed."
+      },
+      {
+        "criterion_id": "CRIT-SHED-CHANGE",
+        "score": 1,
+        "status": "not_satisfied",
+        "observed_finding": "Beat on open shed without crossing treadles; weft pick slid backward (float defect).",
+        "deviation_analysis": "timing_fault"
+      },
+      {
+        "criterion_id": "CRIT-SELVAGE-TENS",
+        "score": 1.5,
+        "status": "partially_satisfied",
+        "observed_finding": "Pulled shuttle yarn excessively, causing 6mm inward selvage waist."
+      }
+    ],
+    "total_score": 4.5,
+    "passed": false,
+    "uncertainty_flags": []
+  },
+  "feedback": {
+    "feedback_id": "fb-weave-001",
+    "evaluation_id": "eval-weave-base",
+    "attempt_id": "attempt-weave-base",
+    "summary": "Targeted corrective feedback for the next attempt.",
+    "items": [
+      {
+        "criterion_id": "CRIT-SHED-CHANGE",
+        "what_was_observed": "Struck reed while the shed was still open in same position as previous pick.",
+        "what_differed": "Struck reed while the shed was still open in same position as previous pick.",
+        "corrective_advice": "Follow the rhythm: Throw shuttle -> Change treadle foot -> Beat reed. The foot switch locks the yarn."
+      }
+    ],
+    "recommended_retry_focus": [
+      "CRIT-SHED-CHANGE"
+    ]
+  },
+  "retry_attempt": {
+    "attempt_id": "attempt-weave-retry",
+    "task_id": "task-weave-picks",
+    "learner": {
+      "participant_id": "learner-replay",
+      "name": "learner-replay",
+      "role": "learner"
+    },
+    "attempt_type": "retry",
+    "attempt_number": 2,
+    "evidence": {
+      "evidence_id": "ev-kieran-retry",
+      "source_id": "src-kieran-weave-02",
+      "modality": "video",
+      "start_sec": 0,
+      "end_sec": 48,
+      "verification_state": "observed",
+      "confidence": 1
+    }
+  },
+  "retry_evaluation": {
+    "evaluation_id": "eval-weave-retry",
+    "attempt_id": "attempt-weave-retry",
+    "rubric_id": "rubric-weave-004",
+    "evaluator_type": "model_assisted",
+    "criterion_results": [
+      {
+        "criterion_id": "CRIT-SHED-CLEAR",
+        "score": 3,
+        "status": "satisfied",
+        "observed_finding": "Clean 48mm shed clearance with zero warp snagging."
+      },
+      {
+        "criterion_id": "CRIT-SHED-CHANGE",
+        "score": 4,
+        "status": "satisfied",
+        "observed_finding": "Treadle crossed before every reed strike; weave interlock 100% verified."
+      },
+      {
+        "criterion_id": "CRIT-SELVAGE-TENS",
+        "score": 2.8,
+        "status": "satisfied",
+        "observed_finding": "Selvage deviation constrained within +/- 1.2mm."
+      }
+    ],
+    "total_score": 9.8,
+    "passed": true,
+    "uncertainty_flags": []
+  },
+  "transmission_record": {
+    "transmission_id": "tx-weave-004",
+    "skill_id": "skill-weave-shed",
+    "package_id": "pkg-weave-004",
+    "rubric_id": "rubric-weave-004",
+    "expert_id": "reference-expert-replay",
+    "learner_id": "learner-replay",
+    "baseline_attempt_id": "attempt-weave-base",
+    "retry_attempt_id": "attempt-weave-retry",
+    "baseline_score": 4.5,
+    "retry_score": 9.8,
+    "transmission_gain": 5.3,
+    "criteria_improved": [
+      "CRIT-SHED-CHANGE",
+      "CRIT-SHED-CLEAR",
+      "CRIT-SELVAGE-TENS"
+    ],
+    "lineage": {
+      "recorded_at": "2026-10-04T13:30:00Z",
+      "provenance_hash": "sha256-weave-merkle-4d3c2b1a",
+      "adaptation_notes": "State machine sequence synchronization reinforced through state snapshot matrix."
+    }
+  }
+}

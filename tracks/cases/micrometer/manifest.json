@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "case_id": "micrometer",
+  "bundle_case_id": "transmission_case_001",
+  "title": "Micrometer Zeroing & Measurement",
+  "domain": "Precision metrology",
+  "archetype": "precision-forensic-evidence",
+  "workspace_type": "forensic_instrument",
+  "transmission_mode": "forward",
+  "source_posture": "synthetic_replay",
+  "epistemic_status": "REPLAY_FIXTURE_NOT_AUTHENTIC_VALIDATION",
+  "data_status": "prototype_replay",
+  "pack_version": "1.0"
+}

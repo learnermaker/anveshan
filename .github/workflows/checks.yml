@@ -22,6 +22,9 @@ jobs:
       - name: Check repository governance invariants
         run: python .github/scripts/check_governance.py
 
+      - name: Check capability case-pack structure
+        run: python .github/scripts/check_case_packs.py
+
       - name: Check canonical Python -> UI contract parity
         run: python .github/scripts/check_contract_parity.py
 

@@ -1,0 +1,247 @@
+{
+  "case_id": "bike_case_003",
+  "domain": "Mechanical Field Diagnostics & Pneumatic Systems",
+  "skill": "Bicycle Tube Puncture Localization & Cold-Vulcanizing Patch",
+  "knowledge_package": {
+    "package_id": "pkg-bike-003",
+    "skill_id": "skill-bike-puncture",
+    "title": "Pneumatic Tube Diagnosis & Chemical Vulcanization",
+    "summary": "Systematic observation, water immersion acoustic leak localization, abrasive butyl buffing, and chemical cold-vulcanization.",
+    "claims": [
+      {
+        "claim_id": "claim-immersion-diag",
+        "claim_type": "step",
+        "statement": "Submerge partially inflated tube in clean water vessel section by section while applying gentle stretch to identify micro-bubbles.",
+        "is_observed": true,
+        "evidence_refs": [
+          {
+            "evidence_id": "ev-bike-bubbles",
+            "source_id": "src-bike-01",
+            "modality": "video",
+            "start_sec": 14,
+            "end_sec": 25,
+            "verification_state": "observed",
+            "confidence": 0.96
+          }
+        ]
+      },
+      {
+        "claim_id": "claim-abrasive-scuff",
+        "claim_type": "step",
+        "statement": "Sandpaper scuffing must abrade the glazed butyl mold-release layer in a circular zone larger than the patch to allow chemical solvent cross-linking.",
+        "is_observed": true,
+        "evidence_refs": [
+          {
+            "evidence_id": "ev-bike-scuff",
+            "source_id": "src-bike-01",
+            "modality": "video",
+            "start_sec": 32,
+            "end_sec": 45,
+            "verification_state": "observed",
+            "confidence": 0.94
+          }
+        ]
+      }
+    ],
+    "consent": {
+      "contributor_name": "Synthetic Fixture Contributor",
+      "consent_scope": "engineering_replay_only",
+      "revocable": true,
+      "granted_at": "2026-09-15T09:00:00Z"
+    },
+    "expert_review": {
+      "reviewer_name": "Replay Fixture Reviewer",
+      "status": "pending",
+      "reviewed_at": "2026-09-20T11:00:00Z"
+    }
+  },
+  "rubric": {
+    "rubric_id": "rubric-bike-003",
+    "skill_id": "skill-bike-puncture",
+    "title": "Puncture Diagnostic Sequence & Patch Adhesion Rubric",
+    "description": "Scoring of diagnostic leak localization, surface mechanical preparation, and cement drying window.",
+    "passing_score": 7,
+    "criteria": [
+      {
+        "criterion_id": "CRIT-LEAK-LOCAL",
+        "name": "Systematic leak localization & tire rim correlation",
+        "description": "Locates exact puncture puncture hole and checks corresponding tire casing position.",
+        "observable_indicator": "Bubble emergence verified; tire casing inspected for embedded thorn or wire.",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "criterion_id": "CRIT-TUBE-SAND",
+        "name": "Abrasive surface preparation (mold release removal)",
+        "description": "Buffs butyl rubber with emery paper to matte finish across 25mm diameter.",
+        "observable_indicator": "Zero sheen/glaze on butyl surface; uniform matte black texture.",
+        "weight": 4,
+        "required": true
+      },
+      {
+        "criterion_id": "CRIT-CEMENT-CURE",
+        "name": "Solvent flash-off curing time window",
+        "description": "Allows vulcanizing fluid to dry tacky (90–120s) before applying foil patch.",
+        "observable_indicator": "Patch applied only after wet gloss evaporates to matte tackiness.",
+        "weight": 3,
+        "required": true
+      }
+    ]
+  },
+  "practice_task": {
+    "task_id": "task-bike-patch",
+    "package_id": "pkg-bike-003",
+    "rubric_id": "rubric-bike-003",
+    "title": "Diagnose and Patch 700x28c Butyl Tube Puncture",
+    "instructions": "Identify puncture location via immersion, prepare surface with abrasive paper, apply vulcanizing fluid, and seal with 25mm cold-cure patch.",
+    "constraints": [
+      {
+        "constraint_type": "pressure",
+        "description": "Test tube holds 40 PSI post-patch"
+      }
+    ],
+    "target_criteria_ids": [
+      "CRIT-LEAK-LOCAL",
+      "CRIT-TUBE-SAND",
+      "CRIT-CEMENT-CURE"
+    ]
+  },
+  "baseline_attempt": {
+    "attempt_id": "attempt-bike-base",
+    "task_id": "task-bike-patch",
+    "learner": {
+      "participant_id": "learner-replay",
+      "name": "learner-replay",
+      "role": "learner"
+    },
+    "attempt_type": "baseline",
+    "attempt_number": 1,
+    "evidence": {
+      "evidence_id": "ev-priya-base",
+      "source_id": "src-priya-bike-01",
+      "modality": "video",
+      "start_sec": 0,
+      "end_sec": 180,
+      "verification_state": "observed",
+      "confidence": 1
+    }
+  },
+  "baseline_evaluation": {
+    "evaluation_id": "eval-bike-base",
+    "attempt_id": "attempt-bike-base",
+    "rubric_id": "rubric-bike-003",
+    "evaluator_type": "model_assisted",
+    "criterion_results": [
+      {
+        "criterion_id": "CRIT-LEAK-LOCAL",
+        "score": 3,
+        "status": "satisfied",
+        "observed_finding": "Bubble stream correctly identified at valve-adjacent sector."
+      },
+      {
+        "criterion_id": "CRIT-TUBE-SAND",
+        "score": 0.5,
+        "status": "not_satisfied",
+        "observed_finding": "Omitted emery sandpaper abrasion step completely. Shiny factory mold glaze intact.",
+        "deviation_analysis": "omission"
+      },
+      {
+        "criterion_id": "CRIT-CEMENT-CURE",
+        "score": 1.5,
+        "status": "partially_satisfied",
+        "observed_finding": "Cement applied but patch pressed immediately at 15s (too wet, solvent trapped)."
+      }
+    ],
+    "total_score": 5,
+    "passed": false,
+    "uncertainty_flags": []
+  },
+  "feedback": {
+    "feedback_id": "fb-bike-001",
+    "evaluation_id": "eval-bike-base",
+    "attempt_id": "attempt-bike-base",
+    "summary": "Targeted corrective feedback for the next attempt.",
+    "items": [
+      {
+        "criterion_id": "CRIT-TUBE-SAND",
+        "what_was_observed": "Omitted sanding of the butyl surface before applying fluid.",
+        "what_differed": "Omitted sanding of the butyl surface before applying fluid.",
+        "corrective_advice": "Vigorously buff a 30mm circle around the puncture with emery cloth until the gloss disappears."
+      }
+    ],
+    "recommended_retry_focus": [
+      "CRIT-TUBE-SAND"
+    ]
+  },
+  "retry_attempt": {
+    "attempt_id": "attempt-bike-retry",
+    "task_id": "task-bike-patch",
+    "learner": {
+      "participant_id": "learner-replay",
+      "name": "learner-replay",
+      "role": "learner"
+    },
+    "attempt_type": "retry",
+    "attempt_number": 2,
+    "evidence": {
+      "evidence_id": "ev-priya-retry",
+      "source_id": "src-priya-bike-02",
+      "modality": "video",
+      "start_sec": 0,
+      "end_sec": 195,
+      "verification_state": "observed",
+      "confidence": 1
+    }
+  },
+  "retry_evaluation": {
+    "evaluation_id": "eval-bike-retry",
+    "attempt_id": "attempt-bike-retry",
+    "rubric_id": "rubric-bike-003",
+    "evaluator_type": "model_assisted",
+    "criterion_results": [
+      {
+        "criterion_id": "CRIT-LEAK-LOCAL",
+        "score": 3,
+        "status": "satisfied",
+        "observed_finding": "Puncture pinpointed and marked with grease pencil."
+      },
+      {
+        "criterion_id": "CRIT-TUBE-SAND",
+        "score": 4,
+        "status": "satisfied",
+        "observed_finding": "Thorough circular abrasion achieved; zero mold release sheen visible."
+      },
+      {
+        "criterion_id": "CRIT-CEMENT-CURE",
+        "score": 3,
+        "status": "satisfied",
+        "observed_finding": "Waited 105s until matte tacky film formed before patch application."
+      }
+    ],
+    "total_score": 10,
+    "passed": true,
+    "uncertainty_flags": []
+  },
+  "transmission_record": {
+    "transmission_id": "tx-bike-003",
+    "skill_id": "skill-bike-puncture",
+    "package_id": "pkg-bike-003",
+    "rubric_id": "rubric-bike-003",
+    "expert_id": "reference-expert-replay",
+    "learner_id": "learner-replay",
+    "baseline_attempt_id": "attempt-bike-base",
+    "retry_attempt_id": "attempt-bike-retry",
+    "baseline_score": 5,
+    "retry_score": 10,
+    "transmission_gain": 5,
+    "criteria_improved": [
+      "CRIT-TUBE-SAND",
+      "CRIT-CEMENT-CURE"
+    ],
+    "lineage": {
+      "recorded_at": "2026-10-04T13:00:00Z",
+      "provenance_hash": "sha256-bike-merkle-3f2e1d0c",
+      "adaptation_notes": "Diagnostic sequence reinforced via causal state decision tree."
+    }
+  }
+}

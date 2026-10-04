@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "cases": [
+    "micrometer",
+    "kolam",
+    "bicycle-repair",
+    "handloom-weaving",
+    "tabla",
+    "origami",
+    "square-knot"
+  ],
+  "purpose": "Cross-track capability case-pack registry"
+}

@@ -1,0 +1,325 @@
+{
+  "case_id": "transmission_case_001",
+  "domain": "precision_metrology",
+  "skill": "optical_dial_micrometer_zeroing",
+  "knowledge_package": {
+    "package_id": "PKG-OPT-001",
+    "skill_id": "SKILL-OPT-CALIB",
+    "title": "Precision Optical Dial Micrometer Zeroing",
+    "summary": "Standard procedure for cleaning anvil faces, verifying optical alignment under 50x magnification, and setting zero baseline.",
+    "claims": [
+      {
+        "claim_id": "CLM-01",
+        "claim_type": "step",
+        "statement": "Wipe measuring faces with optical lint-free paper using a single continuous drag motion.",
+        "is_observed": true,
+        "evidence_refs": [
+          {
+            "evidence_id": "EV-EXP-01",
+            "source_id": "replay_micrometer_zeroing.mp4",
+            "modality": "video",
+            "start_sec": 4.5,
+            "end_sec": 12,
+            "cue_excerpt": "Expert draws optical paper smoothly without scrubbing or back-and-forth friction.",
+            "verification_state": "observed",
+            "confidence": 1
+          }
+        ]
+      },
+      {
+        "claim_id": "CLM-02",
+        "claim_type": "cue",
+        "statement": "Audible ratchet thimble must click exactly 3 times at uniform 0.5s cadence to apply standard 5N contact pressure.",
+        "is_observed": true,
+        "evidence_refs": [
+          {
+            "evidence_id": "EV-EXP-02",
+            "source_id": "replay_micrometer_zeroing.mp4",
+            "modality": "video",
+            "start_sec": 18,
+            "end_sec": 22.5,
+            "cue_excerpt": "Three distinct uniform ratchet clicks audible at 19.1s, 19.6s, 20.1s.",
+            "verification_state": "observed",
+            "confidence": 0.99
+          }
+        ]
+      },
+      {
+        "claim_id": "CLM-03",
+        "claim_type": "condition",
+        "statement": "Lock barrel screw must only be engaged after needle settles completely within +/- 0.5 division indicator.",
+        "is_observed": true,
+        "evidence_refs": [
+          {
+            "evidence_id": "EV-EXP-03",
+            "source_id": "replay_micrometer_zeroing.mp4",
+            "modality": "video",
+            "start_sec": 26,
+            "end_sec": 31,
+            "cue_excerpt": "Indicator needle stabilizes at zero index line before thumb engages lock ring.",
+            "verification_state": "observed",
+            "confidence": 0.95
+          }
+        ]
+      }
+    ],
+    "consent": {
+      "contributor_name": "Reference Expert (Synthetic Fixture)",
+      "consent_scope": "engineering_replay_only",
+      "revocable": true,
+      "granted_at": "2026-10-04T08:00:00Z",
+      "notes": "Engineering replay metadata only; no real-world expert approval."
+    },
+    "expert_review": {
+      "reviewer_name": "Replay Fixture Reviewer",
+      "status": "pending",
+      "reviewed_at": "2026-10-04T09:30:00Z",
+      "notes": "Step sequence and 3-click ratchet cadence are accurate."
+    }
+  },
+  "rubric": {
+    "rubric_id": "RUBRIC-OPT-001",
+    "skill_id": "SKILL-OPT-CALIB",
+    "title": "Optical Micrometer Calibration Proficiency Rubric",
+    "description": "Standardized criteria for optical micrometer face cleaning, spindle approach, and lock engagement.",
+    "criteria": [
+      {
+        "criterion_id": "CRIT-WIPE",
+        "name": "Face Cleaning Motion",
+        "description": "Single unidirectional drag motion using lint-free optical paper without circular or reciprocating scrubbing.",
+        "observable_indicator": "Continuous unidirectional paper motion across anvil face.",
+        "weight": 2,
+        "required": true
+      },
+      {
+        "criterion_id": "CRIT-RATCHET",
+        "name": "Ratchet Speed and Click Count",
+        "description": "Exactly three audible ratchet clicks applied at steady cadence between 0.3s and 0.8s intervals.",
+        "observable_indicator": "Audible click audio waveform count equals 3.",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "criterion_id": "CRIT-LOCK",
+        "name": "Settled Lock Engagement",
+        "description": "Spindle lock engaged only after gauge needle has come to a complete rest.",
+        "observable_indicator": "Zero angular needle velocity at moment lock lever moves.",
+        "weight": 2,
+        "required": true
+      }
+    ],
+    "passing_score": 5
+  },
+  "practice_task": {
+    "task_id": "TASK-OPT-001",
+    "package_id": "PKG-OPT-001",
+    "rubric_id": "RUBRIC-OPT-001",
+    "title": "Zero an Optical Dial Micrometer",
+    "instructions": "1. Inspect optical faces and perform a single linear wipe with lint-free paper. 2. Advance spindle gently until ratchet stop engages. 3. Turn ratchet stop for exactly 3 steady clicks. 4. Wait for indicator needle to settle, then engage spindle lock lever.",
+    "constraints": [
+      {
+        "constraint_type": "time_limit",
+        "description": "Complete complete zeroing sequence within 45 seconds",
+        "value": "45s"
+      },
+      {
+        "constraint_type": "tool_spec",
+        "description": "Use 0-25mm optical dial micrometer with 0.001mm graduation",
+        "value": "0-25mm"
+      }
+    ],
+    "target_criteria_ids": [
+      "CRIT-WIPE",
+      "CRIT-RATCHET",
+      "CRIT-LOCK"
+    ]
+  },
+  "baseline_attempt": {
+    "attempt_id": "ATT-OPT-BASE-01",
+    "task_id": "TASK-OPT-001",
+    "learner": {
+      "participant_id": "LRN-ELENA-01",
+      "name": "Learner (Replay Fixture)",
+      "role": "learner",
+      "notes": "Novice technician trainee"
+    },
+    "attempt_type": "baseline",
+    "attempt_number": 1,
+    "submitted_at": "2026-10-04T10:15:00Z",
+    "evidence": {
+      "evidence_id": "EV-LRN-BASE-01",
+      "source_id": "elena_baseline_attempt.mp4",
+      "modality": "video",
+      "start_sec": 0,
+      "end_sec": 38,
+      "cue_excerpt": "Learner scrubs paper back and forth, turns thimble barrel rapidly generating 7 fast clicks, locks while needle vibrating.",
+      "verification_state": "observed",
+      "confidence": 1
+    }
+  },
+  "baseline_evaluation": {
+    "evaluation_id": "EVAL-OPT-BASE-01",
+    "attempt_id": "ATT-OPT-BASE-01",
+    "rubric_id": "RUBRIC-OPT-001",
+    "criterion_results": [
+      {
+        "criterion_id": "CRIT-WIPE",
+        "status": "not_satisfied",
+        "score": 0,
+        "observed_finding": "Paper moved back and forth repeatedly in scrubbing motion across optical faces.",
+        "deviation_analysis": "Expert demonstrated single unidirectional wipe. Reciprocating motion traps abrasive dust."
+      },
+      {
+        "criterion_id": "CRIT-RATCHET",
+        "status": "not_satisfied",
+        "score": 0.5,
+        "observed_finding": "Turned thimble barrel rapidly generating 7 clicks in under 0.8s.",
+        "deviation_analysis": "Excessive click count and force induces elastic frame deflection exceeding 0.003mm."
+      },
+      {
+        "criterion_id": "CRIT-LOCK",
+        "status": "partially_satisfied",
+        "score": 1,
+        "observed_finding": "Engaged lock lever while needle was still oscillating between +1 and -1 division.",
+        "deviation_analysis": "Lock lever must only be applied after needle is fully stationary."
+      }
+    ],
+    "total_score": 1.5,
+    "passed": false,
+    "evaluator_type": "model_assisted",
+    "uncertainty_flags": [],
+    "evaluated_at": "2026-10-04T10:18:00Z"
+  },
+  "feedback": {
+    "feedback_id": "FB-OPT-01",
+    "evaluation_id": "EVAL-OPT-BASE-01",
+    "attempt_id": "ATT-OPT-BASE-01",
+    "summary": "Focus your retry on three physical adjustments: 1. Wipe once in one direction. 2. Turn ratchet stop for exactly 3 slow clicks. 3. Let needle settle before locking.",
+    "items": [
+      {
+        "criterion_id": "CRIT-WIPE",
+        "what_was_observed": "You scrubbed the optical paper back and forth across the measuring faces.",
+        "what_differed": "Expert dragged paper in a single unidirectional sweep to prevent re-depositing grit.",
+        "corrective_advice": "Place paper between anvils, close gently, and pull paper straight out in one continuous movement.",
+        "expert_evidence_ref": {
+          "evidence_id": "EV-EXP-01",
+          "source_id": "replay_micrometer_zeroing.mp4",
+          "modality": "video",
+          "start_sec": 4.5,
+          "end_sec": 12
+        }
+      },
+      {
+        "criterion_id": "CRIT-RATCHET",
+        "what_was_observed": "You spun the thimble rapidly producing 7 clicks.",
+        "what_differed": "Expert turned ratchet stop slowly with fingertips to produce exactly 3 clicks at 0.5s cadence.",
+        "corrective_advice": "Use thumb and forefinger on the small ratchet knurl only, counting 'click-one, click-two, click-three' then stop.",
+        "expert_evidence_ref": {
+          "evidence_id": "EV-EXP-02",
+          "source_id": "replay_micrometer_zeroing.mp4",
+          "modality": "video",
+          "start_sec": 18,
+          "end_sec": 22.5
+        }
+      },
+      {
+        "criterion_id": "CRIT-LOCK",
+        "what_was_observed": "You engaged the lock lever while the needle was still oscillating.",
+        "what_differed": "Expert waited until needle was completely motionless at zero.",
+        "corrective_advice": "Wait 1 full second after 3rd click. Ensure needle is stable before rotating the lock lever.",
+        "expert_evidence_ref": {
+          "evidence_id": "EV-EXP-03",
+          "source_id": "replay_micrometer_zeroing.mp4",
+          "modality": "video",
+          "start_sec": 26,
+          "end_sec": 31
+        }
+      }
+    ],
+    "recommended_retry_focus": [
+      "CRIT-WIPE",
+      "CRIT-RATCHET",
+      "CRIT-LOCK"
+    ]
+  },
+  "retry_attempt": {
+    "attempt_id": "ATT-OPT-RETRY-01",
+    "task_id": "TASK-OPT-001",
+    "learner": {
+      "participant_id": "LRN-ELENA-01",
+      "name": "Learner (Replay Fixture)",
+      "role": "learner",
+      "notes": "Novice technician trainee - 2nd attempt"
+    },
+    "attempt_type": "retry",
+    "attempt_number": 2,
+    "submitted_at": "2026-10-04T10:45:00Z",
+    "evidence": {
+      "evidence_id": "EV-LRN-RETRY-01",
+      "source_id": "elena_retry_attempt.mp4",
+      "modality": "video",
+      "start_sec": 0,
+      "end_sec": 30,
+      "cue_excerpt": "Learner pulls optical paper smoothly in single stroke, grips small ratchet knurl producing exactly 3 steady clicks, waits for needle to rest at 0 before locking.",
+      "verification_state": "observed",
+      "confidence": 1
+    }
+  },
+  "retry_evaluation": {
+    "evaluation_id": "EVAL-OPT-RETRY-01",
+    "attempt_id": "ATT-OPT-RETRY-01",
+    "rubric_id": "RUBRIC-OPT-001",
+    "criterion_results": [
+      {
+        "criterion_id": "CRIT-WIPE",
+        "status": "satisfied",
+        "score": 2,
+        "observed_finding": "Optical paper pulled straight through in single continuous unidirectional pass.",
+        "deviation_analysis": "Fully aligned with expert technique."
+      },
+      {
+        "criterion_id": "CRIT-RATCHET",
+        "status": "satisfied",
+        "score": 3,
+        "observed_finding": "Turned ratchet knurl steadily producing exactly 3 audible clicks spaced 0.5s apart.",
+        "deviation_analysis": "Cadence and click count match expert standard."
+      },
+      {
+        "criterion_id": "CRIT-LOCK",
+        "status": "satisfied",
+        "score": 2,
+        "observed_finding": "Paused after 3rd click; needle settled completely at 0 before lock lever engaged.",
+        "deviation_analysis": "Zero angular needle deflection during lock engagement."
+      }
+    ],
+    "total_score": 7,
+    "passed": true,
+    "evaluator_type": "model_assisted",
+    "uncertainty_flags": [],
+    "evaluated_at": "2026-10-04T10:48:00Z"
+  },
+  "transmission_record": {
+    "transmission_id": "TX-OPT-001",
+    "skill_id": "SKILL-OPT-CALIB",
+    "package_id": "PKG-OPT-001",
+    "rubric_id": "RUBRIC-OPT-001",
+    "expert_id": "Reference Expert (Synthetic Fixture)",
+    "learner_id": "LRN-ELENA-01",
+    "baseline_attempt_id": "ATT-OPT-BASE-01",
+    "retry_attempt_id": "ATT-OPT-RETRY-01",
+    "baseline_score": 1.5,
+    "retry_score": 7,
+    "transmission_gain": 5.5,
+    "criteria_improved": [
+      "CRIT-WIPE",
+      "CRIT-RATCHET",
+      "CRIT-LOCK"
+    ],
+    "lineage": {
+      "parent_transmission_id": null,
+      "recorded_at": "2026-10-04T10:50:00Z",
+      "provenance_hash": "sha256-opt-calib-e2e-hash",
+      "adaptation_notes": "Learner achieved 100% competency across all three observable criteria on first retry following targeted feedback."
+    }
+  }
+}

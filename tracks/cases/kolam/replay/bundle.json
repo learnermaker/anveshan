@@ -1,0 +1,252 @@
+{
+  "case_id": "kolam_case_002",
+  "domain": "Traditional Indian Geometric Art & Spatial Mathematics",
+  "skill": "Sikku Kolam Continuous Knot Drawing & Radial Symmetry",
+  "knowledge_package": {
+    "package_id": "pkg-kolam-002",
+    "skill_id": "skill-kolam-geometry",
+    "title": "Sikku Kolam 5x5 Pulli Dot Matrix Trajectory",
+    "summary": "Execution of Brahma Mudi continuous uncrossed loop around a 5x5 orthogonal dot lattice with 4-fold rotational symmetry.",
+    "claims": [
+      {
+        "claim_id": "claim-pulli-grid",
+        "claim_type": "step",
+        "statement": "Establish a 5x5 staggered matrix of dots (pulli) with equal 40mm Euclidean spacing on a clean horizontal surface.",
+        "is_observed": true,
+        "evidence_refs": [
+          {
+            "evidence_id": "ev-kolam-grid",
+            "source_id": "src-kolam-01",
+            "modality": "video",
+            "start_sec": 2,
+            "end_sec": 8.5,
+            "verification_state": "observed",
+            "confidence": 0.98
+          }
+        ]
+      },
+      {
+        "claim_id": "claim-continuous-loop",
+        "claim_type": "step",
+        "statement": "The line must weave around each pulli dot without touching, intersecting, or lifting the drawing medium, completing a single continuous closed topological path.",
+        "is_observed": true,
+        "evidence_refs": [
+          {
+            "evidence_id": "ev-kolam-loop",
+            "source_id": "src-kolam-01",
+            "modality": "video",
+            "start_sec": 12,
+            "end_sec": 28,
+            "verification_state": "observed",
+            "confidence": 0.95
+          }
+        ]
+      }
+    ],
+    "consent": {
+      "contributor_name": "Synthetic Fixture Contributor",
+      "consent_scope": "engineering_replay_only",
+      "revocable": true,
+      "granted_at": "2026-09-18T10:00:00Z"
+    },
+    "expert_review": {
+      "reviewer_name": "Replay Fixture Reviewer",
+      "status": "pending",
+      "reviewed_at": "2026-09-22T14:30:00Z"
+    }
+  },
+  "rubric": {
+    "rubric_id": "rubric-kolam-002",
+    "skill_id": "skill-kolam-geometry",
+    "title": "Sikku Kolam Geometric Fidelity & Topology Rubric",
+    "description": "Deterministic scoring of pulli grid alignment, continuous single-path topology, and 4-fold symmetry.",
+    "passing_score": 7,
+    "criteria": [
+      {
+        "criterion_id": "CRIT-PULLI-GRID",
+        "name": "Pulli dot matrix equidistant spacing",
+        "description": "Dots laid out on orthogonal 5x5 coordinates with variance < 5mm.",
+        "observable_indicator": "Euclidean distance uniformity across all 25 coordinate points.",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "criterion_id": "CRIT-KOLAM-LOOP",
+        "name": "Topological non-intersecting loop closure",
+        "description": "Line circuits completely around dot perimeter without passing through dot centers.",
+        "observable_indicator": "Minimum 5mm clearance between chalk line and pulli centers; continuous path closure.",
+        "weight": 4,
+        "required": true
+      },
+      {
+        "criterion_id": "CRIT-KOLAM-SYMMETRY",
+        "name": "4-fold rotational symmetry preservation",
+        "description": "Opposite quadrants exhibit identical geometric curvature when rotated 90 degrees.",
+        "observable_indicator": "Quadrant pixel cross-correlation score > 0.85.",
+        "weight": 3,
+        "required": false
+      }
+    ]
+  },
+  "practice_task": {
+    "task_id": "task-kolam-brahma",
+    "package_id": "pkg-kolam-002",
+    "rubric_id": "rubric-kolam-002",
+    "title": "Draw 5x5 Sikku Kolam Brahma Mudi",
+    "instructions": "Using rice powder or digital stylus, trace the closed continuous loop encircling the 5x5 dot lattice without intersecting dots or breaking trajectory.",
+    "constraints": [
+      {
+        "constraint_type": "medium",
+        "description": "Continuous uninterrupted stroke"
+      },
+      {
+        "constraint_type": "time_limit",
+        "description": "Complete within 45 seconds",
+        "value": "45s"
+      }
+    ],
+    "target_criteria_ids": [
+      "CRIT-PULLI-GRID",
+      "CRIT-KOLAM-LOOP",
+      "CRIT-KOLAM-SYMMETRY"
+    ]
+  },
+  "baseline_attempt": {
+    "attempt_id": "attempt-kolam-base",
+    "task_id": "task-kolam-brahma",
+    "learner": {
+      "participant_id": "learner-replay",
+      "name": "learner-replay",
+      "role": "learner"
+    },
+    "attempt_type": "baseline",
+    "attempt_number": 1,
+    "evidence": {
+      "evidence_id": "ev-ananya-base",
+      "source_id": "src-ananya-kolam-01",
+      "modality": "video",
+      "start_sec": 0,
+      "end_sec": 32,
+      "verification_state": "observed",
+      "confidence": 1
+    }
+  },
+  "baseline_evaluation": {
+    "evaluation_id": "eval-kolam-base",
+    "attempt_id": "attempt-kolam-base",
+    "rubric_id": "rubric-kolam-002",
+    "evaluator_type": "model_assisted",
+    "criterion_results": [
+      {
+        "criterion_id": "CRIT-PULLI-GRID",
+        "score": 3,
+        "status": "satisfied",
+        "observed_finding": "Dot spacing was uniform within 3mm across the 5x5 matrix."
+      },
+      {
+        "criterion_id": "CRIT-KOLAM-LOOP",
+        "score": 1,
+        "status": "not_satisfied",
+        "observed_finding": "Line intersected dot (3, 4) directly, breaking outer orbital curve.",
+        "deviation_analysis": "incorrect_execution"
+      },
+      {
+        "criterion_id": "CRIT-KOLAM-SYMMETRY",
+        "score": 1.5,
+        "status": "partially_satisfied",
+        "observed_finding": "Quadrant IV distorted due to premature line termination."
+      }
+    ],
+    "total_score": 5.5,
+    "passed": false,
+    "uncertainty_flags": []
+  },
+  "feedback": {
+    "feedback_id": "fb-kolam-001",
+    "evaluation_id": "eval-kolam-base",
+    "attempt_id": "attempt-kolam-base",
+    "summary": "Targeted corrective feedback for the next attempt.",
+    "items": [
+      {
+        "criterion_id": "CRIT-KOLAM-LOOP",
+        "what_was_observed": "At dot (3, 4), hand took the acute diagonal vector directly slicing the dot center.",
+        "what_differed": "At dot (3, 4), hand took the acute diagonal vector directly slicing the dot center.",
+        "corrective_advice": "Loop outward in an arc around the external flank of dot (3, 4) before descending toward center."
+      }
+    ],
+    "recommended_retry_focus": [
+      "CRIT-KOLAM-LOOP"
+    ]
+  },
+  "retry_attempt": {
+    "attempt_id": "attempt-kolam-retry",
+    "task_id": "task-kolam-brahma",
+    "learner": {
+      "participant_id": "learner-replay",
+      "name": "learner-replay",
+      "role": "learner"
+    },
+    "attempt_type": "retry",
+    "attempt_number": 2,
+    "evidence": {
+      "evidence_id": "ev-ananya-retry",
+      "source_id": "src-ananya-kolam-02",
+      "modality": "video",
+      "start_sec": 0,
+      "end_sec": 29.5,
+      "verification_state": "observed",
+      "confidence": 1
+    }
+  },
+  "retry_evaluation": {
+    "evaluation_id": "eval-kolam-retry",
+    "attempt_id": "attempt-kolam-retry",
+    "rubric_id": "rubric-kolam-002",
+    "evaluator_type": "model_assisted",
+    "criterion_results": [
+      {
+        "criterion_id": "CRIT-PULLI-GRID",
+        "score": 3,
+        "status": "satisfied",
+        "observed_finding": "Uniform grid maintained."
+      },
+      {
+        "criterion_id": "CRIT-KOLAM-LOOP",
+        "score": 4,
+        "status": "satisfied",
+        "observed_finding": "All 25 dots encircled with continuous unbroken stroke without contact."
+      },
+      {
+        "criterion_id": "CRIT-KOLAM-SYMMETRY",
+        "score": 2.8,
+        "status": "satisfied",
+        "observed_finding": "Cross-quadrant symmetry correlation reached 0.91."
+      }
+    ],
+    "total_score": 9.8,
+    "passed": true,
+    "uncertainty_flags": []
+  },
+  "transmission_record": {
+    "transmission_id": "tx-kolam-002",
+    "skill_id": "skill-kolam-geometry",
+    "package_id": "pkg-kolam-002",
+    "rubric_id": "rubric-kolam-002",
+    "expert_id": "reference-expert-replay",
+    "learner_id": "learner-replay",
+    "baseline_attempt_id": "attempt-kolam-base",
+    "retry_attempt_id": "attempt-kolam-retry",
+    "baseline_score": 5.5,
+    "retry_score": 9.8,
+    "transmission_gain": 4.3,
+    "criteria_improved": [
+      "CRIT-KOLAM-LOOP",
+      "CRIT-KOLAM-SYMMETRY"
+    ],
+    "lineage": {
+      "recorded_at": "2026-10-04T12:00:00Z",
+      "provenance_hash": "sha256-kolam-merkle-9a8b7c6d",
+      "adaptation_notes": "Spatial trajectory corrected via interactive perimeter overlay practice."
+    }
+  }
+}
