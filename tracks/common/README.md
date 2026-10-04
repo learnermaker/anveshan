@@ -45,7 +45,7 @@ See CONTRACT-USAGE.md for detailed guidance.
 
 ## Current prototype alignment — 2026-10-04
 
-The frontend now demonstrates an adaptive workspace compiler, first-divergence inspection, adaptive micro-practice, deterministic gain, and lineage. These are downstream uses of the frozen seam, not new contracts.
+The frontend now demonstrates an adaptive workspace compiler, first-divergence inspection, adaptive micro-practice, deterministic gain, and lineage. These are downstream uses of the frozen seam, not new contracts. No UI requirement justifies adding a ninth contract.
 
 The current workspace archetypes include Spatial Practice, Forensic Multimodal, Diagnostic, Rhythm, State Transition, Spatial Sequence, and First-Divergence workspaces. The common seam remains domain-agnostic.
 
