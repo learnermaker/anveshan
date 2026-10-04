@@ -1,0 +1,248 @@
+{
+  "case_id": "tabla_case_005",
+  "domain": "Indian Classical Percussion & Acoustic Science",
+  "skill": "Tabla \"Dha\" Compound Syllable & Synchronized Resonance",
+  "knowledge_package": {
+    "package_id": "pkg-tabla-005",
+    "skill_id": "skill-tabla-dha",
+    "title": "Acoustic Synchronization of Dha (Ge + Na Compound Stroke)",
+    "summary": "Bimanual synchronization of the bass Bayan modulation with the treble Dayan rim stroke to produce a singular resonant acoustic timbre.",
+    "claims": [
+      {
+        "claim_id": "claim-dha-sync",
+        "claim_type": "step",
+        "statement": "The flat wrist heel slide on the Bayan (Ge) and the index finger rim strike on the Dayan (Na) must impact within +/- 15ms.",
+        "is_observed": true,
+        "evidence_refs": [
+          {
+            "evidence_id": "ev-tabla-sync",
+            "source_id": "src-tabla-01",
+            "modality": "audio",
+            "start_sec": 8.2,
+            "end_sec": 14.5,
+            "verification_state": "observed",
+            "confidence": 0.99
+          }
+        ]
+      },
+      {
+        "claim_id": "claim-syllable-resonance",
+        "claim_type": "step",
+        "statement": "Simultaneous strike generates a composite acoustic spectrum combining 85Hz bass modulation with 440Hz ringing harmonic overtone.",
+        "is_observed": true,
+        "evidence_refs": [
+          {
+            "evidence_id": "ev-tabla-freq",
+            "source_id": "src-tabla-01",
+            "modality": "audio",
+            "start_sec": 15,
+            "end_sec": 20,
+            "verification_state": "observed",
+            "confidence": 0.98
+          }
+        ]
+      }
+    ],
+    "consent": {
+      "contributor_name": "Synthetic Fixture Contributor",
+      "consent_scope": "engineering_replay_only",
+      "revocable": true,
+      "granted_at": "2026-09-10T14:00:00Z"
+    },
+    "expert_review": {
+      "reviewer_name": "Replay Fixture Reviewer",
+      "status": "pending",
+      "reviewed_at": "2026-09-18T18:00:00Z"
+    }
+  },
+  "rubric": {
+    "rubric_id": "rubric-tabla-005",
+    "skill_id": "skill-tabla-dha",
+    "title": "Tabla Dha Timbre & Temporal Synchronization Rubric",
+    "description": "Deterministic acoustic scoring of bimanual strike offset, harmonic balance, and wrist dampening.",
+    "passing_score": 7,
+    "criteria": [
+      {
+        "criterion_id": "CRIT-TIMING-SYNC",
+        "name": "Bimanual strike temporal offset (< 15ms)",
+        "description": "Bayan bass onset and Dayan treble onset align within 15 milliseconds.",
+        "observable_indicator": "Delta T between acoustic rise times <= 15ms on waveform envelope.",
+        "weight": 4,
+        "required": true
+      },
+      {
+        "criterion_id": "CRIT-BAYAN-PRESSURE",
+        "name": "Bayan wrist modulation & sustain",
+        "description": "Left wrist applies sliding pressure on syahi to modulate 85Hz fundamental pitch.",
+        "observable_indicator": "Pitch glide visible in 70Hz–110Hz spectrogram band.",
+        "weight": 3,
+        "required": true
+      },
+      {
+        "criterion_id": "CRIT-DAYAN-CLARITY",
+        "name": "Dayan ringing clarity (ring finger damping)",
+        "description": "Ring finger rests lightly on sur edge while index finger strikes kinar cleanly.",
+        "observable_indicator": "Sustained 440Hz A4 harmonic overtone with Q-factor > 20.",
+        "weight": 3,
+        "required": false
+      }
+    ]
+  },
+  "practice_task": {
+    "task_id": "task-tabla-teentaal",
+    "package_id": "pkg-tabla-005",
+    "rubric_id": "rubric-tabla-005",
+    "title": "Execute 4 Balanced Dha Strokes on Sam",
+    "instructions": "Play four consecutive \"Dha\" strokes at 60 BPM, ensuring simultaneous acoustic contact of both hands and resonant decay.",
+    "constraints": [
+      {
+        "constraint_type": "tempo",
+        "description": "Metronome fixed at 60 BPM",
+        "value": "60"
+      }
+    ],
+    "target_criteria_ids": [
+      "CRIT-TIMING-SYNC",
+      "CRIT-BAYAN-PRESSURE",
+      "CRIT-DAYAN-CLARITY"
+    ]
+  },
+  "baseline_attempt": {
+    "attempt_id": "attempt-tabla-base",
+    "task_id": "task-tabla-teentaal",
+    "learner": {
+      "participant_id": "learner-replay",
+      "name": "learner-replay",
+      "role": "learner"
+    },
+    "attempt_type": "baseline",
+    "attempt_number": 1,
+    "evidence": {
+      "evidence_id": "ev-rohan-base",
+      "source_id": "src-rohan-tabla-01",
+      "modality": "audio",
+      "start_sec": 0,
+      "end_sec": 16,
+      "verification_state": "observed",
+      "confidence": 1
+    }
+  },
+  "baseline_evaluation": {
+    "evaluation_id": "eval-tabla-base",
+    "attempt_id": "attempt-tabla-base",
+    "rubric_id": "rubric-tabla-005",
+    "evaluator_type": "model_assisted",
+    "criterion_results": [
+      {
+        "criterion_id": "CRIT-TIMING-SYNC",
+        "score": 1,
+        "status": "not_satisfied",
+        "observed_finding": "Dayan-Bayan onset gap was 48ms; heard as disjointed \"ta-ge\" instead of unified \"Dha\".",
+        "deviation_analysis": "timing_fault"
+      },
+      {
+        "criterion_id": "CRIT-BAYAN-PRESSURE",
+        "score": 2,
+        "status": "partially_satisfied",
+        "observed_finding": "Wrist slide was abrupt, muting resonance after 110ms."
+      },
+      {
+        "criterion_id": "CRIT-DAYAN-CLARITY",
+        "score": 2.5,
+        "status": "satisfied",
+        "observed_finding": "Crisp kinar strike with clear 440Hz resonance."
+      }
+    ],
+    "total_score": 5.5,
+    "passed": false,
+    "uncertainty_flags": []
+  },
+  "feedback": {
+    "feedback_id": "fb-tabla-001",
+    "evaluation_id": "eval-tabla-base",
+    "attempt_id": "attempt-tabla-base",
+    "summary": "Targeted corrective feedback for the next attempt.",
+    "items": [
+      {
+        "criterion_id": "CRIT-TIMING-SYNC",
+        "what_was_observed": "Bayan hand made acoustic contact 48ms after Dayan rim hit.",
+        "what_differed": "Bayan hand made acoustic contact 48ms after Dayan rim hit.",
+        "corrective_advice": "Drop both hands as a single mechanical unit. Anticipate the Bayan bass drop slightly before Dayan touch."
+      }
+    ],
+    "recommended_retry_focus": [
+      "CRIT-TIMING-SYNC"
+    ]
+  },
+  "retry_attempt": {
+    "attempt_id": "attempt-tabla-retry",
+    "task_id": "task-tabla-teentaal",
+    "learner": {
+      "participant_id": "learner-replay",
+      "name": "learner-replay",
+      "role": "learner"
+    },
+    "attempt_type": "retry",
+    "attempt_number": 2,
+    "evidence": {
+      "evidence_id": "ev-rohan-retry",
+      "source_id": "src-rohan-tabla-02",
+      "modality": "audio",
+      "start_sec": 0,
+      "end_sec": 15.5,
+      "verification_state": "observed",
+      "confidence": 1
+    }
+  },
+  "retry_evaluation": {
+    "evaluation_id": "eval-tabla-retry",
+    "attempt_id": "attempt-tabla-retry",
+    "rubric_id": "rubric-tabla-005",
+    "evaluator_type": "model_assisted",
+    "criterion_results": [
+      {
+        "criterion_id": "CRIT-TIMING-SYNC",
+        "score": 4,
+        "status": "satisfied",
+        "observed_finding": "Bimanual onset delta measured at 8ms (well within 15ms target window)."
+      },
+      {
+        "criterion_id": "CRIT-BAYAN-PRESSURE",
+        "score": 3,
+        "status": "satisfied",
+        "observed_finding": "Smooth wrist glide created 280ms rich bass decay envelope."
+      },
+      {
+        "criterion_id": "CRIT-DAYAN-CLARITY",
+        "score": 3,
+        "status": "satisfied",
+        "observed_finding": "Clean metallic chime with zero unwanted buzz."
+      }
+    ],
+    "total_score": 10,
+    "passed": true,
+    "uncertainty_flags": []
+  },
+  "transmission_record": {
+    "transmission_id": "tx-tabla-005",
+    "skill_id": "skill-tabla-dha",
+    "package_id": "pkg-tabla-005",
+    "rubric_id": "rubric-tabla-005",
+    "expert_id": "reference-expert-replay",
+    "learner_id": "learner-replay",
+    "baseline_attempt_id": "attempt-tabla-base",
+    "retry_attempt_id": "attempt-tabla-retry",
+    "baseline_score": 5.5,
+    "retry_score": 10,
+    "transmission_gain": 4.5,
+    "criteria_improved": [
+      "CRIT-TIMING-SYNC",
+      "CRIT-BAYAN-PRESSURE"
+    ],
+    "lineage": {
+      "recorded_at": "2026-10-04T14:00:00Z",
+      "provenance_hash": "sha256-tabla-merkle-5e4d3c2b",
+      "adaptation_notes": "Millisecond acoustic onset envelope visualization allowed immediate tactile correction."
+    }
+  }
+}
