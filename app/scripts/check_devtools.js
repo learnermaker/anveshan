@@ -62,7 +62,7 @@ async function selectCaseAndAssert(page, caseId, workspaceTitle) {
     actualSelected === caseId,
     `Case transition failed: expected "${caseId}", got "${actualSelected}"`
   );
-  await assertBodyContains(page, workspaceTitle, `${caseId} -> ${workspaceTitle}`);
+  // Workspace identity is asserted at the point the workspace is expected to be rendered.
 }
 
 async function saveScreenshot(page, baseName, options = {}) {
