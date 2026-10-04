@@ -66,8 +66,10 @@ npm install
 npm run dev
 ```
 
-## Production Build
+## Production Build & Verification
 
 ```bash
 npm run build
+npm run audit:devtools
 ```
+

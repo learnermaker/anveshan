@@ -96,6 +96,7 @@ export interface CapabilityCase {
   title: string;
   domain: string;
   archetype: string;
+  transmissionMode: 'forward' | 'goal_conditioned' | 'corrective';
   shortDescription: string;
   expertName: string;
   expertRole: string;

@@ -100,9 +100,20 @@ export function DiscoveryView({ onSelectCase, selectedCaseId }: DiscoveryViewPro
                     <div className="w-10 h-10 rounded-lg bg-surface-dim border border-outline flex items-center justify-center">
                       {getIcon(id)}
                     </div>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-surface-dim border border-outline text-on-surface-variant">
-                      {c.archetype}
-                    </span>
+                    <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-surface-dim border border-outline text-on-surface-variant">
+                        {c.archetype}
+                      </span>
+                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase ${
+                        c.transmissionMode === 'goal_conditioned'
+                          ? 'bg-caliper-cyan/15 text-caliper-cyan border border-caliper-cyan/30'
+                          : c.transmissionMode === 'corrective'
+                          ? 'bg-divergence-crimson/15 text-divergence-crimson border border-divergence-crimson/30'
+                          : 'bg-transmission-emerald/15 text-transmission-emerald border border-transmission-emerald/30'
+                      }`}>
+                        {c.transmissionMode === 'goal_conditioned' ? 'Goal-Target' : c.transmissionMode === 'corrective' ? 'Corrective' : 'Forward'}
+                      </span>
+                    </div>
                   </div>
 
                   <div>
