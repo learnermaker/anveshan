@@ -133,3 +133,32 @@ Stop and narrow scope if:
 - implementation requires platform infrastructure rather than improving the proof.
 
 Do not solve uncertainty by adding architecture.
+
+
+## Parallel UI coexistence
+UI work is happening independently. Track A must remain UI-agnostic. Do not couple extraction, grounding, review, or practice-task generation to React/component state, UI JSON, route structure, or presentation copy. If the UI needs a different shape, expose an adapter/view-model downstream of validated contracts.
+Never change a common contract because a screen is inconvenient to render.
+
+## Required implementation sequence
+1. Contract map — identify common outputs and relationships.
+2. Fixture first — define expected observations, evidence, uncertainty, and failure cases.
+3. Deterministic core — implement normalization, provenance checks, relationships, and replay without a live model.
+4. Model adapter — add Gemini/model calls only behind a replaceable DTO/adapter boundary.
+5. Review state — make expert review explicit; never infer approval from model confidence.
+6. Bounded teaching — generate only the lesson/practice surface needed for the selected case.
+7. Negative tests — prove unsupported claims, bad evidence, invalid relationships, and uncertainty are handled safely.
+8. Replay gate — run the full Track A replay without live Gemini.
+
+## Evidence ledger requirement
+For every material extracted claim, preserve: claim → evidence → locator → observation/inference state → uncertainty → review state.
+If any link is unavailable, preserve the gap. Do not fabricate timestamps, confidence, source excerpts, expert approval, or domain facts.
+
+## Model-output quarantine
+Gemini/provider DTOs are untrusted intermediate outputs. Validate and normalize them before they cross into tracks.common. Do not pass raw model JSON directly to Track B or the UI as authoritative data.
+
+## Domain selection guardrail
+Until M0 explicitly selects the bounded case, reusable code must work from interfaces/configuration/fixtures rather than named professions, tools, physical techniques, or fixed vocabulary. Domain-specific prompts or fixtures are acceptable; domain-specific assumptions in reusable infrastructure are not.
+
+## Handoff packet
+Before integration, provide source identity and consent/review state; normalized EvidenceRef objects; KnowledgePackage; RubricDefinition; PracticeTask; expected uncertainty/unsupported claims; replay command and expected result; and model/prompt metadata when a model was used.
+Track B must be able to consume this packet without importing Track A source modules.
