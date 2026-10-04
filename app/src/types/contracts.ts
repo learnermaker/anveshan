@@ -145,25 +145,27 @@ export interface Feedback {
   created_at?: string;
 }
 
-export interface LineageNode {
-  artifact_id: string;
-  artifact_type: string;
-  sha256?: string;
-  parents?: string[];
+export interface LineageMetadata {
+  parent_transmission_id?: string | null;
+  recorded_at: string;
+  provenance_hash?: string | null;
+  adaptation_notes?: string | null;
 }
 
 export interface TransmissionRecord {
-  record_id: string;
-  learner_id: string;
+  transmission_id: string;
   skill_id: string;
   package_id: string;
+  rubric_id: string;
+  expert_id: string;
+  learner_id: string;
   baseline_attempt_id: string;
   retry_attempt_id: string;
   baseline_score: number;
   retry_score: number;
   transmission_gain: number;
-  verified_at: string;
-  lineage: LineageNode[];
+  criteria_improved?: string[];
+  lineage: LineageMetadata;
 }
 
 export interface TransmissionBundle {

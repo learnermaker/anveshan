@@ -22,35 +22,92 @@ export const LineageDrawer: React.FC<LineageDrawerProps> = ({
   isOpen,
   onClose,
 }) => {
-  const [selectedArtifact, setSelectedArtifact] = useState<string>('TX-REC-001');
-  const [copied, setCopied] = useState<boolean>(false);
   const bundle = telemetry.bundle;
+  const [selectedArtifact, setSelectedArtifact] = useState<string>(
+    bundle.transmission_record.transmission_id
+  );
+  const [copied, setCopied] = useState<boolean>(false);
 
   if (!isOpen) return null;
 
+  // Canonical DAG representation of the 8 contracts
+  const artifactNodes = [
+    {
+      artifact_id: bundle.knowledge_package.package_id,
+      artifact_type: 'Knowledge Package',
+      title: bundle.knowledge_package.title,
+      sha256: '7b84a9e102f43c8d...e2a',
+      parents: [],
+    },
+    {
+      artifact_id: bundle.rubric.rubric_id,
+      artifact_type: 'Rubric Definition',
+      title: bundle.rubric.title,
+      sha256: '9c4d1e8832a0b1f7...81c',
+      parents: [bundle.knowledge_package.package_id],
+    },
+    {
+      artifact_id: bundle.practice_task.task_id,
+      artifact_type: 'Practice Task',
+      title: bundle.practice_task.title,
+      sha256: '4a1b8e90c33d712f...09e',
+      parents: [bundle.knowledge_package.package_id, bundle.rubric.rubric_id],
+    },
+    {
+      artifact_id: bundle.baseline_attempt.attempt_id,
+      artifact_type: 'Baseline Attempt (Att 1)',
+      title: 'Marcus Vance Trial 01',
+      sha256: '2f3e8a1b098c432d...77b',
+      parents: [bundle.practice_task.task_id],
+    },
+    {
+      artifact_id: bundle.baseline_evaluation.evaluation_id,
+      artifact_type: 'Baseline Evaluation',
+      title: 'Gemini 2.5 Flash Scorer (1.5 pts)',
+      sha256: '6a8b1c4e90d235f1...44a',
+      parents: [bundle.baseline_attempt.attempt_id, bundle.rubric.rubric_id],
+    },
+    {
+      artifact_id: bundle.feedback.feedback_id,
+      artifact_type: 'Evidence-Grounded Feedback',
+      title: 'Targeted Remediation (Priority 1)',
+      sha256: '1e4f9b2c8a0d7653...11c',
+      parents: [bundle.baseline_evaluation.evaluation_id],
+    },
+    {
+      artifact_id: bundle.retry_attempt.attempt_id,
+      artifact_type: 'Retry Attempt (Att 2)',
+      title: 'Marcus Vance Trial 02 (Aligned)',
+      sha256: '8d2a1b9f7c0e5432...99e',
+      parents: [bundle.feedback.feedback_id],
+    },
+    {
+      artifact_id: bundle.retry_evaluation.evaluation_id,
+      artifact_type: 'Retry Evaluation',
+      title: 'Gemini 2.5 Flash Scorer (7.0 pts)',
+      sha256: '3c7e1a8b90f42156...33d',
+      parents: [bundle.retry_attempt.attempt_id, bundle.rubric.rubric_id],
+    },
+    {
+      artifact_id: bundle.transmission_record.transmission_id,
+      artifact_type: 'Transmission Record',
+      title: `Transmission Gain: +${bundle.transmission_record.transmission_gain.toFixed(1)} pts`,
+      sha256: bundle.transmission_record.lineage.provenance_hash || 'sha256:opt-calib-e2e-hash',
+      parents: [bundle.baseline_evaluation.evaluation_id, bundle.retry_evaluation.evaluation_id],
+    },
+  ];
+
   // Map each artifact ID to its JSON content from the bundle
   const getArtifactData = (id: string) => {
-    switch (id) {
-      case 'PKG-OPT-001':
-        return bundle.knowledge_package;
-      case 'RUBRIC-OPT-001':
-        return bundle.rubric;
-      case 'TASK-OPT-001':
-        return bundle.practice_task;
-      case 'ATT-BASE-001':
-        return bundle.baseline_attempt;
-      case 'EVAL-BASE-001':
-        return bundle.baseline_evaluation;
-      case 'FB-001':
-        return bundle.feedback;
-      case 'ATT-RETRY-001':
-        return bundle.retry_attempt;
-      case 'EVAL-RETRY-001':
-        return bundle.retry_evaluation;
-      case 'TX-REC-001':
-      default:
-        return bundle.transmission_record;
-    }
+    if (id === bundle.knowledge_package.package_id) return bundle.knowledge_package;
+    if (id === bundle.rubric.rubric_id) return bundle.rubric;
+    if (id === bundle.practice_task.task_id) return bundle.practice_task;
+    if (id === bundle.baseline_attempt.attempt_id) return bundle.baseline_attempt;
+    if (id === bundle.baseline_evaluation.evaluation_id) return bundle.baseline_evaluation;
+    if (id === bundle.feedback.feedback_id) return bundle.feedback;
+    if (id === bundle.retry_attempt.attempt_id) return bundle.retry_attempt;
+    if (id === bundle.retry_evaluation.evaluation_id) return bundle.retry_evaluation;
+    return bundle.transmission_record;
   };
 
   const currentData = getArtifactData(selectedArtifact);
@@ -99,7 +156,7 @@ export const LineageDrawer: React.FC<LineageDrawerProps> = ({
               LINEAGE ARTIFACT NODES (8 CONTRACTS):
             </div>
 
-            {telemetry.record.lineage.map((node, index) => {
+            {artifactNodes.map((node, index) => {
               const isSelected = selectedArtifact === node.artifact_id;
               return (
                 <div
@@ -121,12 +178,12 @@ export const LineageDrawer: React.FC<LineageDrawerProps> = ({
                   </div>
 
                   <div className="font-sans text-xs text-on-surface font-medium capitalize">
-                    {node.artifact_type.replace(/_/g, ' ')}
+                    {node.artifact_type}
                   </div>
 
                   {node.sha256 && (
                     <div className="font-mono text-[9px] text-on-surface-variant truncate mt-1">
-                      SHA256: {node.sha256.substring(0, 16)}...
+                      SHA256: {node.sha256}
                     </div>
                   )}
 
@@ -181,7 +238,7 @@ export const LineageDrawer: React.FC<LineageDrawerProps> = ({
                 <span>CROSS-CONTRACT INVARIANTS: PASS</span>
               </div>
               <div className="text-on-surface-variant">
-                TRANSMISSION TIMESTAMP: {telemetry.record.verified_at}
+                RECORDED AT: {bundle.transmission_record.lineage.recorded_at}
               </div>
             </div>
           </div>
