@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-on-surface font-sans;
+  }
+}
+
+/* Technical Telemetry Grid */
+.telemetry-grid {
+  background-size: 24px 24px;
+  background-image: 
+    linear-gradient(to right, rgba(46, 53, 59, 0.25) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(46, 53, 59, 0.25) 1px, transparent 1px);
+}
+
+/* Subtle Instrument Noise / Grain */
+.noise-overlay {
+  background-image: radial-gradient(rgba(230, 126, 34, 0.03) 1px, transparent 0);
+  background-size: 16px 16px;
+}
+
+/* Precision Caliper Corners */
+.reticle-corner {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-color: #00e5ff;
+  pointer-events: none;
+}
+.reticle-tl { top: 0; left: 0; border-top: 1.5px solid #00e5ff; border-left: 1.5px solid #00e5ff; }
+.reticle-tr { top: 0; right: 0; border-top: 1.5px solid #00e5ff; border-right: 1.5px solid #00e5ff; }
+.reticle-bl { bottom: 0; left: 0; border-bottom: 1.5px solid #00e5ff; border-left: 1.5px solid #00e5ff; }
+.reticle-br { bottom: 0; right: 0; border-bottom: 1.5px solid #00e5ff; border-right: 1.5px solid #00e5ff; }
+
+/* Custom Scrollbars for High-Density Telemetry */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #08090a;
+}
+::-webkit-scrollbar-thumb {
+  background: #2e353b;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #e67e22;
+}

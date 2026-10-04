@@ -1,0 +1,24 @@
+{
+  "task_id": "TASK-OPT-001",
+  "package_id": "PKG-OPT-001",
+  "rubric_id": "RUBRIC-OPT-001",
+  "title": "Zero an Optical Dial Micrometer",
+  "instructions": "1. Inspect optical faces and perform a single linear wipe with lint-free paper. 2. Advance spindle gently until ratchet stop engages. 3. Turn ratchet stop for exactly 3 steady clicks. 4. Wait for indicator needle to settle, then engage spindle lock lever.",
+  "constraints": [
+    {
+      "constraint_type": "time_limit",
+      "description": "Complete complete zeroing sequence within 45 seconds",
+      "value": "45s"
+    },
+    {
+      "constraint_type": "tool_spec",
+      "description": "Use 0-25mm optical dial micrometer with 0.001mm graduation",
+      "value": "0-25mm"
+    }
+  ],
+  "target_criteria_ids": [
+    "CRIT-WIPE",
+    "CRIT-RATCHET",
+    "CRIT-LOCK"
+  ]
+}

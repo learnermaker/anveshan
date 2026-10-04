@@ -1,0 +1,23 @@
+{
+  "attempt_id": "ATT-OPT-BASE-01",
+  "task_id": "TASK-OPT-001",
+  "learner": {
+    "participant_id": "LRN-ELENA-01",
+    "name": "Elena Rostova",
+    "role": "learner",
+    "notes": "Novice technician trainee"
+  },
+  "attempt_type": "baseline",
+  "attempt_number": 1,
+  "submitted_at": "2026-10-04T10:15:00Z",
+  "evidence": {
+    "evidence_id": "EV-LRN-BASE-01",
+    "source_id": "elena_baseline_attempt.mp4",
+    "modality": "video",
+    "start_sec": 0.0,
+    "end_sec": 38.0,
+    "cue_excerpt": "Learner scrubs paper back and forth, turns thimble barrel rapidly generating 7 fast clicks, locks while needle vibrating.",
+    "verification_state": "observed",
+    "confidence": 1.0
+  }
+}
