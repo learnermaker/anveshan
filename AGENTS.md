@@ -18,6 +18,19 @@ When documents disagree, use this order:
 10. docs/status/NOW.md and docs/status/project.yaml — concise execution state derived from the hierarchy above; they do not override it.
 11. docs/status/DECISIONS.md — durable governance decisions.
 
+
+### Contract single-source rule
+
+The eight shared contracts have exactly one authoritative source: `tracks/common/schemas/`. This includes field names, enum values, required/optional semantics, and validation meaning.
+
+- UI/TypeScript must not invent, rename, broaden, or narrow the eight contract shapes.
+- `app/src/types/contracts.ts` is a downstream type mirror only; it is never an independent product contract.
+- UI fixture payloads may use legacy/internal shapes only at a clearly named adapter boundary and must normalize immediately into the canonical seam before consumption.
+- New UI case data should be authored directly in canonical contract shape whenever possible.
+- If canonical and UI types disagree, stop and reconcile the adapter/types before adding more UI logic; do not make the UI type more permissive just to compile.
+- Contract changes require an explicit common-seam issue and must not be hidden inside a UI task.
+- Before closing UI work, search for drift markers such as `learner_id`, `evidence_refs`, legacy criterion statuses, provider-specific evaluator names, or duplicate contract interfaces.
+
 ## Product hierarchy
 
 Anveshan has three distinct levels:
