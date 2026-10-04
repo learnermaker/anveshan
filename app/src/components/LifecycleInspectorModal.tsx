@@ -68,16 +68,16 @@ export const LifecycleInspectorModal: React.FC<LifecycleInspectorModalProps> = (
               <div className="relative aspect-video rounded-lg overflow-hidden border border-outline bg-surface-container-lowest">
                 <img
                   src="/assets/expert-reference.jpg"
-                  alt="Raw 4K Macro Capture - Master Metrologist Elena Rostova"
+                  alt="Micrometer reference replay fixture"
                   className="w-full h-full object-cover filter contrast-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-surface-container-lowest/40" />
                 <div className="absolute top-2 left-2 bg-surface-container-lowest/90 px-2 py-0.5 rounded font-mono text-[10px] text-transmission-emerald border border-outline flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-transmission-emerald animate-pulse" />
-                  AUTHENTIC MASTER CAPTURE // 4K 60FPS DUAL STEREO
+                  REFERENCE CAPTURE // REPLAY FIXTURE
                 </div>
                 <div className="absolute bottom-2 right-2 bg-surface-container-lowest/90 px-2 py-0.5 rounded font-mono text-[10px] text-cadmium-amber border border-outline">
-                  ELENA ROSTOVA &bull; ISO 3611 CALIBRATED
+                  SYNTHETIC FIXTURE &bull; CALIBRATION NOT VERIFIED
                 </div>
               </div>
 
@@ -91,7 +91,7 @@ export const LifecycleInspectorModal: React.FC<LifecycleInspectorModalProps> = (
                   </span>
                 </div>
                 <p className="text-xs font-sans text-on-surface-variant leading-relaxed">
-                  High-speed macrolens recording of Elena Rostova zeroing an optical dial micrometer under 50x magnification. Captures tactile spindle resistance and acoustic ratchet clicks with precision condenser microphones.
+                  Replay fixture representing a controlled micrometer zeroing scenario. Media, identities, and calibration claims are illustrative engineering data unless explicitly replaced with authorized real evidence.
                 </p>
               </div>
 
@@ -185,7 +185,7 @@ export const LifecycleInspectorModal: React.FC<LifecycleInspectorModalProps> = (
               <div className="relative aspect-video rounded-lg overflow-hidden border border-outline bg-surface-container-lowest">
                 <img
                   src="/assets/learner-attempt.jpg"
-                  alt="Apprentice Marcus Vance Practice Task Capture"
+                  alt="Learner replay fixture practice capture"
                   className="w-full h-full object-cover filter contrast-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-surface-container-lowest/40" />
@@ -254,7 +254,7 @@ export const LifecycleInspectorModal: React.FC<LifecycleInspectorModalProps> = (
         {/* Modal Footer */}
         <div className="p-3 bg-surface-container border-t border-outline flex items-center justify-between">
           <div className="font-mono text-[10px] text-on-surface-variant">
-            ANVESHAN VERIFIED EVIDENCE CHAIN &bull; CASE-001
+            ANVESHAN REPLAY EVIDENCE CHAIN &bull; CASE-001
           </div>
           <button
             onClick={onClose}

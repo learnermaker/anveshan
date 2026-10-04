@@ -7,7 +7,7 @@
 
 **Anveshan helps one person transmit a real piece of expertise to another person.**
 
-It starts from an authentic expert demonstration, uses multimodal AI to structure observable knowledge, preserves source evidence, turns the result into a concise apprenticeship, observes the learner's attempt, provides evidence-linked feedback, measures improvement, and records transmission lineage.
+It starts from an appropriate source—often an authentic expert demonstration, but potentially a desired state or learner attempt—uses multimodal AI to structure observable evidence, preserves source provenance, creates an adaptive transmission experience, observes the learner's attempt, provides evidence-linked feedback, measures improvement, and records transmission lineage.
 
 ### Core loop
 
@@ -94,13 +94,15 @@ Current research shows that AI interviews, tacit-knowledge extraction, knowledge
 
 The current differentiation hypothesis is:
 
-> **authentic expert source → grounded representation → adaptive teaching → learner attempt → evidence-linked verification → measurable improvement → lineage**
+> **appropriate source → grounded representation → adaptive transmission → learner attempt → evidence-linked verification → measurable improvement → lineage**
 
 This is a hypothesis, not a market-wide claim of uniqueness.
 
 ## 9. MVP
 
-The first proof should use one real expert, one bounded skill, one authentic demonstration, one learner, one practice task, one baseline attempt, one teaching interaction, one feedback loop, one retry, one measurable improvement, one transmission record and one lineage event.
+The first proof should use one accountable source, one bounded skill, one source-grounded representation, one learner, one practice task, one baseline attempt, one teaching/transmission interaction, one feedback loop, one retry, one measurable improvement, one transmission record and one lineage event.
+
+For the original expert-transfer wedge, the accountable source should be a real expert. Goal-conditioned target-first cases are a documented research extension and must not be presented as validated expert-procedure recovery.
 
 The exact skill must be selected from authentic access, observability, safety and judge comprehension.
 
