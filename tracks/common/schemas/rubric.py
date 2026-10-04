@@ -20,7 +20,7 @@ class RubricCriterion(BaseModel):
     weight: float = Field(
         default=1.0,
         gt=0.0,
-        description="Weight or maximum points assigned to this criterion",
+        description="Maximum points achievable for this criterion (acts as criterion weight/scale)",
     )
     required: bool = Field(
         default=True,
@@ -43,7 +43,7 @@ class RubricDefinition(BaseModel):
     passing_score: Optional[float] = Field(
         None,
         ge=0.0,
-        description="Minimum total score required to achieve competency (defaults to 70% of max score)",
+        description="Explicit minimum total score required to achieve competency. If None, passing requires satisfying all required criteria.",
     )
 
     @property

@@ -46,7 +46,7 @@ Three people and their agents may work in parallel when ownership boundaries are
 
 For two-developer parallel delivery: Track A owns expert intelligence and grounding; Track B owns practice, evaluation, and transmission. Both work against frozen cross-track contracts and replay fixtures, so neither track requires the other's implementation to make progress. Integration occurs only after both tracks have independent proof.
 
-The shared seam is intentionally small: `KnowledgePackage`, `EvidenceRef`, `PracticeTask`, `LearnerAttempt`, `Evaluation`, `Feedback`, and `TransmissionRecord`. These names describe the execution boundary, not a commitment to implement every object immediately.
+The shared seam is intentionally small: `KnowledgePackage`, `EvidenceRef`, `RubricDefinition`, `PracticeTask`, `LearnerAttempt`, `Evaluation`, `Feedback`, and `TransmissionRecord`. These names describe the execution boundary, not a commitment to implement every object immediately.
 
 ## Scope buckets
 

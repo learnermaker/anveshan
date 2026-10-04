@@ -1,0 +1,33 @@
+{
+  "evaluation_id": "EVAL-OPT-RETRY-01",
+  "attempt_id": "ATT-OPT-RETRY-01",
+  "rubric_id": "RUBRIC-OPT-001",
+  "criterion_results": [
+    {
+      "criterion_id": "CRIT-WIPE",
+      "status": "satisfied",
+      "score": 2.0,
+      "observed_finding": "Optical paper pulled straight through in single continuous unidirectional pass.",
+      "deviation_analysis": "Fully aligned with expert technique."
+    },
+    {
+      "criterion_id": "CRIT-RATCHET",
+      "status": "satisfied",
+      "score": 3.0,
+      "observed_finding": "Turned ratchet knurl steadily producing exactly 3 audible clicks spaced 0.5s apart.",
+      "deviation_analysis": "Cadence and click count match expert standard."
+    },
+    {
+      "criterion_id": "CRIT-LOCK",
+      "status": "satisfied",
+      "score": 2.0,
+      "observed_finding": "Paused after 3rd click; needle settled completely at 0 before lock lever engaged.",
+      "deviation_analysis": "Zero angular needle deflection during lock engagement."
+    }
+  ],
+  "total_score": 7.0,
+  "passed": true,
+  "evaluator_type": "model_assisted",
+  "uncertainty_flags": [],
+  "evaluated_at": "2026-10-04T10:48:00Z"
+}

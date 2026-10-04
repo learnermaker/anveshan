@@ -1,7 +1,7 @@
 # Track Common — The 8 Shared Contracts
 
 **Status:** DECIDED & IMPLEMENTED frozen contract seam  
-**Scope:** Universal domain-agnostic transmission entities for parallel development.
+**Scope:** Shared execution contracts for the current transmission MVP.
 
 ---
 
@@ -141,9 +141,11 @@ python -m tracks.common.validator path/to/fixture.json --type KnowledgePackage
 
 ---
 
-## 6. Running Tests
+## 6. Running Tests & Cross-Contract Verification
 
-Run the deterministic test suite:
+Prerequisites: standard repository environment with `pydantic>=2.0` and `pytest>=8.0`.
+
+Run the unit and cross-contract validation test suite:
 
 ```bash
 python -m pytest tracks/common/tests
