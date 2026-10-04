@@ -208,26 +208,45 @@ export const LifecycleInspectorModal: React.FC<LifecycleInspectorModalProps> = (
                 </p>
               </div>
 
-              <div className="space-y-2">
-                <div className="font-mono text-xs text-on-surface-variant uppercase">
-                  EXPECTED SENSORY EVIDENCE REQUIREMENTS:
-                </div>
-                {task.expected_evidence.map((ee, idx) => (
-                  <div key={idx} className="bg-surface-container p-3 rounded border border-outline flex items-center justify-between text-xs">
-                    <div>
-                      <span className="font-mono text-[10px] text-cadmium-amber uppercase font-bold mr-2">
-                        [{ee.modality}]
-                      </span>
-                      <span className="font-sans text-on-surface">{ee.description}</span>
-                    </div>
-                    {ee.min_duration_sec && (
-                      <span className="font-mono text-[10px] text-caliper-cyan shrink-0">
-                        MIN DURATION: {ee.min_duration_sec}s
-                      </span>
-                    )}
+              {/* Task Execution Constraints */}
+              {task.constraints && task.constraints.length > 0 && (
+                <div className="space-y-2">
+                  <div className="font-mono text-xs text-on-surface-variant uppercase">
+                    EXECUTION CONSTRAINTS ({task.constraints.length}):
                   </div>
-                ))}
-              </div>
+                  {task.constraints.map((c, idx) => (
+                    <div key={idx} className="bg-surface-container p-3 rounded border border-outline flex items-center justify-between text-xs">
+                      <div>
+                        <span className="font-mono text-[10px] text-cadmium-amber uppercase font-bold mr-2">
+                          [{c.constraint_type.toUpperCase()}]
+                        </span>
+                        <span className="font-sans text-on-surface">{c.description}</span>
+                      </div>
+                      {c.value && (
+                        <span className="font-mono text-[10px] text-caliper-cyan shrink-0">
+                          LIMIT: {c.value}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Target Criteria */}
+              {task.target_criteria_ids && task.target_criteria_ids.length > 0 && (
+                <div className="bg-surface-container p-3 rounded border border-outline flex items-center justify-between">
+                  <span className="font-mono text-xs text-on-surface-variant uppercase">
+                    TARGET CRITERIA:
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    {task.target_criteria_ids.map((cid) => (
+                      <span key={cid} className="font-mono text-[10px] px-2 py-0.5 rounded bg-caliper-cyan/10 text-caliper-cyan border border-caliper-cyan/30 font-bold">
+                        {cid}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

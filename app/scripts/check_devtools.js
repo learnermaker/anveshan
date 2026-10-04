@@ -4,15 +4,32 @@ import path from 'path';
 
 const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 const URL = 'http://localhost:5173';
-const SCREENSHOT_DIR = path.resolve('screenshots');
 
-if (!fs.existsSync(SCREENSHOT_DIR)) {
-  fs.mkdirSync(SCREENSHOT_DIR, { recursive: true });
+// Generate filesystem-safe ISO timestamp: YYYY-MM-DDTHH-mm-ssZ
+const runTimestamp = new Date().toISOString().replace(/:/g, '-').replace(/\..+/, '') + 'Z';
+const BASE_SCREENSHOT_DIR = path.resolve('screenshots');
+const RUN_DIR = path.join(BASE_SCREENSHOT_DIR, 'runs', runTimestamp);
+const LATEST_DIR = path.join(BASE_SCREENSHOT_DIR, 'latest');
+
+fs.mkdirSync(RUN_DIR, { recursive: true });
+fs.mkdirSync(LATEST_DIR, { recursive: true });
+
+async function saveScreenshot(page, baseName, options = {}) {
+  const timestampedFileName = `${baseName}_${runTimestamp}.png`;
+  const runPath = path.join(RUN_DIR, timestampedFileName);
+  const latestPath = path.join(LATEST_DIR, `${baseName}.png`);
+
+  await page.screenshot({ path: runPath, ...options });
+  fs.copyFileSync(runPath, latestPath);
+  console.log(`Screenshot saved:`);
+  console.log(`  ├─ Timestamped: ${runPath}`);
+  console.log(`  └─ Latest:      ${latestPath}`);
+  return { runPath, latestPath, baseName, timestampedFileName };
 }
 
 async function runDevToolsAudit() {
   console.log('====================================================');
-  console.log('ANVESHAN // CHROME DEVTOOLS DIAGNOSTIC SUITE');
+  console.log(`ANVESHAN // CHROME DEVTOOLS AUDIT [${runTimestamp}]`);
   console.log('====================================================');
   console.log(`Connecting Chrome executable: ${CHROME_PATH}`);
 
@@ -30,6 +47,7 @@ async function runDevToolsAudit() {
   const pageErrors = [];
   const failedRequests = [];
   const loadedResources = [];
+  const savedScreenshots = [];
 
   // 1. Hook Chrome DevTools Console Listener
   page.on('console', (msg) => {
@@ -120,30 +138,20 @@ async function runDevToolsAudit() {
   const gainHero = await page.$eval('main', (el) => el.innerText.includes('+5.5 PTS'));
   console.log(`Transmission Gain Hero (+5.5 PTS GAIN): ${gainHero ? 'PASS' : 'FAIL'}`);
 
-  // 5. Test Interactive Features
-  console.log('\n--- TESTING USER INTERACTIONS ---');
+  // 5. Test Interactive Features & Capture Timestamped Evidence
+  console.log('\n--- TESTING USER INTERACTIONS & CAPTURING EVIDENCE ---');
 
   // Test 1: Click "JUMP TO FIRST DIVERGENCE (00:19.2)"
   console.log('Testing "JUMP TO FIRST DIVERGENCE"...');
-  const jumpButton = await page.$('button ::-p-text(JUMP TO FIRST DIVERGENCE)');
-  if (jumpButton) {
-    await jumpButton.click();
-    await new Promise((r) => setTimeout(r, 600));
-    console.log('  -> Button clicked successfully.');
-  } else {
-    // Fallback search
-    await page.evaluate(() => {
-      const btn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('JUMP TO FIRST DIVERGENCE'));
-      if (btn) btn.click();
-    });
-    await new Promise((r) => setTimeout(r, 600));
-    console.log('  -> Button clicked via evaluate.');
-  }
+  await page.evaluate(() => {
+    const btn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('JUMP TO FIRST DIVERGENCE'));
+    if (btn) btn.click();
+  });
+  await new Promise((r) => setTimeout(r, 600));
 
-  // Take Workbench Screenshot
-  const ss1Path = path.join(SCREENSHOT_DIR, '01_workbench_overview.png');
-  await page.screenshot({ path: ss1Path, fullPage: true });
-  console.log(`Screenshot saved: ${ss1Path}`);
+  // Take Full Workbench Screenshot
+  const ss1 = await saveScreenshot(page, '01_workbench_overview', { fullPage: true });
+  savedScreenshots.push(ss1);
 
   // Test 2: Click "VIEW PROVENANCE DAG" to open Lineage Drawer
   console.log('Testing "VIEW PROVENANCE DAG"...');
@@ -158,22 +166,18 @@ async function runDevToolsAudit() {
   });
   console.log(`Lineage DAG Modal Opened: ${lineageModalOpened ? 'PASS' : 'FAIL'}`);
 
-  // Take Lineage Modal Screenshot
-  const ss2Path = path.join(SCREENSHOT_DIR, '02_lineage_modal.png');
-  await page.screenshot({ path: ss2Path });
-  console.log(`Screenshot saved: ${ss2Path}`);
+  const ss2 = await saveScreenshot(page, '02_lineage_modal');
+  savedScreenshots.push(ss2);
 
   // Close Lineage modal
   await page.evaluate(() => {
-    const closeBtn = document.querySelector('button');
-    // Click close
     const allBtns = Array.from(document.querySelectorAll('button'));
     const xBtn = allBtns.find((b) => b.querySelector('svg.lucide-x'));
     if (xBtn) xBtn.click();
   });
   await new Promise((r) => setTimeout(r, 400));
 
-  // Test 3: Click "STITCH CANVAS"
+  // Test 3: Click "STITCH CANVAS" modal
   console.log('Testing "STITCH CANVAS" modal...');
   await page.evaluate(() => {
     const stitchBtn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('STITCH CANVAS'));
@@ -186,9 +190,8 @@ async function runDevToolsAudit() {
   });
   console.log(`Stitch Canvas Modal Opened: ${stitchModalOpened ? 'PASS' : 'FAIL'}`);
 
-  const ss3Path = path.join(SCREENSHOT_DIR, '03_stitch_canvas_modal.png');
-  await page.screenshot({ path: ss3Path });
-  console.log(`Screenshot saved: ${ss3Path}`);
+  const ss3 = await saveScreenshot(page, '03_stitch_canvas_modal');
+  savedScreenshots.push(ss3);
 
   // Close Stitch modal
   await page.evaluate(() => {
@@ -198,32 +201,110 @@ async function runDevToolsAudit() {
   });
   await new Promise((r) => setTimeout(r, 400));
 
-  // 6. Summary of Chrome DevTools Metrics
+  // Test 4: Open Stage 01 (Source) in Lifecycle Stepper
+  console.log('Testing Lifecycle Stepper: 01. SOURCE...');
+  await page.evaluate(() => {
+    const sourceBtn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('01.') && b.innerText.includes('SOURCE'));
+    if (sourceBtn) sourceBtn.click();
+  });
+  await new Promise((r) => setTimeout(r, 600));
+
+  const sourceModalOpened = await page.evaluate(() => {
+    return document.body.innerText.includes('STAGE 01: CAPTURE & CONSENT');
+  });
+  console.log(`Stage 01 Source Modal Opened: ${sourceModalOpened ? 'PASS' : 'FAIL'}`);
+
+  const ss4 = await saveScreenshot(page, '04_source_stage_modal');
+  savedScreenshots.push(ss4);
+
+  // Close Source modal
+  await page.evaluate(() => {
+    const allBtns = Array.from(document.querySelectorAll('button'));
+    const xBtn = allBtns.find((b) => b.querySelector('svg.lucide-x'));
+    if (xBtn) xBtn.click();
+  });
+  await new Promise((r) => setTimeout(r, 400));
+
+  // Test 5: Open Stage 03 (Practice) in Lifecycle Stepper
+  console.log('Testing Lifecycle Stepper: 03. PRACTICE...');
+  await page.evaluate(() => {
+    const practiceBtn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('03.') && b.innerText.includes('PRACTICE'));
+    if (practiceBtn) practiceBtn.click();
+  });
+  await new Promise((r) => setTimeout(r, 600));
+
+  const practiceModalOpened = await page.evaluate(() => {
+    return document.body.innerText.includes('STAGE 03: PRACTICE TASK SPECIFICATION');
+  });
+  console.log(`Stage 03 Practice Modal Opened: ${practiceModalOpened ? 'PASS' : 'FAIL'}`);
+
+  const ss5 = await saveScreenshot(page, '05_practice_stage_modal');
+  savedScreenshots.push(ss5);
+
+  // Close Practice modal
+  await page.evaluate(() => {
+    const allBtns = Array.from(document.querySelectorAll('button'));
+    const xBtn = allBtns.find((b) => b.querySelector('svg.lucide-x'));
+    if (xBtn) xBtn.click();
+  });
+  await new Promise((r) => setTimeout(r, 400));
+
+  // 6. Write Audit Manifest & Summary
+  const allPassed = consoleErrors.length === 0 && pageErrors.length === 0 && failedRequests.length === 0;
+  
+  const auditReport = {
+    run_timestamp: runTimestamp,
+    execution_time_iso: new Date().toISOString(),
+    navigation_duration_ms: navDuration,
+    resources_loaded_count: loadedResources.length,
+    console_messages_count: consoleLogs.length,
+    console_errors_count: consoleErrors.length,
+    uncaught_exceptions_count: pageErrors.length,
+    failed_requests_count: failedRequests.length,
+    audit_passed: allPassed,
+    screenshots: savedScreenshots.map((s) => ({
+      name: s.baseName,
+      timestamped_file: s.timestampedFileName,
+      relative_path: `runs/${runTimestamp}/${s.timestampedFileName}`,
+    })),
+  };
+
+  const reportPath = path.join(RUN_DIR, 'audit_report.json');
+  fs.writeFileSync(reportPath, JSON.stringify(auditReport, null, 2));
+
+  // Update or append to master manifest
+  const masterManifestPath = path.join(BASE_SCREENSHOT_DIR, 'manifest.json');
+  let masterManifest = [];
+  if (fs.existsSync(masterManifestPath)) {
+    try {
+      masterManifest = JSON.parse(fs.readFileSync(masterManifestPath, 'utf8'));
+    } catch {
+      masterManifest = [];
+    }
+  }
+  masterManifest.unshift({
+    run_timestamp: runTimestamp,
+    report_file: `runs/${runTimestamp}/audit_report.json`,
+    audit_passed: allPassed,
+    screenshots_count: savedScreenshots.length,
+  });
+  fs.writeFileSync(masterManifestPath, JSON.stringify(masterManifest, null, 2));
+
   console.log('\n====================================================');
   console.log('CHROME DEVTOOLS AUDIT SUMMARY:');
   console.log('====================================================');
-  console.log(`Total Resources Loaded: ${loadedResources.length}`);
-  console.log(`Total Console Messages: ${consoleLogs.length}`);
-  console.log(`Console Errors: ${consoleErrors.length}`);
-  console.log(`Uncaught Page Errors: ${pageErrors.length}`);
-  console.log(`Failed Network Requests: ${failedRequests.length}`);
+  console.log(`Run Timestamp:            ${runTimestamp}`);
+  console.log(`Total Resources Loaded:   ${loadedResources.length}`);
+  console.log(`Total Console Messages:   ${consoleLogs.length}`);
+  console.log(`Console Errors:           ${consoleErrors.length}`);
+  console.log(`Uncaught Page Errors:     ${pageErrors.length}`);
+  console.log(`Failed Network Requests:  ${failedRequests.length}`);
+  console.log(`Screenshots Captured:     ${savedScreenshots.length}`);
+  console.log(`Run Directory:            ${RUN_DIR}`);
+  console.log(`Latest Pointer Directory: ${LATEST_DIR}`);
+  console.log(`Audit Report:             ${reportPath}`);
+  console.log(`Master Manifest:          ${masterManifestPath}`);
 
-  if (consoleErrors.length > 0) {
-    console.log('\nConsole Errors Details:');
-    consoleErrors.forEach((e) => console.log('  -', e));
-  }
-
-  if (pageErrors.length > 0) {
-    console.log('\nPage Errors Details:');
-    pageErrors.forEach((e) => console.log('  -', e));
-  }
-
-  if (failedRequests.length > 0) {
-    console.log('\nFailed Requests Details:');
-    failedRequests.forEach((r) => console.log('  -', r.method, r.url, r.errorText));
-  }
-
-  const allPassed = consoleErrors.length === 0 && pageErrors.length === 0 && failedRequests.length === 0;
   console.log(`\nALL IN TACT AUDIT RESULT: ${allPassed ? '>>> 100% HEALTHY & INTACT <<<' : 'ISSUES DETECTED'}`);
 
   await browser.close();

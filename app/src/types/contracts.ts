@@ -70,20 +70,20 @@ export interface RubricDefinition {
   created_at?: string;
 }
 
-export interface ExpectedEvidence {
-  modality: string;
+export interface TaskConstraint {
+  constraint_type: string;
   description: string;
-  min_duration_sec?: number;
+  value?: string | null;
 }
 
 export interface PracticeTask {
   task_id: string;
-  skill_id: string;
   package_id: string;
+  rubric_id: string;
   title: string;
   instructions: string;
-  target_criteria: string[];
-  expected_evidence: ExpectedEvidence[];
+  constraints?: TaskConstraint[];
+  target_criteria_ids?: string[];
 }
 
 export interface AttemptEvidenceRef {

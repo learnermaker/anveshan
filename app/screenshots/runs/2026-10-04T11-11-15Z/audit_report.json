@@ -1,0 +1,38 @@
+{
+  "run_timestamp": "2026-10-04T11-11-15Z",
+  "execution_time_iso": "2026-10-04T11:11:22.861Z",
+  "navigation_duration_ms": 1105,
+  "resources_loaded_count": 32,
+  "console_messages_count": 3,
+  "console_errors_count": 0,
+  "uncaught_exceptions_count": 0,
+  "failed_requests_count": 0,
+  "audit_passed": true,
+  "screenshots": [
+    {
+      "name": "01_workbench_overview",
+      "timestamped_file": "01_workbench_overview_2026-10-04T11-11-15Z.png",
+      "relative_path": "runs/2026-10-04T11-11-15Z/01_workbench_overview_2026-10-04T11-11-15Z.png"
+    },
+    {
+      "name": "02_lineage_modal",
+      "timestamped_file": "02_lineage_modal_2026-10-04T11-11-15Z.png",
+      "relative_path": "runs/2026-10-04T11-11-15Z/02_lineage_modal_2026-10-04T11-11-15Z.png"
+    },
+    {
+      "name": "03_stitch_canvas_modal",
+      "timestamped_file": "03_stitch_canvas_modal_2026-10-04T11-11-15Z.png",
+      "relative_path": "runs/2026-10-04T11-11-15Z/03_stitch_canvas_modal_2026-10-04T11-11-15Z.png"
+    },
+    {
+      "name": "04_source_stage_modal",
+      "timestamped_file": "04_source_stage_modal_2026-10-04T11-11-15Z.png",
+      "relative_path": "runs/2026-10-04T11-11-15Z/04_source_stage_modal_2026-10-04T11-11-15Z.png"
+    },
+    {
+      "name": "05_practice_stage_modal",
+      "timestamped_file": "05_practice_stage_modal_2026-10-04T11-11-15Z.png",
+      "relative_path": "runs/2026-10-04T11-11-15Z/05_practice_stage_modal_2026-10-04T11-11-15Z.png"
+    }
+  ]
+}
