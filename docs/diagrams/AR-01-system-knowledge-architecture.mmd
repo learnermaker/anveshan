@@ -6,6 +6,7 @@
 %% - docs/architecture/knowledge-model.md
 %% - docs/architecture/ai-agent-architecture.md
 %% - docs/product/product-vision.md
+%% - docs/status/NOW.md
 
 flowchart TB
   EXP[Expert] --> UX[Anveshan Experience Layer]
@@ -71,17 +72,21 @@ flowchart TB
   EV --> REF
   LIN --> LG
 
-  subgraph ROADMAP[Development path]
-    M0[M0 Validate capability<br/>1 expert • 1 learner • 1 skill]
-    M1[M1 Build vertical slice<br/>capture → teach → practice → verify]
-    M2[M2 Test & iterate<br/>baseline → retry → measured improvement]
-    M3[M3 Harden + demo<br/>replay • evidence • reliability • submission]
-    M0 --> M1 --> M2 --> M3
+  subgraph ROADMAP[Current execution gates]
+    M0[M0 Capability validation]
+    M1[M1 Vertical slice]
+    M2[M2 Productization]
+    M3[M3 Reliability]
+    M4[M4 Demo]
+    M5[M5 Submission]
+    M0 --> M1 --> M2 --> M3 --> M4 --> M5
   end
   M0 --> ORCH
   M1 --> AI
   M2 --> EVAL
   M3 --> RUN
+  M4 --> UX
+  M5 --> UX
 
   V[Long-term vision<br/>Memory → Expertise → Capability<br/>CAPTURE → UNDERSTAND → GROUND → TRANSMIT → PRACTICE → VERIFY → EVOLVE]
   V --> UX
@@ -96,5 +101,5 @@ flowchart TB
   class K,E,T,UX,ORCH aiNode
   class KNOW,EV,EVAL,LIN,KO,SK,CTX,PROC,CL,REF,UNC,LG dataNode
   class GEM,ADK,RUN,STR,SEC,RET infraNode
-  class M0,M1,M2,M3 roadNode
+  class M0,M1,M2,M3,M4,M5 roadNode
   class V visionNode
