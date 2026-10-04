@@ -44,19 +44,30 @@ Every derived representation should preserve its relationship to source evidence
 
 If source evidence is insufficient, the flow should stop at uncertainty rather than generate unsupported content.
 
+## Case-pack boundary
+
+Canonical shared case content lives under `tracks/cases/<case_id>/` and is discovered via `tracks/cases/index.json`.
+Track-local `tracks/track-a/data/` and `tracks/track-b/data/` are implementation-specific fixtures/metadata only; they must not become duplicate case authorities.
+Large media belongs in an appropriate object store when deployed; mutable runtime state belongs in a runtime datastore when deployment requirements justify one.
+
 ## Parallel development boundary
 
 The two implementation tracks use a deliberately small handoff surface so they can build and validate independently:
 
-- Track A produces source-grounded `KnowledgePackage` and `EvidenceRef` information plus a `PracticeTask`.
+- Track A produces source-grounded `KnowledgePackage` and `EvidenceRef` information plus a `RubricDefinition` and `PracticeTask`.
 - Track B consumes a frozen replay version of those inputs and produces `LearnerAttempt`, `Evaluation`, `Feedback`, and `TransmissionRecord` information.
 - The replay boundary is a test seam, not a requirement for a particular storage or service architecture.
 - Real expert/learner evidence replaces fixtures only at the integration point.
+- The common seam remains the eight frozen contracts in `tracks/common/schemas/`.
 
-This boundary should remain contract-first and implementation-agnostic until the bounded domain and actual interfaces are decided. The exact handoff is documented in `docs/architecture/parallel-work-contract.md`; shared contracts and integration adapters must remain outside the two track ownership folders.
+This boundary should remain contract-first and implementation-agnostic. The exact handoff is documented in `docs/architecture/parallel-work-contract.md`; shared contracts and integration adapters remain outside the two track ownership folders.
 
-## 2026-10-03 Critical Path
+## 2026-10-04 Critical Path
 
-The MVP flow is explicitly: expert demonstration → source processing → candidate knowledge → evidence grounding → expert review → baseline learner attempt → teaching → second attempt → criterion-level evaluation → evidence-linked feedback → retry → measured change → transmission record → lineage.
+The MVP critical path is explicitly:
 
-The baseline is important because without it the product cannot distinguish teaching from evaluation or claim transmission gain.
+**accountable source → source processing → candidate knowledge → evidence grounding → expert review → baseline learner attempt → grounded teaching → learner retry → criterion-level evaluation → evidence-linked feedback → measured change → transmission record → lineage**
+
+The baseline is required because without it the product cannot distinguish initial performance from post-teaching improvement.
+
+Replay fixtures may demonstrate engineering/capability behavior, but they do not by themselves establish product validation.
