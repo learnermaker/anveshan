@@ -5,7 +5,7 @@ Case data is organized as:
     data/
     └── cases/
         └── <case_id>/
-            ├── manifest.yaml
+            ├── manifest.json
             ├── attempts/
             ├── expected/
             └── metadata/
