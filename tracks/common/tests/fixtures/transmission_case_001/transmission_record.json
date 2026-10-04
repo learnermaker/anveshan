@@ -1,0 +1,24 @@
+{
+  "transmission_id": "TX-OPT-001",
+  "skill_id": "SKILL-OPT-CALIB",
+  "package_id": "PKG-OPT-001",
+  "rubric_id": "RUBRIC-OPT-001",
+  "expert_id": "Marcus Vance",
+  "learner_id": "LRN-ELENA-01",
+  "baseline_attempt_id": "ATT-OPT-BASE-01",
+  "retry_attempt_id": "ATT-OPT-RETRY-01",
+  "baseline_score": 1.5,
+  "retry_score": 7.0,
+  "transmission_gain": 5.5,
+  "criteria_improved": [
+    "CRIT-WIPE",
+    "CRIT-RATCHET",
+    "CRIT-LOCK"
+  ],
+  "lineage": {
+    "parent_transmission_id": null,
+    "recorded_at": "2026-10-04T10:50:00Z",
+    "provenance_hash": "sha256-opt-calib-e2e-hash",
+    "adaptation_notes": "Learner achieved 100% competency across all three observable criteria on first retry following targeted feedback."
+  }
+}

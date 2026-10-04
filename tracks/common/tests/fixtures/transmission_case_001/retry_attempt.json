@@ -1,0 +1,23 @@
+{
+  "attempt_id": "ATT-OPT-RETRY-01",
+  "task_id": "TASK-OPT-001",
+  "learner": {
+    "participant_id": "LRN-ELENA-01",
+    "name": "Elena Rostova",
+    "role": "learner",
+    "notes": "Novice technician trainee - 2nd attempt"
+  },
+  "attempt_type": "retry",
+  "attempt_number": 2,
+  "submitted_at": "2026-10-04T10:45:00Z",
+  "evidence": {
+    "evidence_id": "EV-LRN-RETRY-01",
+    "source_id": "elena_retry_attempt.mp4",
+    "modality": "video",
+    "start_sec": 0.0,
+    "end_sec": 30.0,
+    "cue_excerpt": "Learner pulls optical paper smoothly in single stroke, grips small ratchet knurl producing exactly 3 steady clicks, waits for needle to rest at 0 before locking.",
+    "verification_state": "observed",
+    "confidence": 1.0
+  }
+}

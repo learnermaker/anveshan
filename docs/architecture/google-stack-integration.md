@@ -60,44 +60,88 @@ if video_file.state.name == "FAILED":
     raise RuntimeError("Video processing failed in Gemini File API")
 ```
 
-### 3.3 Strict Structured Output with Pydantic
-All model responses matching the 7 core contract entities MUST use Gemini's structured output enforcement to guarantee schema conformity:
+### 3.3 Gemini Structured Outputs vs. Internal Shared Contracts
+
+A critical architectural distinction must be maintained:
+
+```text
+Gemini Model Call (Prompt + Video)
+        ↓ (Gemini response_schema enforces prompt-level extraction DTO)
+Model Extraction DTO (e.g. KnowledgeExtractionDTO)
+        ↓ (Attach provenance, contributor consent, expert review status)
+Anveshan Shared Contract (e.g. tracks.common.schemas.KnowledgePackage)
+        ↓ (Validated against 8-contract seam via validator.py)
+Frozen Seam (Track A → Track B handoff)
+```
+
+1. **Model Extraction DTOs:** Focused, lean Pydantic schemas passed as `response_schema` to guide model generation (e.g., extracting steps, observable cues, and timestamp intervals).
+2. **Anveshan Shared Contracts:** The authoritative 8 root contracts in `tracks/common/schemas/` that embed provenance, contributor consent, review status, and deterministic validation.
+
+Example of model extraction and normalization into the shared contract:
 
 ```python
 from pydantic import BaseModel, Field
 from typing import List, Optional
+from tracks.common.schemas import KnowledgePackage, KnowledgeClaim, ClaimType, EvidenceRef, Modality, ConsentMetadata
 
-class EvidenceLocator(BaseModel):
-    start_sec: float = Field(description="Start time in seconds")
-    end_sec: float = Field(description="End time in seconds")
-    modality: str = Field(description="video, audio, or text")
-    description: str = Field(description="Specific visual or audible cue observed")
+# 1. Prompt-specific extraction DTO passed to Gemini API
+class ExtractedCueDTO(BaseModel):
+    statement: str
+    start_sec: float
+    end_sec: float
+    cue_description: str
 
-class ExtractedStep(BaseModel):
-    step_number: int
-    action_label: str
-    condition: Optional[str] = Field(None, description="Pre-condition or trigger")
-    cues: List[str] = Field(description="Subtle or non-obvious sensory cues")
-    evidence: EvidenceLocator
-
-class KnowledgePackageOutput(BaseModel):
-    skill_name: str
-    steps: List[ExtractedStep]
+class ExtractionResponseDTO(BaseModel):
+    skill_title: str
+    summary: str
+    steps: List[str]
+    cues: List[ExtractedCueDTO]
     failure_modes: List[str]
-    uncertainty_notes: Optional[str] = None
 
-# Enforce schema at the inference boundary
+# 2. Enforce DTO schema at the model inference boundary
 response = client.models.generate_content(
     model="gemini-3.8-flash",
-    contents=[video_file, "Extract the structured knowledge, steps, cues, and exact timestamps from this demonstration."],
+    contents=[video_file, "Extract the procedural steps, sensory cues, and exact timestamps from this demonstration."],
     config=types.GenerateContentConfig(
         response_mime_type="application/json",
-        response_schema=KnowledgePackageOutput,
+        response_schema=ExtractionResponseDTO,
         temperature=0.2,
     ),
 )
+dto: ExtractionResponseDTO = response.parsed
 
-parsed_knowledge: KnowledgePackageOutput = response.parsed
+# 3. Normalize into the authoritative Anveshan shared contract
+claims = []
+for idx, cue in enumerate(dto.cues):
+    ev = EvidenceRef(
+        evidence_id=f"EV-CUE-{idx+1:02d}",
+        source_id=video_file.name,
+        modality=Modality.VIDEO,
+        start_sec=cue.start_sec,
+        end_sec=cue.end_sec,
+        cue_excerpt=cue.cue_description,
+    )
+    claims.append(
+        KnowledgeClaim(
+            claim_id=f"CLM-{idx+1:02d}",
+            claim_type=ClaimType.CUE,
+            statement=cue.statement,
+            is_observed=True,
+            evidence_refs=[ev],
+        )
+    )
+
+knowledge_pkg = KnowledgePackage(
+    package_id="PKG-DEMO-001",
+    skill_id="SKILL-BOUNDED-01",
+    title=dto.skill_title,
+    summary=dto.summary,
+    claims=claims,
+    consent=ConsentMetadata(
+        contributor_name="Expert Jane Doe",
+        consent_scope="hackathon_demo",
+    ),
+)
 ```
 
 ---

@@ -54,7 +54,7 @@ This file records decisions that materially affect scope, architecture, validati
 
 **Context:** A product/platform split creates sequential dependencies disguised as parallel work. The team needs genuine parallel execution with minimal synchronization.
 
-**Shared seam:** `KnowledgePackage`, `EvidenceRef`, `PracticeTask`, `LearnerAttempt`, `Evaluation`, `Feedback`, and `TransmissionRecord`. These names define the handoff concept; they do not authorize implementation of every object.
+**Shared seam:** `KnowledgePackage`, `EvidenceRef`, `RubricDefinition`, `PracticeTask`, `LearnerAttempt`, `Evaluation`, `Feedback`, and `TransmissionRecord`. These names define the handoff concept; they do not authorize implementation of every object.
 
 **Alternatives considered:** A sequential product/evidence track plus platform/engineering track; rejected because most work remained dependency-ordered. A broad shared-service architecture; rejected because it increases synchronization and prematurely commits architecture.
 

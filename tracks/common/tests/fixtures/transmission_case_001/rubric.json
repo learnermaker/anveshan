@@ -1,0 +1,33 @@
+{
+  "rubric_id": "RUBRIC-OPT-001",
+  "skill_id": "SKILL-OPT-CALIB",
+  "title": "Optical Micrometer Calibration Proficiency Rubric",
+  "description": "Standardized criteria for optical micrometer face cleaning, spindle approach, and lock engagement.",
+  "criteria": [
+    {
+      "criterion_id": "CRIT-WIPE",
+      "name": "Face Cleaning Motion",
+      "description": "Single unidirectional drag motion using lint-free optical paper without circular or reciprocating scrubbing.",
+      "observable_indicator": "Continuous unidirectional paper motion across anvil face.",
+      "weight": 2.0,
+      "required": true
+    },
+    {
+      "criterion_id": "CRIT-RATCHET",
+      "name": "Ratchet Speed and Click Count",
+      "description": "Exactly three audible ratchet clicks applied at steady cadence between 0.3s and 0.8s intervals.",
+      "observable_indicator": "Audible click audio waveform count equals 3.",
+      "weight": 3.0,
+      "required": true
+    },
+    {
+      "criterion_id": "CRIT-LOCK",
+      "name": "Settled Lock Engagement",
+      "description": "Spindle lock engaged only after gauge needle has come to a complete rest.",
+      "observable_indicator": "Zero angular needle velocity at moment lock lever moves.",
+      "weight": 2.0,
+      "required": true
+    }
+  ],
+  "passing_score": 5.0
+}

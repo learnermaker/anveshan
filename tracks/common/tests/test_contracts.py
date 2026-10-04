@@ -31,7 +31,16 @@ from tracks.common.schemas import (
     TransmissionRecord,
     LineageMetadata,
 )
-from tracks.common.validator import validate_contract, validate_fixture_file
+from tracks.common.validator import (
+    validate_contract,
+    validate_fixture_file,
+    validate_evaluation_against_rubric,
+    validate_practice_task_against_knowledge_and_rubric,
+    validate_feedback_against_evaluation,
+    validate_transmission_record_invariants,
+    validate_transmission_bundle,
+    load_bundle_from_directory,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -403,3 +412,206 @@ def test_validator_dict_and_file(tmp_path: Path):
     success_auto, _, instance_auto = validate_fixture_file(fixture_file)
     assert success_auto is True
     assert isinstance(instance_auto, EvidenceRef)
+
+
+# ---------------------------------------------------------------------------
+# 10. Attempt Numbering Invariant Tests
+# ---------------------------------------------------------------------------
+
+def test_learner_attempt_invalid_attempt_numbers():
+    ev = EvidenceRef(
+        evidence_id="EV-1", source_id="test.mp4", modality=Modality.VIDEO
+    )
+    # BASELINE with attempt_number != 1 should fail
+    with pytest.raises(ValidationError, match="BASELINE attempt must have attempt_number == 1"):
+        LearnerAttempt(
+            attempt_id="ATT-BAD-1",
+            task_id="TASK-1",
+            learner=ParticipantRef(participant_id="P1", name="Learner 1"),
+            attempt_type=AttemptType.BASELINE,
+            attempt_number=2,  # Invalid for baseline
+            evidence=ev,
+        )
+
+    # RETRY with attempt_number < 2 should fail
+    with pytest.raises(ValidationError, match="RETRY attempt must have attempt_number >= 2"):
+        LearnerAttempt(
+            attempt_id="ATT-BAD-2",
+            task_id="TASK-1",
+            learner=ParticipantRef(participant_id="P1", name="Learner 1"),
+            attempt_type=AttemptType.RETRY,
+            attempt_number=1,  # Invalid for retry
+            evidence=ev,
+        )
+
+
+# ---------------------------------------------------------------------------
+# 11. Canonical Replay Fixture (transmission_case_001) Tests
+# ---------------------------------------------------------------------------
+
+def test_canonical_replay_fixture_case_001():
+    fixture_dir = Path(__file__).parent / "fixtures" / "transmission_case_001"
+    assert fixture_dir.exists(), f"Fixture directory not found: {fixture_dir}"
+
+    # 1. Test directory loading
+    bundle_data = load_bundle_from_directory(fixture_dir)
+    assert "knowledge_package" in bundle_data
+    assert "rubric" in bundle_data
+
+    # 2. Test bundle validation
+    is_valid, errors = validate_transmission_bundle(bundle_data)
+    assert is_valid is True, f"Canonical bundle validation failed with errors: {errors}"
+
+    # 3. Test bundle.json file validation via CLI function
+    bundle_json_path = fixture_dir / "bundle.json"
+    success, msg, _ = validate_fixture_file(bundle_json_path, is_bundle=True)
+    assert success is True, f"Failed to validate bundle.json: {msg}"
+
+    # 4. Test directory validation via CLI function
+    success_dir, msg_dir, _ = validate_fixture_file(fixture_dir, is_bundle=True)
+    assert success_dir is True, f"Failed to validate fixture directory: {msg_dir}"
+
+
+# ---------------------------------------------------------------------------
+# 12. Cross-Contract Invariant Negative Tests
+# ---------------------------------------------------------------------------
+
+def test_cross_contract_evaluation_against_rubric_failures():
+    rubric = RubricDefinition(
+        rubric_id="R-01",
+        skill_id="SK-01",
+        title="Test Rubric",
+        criteria=[
+            RubricCriterion(
+                criterion_id="C1",
+                name="Crit 1",
+                description="Desc 1",
+                observable_indicator="Ind 1",
+                weight=2.0,
+                required=True,
+            ),
+            RubricCriterion(
+                criterion_id="C2",
+                name="Crit 2",
+                description="Desc 2",
+                observable_indicator="Ind 2",
+                weight=3.0,
+                required=True,
+            ),
+        ],
+        passing_score=4.0,
+    )
+
+    # Failure 1: Unknown criterion
+    eval_unknown = Evaluation(
+        evaluation_id="E1",
+        attempt_id="A1",
+        rubric_id="R-01",
+        criterion_results=[
+            CriterionResult(
+                criterion_id="C-UNKNOWN",
+                status=CriterionStatus.SATISFIED,
+                score=2.0,
+                observed_finding="Unknown test",
+            )
+        ],
+        total_score=2.0,
+    )
+    errs = validate_evaluation_against_rubric(eval_unknown, rubric)
+    assert any("unknown criterion_id 'C-UNKNOWN'" in e for e in errs)
+
+    # Failure 2: Score exceeds weight
+    eval_over_weight = Evaluation(
+        evaluation_id="E2",
+        attempt_id="A1",
+        rubric_id="R-01",
+        criterion_results=[
+            CriterionResult(
+                criterion_id="C1",
+                status=CriterionStatus.SATISFIED,
+                score=3.5,  # Weight is 2.0!
+                observed_finding="Over weight",
+            )
+        ],
+        total_score=3.5,
+    )
+    errs2 = validate_evaluation_against_rubric(eval_over_weight, rubric)
+    assert any("exceeds rubric max points" in e for e in errs2)
+
+    # Failure 3: Missing required criterion
+    eval_missing_req = Evaluation(
+        evaluation_id="E3",
+        attempt_id="A1",
+        rubric_id="R-01",
+        criterion_results=[
+            CriterionResult(
+                criterion_id="C1",
+                status=CriterionStatus.SATISFIED,
+                score=2.0,
+                observed_finding="Only C1",
+            )
+        ],
+        total_score=2.0,
+    )
+    errs3 = validate_evaluation_against_rubric(eval_missing_req, rubric)
+    assert any("Required rubric criterion 'C2'" in e for e in errs3)
+
+    # Failure 4: Passed flag is True but total_score below passing_score
+    eval_inconsistent_pass = Evaluation(
+        evaluation_id="E4",
+        attempt_id="A1",
+        rubric_id="R-01",
+        criterion_results=[
+            CriterionResult(
+                criterion_id="C1",
+                status=CriterionStatus.SATISFIED,
+                score=2.0,
+                observed_finding="Finding 1",
+            ),
+            CriterionResult(
+                criterion_id="C2",
+                status=CriterionStatus.PARTIALLY_SATISFIED,
+                score=1.0,
+                observed_finding="Finding 2",
+            ),
+        ],
+        total_score=3.0,  # Below passing_score 4.0
+        passed=True,      # Inconsistent!
+    )
+    errs4 = validate_evaluation_against_rubric(eval_inconsistent_pass, rubric)
+    assert any("below rubric passing_score" in e for e in errs4)
+
+
+def test_cross_contract_feedback_failures():
+    evaluation = Evaluation(
+        evaluation_id="EVAL-01",
+        attempt_id="ATT-01",
+        rubric_id="RUB-01",
+        criterion_results=[
+            CriterionResult(
+                criterion_id="C1",
+                status=CriterionStatus.PARTIALLY_SATISFIED,
+                score=1.0,
+                observed_finding="Observed C1",
+            )
+        ],
+        total_score=1.0,
+    )
+
+    # Feedback references non-existent criterion
+    feedback_bad = Feedback(
+        feedback_id="FB-01",
+        evaluation_id="EVAL-01",
+        attempt_id="ATT-01",
+        summary="Summary",
+        items=[
+            FeedbackItem(
+                criterion_id="C-NON-EXISTENT",
+                what_was_observed="Obs",
+                what_differed="Diff",
+                corrective_advice="Advice",
+            )
+        ],
+    )
+    errs = validate_feedback_against_evaluation(feedback_bad, evaluation)
+    assert any("references criterion 'C-NON-EXISTENT' not evaluated" in e for e in errs)
