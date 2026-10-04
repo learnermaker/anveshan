@@ -10,5 +10,9 @@
   "source_posture": "synthetic_replay",
   "epistemic_status": "REPLAY_FIXTURE_NOT_AUTHENTIC_VALIDATION",
   "data_status": "prototype_replay",
-  "pack_version": "1.0"
+  "pack_version": "1.0",
+  "case_version": "1.0",
+  "status": "ENGINEERING_FIXTURE",
+  "source_mode": "GOAL_CONDITIONED",
+  "runtime_class": "REPLAY"
 }
