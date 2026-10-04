@@ -103,9 +103,20 @@ def validate_manifest(manifest: dict[str, Any], case_id: str, schema: dict[str, 
                 f"{case_id}: status AUTHENTIC_SOURCE_READY requires "
                 "source_posture=authentic_expert"
             )
-        if manifest.get("runtime_class") == "REPLAY":
+        if manifest.get("runtime_class") != "AUTHENTIC":
             failures.append(
-                f"{case_id}: status AUTHENTIC_SOURCE_READY requires a non-REPLAY runtime class"
+                f"{case_id}: status AUTHENTIC_SOURCE_READY requires runtime_class=AUTHENTIC"
+            )
+
+    if manifest.get("runtime_class") == "AUTHENTIC" and manifest.get("status") == "ENGINEERING_FIXTURE":
+        failures.append(
+            f"{case_id}: runtime_class AUTHENTIC contradicts status ENGINEERING_FIXTURE"
+        )
+
+    if manifest.get("source_posture") == "synthetic_replay":
+        if manifest.get("runtime_class") != "REPLAY" or manifest.get("status") != "ENGINEERING_FIXTURE":
+            failures.append(
+                f"{case_id}: source_posture=synthetic_replay requires runtime_class=REPLAY and status=ENGINEERING_FIXTURE"
             )
 
     return failures
