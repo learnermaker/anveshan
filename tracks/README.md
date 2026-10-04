@@ -1,6 +1,6 @@
 # Parallel Track Workspaces
 
-The `tracks/` directory is the implementation workspace boundary for the two parallel MVP tracks described by `docs/diagrams/DP-01-parallel-development-roadmap.mmd`.
+The `tracks/` directory is the implementation workspace boundary for the two parallel MVP tracks described by `docs/architecture/parallel-work-contract.md` and the current execution gates in `docs/status/NOW.md`.
 
 ## Ownership
 
@@ -29,6 +29,6 @@ The frozen 8-contract seam defined in `tracks/common/schemas/` is:
 
 ## Integration
 
-Real expert and learner evidence is joined only at the explicit integration point described in DP-01. Keep integration-specific code outside the two ownership folders unless ownership is explicitly reassigned.
+Real expert and learner evidence is joined only at the explicit integration point described by `docs/architecture/parallel-work-contract.md`. Keep integration-specific code outside the two ownership folders unless ownership is explicitly reassigned.
 
 See `AGENTS.md`, `docs/status/NOW.md`, `docs/architecture/google-stack-integration.md`, `docs/architecture/data-flow.md`, and `docs/architecture/parallel-work-contract.md` before starting implementation.
