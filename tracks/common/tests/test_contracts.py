@@ -615,3 +615,238 @@ def test_cross_contract_feedback_failures():
     )
     errs = validate_feedback_against_evaluation(feedback_bad, evaluation)
     assert any("references criterion 'C-NON-EXISTENT' not evaluated" in e for e in errs)
+
+
+# ---------------------------------------------------------------------------
+# 13. Current cross-contract alignment invariants
+# ---------------------------------------------------------------------------
+
+def test_cross_contract_alignment_rejects_mismatched_attempts_and_criteria():
+    rubric = RubricDefinition(
+        rubric_id="R-ALIGN",
+        skill_id="SKILL-ALIGN",
+        title="Alignment Rubric",
+        criteria=[
+            RubricCriterion(
+                criterion_id="C1",
+                name="Criterion 1",
+                description="Observable criterion",
+                observable_indicator="Visible indicator",
+                weight=2.0,
+                required=True,
+            ),
+            RubricCriterion(
+                criterion_id="C2",
+                name="Criterion 2",
+                description="Observable criterion",
+                observable_indicator="Visible indicator",
+                weight=2.0,
+                required=True,
+            ),
+        ],
+        passing_score=3.0,
+    )
+    task = PracticeTask(
+        task_id="TASK-ALIGN",
+        package_id="PKG-ALIGN",
+        rubric_id="R-ALIGN",
+        title="Alignment task",
+        instructions="Perform the bounded task.",
+        target_criteria_ids=["C1", "C2"],
+    )
+    ev1 = EvidenceRef(
+        evidence_id="EV-A1",
+        source_id="baseline.mp4",
+        modality=Modality.VIDEO,
+    )
+    ev2 = EvidenceRef(
+        evidence_id="EV-A2",
+        source_id="retry.mp4",
+        modality=Modality.VIDEO,
+    )
+    baseline = LearnerAttempt(
+        attempt_id="ATT-A1",
+        task_id="TASK-ALIGN",
+        learner=ParticipantRef(participant_id="L1", name="Learner"),
+        attempt_type=AttemptType.BASELINE,
+        attempt_number=1,
+        evidence=ev1,
+    )
+    retry = LearnerAttempt(
+        attempt_id="ATT-A2",
+        task_id="TASK-ALIGN",
+        learner=ParticipantRef(participant_id="L1", name="Learner"),
+        attempt_type=AttemptType.RETRY,
+        attempt_number=2,
+        evidence=ev2,
+    )
+    baseline_eval = Evaluation(
+        evaluation_id="E-A1",
+        attempt_id="WRONG-ATTEMPT",
+        rubric_id="R-ALIGN",
+        criterion_results=[
+            CriterionResult(
+                criterion_id="C1",
+                status=CriterionStatus.SATISFIED,
+                score=1.0,
+                observed_finding="Observed",
+            ),
+            CriterionResult(
+                criterion_id="C2",
+                status=CriterionStatus.PARTIALLY_SATISFIED,
+                score=1.0,
+                observed_finding="Observed",
+            ),
+        ],
+        total_score=2.0,
+    )
+    retry_eval = Evaluation(
+        evaluation_id="E-A2",
+        attempt_id="ATT-A2",
+        rubric_id="R-ALIGN",
+        criterion_results=[
+            CriterionResult(
+                criterion_id="C1",
+                status=CriterionStatus.SATISFIED,
+                score=2.0,
+                observed_finding="Improved",
+            ),
+            CriterionResult(
+                criterion_id="C2",
+                status=CriterionStatus.SATISFIED,
+                score=2.0,
+                observed_finding="Improved",
+            ),
+        ],
+        total_score=4.0,
+        passed=True,
+    )
+    record = TransmissionRecord(
+        transmission_id="TX-ALIGN",
+        skill_id="SKILL-ALIGN",
+        package_id="PKG-ALIGN",
+        rubric_id="R-ALIGN",
+        expert_id="EXP-1",
+        learner_id="L1",
+        baseline_attempt_id="ATT-A1",
+        retry_attempt_id="ATT-A2",
+        baseline_score=2.0,
+        retry_score=4.0,
+        transmission_gain=2.0,
+        criteria_improved=["C1", "C2"],
+        lineage=LineageMetadata(recorded_at="2026-10-04T12:00:00Z"),
+    )
+
+    errors = validate_transmission_record_invariants(
+        record, task, rubric, baseline, retry, baseline_eval, retry_eval
+    )
+    assert any("baseline_eval attempt_id" in e for e in errors)
+
+
+def test_cross_contract_alignment_rejects_unknown_improved_criterion_and_required_partial_pass():
+    rubric = RubricDefinition(
+        rubric_id="R-PASS",
+        skill_id="SKILL-PASS",
+        title="Pass semantics",
+        criteria=[
+            RubricCriterion(
+                criterion_id="C1",
+                name="Required criterion",
+                description="Must be satisfied",
+                observable_indicator="Observable",
+                weight=2.0,
+                required=True,
+            ),
+        ],
+        passing_score=1.0,
+    )
+    evaluation = Evaluation(
+        evaluation_id="E-PASS",
+        attempt_id="A-PASS",
+        rubric_id="R-PASS",
+        criterion_results=[
+            CriterionResult(
+                criterion_id="C1",
+                status=CriterionStatus.PARTIALLY_SATISFIED,
+                score=1.0,
+                observed_finding="Only partial",
+            ),
+        ],
+        total_score=1.0,
+        passed=True,
+    )
+    errors = validate_evaluation_against_rubric(evaluation, rubric)
+    assert any("PARTIALLY_SATISFIED" in e for e in errors)
+
+    task = PracticeTask(
+        task_id="TASK-PASS",
+        package_id="PKG-PASS",
+        rubric_id="R-PASS",
+        title="Task",
+        instructions="Practice",
+        target_criteria_ids=["C1"],
+    )
+    ev = EvidenceRef(evidence_id="EV-PASS", source_id="a.mp4", modality=Modality.VIDEO)
+    baseline = LearnerAttempt(
+        attempt_id="A-BASE",
+        task_id="TASK-PASS",
+        learner=ParticipantRef(participant_id="L1", name="Learner"),
+        attempt_type=AttemptType.BASELINE,
+        attempt_number=1,
+        evidence=ev,
+    )
+    retry = LearnerAttempt(
+        attempt_id="A-RETRY",
+        task_id="TASK-PASS",
+        learner=ParticipantRef(participant_id="L1", name="Learner"),
+        attempt_type=AttemptType.RETRY,
+        attempt_number=2,
+        evidence=ev,
+    )
+    base_eval = Evaluation(
+        evaluation_id="EB",
+        attempt_id="A-BASE",
+        rubric_id="R-PASS",
+        criterion_results=[
+            CriterionResult(
+                criterion_id="C1",
+                status=CriterionStatus.NOT_SATISFIED,
+                score=0.0,
+                observed_finding="Baseline",
+            )
+        ],
+        total_score=0.0,
+    )
+    retry_eval = Evaluation(
+        evaluation_id="ER",
+        attempt_id="A-RETRY",
+        rubric_id="R-PASS",
+        criterion_results=[
+            CriterionResult(
+                criterion_id="C1",
+                status=CriterionStatus.SATISFIED,
+                score=1.0,
+                observed_finding="Retry",
+            )
+        ],
+        total_score=1.0,
+    )
+    record = TransmissionRecord(
+        transmission_id="TX-PASS",
+        skill_id="SKILL-PASS",
+        package_id="PKG-PASS",
+        rubric_id="R-PASS",
+        expert_id="EXP-1",
+        learner_id="L1",
+        baseline_attempt_id="A-BASE",
+        retry_attempt_id="A-RETRY",
+        baseline_score=0.0,
+        retry_score=1.0,
+        transmission_gain=1.0,
+        criteria_improved=["UNKNOWN-CRITERION"],
+        lineage=LineageMetadata(recorded_at="2026-10-04T12:00:00Z"),
+    )
+    errors = validate_transmission_record_invariants(
+        record, task, rubric, baseline, retry, base_eval, retry_eval
+    )
+    assert any("does not exist in RubricDefinition" in e for e in errors)
