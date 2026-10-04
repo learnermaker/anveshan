@@ -30,7 +30,7 @@ export function SourceAnalysisView({
           <span className="text-outline">/</span>
           <span className="text-cadmium-amber font-semibold uppercase">{capCase.id}</span>
           <span className="text-outline">/</span>
-          <span className="text-on-surface">SOURCE DEMONSTRATION & GROUNDING</span>
+          <span className="text-on-surface">SOURCE & GROUNDING</span>
         </div>
 
         <div className="px-3 py-1 bg-surface-dim border border-outline rounded font-mono text-xs text-on-surface-variant flex items-center gap-2">
