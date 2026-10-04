@@ -28,3 +28,16 @@ Use synthetic-but-structurally-realistic replay fixtures that distinguish observ
 
 ## Worktree
 tracks/track-a/ contains README.md, CODING-AGENT-GUIDE.md, SUCCESS-CRITERIA.md, fixtures/, prompts/, src/, tests/, and notes/. Create implementation files only through bounded issues.
+
+## Operational conventions
+
+Before creating case-local artifacts, read:
+- `tracks/common/CASE-DATA-CONVENTIONS.md`
+- `tracks/common/MODEL-GATEWAY-CONVENTIONS.md`
+- `data/README.md`
+
+Use `data/cases/<case_id>/manifest.yaml` as the entry point for implementation-ready cases. Do not infer validation status from folder presence.
+
+## Worktree
+
+`tracks/track-a/` contains README.md, CODING-AGENT-GUIDE.md, SUCCESS-CRITERIA.md, IMPLEMENTATION-READINESS.md, fixtures/, data/, prompts/, src/, tests/, and notes/. Create implementation files only through bounded issues.
