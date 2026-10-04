@@ -14,9 +14,9 @@ When documents disagree, use this order:
 6. docs/validation/ — evidence about what has actually been validated.
 7. docs/architecture/ — implementation architecture, subject to product and validation constraints.
 8. docs/research/ and EXPLORATION.md — research, alternatives, and historical reasoning; not implementation authority unless explicitly promoted into a current decision.
-9. docs/product/feature-universe.md — exhaustive possibility inventory; never treat presence as commitment.
-10. docs/status/NOW.md and docs/status/project.yaml — concise execution state derived from the hierarchy above; they do not override it.
-11. docs/status/DECISIONS.md — durable governance decisions.
+9. docs/status/NOW.md and docs/status/project.yaml — concise execution scope/state derived from the hierarchy above; they do not override product or validation truth.
+10. docs/status/DECISIONS.md — durable governance decisions where applicable.
+11. docs/product/feature-universe.md — exhaustive possibility inventory; never treat presence as commitment.
 
 
 ### Contract single-source rule
