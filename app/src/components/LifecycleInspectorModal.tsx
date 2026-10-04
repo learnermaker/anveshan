@@ -64,6 +64,23 @@ export const LifecycleInspectorModal: React.FC<LifecycleInspectorModalProps> = (
           {/* STAGE 01: SOURCE */}
           {stage === 'source' && (
             <div className="space-y-4">
+              {/* Authentic Master Capture Preview */}
+              <div className="relative aspect-video rounded-lg overflow-hidden border border-outline bg-surface-container-lowest">
+                <img
+                  src="/assets/expert-reference.jpg"
+                  alt="Raw 4K Macro Capture - Master Metrologist Elena Rostova"
+                  className="w-full h-full object-cover filter contrast-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-surface-container-lowest/40" />
+                <div className="absolute top-2 left-2 bg-surface-container-lowest/90 px-2 py-0.5 rounded font-mono text-[10px] text-transmission-emerald border border-outline flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-transmission-emerald animate-pulse" />
+                  AUTHENTIC MASTER CAPTURE // 4K 60FPS DUAL STEREO
+                </div>
+                <div className="absolute bottom-2 right-2 bg-surface-container-lowest/90 px-2 py-0.5 rounded font-mono text-[10px] text-cadmium-amber border border-outline">
+                  ELENA ROSTOVA &bull; ISO 3611 CALIBRATED
+                </div>
+              </div>
+
               <div className="bg-surface-container p-4 rounded-lg border border-outline space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-xs font-bold text-caliper-cyan">
@@ -164,6 +181,23 @@ export const LifecycleInspectorModal: React.FC<LifecycleInspectorModalProps> = (
           {/* STAGE 03: PRACTICE */}
           {stage === 'practice' && (
             <div className="space-y-4">
+              {/* Authentic Apprentice Capture Preview */}
+              <div className="relative aspect-video rounded-lg overflow-hidden border border-outline bg-surface-container-lowest">
+                <img
+                  src="/assets/learner-attempt.jpg"
+                  alt="Apprentice Marcus Vance Practice Task Capture"
+                  className="w-full h-full object-cover filter contrast-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-surface-container-lowest/40" />
+                <div className="absolute top-2 left-2 bg-surface-container-lowest/90 px-2 py-0.5 rounded font-mono text-[10px] text-caliper-cyan border border-outline flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-caliper-cyan animate-pulse" />
+                  APPRENTICE TRIAL FEED // ATT-BASE-001 &bull; ATT-RETRY-001
+                </div>
+                <div className="absolute bottom-2 right-2 bg-surface-container-lowest/90 px-2 py-0.5 rounded font-mono text-[10px] text-on-surface-variant border border-outline">
+                  MARCUS VANCE &bull; BENCH 04 TELEMETRY
+                </div>
+              </div>
+
               <div className="bg-surface-container p-4 rounded border border-outline space-y-2">
                 <div className="font-mono text-xs font-bold text-caliper-cyan">
                   PRACTICE TASK ID: {task.task_id}

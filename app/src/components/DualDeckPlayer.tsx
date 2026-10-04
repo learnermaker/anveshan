@@ -126,6 +126,15 @@ export const DualDeckPlayer: React.FC<DualDeckPlayerProps> = ({
 
           {/* Precision Micrometer Simulation Canvas (Left) */}
           <div className="w-full aspect-video bg-surface-container-lowest rounded border border-outline relative overflow-hidden flex items-center justify-center telemetry-grid">
+            {/* Authentic Photographic Benchmark Background from Stitch */}
+            <img
+              src="/assets/expert-reference.jpg"
+              alt="Elena Rostova master micrometer zeroing reference"
+              className="absolute inset-0 w-full h-full object-cover opacity-75 mix-blend-luminosity filter contrast-125 brightness-95"
+            />
+            {/* Subtle darkroom optics vignette */}
+            <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/30 to-surface-container-lowest/60" />
+
             {/* Caliper Reticle Overlay */}
             <div className="reticle-corner reticle-tl" />
             <div className="reticle-corner reticle-tr" />
@@ -133,7 +142,7 @@ export const DualDeckPlayer: React.FC<DualDeckPlayerProps> = ({
             <div className="reticle-corner reticle-br" />
 
             {/* Central Optical Micrometer Visualizer */}
-            <div className="relative w-full h-full flex items-center justify-center p-6">
+            <div className="relative z-10 w-full h-full flex items-center justify-center p-6">
               {/* SVG Technical Instrument Schematics */}
               <svg className="w-full h-full max-h-56" viewBox="0 0 400 220" fill="none">
                 {/* Frame C-clamp */}
@@ -279,12 +288,31 @@ export const DualDeckPlayer: React.FC<DualDeckPlayerProps> = ({
 
           {/* Precision Micrometer Simulation Canvas (Right - Learner) */}
           <div className="w-full aspect-video bg-surface-container-lowest rounded border border-outline relative overflow-hidden flex items-center justify-center telemetry-grid">
+            {/* Authentic Photographic Learner Background from Stitch */}
+            <img
+              src="/assets/learner-attempt.jpg"
+              alt="Marcus Vance apprentice micrometer trial"
+              className={`absolute inset-0 w-full h-full object-cover transition-all duration-300 ${
+                learnerMode === 'baseline'
+                  ? 'opacity-65 mix-blend-luminosity filter sepia-[0.35] hue-rotate-[315deg] contrast-125'
+                  : 'opacity-75 mix-blend-luminosity filter contrast-125 brightness-95'
+              }`}
+            />
+            {/* Dynamic divergence vs calibrated vignette */}
+            <div
+              className={`absolute inset-0 transition-colors duration-300 ${
+                learnerMode === 'baseline' && currentTime >= 18.0
+                  ? 'bg-gradient-to-t from-divergence-crimson/25 via-surface-container-lowest/30 to-surface-container-lowest/60'
+                  : 'bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/30 to-surface-container-lowest/60'
+              }`}
+            />
+
             <div className="reticle-corner reticle-tl" />
             <div className="reticle-corner reticle-tr" />
             <div className="reticle-corner reticle-bl" />
             <div className="reticle-corner reticle-br" />
 
-            <div className="relative w-full h-full flex items-center justify-center p-6">
+            <div className="relative z-10 w-full h-full flex items-center justify-center p-6">
               <svg className="w-full h-full max-h-56" viewBox="0 0 400 220" fill="none">
                 {/* Frame C-clamp */}
                 <path

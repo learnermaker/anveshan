@@ -16,12 +16,14 @@ interface HeaderProps {
   telemetry: TransmissionTelemetry;
   activeStage: LifecycleStage;
   onSelectStage: (stage: LifecycleStage) => void;
+  onOpenStitchDesign?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   telemetry,
   activeStage,
   onSelectStage,
+  onOpenStitchDesign,
 }) => {
   const stages: { id: LifecycleStage; label: string; number: string; icon: typeof Compass }[] = [
     { id: 'source', number: '01', label: 'SOURCE', icon: Compass },
@@ -116,6 +118,17 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="w-2 h-2 rounded-full bg-transmission-emerald" />
             <span>8-CONTRACT SEAM</span>
           </div>
+
+          {onOpenStitchDesign && (
+            <button
+              onClick={onOpenStitchDesign}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high border border-outline hover:border-cadmium-amber text-[11px] font-mono text-on-surface transition-colors shadow-sm"
+              title="View Google Stitch Generative Canvas Artifact"
+            >
+              <Sparkles className="w-3 h-3 text-cadmium-amber" />
+              <span>STITCH CANVAS</span>
+            </button>
+          )}
         </div>
       </div>
     </header>

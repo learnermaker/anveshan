@@ -6,6 +6,7 @@ import { RubricHUD } from './components/RubricHUD';
 import { TransmissionGainHero } from './components/TransmissionGainHero';
 import { LineageDrawer } from './components/LineageDrawer';
 import { LifecycleInspectorModal } from './components/LifecycleInspectorModal';
+import { StitchModal } from './components/StitchModal';
 import { getTransmissionTelemetry } from './data/adapter';
 
 export function App() {
@@ -15,6 +16,7 @@ export function App() {
   const [activeStage, setActiveStage] = useState<LifecycleStage>('transmission');
   const [selectedCriterionId, setSelectedCriterionId] = useState<string | null>('CRIT-RATCHET');
   const [isLineageOpen, setIsLineageOpen] = useState<boolean>(false);
+  const [isStitchOpen, setIsStitchOpen] = useState<boolean>(false);
   const [modalStage, setModalStage] = useState<LifecycleStage | null>(null);
 
   const animationFrameRef = useRef<number | null>(null);
@@ -69,6 +71,7 @@ export function App() {
         telemetry={telemetry}
         activeStage={activeStage}
         onSelectStage={handleStageSelect}
+        onOpenStitchDesign={() => setIsStitchOpen(true)}
       />
 
       {/* Main Workbench Body */}
@@ -147,6 +150,12 @@ export function App() {
         stage={modalStage}
         onClose={() => setModalStage(null)}
         telemetry={telemetry}
+      />
+
+      {/* Google Stitch Generative Canvas Modal */}
+      <StitchModal
+        isOpen={isStitchOpen}
+        onClose={() => setIsStitchOpen(false)}
       />
     </div>
   );
