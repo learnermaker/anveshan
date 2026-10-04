@@ -56,14 +56,14 @@ export const LineageDrawer: React.FC<LineageDrawerProps> = ({
     {
       artifact_id: bundle.baseline_attempt.attempt_id,
       artifact_type: 'Baseline Attempt (Att 1)',
-      title: 'Marcus Vance Trial 01',
+      title: 'Learner Replay Trial 01',
       sha256: '2f3e8a1b098c432d...77b',
       parents: [bundle.practice_task.task_id],
     },
     {
       artifact_id: bundle.baseline_evaluation.evaluation_id,
       artifact_type: 'Baseline Evaluation',
-      title: 'Gemini 2.5 Flash Scorer (1.5 pts)',
+      title: 'Replay Evaluation (1.5 pts)',
       sha256: '6a8b1c4e90d235f1...44a',
       parents: [bundle.baseline_attempt.attempt_id, bundle.rubric.rubric_id],
     },
@@ -77,14 +77,14 @@ export const LineageDrawer: React.FC<LineageDrawerProps> = ({
     {
       artifact_id: bundle.retry_attempt.attempt_id,
       artifact_type: 'Retry Attempt (Att 2)',
-      title: 'Marcus Vance Trial 02 (Aligned)',
+      title: 'Learner Replay Trial 02 (Aligned)',
       sha256: '8d2a1b9f7c0e5432...99e',
       parents: [bundle.feedback.feedback_id],
     },
     {
       artifact_id: bundle.retry_evaluation.evaluation_id,
       artifact_type: 'Retry Evaluation',
-      title: 'Gemini 2.5 Flash Scorer (7.0 pts)',
+      title: 'Replay Evaluation (7.0 pts)',
       sha256: '3c7e1a8b90f42156...33d',
       parents: [bundle.retry_attempt.attempt_id, bundle.rubric.rubric_id],
     },
@@ -131,11 +131,11 @@ export const LineageDrawer: React.FC<LineageDrawerProps> = ({
               <div className="font-mono text-sm font-bold text-on-surface uppercase tracking-wider flex items-center gap-2">
                 <span>CRYPTOGRAPHIC LINEAGE & PROVENANCE RECORD</span>
                 <span className="text-[10px] px-2 py-0.5 rounded bg-transmission-emerald/10 text-transmission-emerald border border-transmission-emerald/30 font-bold">
-                  VERIFIED ED25519
+                  REPLAY SIGNATURE LABEL
                 </span>
               </div>
               <div className="text-xs font-sans text-on-surface-variant">
-                Immutable Merkle provenance graph validating the 8-contract transmission chain
+                Replay provenance graph for the 8-contract transmission fixture
               </div>
             </div>
           </div>
