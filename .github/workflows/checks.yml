@@ -71,3 +71,7 @@ jobs:
         run: |
           printf '%s\n' '{"truth":[{"timestamp":10,"action":"open"}],"pred":[{"timestamp":10.5,"action":"open"}]}' > /tmp/events.json
           python research/benchmarks/scripts/score_events.py /tmp/events.json
+
+      - name: Build frontend
+        working-directory: app
+        run: npm install --no-audit --no-fund && npm run build
