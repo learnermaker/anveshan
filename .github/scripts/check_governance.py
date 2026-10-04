@@ -25,7 +25,7 @@ if missing:
     print("\n".join(missing))
     sys.exit(1)
 
-agents = (ROOT / "AGENTS.md").read_text()
+agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
 required_rules = [
     "Issue before implementation.",
     "One issue, one outcome.",
@@ -42,13 +42,13 @@ if missing_rules:
     print("\n".join(missing_rules))
     sys.exit(1)
 
-copilot = (ROOT / ".github/copilot-instructions.md").read_text()
+copilot = (ROOT / ".github/copilot-instructions.md").read_text(encoding="utf-8")
 for token in ("AGENTS.md", "docs/status/NOW.md", "one bounded outcome", "Closes/Fixes/Resolves #N"):
     if token not in copilot:
         print(f"copilot-instructions.md missing required context: {token}")
         sys.exit(1)
 
-project = (ROOT / "docs/status/project.yaml").read_text()
+project = (ROOT / "docs/status/project.yaml").read_text(encoding="utf-8")
 for token in ("implementation_requires_issue", "pull_request_requires_issue", "scope_change_requires_trade"):
     if token not in project:
         print(f"project.yaml missing governance rule: {token}")
