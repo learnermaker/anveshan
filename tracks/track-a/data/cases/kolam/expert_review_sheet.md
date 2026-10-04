@@ -1,8 +1,8 @@
-# Expert Review Sheet: Sikku Kolam 5x5 Pulli Dot Matrix Trajectory
+# Expert Review Sheet: Reverse Engineering of 7-to-1 Sikku Kolam Geometric Pattern
 
 ## Case Metadata
 - **Package ID:** `kp.kolam.1`
-- **Skill ID:** `skill-kolam-geometry`
+- **Skill ID:** `skill_kolam`
 - **Domain:** Traditional Indian Geometric Art & Spatial Mathematics
 - **Archetype:** `spatial-transformation`
 - **Transmission Mode:** `goal-conditioned`
@@ -10,10 +10,10 @@
 - **Runtime Class:** `REPLAY`
 
 ## Contributor Consent
-- **Expert:** Synthetic Fixture Contributor
-- **Scope:** `engineering_replay_only`
+- **Expert:** Expert for kolam
+- **Scope:** `prototype_demonstration`
 - **Revocable:** True
-- **Granted At:** 2026-09-18T10:00:00Z
+- **Granted At:** N/A
 
 ## Review Status
 - **Reviewer:** Track A Automated Review Gate
@@ -25,8 +25,12 @@
 
 | ID | Type | Observation | Statement | Evidence Locators |
 |---|---|---|---|---|
-| `CLM-01` | `step` | **OBSERVED** | Step 1: Establish a 5x5 staggered matrix of dots (pulli) with equal 40mm Euclidean spacing on a clean horizontal surface. | `ev.kolam.step.01` [2.0s - 8.5s] (observed) |
-| `CLM-02` | `step` | **OBSERVED** | Step 2: The line must weave around each pulli dot without touching, intersecting, or lifting the drawing medium, completing a single continuous closed topological path. | `ev.kolam.step.02` [12.0s - 28.0s] (observed) |
+| `CLM-01` | `condition` | **OBSERVED** | Target Property: A rhombic (diamond-oriented) dot array labeled '7x1', arranged symmetrically with a maximum axis length of 7 dots tapering to 1 at each cardinal apex. | `ev.kolam.target.01` [0.0s - 0.0s] (observed) |
+| `CLM-02` | `condition` | **OBSERVED** | Target Property: Planar symmetry possessing 4-fold rotational symmetry (90-degree rotations) and 4 axes of reflectional symmetry (two orthogonal, two diagonal). | `ev.kolam.target.02` [0.0s - 0.0s] (observed) |
+| `CLM-03` | `condition` | **OBSERVED** | Target Property: A closed square/rhombus line segment enclosing the single central dot at the exact origin of the grid. | `ev.kolam.target.03` [0.0s - 0.0s] (observed) |
+| `CLM-04` | `condition` | **OBSERVED** | Target Property: Each cardinal extreme (North, South, East, West) terminates in a teardrop/figure-eight loop enclosing the single outermost dot. | `ev.kolam.target.04` [0.0s - 0.0s] (observed) |
+| `CLM-05` | `condition` | **OBSERVED** | Target Property: Each of the four quadrants contains three rounded outer petal loops wrapping around peripheral dots in a stepped corner configuration. | `ev.kolam.target.05` [0.0s - 0.0s] (observed) |
+| `CLM-06` | `condition` | **OBSERVED** | Target Property: Continuous curved strokes pass between and around dots without crossing through the dots, intersecting orthogonally at regular crossover nodes. | `ev.kolam.target.06` [0.0s - 0.0s] (observed) |
 
 ---
 ### Expert Signature & Verdict

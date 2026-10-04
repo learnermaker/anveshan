@@ -2,8 +2,8 @@
   "task_id": "task.kolam.1",
   "package_id": "kp.kolam.1",
   "rubric_id": "rubric.kolam.1",
-  "title": "Practice: Sikku Kolam 5x5 Pulli Dot Matrix Trajectory",
-  "instructions": "Demonstrate mastery of Sikku Kolam 5x5 Pulli Dot Matrix Trajectory adhering strictly to observed conditions and cues.",
+  "title": "Practice: Reverse Engineering of 7-to-1 Sikku Kolam Geometric Pattern",
+  "instructions": "Demonstrate mastery of Reverse Engineering of 7-to-1 Sikku Kolam Geometric Pattern adhering strictly to observed conditions and cues.",
   "constraints": [
     {
       "constraint_type": "environment",
@@ -13,6 +13,10 @@
   ],
   "target_criteria_ids": [
     "CRIT-01",
-    "CRIT-02"
+    "CRIT-02",
+    "CRIT-03",
+    "CRIT-04",
+    "CRIT-05",
+    "CRIT-06"
   ]
 }

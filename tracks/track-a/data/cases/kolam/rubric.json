@@ -1,25 +1,57 @@
 {
   "rubric_id": "rubric.kolam.1",
-  "skill_id": "skill-kolam-geometry",
-  "title": "Rubric: Sikku Kolam 5x5 Pulli Dot Matrix Trajectory",
-  "description": "Observable rubric synthesized for skill-kolam-geometry",
+  "skill_id": "skill_kolam",
+  "title": "Rubric: Reverse Engineering of 7-to-1 Sikku Kolam Geometric Pattern",
+  "description": "Observable rubric synthesized for skill_kolam",
   "criteria": [
     {
       "criterion_id": "CRIT-01",
       "name": "Criterion for CLM-01",
-      "description": "Step 1: Establish a 5x5 staggered matrix of dots (pulli) with equal 40mm Euclidean spacing on a clean horizontal surface. [source_claim_id: CLM-01]",
-      "observable_indicator": "Establish a 5x5 staggered matrix of dots (pulli) with equal 40mm Euclidean spacing on a clean horizontal surface.",
+      "description": "Target Property: A rhombic (diamond-oriented) dot array labeled '7x1', arranged symmetrically with a maximum axis length of 7 dots tapering to 1 at each cardinal apex. [source_claim_id: CLM-01]",
+      "observable_indicator": "A rhombic (diamond-oriented) dot array labeled '7x1', arranged symmetrically with a maximum axis length of 7 dots tapering to 1 at each cardinal apex. (Measurement: 7 to 1 rhombic dot grid (25 total dots))",
       "weight": 2.0,
       "required": true
     },
     {
       "criterion_id": "CRIT-02",
       "name": "Criterion for CLM-02",
-      "description": "Step 2: The line must weave around each pulli dot without touching, intersecting, or lifting the drawing medium, completing a single continuous closed topological path. [source_claim_id: CLM-02]",
-      "observable_indicator": "The line must weave around each pulli dot without touching, intersecting, or lifting the drawing medium, completing a single continuous closed topological path.",
+      "description": "Target Property: Planar symmetry possessing 4-fold rotational symmetry (90-degree rotations) and 4 axes of reflectional symmetry (two orthogonal, two diagonal). [source_claim_id: CLM-02]",
+      "observable_indicator": "Planar symmetry possessing 4-fold rotational symmetry (90-degree rotations) and 4 axes of reflectional symmetry (two orthogonal, two diagonal). (Measurement: D4 dihedral symmetry group (order 8))",
+      "weight": 2.0,
+      "required": true
+    },
+    {
+      "criterion_id": "CRIT-03",
+      "name": "Criterion for CLM-03",
+      "description": "Target Property: A closed square/rhombus line segment enclosing the single central dot at the exact origin of the grid. [source_claim_id: CLM-03]",
+      "observable_indicator": "A closed square/rhombus line segment enclosing the single central dot at the exact origin of the grid. (Measurement: 1 enclosed central dot)",
+      "weight": 2.0,
+      "required": true
+    },
+    {
+      "criterion_id": "CRIT-04",
+      "name": "Criterion for CLM-04",
+      "description": "Target Property: Each cardinal extreme (North, South, East, West) terminates in a teardrop/figure-eight loop enclosing the single outermost dot. [source_claim_id: CLM-04]",
+      "observable_indicator": "Each cardinal extreme (North, South, East, West) terminates in a teardrop/figure-eight loop enclosing the single outermost dot. (Measurement: 4 cardinal terminal loops)",
+      "weight": 2.0,
+      "required": true
+    },
+    {
+      "criterion_id": "CRIT-05",
+      "name": "Criterion for CLM-05",
+      "description": "Target Property: Each of the four quadrants contains three rounded outer petal loops wrapping around peripheral dots in a stepped corner configuration. [source_claim_id: CLM-05]",
+      "observable_indicator": "Each of the four quadrants contains three rounded outer petal loops wrapping around peripheral dots in a stepped corner configuration. (Measurement: 12 corner petal lobes (3 per quadrant))",
+      "weight": 2.0,
+      "required": true
+    },
+    {
+      "criterion_id": "CRIT-06",
+      "name": "Criterion for CLM-06",
+      "description": "Target Property: Continuous curved strokes pass between and around dots without crossing through the dots, intersecting orthogonally at regular crossover nodes. [source_claim_id: CLM-06]",
+      "observable_indicator": "Continuous curved strokes pass between and around dots without crossing through the dots, intersecting orthogonally at regular crossover nodes. (Measurement: Orthogonal 90-degree line crossovers)",
       "weight": 2.0,
       "required": true
     }
   ],
-  "passing_score": 2.8
+  "passing_score": 8.4
 }

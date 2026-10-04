@@ -1,11 +1,11 @@
 {
-  "provider": "replay",
-  "model_id": "deterministic-case-pack",
-  "prompt_id": "replay_extraction",
+  "provider": "gemini",
+  "model_id": "gemini-3.8-flash",
+  "prompt_id": "goal-conditioned_extraction",
   "prompt_version": "v1",
-  "input_artifact_id": "bundle_kolam",
-  "runtime_class": "REPLAY",
-  "run_id": "run_replay_kolam",
-  "expected_behavior": "100% deterministic deserialization",
-  "evaluation_reference": "tracks/cases/kolam/replay/bundle.json"
+  "input_artifact_id": "source_kolam",
+  "runtime_class": "LIVE",
+  "run_id": "run_live_kolam_1273102569008",
+  "expected_behavior": "Live multimodal extraction with structured JSON output",
+  "evaluation_reference": "tracks/cases/kolam/source/"
 }
