@@ -4,10 +4,9 @@
  * Each case is strictly grounded in the 8-contract common seam and includes declarative workspace specifications.
  */
 
-import { canonicalBundle } from '../adapter';
+import { canonicalBundle, normalizeTransmissionBundle } from '../adapter';
 import type { CapabilityCase, WorkspaceSpecification, FirstDivergenceDetail, MicroPracticeChallenge } from '../../types/workspace';
 import { getTransmissionTelemetry } from '../adapter';
-import type { TransmissionBundle } from '../../types/contracts';
 
 // ============================================================================
 // CASE 1: MECHANICAL MICROMETER (REFERENCE CASE - FORENSIC INSTRUMENT)
@@ -70,7 +69,7 @@ const micrometerMicroPractice: MicroPracticeChallenge = {
 // ============================================================================
 // CASE 2: SIKKU KOLAM (SPATIAL CANVAS)
 // ============================================================================
-const kolamBundle: TransmissionBundle = {
+const kolamBundle = normalizeTransmissionBundle({
   case_id: 'kolam_case_002',
   domain: 'Traditional Indian Geometric Art & Spatial Mathematics',
   skill: 'Sikku Kolam Continuous Knot Drawing & Radial Symmetry',
@@ -292,7 +291,7 @@ const kolamBundle: TransmissionBundle = {
       adaptation_notes: 'Spatial trajectory corrected via interactive perimeter overlay practice.',
     },
   },
-};
+});
 
 const kolamSpec: WorkspaceSpecification = {
   workspaceType: 'spatial_canvas',
@@ -352,7 +351,7 @@ const kolamMicroPractice: MicroPracticeChallenge = {
 // ============================================================================
 // CASE 3: BICYCLE PUNCTURE REPAIR (DIAGNOSTIC WORKSPACE)
 // ============================================================================
-const bikeBundle: TransmissionBundle = {
+const bikeBundle = normalizeTransmissionBundle({
   case_id: 'bike_case_003',
   domain: 'Mechanical Field Diagnostics & Pneumatic Systems',
   skill: 'Bicycle Tube Puncture Localization & Cold-Vulcanizing Patch',
@@ -573,7 +572,7 @@ const bikeBundle: TransmissionBundle = {
       adaptation_notes: 'Diagnostic sequence reinforced via causal state decision tree.',
     },
   },
-};
+});
 
 const bikeSpec: WorkspaceSpecification = {
   workspaceType: 'diagnostic_workspace',
@@ -633,7 +632,7 @@ const bikeMicroPractice: MicroPracticeChallenge = {
 // ============================================================================
 // CASE 4: HANDLOOM WEAVING (STATE TRANSITION WORKSPACE)
 // ============================================================================
-const weavingBundle: TransmissionBundle = {
+const weavingBundle = normalizeTransmissionBundle({
   case_id: 'weaving_case_004',
   domain: 'Artisanal Textile Engineering & Material Science',
   skill: 'Handloom Warp Shedding & Selvage Tension Control',
@@ -854,7 +853,7 @@ const weavingBundle: TransmissionBundle = {
       adaptation_notes: 'State machine sequence synchronization reinforced through state snapshot matrix.',
     },
   },
-};
+});
 
 const weavingSpec: WorkspaceSpecification = {
   workspaceType: 'state_transition',
@@ -914,7 +913,7 @@ const weavingMicroPractice: MicroPracticeChallenge = {
 // ============================================================================
 // CASE 5: TABLA RHYTHM (RHYTHM PRACTICE INSTRUMENT)
 // ============================================================================
-const tablaBundle: TransmissionBundle = {
+const tablaBundle = normalizeTransmissionBundle({
   case_id: 'tabla_case_005',
   domain: 'Indian Classical Percussion & Acoustic Science',
   skill: 'Tabla "Dha" Compound Syllable & Synchronized Resonance',
@@ -1135,7 +1134,7 @@ const tablaBundle: TransmissionBundle = {
       adaptation_notes: 'Millisecond acoustic onset envelope visualization allowed immediate tactile correction.',
     },
   },
-};
+});
 
 const tablaSpec: WorkspaceSpecification = {
   workspaceType: 'rhythm_instrument',
@@ -1195,7 +1194,7 @@ const tablaMicroPractice: MicroPracticeChallenge = {
 // ============================================================================
 // CASE 6: ORIGAMI FOLDING (SPATIAL SEQUENCE WORKSPACE)
 // ============================================================================
-const origamiBundle: TransmissionBundle = {
+const origamiBundle = normalizeTransmissionBundle({
   case_id: 'origami_case_006',
   domain: 'Mathematical Origami & Computational Paper Geometry',
   skill: 'Traditional Origami Crane: Petal Fold & Corner Alignment',
@@ -1416,7 +1415,7 @@ const origamiBundle: TransmissionBundle = {
       adaptation_notes: 'Sequential step-by-step 3D origami vector state sequence prevented fold crinkling.',
     },
   },
-};
+});
 
 const origamiSpec: WorkspaceSpecification = {
   workspaceType: 'spatial_sequence',
@@ -1476,7 +1475,7 @@ const origamiMicroPractice: MicroPracticeChallenge = {
 // ============================================================================
 // CASE 7: SQUARE KNOT (FIRST DIVERGENCE WORKSPACE)
 // ============================================================================
-const knotBundle: TransmissionBundle = {
+const knotBundle = normalizeTransmissionBundle({
   case_id: 'knot_case_007',
   domain: 'Surgical & Maritime Ropework Mechanics',
   skill: 'Surgical / Maritime Square Knot Tying & Capsize Prevention',
@@ -1698,7 +1697,7 @@ const knotBundle: TransmissionBundle = {
       adaptation_notes: 'First-divergence crossing topology visualizer cleanly differentiated Square Knot from Granny Knot.',
     },
   },
-};
+});
 
 const knotSpec: WorkspaceSpecification = {
   workspaceType: 'first_divergence',
@@ -2008,6 +2007,10 @@ export const CAPABILITY_CASES: Record<string, CapabilityCase> = {
 
 export const ALL_CAPABILITY_IDS = Object.keys(CAPABILITY_CASES);
 export const DEFAULT_CASE_ID = 'micrometer';
+
+export function hasCapabilityCase(id: string): boolean {
+  return Object.prototype.hasOwnProperty.call(CAPABILITY_CASES, id);
+}
 
 export function getCapabilityCase(id: string): CapabilityCase {
   return CAPABILITY_CASES[id] ?? CAPABILITY_CASES[DEFAULT_CASE_ID];

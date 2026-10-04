@@ -11,7 +11,7 @@ import { StitchModal } from './components/StitchModal';
 import { SettingsModal } from './components/SettingsModal';
 import { LifecycleInspectorModal } from './components/LifecycleInspectorModal';
 
-import { getCapabilityCase, DEFAULT_CASE_ID } from './data/cases/registry';
+import { getCapabilityCase, hasCapabilityCase, DEFAULT_CASE_ID } from './data/cases/registry';
 import { getStoredGeminiConfig, saveStoredGeminiConfig } from './model/geminiGateway';
 import type { AppView } from './types/workspace';
 import type { GeminiConfig } from './types/gemini';
@@ -32,7 +32,7 @@ const getInitialCaseId = (): string => {
   if (typeof window !== 'undefined') {
     const params = new URLSearchParams(window.location.search);
     const c = params.get('case');
-    if (c && getCapabilityCase(c)) {
+    if (c && hasCapabilityCase(c)) {
       return c;
     }
   }
