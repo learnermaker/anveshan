@@ -66,7 +66,7 @@ export function SourceAnalysisView({
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono font-bold text-on-surface flex items-center gap-2">
                 <Video className="w-4 h-4 text-transmission-emerald" />
-                AUTHENTIC EXPERT DEMONSTRATION
+                SOURCE EVIDENCE
               </span>
               <span className="text-[10px] font-mono text-on-surface-variant bg-surface-dim px-2 py-0.5 rounded border border-outline">
                 {capCase.workspaceSpec.evidenceProfile.temporalResolution}
