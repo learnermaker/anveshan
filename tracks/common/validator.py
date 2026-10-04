@@ -78,6 +78,16 @@ def validate_evaluation_against_rubric(
     rubric_criteria_map = {c.criterion_id: c for c in rubric.criteria}
     eval_criteria_ids = {cr.criterion_id for cr in evaluation.criterion_results}
 
+    # 0. Duplicate criterion results would double-count the same rubric criterion.
+    if len(eval_criteria_ids) != len(evaluation.criterion_results):
+        duplicates = [
+            cid for cid in eval_criteria_ids
+            if sum(1 for cr in evaluation.criterion_results if cr.criterion_id == cid) > 1
+        ]
+        errors.append(
+            f"Evaluation contains duplicate criterion results: {sorted(set(duplicates))}"
+        )
+
     # 1. Unknown criteria in evaluation
     for cr in evaluation.criterion_results:
         if cr.criterion_id not in rubric_criteria_map:
@@ -106,13 +116,14 @@ def validate_evaluation_against_rubric(
                 f"Evaluation.passed is True, but total_score ({evaluation.total_score}) is below rubric passing_score ({rubric.passing_score})"
             )
 
-    # If any required criterion is explicitly NOT_SATISFIED, cannot be marked passed
+    # If any required criterion is not SATISFIED, it cannot be marked passed.
+    # This applies whether passing_score is explicit or defaults to required-criteria semantics.
     for cr in evaluation.criterion_results:
         if cr.criterion_id in rubric_criteria_map:
-            if rubric_criteria_map[cr.criterion_id].required and cr.status == CriterionStatus.NOT_SATISFIED:
+            if rubric_criteria_map[cr.criterion_id].required and cr.status != CriterionStatus.SATISFIED:
                 if evaluation.passed:
                     errors.append(
-                        f"Evaluation.passed is True, but required criterion '{cr.criterion_id}' is NOT_SATISFIED"
+                        f"Evaluation.passed is True, but required criterion '{cr.criterion_id}' is {cr.status.value.upper()}"
                     )
 
     return errors
@@ -194,6 +205,40 @@ def validate_transmission_record_invariants(
         errors.append(
             f"TransmissionRecord rubric_id '{record.rubric_id}' does not match RubricDefinition '{rubric.rubric_id}'"
         )
+    if record.skill_id != rubric.skill_id:
+        errors.append(
+            f"TransmissionRecord skill_id '{record.skill_id}' does not match RubricDefinition skill_id '{rubric.skill_id}'"
+        )
+
+    # Attempt/task/evaluation alignment
+    if baseline_attempt.task_id != task.task_id:
+        errors.append(
+            f"baseline_attempt task_id '{baseline_attempt.task_id}' does not match PracticeTask '{task.task_id}'"
+        )
+    if retry_attempt.task_id != task.task_id:
+        errors.append(
+            f"retry_attempt task_id '{retry_attempt.task_id}' does not match PracticeTask '{task.task_id}'"
+        )
+    if retry_attempt.attempt_number <= baseline_attempt.attempt_number:
+        errors.append(
+            f"retry_attempt_number ({retry_attempt.attempt_number}) must be greater than baseline_attempt_number ({baseline_attempt.attempt_number})"
+        )
+    if baseline_eval.attempt_id != baseline_attempt.attempt_id:
+        errors.append(
+            f"baseline_eval attempt_id '{baseline_eval.attempt_id}' does not match baseline_attempt '{baseline_attempt.attempt_id}'"
+        )
+    if retry_eval.attempt_id != retry_attempt.attempt_id:
+        errors.append(
+            f"retry_eval attempt_id '{retry_eval.attempt_id}' does not match retry_attempt '{retry_attempt.attempt_id}'"
+        )
+    if baseline_eval.rubric_id != rubric.rubric_id:
+        errors.append(
+            f"baseline_eval rubric_id '{baseline_eval.rubric_id}' does not match RubricDefinition '{rubric.rubric_id}'"
+        )
+    if retry_eval.rubric_id != rubric.rubric_id:
+        errors.append(
+            f"retry_eval rubric_id '{retry_eval.rubric_id}' does not match RubricDefinition '{rubric.rubric_id}'"
+        )
 
     # Attempt type checks
     if baseline_attempt.attempt_type != AttemptType.BASELINE:
@@ -241,9 +286,25 @@ def validate_transmission_record_invariants(
     # Criteria improved validation
     baseline_scores = {cr.criterion_id: cr.score for cr in baseline_eval.criterion_results}
     retry_scores = {cr.criterion_id: cr.score for cr in retry_eval.criterion_results}
+    rubric_criterion_ids = {c.criterion_id for c in rubric.criteria}
     for crit_id in record.criteria_improved:
-        b_score = baseline_scores.get(crit_id, 0.0)
-        r_score = retry_scores.get(crit_id, 0.0)
+        if crit_id not in rubric_criterion_ids:
+            errors.append(
+                f"Criterion '{crit_id}' listed in criteria_improved but does not exist in RubricDefinition '{rubric.rubric_id}'"
+            )
+            continue
+        if crit_id not in baseline_scores:
+            errors.append(
+                f"Criterion '{crit_id}' listed in criteria_improved but is missing from baseline evaluation"
+            )
+            continue
+        if crit_id not in retry_scores:
+            errors.append(
+                f"Criterion '{crit_id}' listed in criteria_improved but is missing from retry evaluation"
+            )
+            continue
+        b_score = baseline_scores[crit_id]
+        r_score = retry_scores[crit_id]
         if r_score <= b_score:
             errors.append(
                 f"Criterion '{crit_id}' listed in criteria_improved, but retry_score ({r_score}) <= baseline_score ({b_score})"
