@@ -74,7 +74,7 @@ export class GeminiGateway {
           latencyMs: Math.round(performance.now() - startTime),
         };
       } catch (err) {
-        console.warn('Live Gemini call failed; falling back gracefully to verified replay fixture:', err);
+        console.warn('Live Gemini call failed; falling back gracefully to replay fixture:', err);
       }
     }
 
@@ -107,7 +107,7 @@ export class GeminiGateway {
           latencyMs: Math.round(performance.now() - startTime),
         };
       } catch (err) {
-        console.warn('Live Gemini call failed; falling back to verified replay divergence:', err);
+        console.warn('Live Gemini call failed; falling back to replay divergence:', err);
       }
     }
 
