@@ -38,43 +38,7 @@ jobs:
         if: github.event_name == 'pull_request'
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
-        run: |
-          python - <<'PY'
-          import os
-          import re
-
-          body = os.environ.get("PR_BODY", "")
-          checks = {
-              "issue linkage": re.search(
-                  r"(?im)^\s*(?:-\s*)?(?:closes|fixes|resolves)\s+#\d+\s*$",
-                  body,
-              ),
-              "scope included section": re.search(
-                  r"(?im)^\s*\*\*Included\*\*\s*$",
-                  body,
-              ),
-              "scope excluded section": re.search(
-                  r"(?im)^\s*\*\*Not included\*\*\s*$",
-                  body,
-              ),
-              "validation section": re.search(
-                  r"(?im)^\s*##\s+Validation\s*$",
-                  body,
-              ),
-          }
-          missing = [name for name, match in checks.items() if not match]
-          if missing:
-              raise SystemExit("Missing PR contract: " + ", ".join(missing))
-
-          issue_numbers = re.findall(
-              r"(?im)^\s*(?:-\s*)?(?:closes|fixes|resolves)\s+#(\d+)\s*$",
-              body,
-          )
-          if len(issue_numbers) != 1:
-              raise SystemExit("PR must link exactly one GitHub issue.")
-
-          print(f"PR contract: PASS (linked issue #{issue_numbers[0]})")
-          PY
+        run: python .github/scripts/check_pr_contract.py
 
       - name: Syntax-check benchmark scripts
         run: python -m compileall -q research/benchmarks/scripts
