@@ -22,6 +22,7 @@ Anveshan helps an expert transmit a bounded piece of real-world expertise to ano
 6. Adding scope requires removing, reducing, or deferring other work.
 7. If work is not necessary for the current gate, stop and create a research or scope-change issue.
 8. Prefer automation over ceremony.
+9. Completed implementation work should be merged into `main` promptly; `main` is the canonical latest integrated baseline.
 
 ## Operating target
 
