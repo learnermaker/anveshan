@@ -1,5 +1,5 @@
-# Case Registry
+# Track-local Case Data
 
-Add one directory per bounded case: `data/cases/<case_id>/`.
+Canonical case packs live in `tracks/cases/<case_id>/` and are shared across Track A and Track B.
 
-Each executable case must begin with `manifest.yaml` and follow `tracks/common/CASE-DATA-CONVENTIONS.md`. Do not add a real case until its domain/source/validation status is authorized.
+Use this directory only for track-specific implementation artifacts that cannot belong in the shared pack. Reference the canonical `case_id`; do not create a second manifest or duplicate canonical case content.
