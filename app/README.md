@@ -35,12 +35,12 @@ Track B (Evaluation & Transmission)    LearnerAttempt (Baseline & Retry)
 
 ## Key Capabilities & Interactions
 
-1. **Dual-Deck Comparative Telemetry:** Side-by-side inspection between **Elena Rostova (Master Instrumentalist)** and **Marcus Vance (Apprentice)** with toggleable Baseline (1.5 pts) vs Retry (7.0 pts).
-2. **Jump to First Divergence:** One-click instant snap to `00:19.2` where the apprentice diverged on ratchet torque clutch cadence (`CRIT-RATCHET`).
+1. **Dual-Deck Comparative Telemetry:** Side-by-side inspection of the **micrometer reference fixture** and **learner replay fixture** with toggleable Baseline vs Retry evidence.
+2. **Jump to First Divergence:** One-click snap to the fixture's first divergence at `00:19.2` (`CRIT-RATCHET`). This timestamp is replay-fixture data, not a validated real-world observation.
 3. **Multi-Modal Sensory Ribbon:** Acoustic waveform impulse peaks for ratchet clicks (18.4s, 18.8s, 19.2s), tactile friction drag duration (4.5s – 12.0s), and dial needle settle zone (26.0s – 31.0s).
 4. **8-Contract Rubric HUD:** Criterion-level scoring breakdown for `CRIT-WIPE`, `CRIT-RATCHET`, and `CRIT-LOCK` with direct evidence jumps and Gemini 2.5 Flash observation notes.
-5. **Deterministic Transmission Gain Hero:** Quantitative progression display showing $+5.5$ pts gain ($7.0 - 1.5$) and $+3$ criteria mastered.
-6. **Cryptographic Lineage DAG:** Interactive Merkle provenance inspector showing SHA-256 hashes, parent links, and verified Ed25519 signatures across the entire 8-contract chain.
+5. **Deterministic Transmission Gain Hero:** Quantitative progression display derived from the replay fixture's baseline/retry evaluations. The current `+5.5` gain is synthetic/replay data, not a product validation result.
+6. **Lineage DAG:** Interactive provenance inspector over the current contract chain. Fixture hashes/signature labels are illustrative unless a live cryptographic verification path is explicitly connected.
 
 ## Canonical prototype direction
 
@@ -66,10 +66,8 @@ npm install
 npm run dev
 ```
 
-## Production Build & Verification
+## Production Build
 
 ```bash
 npm run build
-npm run audit:devtools
 ```
-
