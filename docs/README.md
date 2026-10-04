@@ -94,23 +94,22 @@ Every time-sensitive competitor, model, platform or competition claim must be re
 
 ## Repository Readiness Audit — 2026-10-03
 
-Current state: **research-complete enough to begin capability validation; not implementation-complete and not submission-complete**.
+Current state: **active development toward the M1 vertical slice; not submission-complete**.
 
-The repository currently contains the research, product-definition, architecture, governance, hackathon, validation and benchmark-planning spine. It does **not** yet contain a runnable application, deployment configuration, CI/test workflow, real benchmark results, real validation artifacts, or final submission assets.
+The repository now contains active implementation across the frontend, shared contracts, case packs, CI, and parallel Track A/Track B workspaces. Engineering fixtures and replay tests provide deterministic development evidence; they do **not** by themselves constitute real-world product validation. Real benchmark/validation artifacts, production deployment hardening, and final submission assets remain outstanding.
 
-### Required next artifacts
+### Remaining development and validation artifacts
 
-- `app/` or equivalent runnable prototype source.
-- `tests/` with schema/unit/replay/evaluation tests.
-- model gateway implementation with recorded-response/replay mode.
-- real benchmark run artifacts and summarized results.
-- real self-recorded MVP fixture media outside git or in an approved storage path, plus metadata/index fixtures.
-- skill-specific rubric and independent expert-review records once domain is chosen.
-- evidence/citation examples produced by the actual system.
-- Google Cloud deployment configuration and deployment smoke-test record.
-- CI workflow for deterministic tests and repository checks.
-- final architecture diagram exported as an artifact.
-- final proposal/deck PDF and public three-minute demo link before submission.
+- complete the M1 vertical slice across the current bounded implementation work;
+- model gateway implementation with recorded-response/replay mode where required;
+- real benchmark run artifacts and summarized results;
+- approved authentic MVP fixture media and provenance metadata;
+- skill-specific rubric and independent expert-review records;
+- evidence/citation examples produced by the actual system;
+- Google Cloud deployment configuration and deployment smoke-test record when deployment is in scope;
+- continued deterministic CI/replay/evaluation coverage;
+- final architecture diagram exported as an artifact;
+- final proposal/deck PDF and public three-minute demo link before submission;
 - final submission evidence mapping each judging criterion to working prototype behavior.
 
 ### Current scope rule

@@ -4,9 +4,9 @@ This is the shortest current-scope contract for humans and coding agents.
 
 ## Current phase
 
-**RESEARCH → PRODUCT DEFINITION → VALIDATION**
+**ACTIVE DEVELOPMENT — M1 VERTICAL SLICE**
 
-No core product hypothesis is validated yet.
+Implementation is now authorized and underway. Product validation continues in parallel; implemented engineering behavior must not be described as validated product evidence.
 
 ## Current MVP wedge
 
@@ -45,8 +45,8 @@ These do not change the frozen common seam or, by themselves, authorize unrelate
 
 ## Gates
 
-- M0 — Capability validation
-- M1 — Vertical slice
+- M0 — Capability validation — completed as the authorization point for implementation
+- M1 — Vertical slice — current
 - M2 — Productization
 - M3 — Reliability
 - M4 — Demo
