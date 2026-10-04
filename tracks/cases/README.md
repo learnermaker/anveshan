@@ -26,17 +26,11 @@ tracks/cases/<case-id>/
 ├── source/
 │   └── README.md
 ├── knowledge/
-│   └── knowledge_package.json
+│   └── README.md
 ├── practice/
-│   ├── rubric.json
-│   └── practice_task.json
+│   └── README.md
 ├── replay/
-│   ├── baseline_attempt.json
-│   ├── baseline_evaluation.json
-│   ├── feedback.json
-│   ├── retry_attempt.json
-│   ├── retry_evaluation.json
-│   └── transmission_record.json
+│   └── bundle.json
 └── media/
     └── README.md
 ~~~
@@ -45,9 +39,9 @@ tracks/cases/<case-id>/
 
 - **manifest.json** — stable case identity, capability archetype, workspace projection, source posture, and pack status.
 - **source/** — source identity, provenance, consent/review/access notes, and source references.
-- **knowledge/** — normalized case knowledge entering the common seam.
-- **practice/** — case-specific task and deterministic rubric.
-- **replay/** — deterministic baseline → evaluation → feedback → retry → evaluation → transmission evidence.
+- **knowledge/** — case knowledge authoring boundary. The current prototype keeps it co-located in the replay bundle; it can be promoted to its own JSON artifact when independently authored.
+- **practice/** — case-specific task and deterministic rubric authoring boundary. The current prototype keeps them co-located in the replay bundle.
+- **replay/** — the current atomic deterministic bundle containing knowledge, practice, baseline/retry attempts, evaluations, feedback, and transmission record.
 - **media/** — pointers/manifests for media objects. Large binaries do not belong in Git.
 
 ## Contract boundary
