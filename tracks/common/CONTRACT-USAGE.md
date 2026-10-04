@@ -137,3 +137,12 @@ If a genuinely missing cross-track invariant is discovered:
 5. treat the change as a cross-track architectural decision.
 
 The goal is a **small stable seam**, not a generalized platform model.
+
+
+## Parallel UI work — non-negotiable boundary
+UI development may proceed in parallel with Track A and Track B. Track agents must not modify shared contracts merely to satisfy a UI shape, and UI code must not become an alternate canonical model.
+For UI-facing data: start from a validated common contract; create a downstream adapter/view-model when needed; preserve stable contract IDs and lineage references; keep presentation state and UI-only fields out of canonical contracts; and raise an explicit cross-track issue if the seam genuinely cannot express a required invariant.
+Track A/B agents should assume UI code may change independently. Do not import UI implementation modules into track logic or make tests depend on UI component structure.
+
+## Agent operating rule
+Before coding, identify the exact contract(s) owned by the change, the fixture that proves the behavior, and the boundary that must remain untouched. Prefer the smallest local adapter or deterministic helper over shared-schema changes.
