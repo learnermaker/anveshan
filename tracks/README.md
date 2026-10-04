@@ -4,10 +4,11 @@ The `tracks/` directory is the implementation workspace boundary for the two par
 
 ## Ownership
 
+- `tracks/common/` — **Track Common: The 8 Shared Contracts & Universal Validator**
 - `tracks/track-a/` — **Track A: Expert Intelligence & Grounding**
 - `tracks/track-b/` — **Track B: Practice, Evaluation & Transmission**
 
-Track folders are intentionally disjoint. Do not place shared contracts, cross-track utilities, or integration code inside a track folder unless the relevant issue explicitly assigns ownership.
+Track folders are intentionally disjoint. Shared contracts and cross-track utilities live in `tracks/common/` as the single authoritative source of truth.
 
 ## Independence rule
 
@@ -15,17 +16,16 @@ Each track must be runnable/testable against replay fixtures and frozen handoff 
 
 ## Shared seam
 
-The current conceptual handoff surface is:
+The frozen 8-contract seam defined in `tracks/common/schemas/` is:
 
-- `KnowledgePackage`
-- `EvidenceRef`
-- `PracticeTask`
-- `LearnerAttempt`
-- `Evaluation`
-- `Feedback`
-- `TransmissionRecord`
-
-These are contract names, not authorization to implement every object immediately.
+1. `EvidenceRef`
+2. `KnowledgePackage`
+3. `RubricDefinition`
+4. `PracticeTask`
+5. `LearnerAttempt`
+6. `Evaluation`
+7. `Feedback`
+8. `TransmissionRecord`
 
 ## Integration
 

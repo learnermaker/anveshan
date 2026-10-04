@@ -49,9 +49,10 @@ For coding-agent operating rules, read `AGENTS.md` first.
 
 ## Parallel implementation workspaces
 
-- `tracks/` — disjoint starter workspaces for the two concurrent transmission tracks.
-- `tracks/track-a/` — Expert Intelligence & Grounding.
-- `tracks/track-b/` — Practice, Evaluation & Transmission.
+- `tracks/` — starter workspaces for concurrent transmission tracks.
+- `tracks/common/` — **The 8 Shared Contracts & Universal Validator (Track 3 / Common Seam)**.
+- `tracks/track-a/` — Expert Intelligence & Grounding (Track 1).
+- `tracks/track-b/` — Practice, Evaluation & Transmission (Track 2).
 
 
 ## Validation
