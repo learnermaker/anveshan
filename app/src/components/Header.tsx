@@ -147,7 +147,7 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="text-on-surface font-semibold flex items-center gap-1 justify-end mt-0.5">
               <ShieldCheck className="w-2.5 h-2.5 text-caliper-cyan" />
               <span className="text-caliper-cyan font-mono text-[10px]">
-                REPLAY VERIFIED // HONEST SPEC
+                REPLAY FIXTURE // DETERMINISTIC CHECKS
               </span>
             </div>
           </div>
