@@ -172,7 +172,7 @@ In accordance with official hackathon guidelines (Google Cloud AI Builder Cup 20
 - Auto-scales based on incoming evaluation requests.
 
 ### 4.2 Cloud Storage (Blob Store)
-- Bucket stores raw authentic demonstration videos, learner baseline videos, and retry attempts.
+- Bucket stores authorized source media/assets, learner baseline evidence, and retry attempts. Source assets may be video, audio, images, documents, or other supported evidence.
 - Video references are passed directly or proxied to the Gemini File API.
 
 ### 4.3 Firestore (State & Lineage)
