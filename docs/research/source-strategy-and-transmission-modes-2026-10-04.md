@@ -21,7 +21,7 @@ The key conclusion is:
 
 The system starts with an expert or successful demonstration and helps a learner reproduce the capability.
 
-\`\`\`
+~~~
 SOURCE / DEMONSTRATION
         ↓
 OBSERVE
@@ -33,7 +33,7 @@ TEACH
 PRACTICE
         ↓
 VERIFY
-\`\`\`
+~~~
 
 Strong examples: Bicycle repair, Micrometer, Origami, Tabla.
 
@@ -43,7 +43,7 @@ Strong examples: Bicycle repair, Micrometer, Origami, Tabla.
 
 The system starts with a target state rather than an observed procedure.
 
-\`\`\`
+~~~
 TARGET / DESIRED STATE
         ↓
 STRUCTURE ANALYSIS
@@ -57,7 +57,7 @@ PRACTICE PATH
 LEARNER ATTEMPT
         ↓
 VERIFY AGAINST TARGET
-\`\`\`
+~~~
 
 **Kolam is the primary prototype candidate for this mode.**
 
@@ -75,7 +75,7 @@ Therefore the system must distinguish:
 
 **Learner attempt → divergence → capability**
 
-\`\`\`
+~~~
 LEARNER ATTEMPT
         ↓
 EVIDENCE ANALYSIS
@@ -87,7 +87,7 @@ TARGETED INTERVENTION
 RETRY
         ↓
 VERIFY CHANGE
-\`\`\`
+~~~
 
 Strong examples: Square knot, Origami, Bicycle repair, Micrometer.
 
@@ -137,7 +137,7 @@ That distinction is central to the product's evidence discipline.
 
 ## Spatial Reconstruction Workspace
 
-\`\`\`
+~~~
 TARGET IMAGE
      ↓
 STRUCTURE MAP
@@ -155,7 +155,7 @@ DIVERGENCE
 CORRECTION
      ↓
 RETRY
-\`\`\`
+~~~
 
 Possible UI primitives:
 
@@ -185,7 +185,7 @@ The important demonstration is:
 
 The stronger chain is:
 
-\`\`\`
+~~~
 EVIDENCE
    ↓
 REASONING REQUIREMENT
@@ -195,7 +195,7 @@ WORKSPACE COMPOSITION
 INTERACTION
    ↓
 LEARNING / PRACTICE
-\`\`\`
+~~~
 
 Examples:
 
@@ -344,7 +344,7 @@ This distinction should be encoded into both the prototype UX and agent guidance
 
 Every case should define:
 
-\`\`\`
+~~~
 SOURCE TYPE
    ↓
 AVAILABLE EVIDENCE
@@ -354,7 +354,7 @@ REASONING ARCHETYPE
 TRANSMISSION MODE
    ↓
 WORKSPACE
-\`\`\`
+~~~
 
 Examples:
 
