@@ -47,7 +47,7 @@ export const TransmissionGainHero: React.FC<TransmissionGainHeroProps> = ({
             </h2>
 
             <p className="font-sans text-xs text-on-surface-variant leading-relaxed max-w-xl">
-              Through evidence-grounded feedback and deliberate retry, the apprentice eliminated all 3 critical technique divergences, converting baseline acoustic and parallax failures into certified optical calibration proficiency.
+              The replay fixture shows criterion-level improvement after evidence-grounded feedback and a deliberate retry. This result is limited to the configured rubric and does not establish real-world mastery or certification.
             </p>
           </div>
 
@@ -89,7 +89,7 @@ export const TransmissionGainHero: React.FC<TransmissionGainHeroProps> = ({
               </div>
               <div className="text-right">
                 <span className="px-2 py-1 rounded bg-transmission-emerald text-surface-container-lowest font-mono font-bold text-xs uppercase tracking-wider">
-                  +3 CRITERIA MASTERED
+                  +3 CRITERIA IMPROVED
                 </span>
               </div>
             </div>

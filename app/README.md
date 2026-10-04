@@ -35,12 +35,12 @@ Track B (Evaluation & Transmission)    LearnerAttempt (Baseline & Retry)
 
 ## Key Capabilities & Interactions
 
-1. **Dual-Deck Comparative Telemetry:** Side-by-side inspection between **Elena Rostova (Master Instrumentalist)** and **Marcus Vance (Apprentice)** with toggleable Baseline (1.5 pts) vs Retry (7.0 pts).
-2. **Jump to First Divergence:** One-click instant snap to `00:19.2` where the apprentice diverged on ratchet torque clutch cadence (`CRIT-RATCHET`).
-3. **Multi-Modal Sensory Ribbon:** Acoustic waveform impulse peaks for ratchet clicks (18.4s, 18.8s, 19.2s), tactile friction drag duration (4.5s – 12.0s), and dial needle settle zone (26.0s – 31.0s).
-4. **8-Contract Rubric HUD:** Criterion-level scoring breakdown for `CRIT-WIPE`, `CRIT-RATCHET`, and `CRIT-LOCK` with direct evidence jumps and Gemini 2.5 Flash observation notes.
-5. **Deterministic Transmission Gain Hero:** Quantitative progression display showing $+5.5$ pts gain ($7.0 - 1.5$) and $+3$ criteria mastered.
-6. **Cryptographic Lineage DAG:** Interactive Merkle provenance inspector showing SHA-256 hashes, parent links, and verified Ed25519 signatures across the entire 8-contract chain.
+1. **Dual-Deck Comparative Telemetry:** Side-by-side inspection between a **reference replay fixture** and **learner replay attempt**, with toggleable Baseline vs Retry.
+2. **Jump to First Divergence:** One-click snap to the configured replay divergence at `00:19.2` (`CRIT-RATCHET`).
+3. **Multi-Modal Sensory Ribbon:** Replay annotations for ratchet clicks, drag duration, and dial-settle observations; physical force remains unmeasured.
+4. **8-Contract Rubric HUD:** Criterion-level replay scoring for `CRIT-WIPE`, `CRIT-RATCHET`, and `CRIT-LOCK`, with evidence jumps and model-assisted observation notes.
+5. **Deterministic Transmission Gain Hero:** Quantitative progression display showing the configured baseline-to-retry gain and improved criteria; it does not assert mastery or certification.
+6. **Provenance / Lineage Inspector:** Interactive replay lineage view showing contract nodes, hashes, parent links, and configured provenance metadata. Cryptographic display is fixture data unless backed by real verification.
 
 ## Canonical prototype direction
 
@@ -73,3 +73,6 @@ npm run build
 npm run audit:devtools
 ```
 
+
+
+> **Replay boundary:** current fixture identities, consent metadata, review state, scores, and provenance displays are engineering fixtures unless explicitly replaced by authorized real evidence.

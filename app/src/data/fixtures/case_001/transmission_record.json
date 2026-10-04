@@ -3,7 +3,7 @@
   "skill_id": "SKILL-OPT-CALIB",
   "package_id": "PKG-OPT-001",
   "rubric_id": "RUBRIC-OPT-001",
-  "expert_id": "Marcus Vance",
+  "expert_id": "Reference Expert (Synthetic Fixture)",
   "learner_id": "LRN-ELENA-01",
   "baseline_attempt_id": "ATT-OPT-BASE-01",
   "retry_attempt_id": "ATT-OPT-RETRY-01",
