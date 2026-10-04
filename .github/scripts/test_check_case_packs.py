@@ -65,13 +65,27 @@ def test_replay_cannot_claim_authentic_source_ready():
     assert any("AUTHENTIC_SOURCE_READY" in failure and "REPLAY" in failure for failure in failures)
 
 
-def test_authentic_source_ready_requires_authentic_expert_and_non_replay():
+def test_authentic_source_ready_requires_authentic_expert_and_authentic_runtime():
     failures = check_case_packs.validate_manifest(
         manifest(source_posture="authentic_expert", status="AUTHENTIC_SOURCE_READY", runtime_class="REPLAY"),
         "example-case",
         SCHEMA,
     )
     assert any("runtime_class" in failure for failure in failures)
+
+
+def test_authentic_source_ready_is_representable():
+    value = manifest(source_posture="authentic_expert", status="AUTHENTIC_SOURCE_READY", runtime_class="AUTHENTIC")
+    assert check_case_packs.validate_manifest(value, "example-case", SCHEMA) == []
+
+
+def test_authentic_runtime_cannot_be_engineering_fixture():
+    failures = check_case_packs.validate_manifest(
+        manifest(source_posture="authentic_expert", status="ENGINEERING_FIXTURE", runtime_class="AUTHENTIC"),
+        "example-case",
+        SCHEMA,
+    )
+    assert any("ENGINEERING_FIXTURE" in failure and "AUTHENTIC" in failure for failure in failures)
 
 
 def test_schema_unknown_field_is_rejected():
