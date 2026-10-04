@@ -162,3 +162,37 @@ Track A/B agents should assume UI code may change independently. Do not import U
 
 ## Agent operating rule
 Before coding, identify the exact contract(s) owned by the change, the fixture that proves the behavior, and the boundary that must remain untouched. Prefer the smallest local adapter or deterministic helper over shared-schema changes.
+
+
+## Current prototype boundary — 2026-10-04
+
+The current UI demonstrates three useful downstream behaviors:
+
+1. **Workspace composition** — choose a capability-specific interaction model from validated evidence/mode characteristics;
+2. **First divergence** — focus the UI on the earliest meaningful criterion/evidence mismatch;
+3. **Adaptive retry** — derive a bounded micro-practice from the failed criterion.
+
+None requires a new common contract. Use downstream adapters/view models and retain the stable IDs from the eight contracts.
+
+### Epistemic state mapping
+
+The common evidence enum is:
+
+OBSERVED | INFERRED | UNVERIFIED
+
+A UI may display UNVERIFIED as UNKNOWN, but this is a presentation mapping, not a new canonical state.
+
+### Replay/live mapping
+
+LIVE, REPLAY, SYNTHETIC, and ILLUSTRATIVE are runtime/fixture labels, not common-contract fields. Keep them in test metadata, model gateway state, or UI view models.
+
+### Target-first rule
+
+For a desired-state/image source:
+- observable target properties may become source-grounded evidence;
+- candidate construction strategy is explicitly inferred;
+- original creator process, intent, or provenance must not be invented.
+
+### Transmission result rule
+
+The common seam can prove deterministic improvement in the configured rubric frame. It cannot, by itself, prove real-world mastery, generalization, certification, or causal transfer.
