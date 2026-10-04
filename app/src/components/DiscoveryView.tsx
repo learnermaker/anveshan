@@ -152,7 +152,7 @@ export function DiscoveryView({ onSelectCase, selectedCaseId }: DiscoveryViewPro
         <div className="space-y-1.5 max-w-2xl">
           <div className="flex items-center gap-2 text-xs font-mono font-bold text-on-surface">
             <Shield className="w-4 h-4 text-transmission-emerald" />
-            <span>AUTHENTIC EVIDENCE & FROZEN SEAM ARCHITECTURE</span>
+            <span>SOURCE EVIDENCE & FROZEN SEAM ARCHITECTURE</span>
           </div>
           <p className="text-xs text-on-surface-variant leading-relaxed">
             Every capability conforms to the 8 frozen shared contracts: <span className="text-on-surface font-mono">KnowledgePackage, RubricDefinition, PracticeTask, LearnerAttempt, Evaluation, Feedback, and TransmissionRecord</span>. Gemini interprets multimodal cues; deterministic rubrics govern scoring.
