@@ -72,6 +72,22 @@ Expert → Knowledge → Evidence → Learner → Attempt → Feedback → Impro
 
 The record identifies the source and learner and leaves room for a later adaptation.
 
+## Source flexibility
+
+The MVP transmission loop remains narrow, but its source can be multimodal and need not always be a demonstration video.
+
+For a selected bounded case, the source may be:
+- an authentic demonstration;
+- a desired target state/image;
+- a learner attempt;
+- or a combination.
+
+The chosen source must support an observable, reviewable practice task and measurable verification.
+
+For target-first cases, generated procedure is a candidate inferred path, not an asserted reconstruction of the original creator's process.
+
+This is a source/input clarification, not a relaxation of the MVP proof requirements.
+
 ## MVP Non-Requirements
 
 The following are explicitly not required to prove the thesis:
