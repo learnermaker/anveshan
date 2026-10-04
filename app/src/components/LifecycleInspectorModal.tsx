@@ -11,7 +11,7 @@ import {
   Eye,
   ExternalLink,
 } from 'lucide-react';
-import type { LifecycleStage } from './Header';
+export type LifecycleStage = 'source' | 'knowledge' | 'practice' | 'transmission';
 import type { TransmissionTelemetry } from '../data/adapter';
 
 interface LifecycleInspectorModalProps {

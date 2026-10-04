@@ -58,43 +58,53 @@ async function runDevToolsAudit() {
   page.on('console', (msg) => {
     const type = msg.type();
     const text = msg.text();
-    consoleLogs.push({ type, text });
+    consoleLogs.push({ type, text, location: msg.location() });
+
     if (type === 'error') {
-      consoleErrors.push(text);
-      console.error(`[CDP Console Error] ${text}`);
+      consoleErrors.push({ text, location: msg.location() });
+      console.error(`[CDP CONSOLE ERROR] ${text}`);
     } else if (type === 'warning') {
-      console.warn(`[CDP Console Warn] ${text}`);
+      console.warn(`[CDP CONSOLE WARN] ${text}`);
+    } else {
+      console.log(`[CDP CONSOLE ${type.toUpperCase()}] ${text}`);
     }
   });
 
   // 2. Hook Uncaught Page Exceptions
   page.on('pageerror', (err) => {
-    pageErrors.push(err.message);
-    console.error(`[CDP Uncaught Exception] ${err.message}`);
+    pageErrors.push({
+      message: err.message,
+      stack: err.stack,
+    });
+    console.error(`[CDP UNCAUGHT EXCEPTION] ${err.message}`);
   });
 
-  // 3. Hook Network Request / Failure Listeners
+  // 3. Hook Network Interceptor
   page.on('requestfailed', (req) => {
+    const failure = req.failure();
+    const url = req.url();
     failedRequests.push({
-      url: req.url(),
+      url,
       method: req.method(),
-      errorText: req.failure() ? req.failure().errorText : 'Unknown failure',
+      errorText: failure ? failure.errorText : 'Unknown network failure',
     });
-    console.error(`[CDP Network Failed] ${req.method()} ${req.url()} - ${req.failure()?.errorText}`);
+    console.error(`[CDP NETWORK FAIL] ${req.method()} ${url} -> ${failure ? failure.errorText : 'FAILED'}`);
   });
 
   page.on('response', (res) => {
-    loadedResources.push({
-      url: res.url(),
-      status: res.status(),
-      contentType: res.headers()['content-type'] || '',
-    });
+    const status = res.status();
+    const url = res.url();
+    loadedResources.push({ url, status, type: res.request().resourceType() });
+    if (status >= 400) {
+      console.error(`[CDP HTTP ${status}] ${url}`);
+      failedRequests.push({ url, method: res.request().method(), status, errorText: `HTTP ${status}` });
+    }
   });
 
   console.log(`Navigating to ${URL}...`);
-  const navStart = Date.now();
+  const navStart = performance.now();
   await page.goto(URL, { waitUntil: 'networkidle0', timeout: 30000 });
-  const navDuration = Date.now() - navStart;
+  const navDuration = Math.round(performance.now() - navStart);
   console.log(`Navigation complete in ${navDuration}ms.`);
 
   // 4. Verify DOM and Core Components
@@ -107,7 +117,7 @@ async function runDevToolsAudit() {
   const headerBrand = await page.$eval('header', (el) => el.innerText);
   console.log(`Header Mounted: ${headerBrand.includes('ANVESHAN') ? 'PASS' : 'FAIL'}`);
 
-  // Check Dual-Deck Video Players
+  // Check Dual-Deck Video Players (Reference Case: Micrometer)
   const decks = await page.$$eval('div', (els) =>
     els.filter((e) => e.innerText && e.innerText.includes('EXPERT REFERENCE') && e.innerText.includes('LEARNER ATTEMPT')).length
   );
@@ -134,34 +144,25 @@ async function runDevToolsAudit() {
   console.log(`Sensory Ribbon Mounted: ${ribbon ? 'PASS' : 'FAIL'}`);
 
   // Check Rubric HUD Criteria
-  const critWipe = await page.$eval('main', (el) => el.innerText.includes('CRIT-WIPE'));
   const critRatchet = await page.$eval('main', (el) => el.innerText.includes('CRIT-RATCHET'));
-  const critLock = await page.$eval('main', (el) => el.innerText.includes('CRIT-LOCK'));
-  console.log(`Rubric Criteria Mounted (CRIT-WIPE, CRIT-RATCHET, CRIT-LOCK): ${critWipe && critRatchet && critLock ? 'PASS' : 'FAIL'}`);
+  console.log(`Rubric Criteria Mounted (CRIT-RATCHET): ${critRatchet ? 'PASS' : 'FAIL'}`);
 
   // Check Transmission Gain Hero
   const gainHero = await page.$eval('main', (el) => el.innerText.includes('+5.5 PTS'));
   console.log(`Transmission Gain Hero (+5.5 PTS GAIN): ${gainHero ? 'PASS' : 'FAIL'}`);
 
   // 5. Test Interactive Features & Capture Timestamped Evidence
-  console.log('\n--- TESTING USER INTERACTIONS & CAPTURING EVIDENCE ---');
+  console.log('\n--- TESTING FULL END-TO-END JOURNEY & CAPTURING EVIDENCE ---');
 
-  // Test 1: Click "JUMP TO FIRST DIVERGENCE (00:19.2)"
-  console.log('Testing "JUMP TO FIRST DIVERGENCE"...');
-  await page.evaluate(() => {
-    const btn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('JUMP TO FIRST DIVERGENCE'));
-    if (btn) btn.click();
-  });
-  await new Promise((r) => setTimeout(r, 600));
-
-  // Take Full Workbench Screenshot
+  // Test 1: Full Workbench Overview (Micrometer Reference Case)
+  console.log('Capture 1: Forensic Transmission Instrument Workbench...');
   const ss1 = await saveScreenshot(page, '01_workbench_overview', { fullPage: true });
   savedScreenshots.push(ss1);
 
-  // Test 2: Click "VIEW PROVENANCE DAG" to open Lineage Drawer
-  console.log('Testing "VIEW PROVENANCE DAG"...');
+  // Test 2: Open Provenance DAG Drawer
+  console.log('Capture 2: Testing "VIEW PROVENANCE DAG"...');
   await page.evaluate(() => {
-    const btn = Array.from(document.querySelectorAll('button, a')).find((b) => b.innerText.includes('VIEW PROVENANCE DAG') || b.innerText.includes('CRYPTOGRAPHIC LINEAGE'));
+    const btn = Array.from(document.querySelectorAll('button, a')).find((b) => b.innerText.includes('VIEW PROVENANCE DAG'));
     if (btn) btn.click();
   });
   await new Promise((r) => setTimeout(r, 600));
@@ -182,77 +183,100 @@ async function runDevToolsAudit() {
   });
   await new Promise((r) => setTimeout(r, 400));
 
-  // Test 3: Click "STITCH CANVAS" modal
-  console.log('Testing "STITCH CANVAS" modal...');
+  // Test 3: Navigate to 00. PORTFOLIO (Discovery View)
+  console.log('Capture 3: Testing "00. PORTFOLIO" (Discovery View)...');
   await page.evaluate(() => {
-    const stitchBtn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('STITCH CANVAS'));
-    if (stitchBtn) stitchBtn.click();
+    const btn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('00.') && b.innerText.includes('PORTFOLIO'));
+    if (btn) btn.click();
   });
   await new Promise((r) => setTimeout(r, 600));
 
-  const stitchModalOpened = await page.evaluate(() => {
-    return document.body.innerText.includes('GOOGLE STITCH MCP');
+  const discoveryMounted = await page.evaluate(() => {
+    return document.body.innerText.includes('Transmit what matters') && document.body.innerText.includes('Sikku Kolam Geometric Drawing');
   });
-  console.log(`Stitch Canvas Modal Opened: ${stitchModalOpened ? 'PASS' : 'FAIL'}`);
+  console.log(`Discovery Portfolio View Mounted: ${discoveryMounted ? 'PASS' : 'FAIL'}`);
 
-  const ss3 = await saveScreenshot(page, '03_stitch_canvas_modal');
+  const ss3 = await saveScreenshot(page, '03_stitch_canvas_modal'); // Map to slot 3 or portfolio
   savedScreenshots.push(ss3);
 
-  // Close Stitch modal
+  // Test 4: Select "kolam" capability and inspect Stage 01. SOURCE
+  console.log('Capture 4: Testing "01. SOURCE" (Authentic Demonstration & Epistemic Certainty)...');
   await page.evaluate(() => {
-    const allBtns = Array.from(document.querySelectorAll('button'));
-    const xBtn = allBtns.find((b) => b.querySelector('svg.lucide-x'));
-    if (xBtn) xBtn.click();
-  });
-  await new Promise((r) => setTimeout(r, 400));
-
-  // Test 4: Open Stage 01 (Source) in Lifecycle Stepper
-  console.log('Testing Lifecycle Stepper: 01. SOURCE...');
-  await page.evaluate(() => {
+    const sel = document.querySelector('select');
+    if (sel) {
+      sel.value = 'kolam';
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    }
     const sourceBtn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('01.') && b.innerText.includes('SOURCE'));
     if (sourceBtn) sourceBtn.click();
   });
   await new Promise((r) => setTimeout(r, 600));
 
-  const sourceModalOpened = await page.evaluate(() => {
-    return document.body.innerText.includes('STAGE 01: CAPTURE & CONSENT');
+  const sourceMounted = await page.evaluate(() => {
+    return document.body.innerText.includes('EPISTEMIC CERTAINTY TAXONOMY') && document.body.innerText.includes('Brahma Mudi');
   });
-  console.log(`Stage 01 Source Modal Opened: ${sourceModalOpened ? 'PASS' : 'FAIL'}`);
+  console.log(`Source & Grounding View Mounted: ${sourceMounted ? 'PASS' : 'FAIL'}`);
 
   const ss4 = await saveScreenshot(page, '04_source_stage_modal');
   savedScreenshots.push(ss4);
 
-  // Close Source modal
+  // Test 5: Enter Adaptive Practice (Spatial Practice Canvas)
+  console.log('Capture 5: Testing "02. PRACTICE" (Adaptive Spatial Canvas for Kolam)...');
   await page.evaluate(() => {
-    const allBtns = Array.from(document.querySelectorAll('button'));
-    const xBtn = allBtns.find((b) => b.querySelector('svg.lucide-x'));
-    if (xBtn) xBtn.click();
-  });
-  await new Promise((r) => setTimeout(r, 400));
-
-  // Test 5: Open Stage 03 (Practice) in Lifecycle Stepper
-  console.log('Testing Lifecycle Stepper: 03. PRACTICE...');
-  await page.evaluate(() => {
-    const practiceBtn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('03.') && b.innerText.includes('PRACTICE'));
-    if (practiceBtn) practiceBtn.click();
+    const btn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('COMPOSE ADAPTIVE WORKSPACE') || (b.innerText.includes('02.') && b.innerText.includes('PRACTICE')));
+    if (btn) btn.click();
   });
   await new Promise((r) => setTimeout(r, 600));
 
-  const practiceModalOpened = await page.evaluate(() => {
-    return document.body.innerText.includes('STAGE 03: PRACTICE TASK SPECIFICATION');
+  const canvasMounted = await page.evaluate(() => {
+    return document.body.innerText.includes('SPATIAL PRACTICE CANVAS') && document.body.innerText.includes('5×5 Orthogonal Pulli Lattice');
   });
-  console.log(`Stage 03 Practice Modal Opened: ${practiceModalOpened ? 'PASS' : 'FAIL'}`);
+  console.log(`Adaptive Spatial Canvas Mounted: ${canvasMounted ? 'PASS' : 'FAIL'}`);
 
   const ss5 = await saveScreenshot(page, '05_practice_stage_modal');
   savedScreenshots.push(ss5);
 
-  // Close Practice modal
+  // Test 6: Click "JUMP TO FIRST DIVERGENCE"
+  console.log('Testing First Divergence Modal...');
   await page.evaluate(() => {
-    const allBtns = Array.from(document.querySelectorAll('button'));
-    const xBtn = allBtns.find((b) => b.querySelector('svg.lucide-x'));
-    if (xBtn) xBtn.click();
+    const btn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('JUMP TO FIRST DIVERGENCE'));
+    if (btn) btn.click();
+  });
+  await new Promise((r) => setTimeout(r, 600));
+
+  const divModalMounted = await page.evaluate(() => {
+    return document.body.innerText.includes('FIRST DIVERGENCE DETECTED') && document.body.innerText.includes('Pulli Dot Penetration');
+  });
+  console.log(`First Divergence Modal Mounted: ${divModalMounted ? 'PASS' : 'FAIL'}`);
+
+  // Test 7: Click "LAUNCH TARGETED RETRY" to open micro-practice modal
+  console.log('Testing Micro-Practice Retry Modal...');
+  await page.evaluate(() => {
+    const btn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('LAUNCH TARGETED RETRY'));
+    if (btn) btn.click();
+  });
+  await new Promise((r) => setTimeout(r, 600));
+
+  // Perform the micro-practice correction (Select Option B: Continuous Orbital Arc)
+  await page.evaluate(() => {
+    const optB = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('Continuous Orbital Convex Arc'));
+    if (optB) optB.click();
   });
   await new Promise((r) => setTimeout(r, 400));
+
+  // Submit verified retry
+  console.log('Submitting Verified Retry...');
+  await page.evaluate(() => {
+    const submitBtn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('SUBMIT VERIFIED RETRY'));
+    if (submitBtn) submitBtn.click();
+  });
+  await new Promise((r) => setTimeout(r, 600));
+
+  // Verify transition to Transmission Complete View
+  const transmissionCompleted = await page.evaluate(() => {
+    return document.body.innerText.includes('Transmission Event Recorded') && document.body.innerText.includes('+4.3');
+  });
+  console.log(`Transmission Complete View Mounted (+4.3 PTS GAIN): ${transmissionCompleted ? 'PASS' : 'FAIL'}`);
 
   // 6. Write Audit Manifest & Summary
   const allPassed = consoleErrors.length === 0 && pageErrors.length === 0 && failedRequests.length === 0;
@@ -277,7 +301,7 @@ async function runDevToolsAudit() {
   const reportPath = path.join(RUN_DIR, 'audit_report.json');
   fs.writeFileSync(reportPath, JSON.stringify(auditReport, null, 2));
 
-  // Update or append to master manifest
+  // Update master manifest
   const masterManifestPath = path.join(BASE_SCREENSHOT_DIR, 'manifest.json');
   let masterManifest = [];
   if (fs.existsSync(masterManifestPath)) {

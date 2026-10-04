@@ -68,7 +68,12 @@ export interface TransmissionTelemetry {
   };
 }
 
-export function getTransmissionTelemetry(bundle: TransmissionBundle = canonicalBundle): TransmissionTelemetry {
+export function getTransmissionTelemetry(
+  bundle: TransmissionBundle = canonicalBundle,
+  customSensoryCues?: SensoryCueAnnotation[],
+  targetFirstDivergenceCriterionId: string = 'CRIT-RATCHET',
+  firstDivergenceSec: number = 19.2
+): TransmissionTelemetry {
   const kp = bundle.knowledge_package;
   const rubric = bundle.rubric;
   const baselineEval = bundle.baseline_evaluation;
@@ -98,8 +103,7 @@ export function getTransmissionTelemetry(bundle: TransmissionBundle = canonicalB
       criteriaImprovedCount++;
     }
 
-    // CRIT-RATCHET is our primary first divergence in case_001
-    const isFirstDivergence = c.criterion_id === 'CRIT-RATCHET';
+    const isFirstDivergence = c.criterion_id === targetFirstDivergenceCriterionId;
 
     return {
       criterionId: c.criterion_id,
@@ -119,7 +123,7 @@ export function getTransmissionTelemetry(bundle: TransmissionBundle = canonicalB
     };
   });
 
-  const sensoryCues: SensoryCueAnnotation[] = [
+  const sensoryCues: SensoryCueAnnotation[] = customSensoryCues ?? [
     {
       id: 'cue-wipe',
       timeSec: 6.5,
@@ -178,8 +182,8 @@ export function getTransmissionTelemetry(bundle: TransmissionBundle = canonicalB
     retryEval,
     record,
     criteriaComparisons,
-    firstDivergenceSec: 19.2,
-    firstDivergenceCriterionId: 'CRIT-RATCHET',
+    firstDivergenceSec,
+    firstDivergenceCriterionId: targetFirstDivergenceCriterionId,
     sensoryCues,
     metrics: {
       baselineScore: record.baseline_score,
