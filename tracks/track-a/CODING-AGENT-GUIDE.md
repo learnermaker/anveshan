@@ -6,9 +6,13 @@ Prove that an appropriate source can become a **faithful, source-grounded, revie
 
 The source may be a demonstration, desired target state/image, learner attempt, or combination. Do not invent a historical procedure from a final image.
 
-The Track A proof is:
+The Track A proof depends on the selected transmission mode:
 
-`authentic expert source → multimodal understanding → structured knowledge → evidence grounding → expert review → teaching/practice input`
+- **Forward:** `expert demonstration → multimodal understanding → structured knowledge → evidence grounding → expert review → teaching/practice input`
+- **Goal-conditioned:** `desired target → observable target structure → explicitly inferred candidate procedure → bounded practice input`
+- **Corrective:** `learner attempt → grounded divergence evidence → targeted teaching/practice input`
+
+For the original expert-transfer validation wedge, the accountable source must be an authentic expert source. Goal-conditioned and corrective modes are supported product hypotheses and must preserve their different evidence boundaries.
 
 Do not optimize for generic knowledge extraction. Optimize for fidelity and auditability.
 
@@ -183,3 +187,39 @@ Until M0 explicitly selects the bounded case, reusable code must work from inter
 ## Handoff packet
 Before integration, provide source identity and consent/review state; normalized EvidenceRef objects; KnowledgePackage; RubricDefinition; PracticeTask; expected uncertainty/unsupported claims; replay command and expected result; and model/prompt metadata when a model was used.
 Track B must be able to consume this packet without importing Track A source modules.
+
+
+## Current prototype alignment — 2026-10-04
+
+The current frontend is a reference implementation of the adaptive transmission loop. Track A agents must remain independent of its React/component structure, but they should understand the semantics the UI now expects from validated data.
+
+### Adaptive workspace composition
+
+The prototype demonstrates that the interface changes with the capability archetype and evidence structure. Track A should expose enough validated, domain-agnostic information for a downstream adapter to determine characteristics such as:
+
+- evidence modalities available;
+- forward / goal-conditioned / corrective mode;
+- observable state structure;
+- temporal, spatial, diagnostic, rhythmic, or state-transition characteristics;
+- uncertainty/unknown regions;
+- candidate intervention-relevant findings.
+
+Do not create a Workspace common contract merely to satisfy the UI. If needed, derive a UI/workspace view model downstream from KnowledgePackage, EvidenceRef[], RubricDefinition, and the selected transmission mode.
+
+### Epistemic presentation
+
+The prototype intentionally separates:
+
+- **OBSERVED / SOURCE-DERIVED FACT** — supported by evidence;
+- **INFERRED** — model interpretation or candidate procedure;
+- **UNKNOWN / UNVERIFIED** — not established by the available source.
+
+The current common VerificationState values are OBSERVED, INFERRED, and UNVERIFIED. A UI may render UNVERIFIED as UNKNOWN, but must not silently promote it to observed fact.
+
+### Replay/live discipline
+
+The prototype supports replay fixtures and a live Gemini path. Track A model outputs are always intermediate and untrusted until normalized and validated. Never label fixture-derived extraction as live Gemini output, authentic expert validation, or real-world product validation.
+
+### Target-first Kolam guardrail
+
+For a target image, extract visible target properties separately from inferred construction strategy. A final image does not prove original creator sequence, intent, cultural meaning, or hand motion. Preserve the inference boundary in the data handed downstream.

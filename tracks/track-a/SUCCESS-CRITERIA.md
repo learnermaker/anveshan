@@ -9,11 +9,15 @@ Track A — **Expert Intelligence & Grounding** owns the expert-side half of the
 
 The objective is not to build a generic knowledge platform. The objective is to prove that an appropriate source can be transformed into a **faithful, source-grounded, reviewable teaching input** that another person can practice.
 
-For the original expert-transfer wedge, the source should be an authentic expert demonstration. Target-first and attempt-first source modes are documented research extensions.
+Track A must support the three currently documented source/interaction modes:
 
-Track A is successful only when it preserves the chain:
+1. **Forward:** authentic expert demonstration → grounded knowledge → bounded teaching/practice input;
+2. **Goal-conditioned:** desired target state/image → observable target structure + explicitly inferred candidate construction strategy → bounded practice input;
+3. **Corrective:** learner attempt → evidence of divergence → targeted teaching/practice input.
 
-**Authentic expert source → multimodal understanding → structured knowledge → evidence grounding → expert review → bounded teaching/practice input**
+For the original expert-transfer validation wedge, the accountable source remains a real expert. Goal-conditioned and corrective modes extend the transmission hypothesis but are not automatically validated merely because the engineering flow works.
+
+Track A is successful only when it preserves the appropriate evidence chain for the selected mode.
 
 The implementation must support Anveshan’s original long-term direction:
 
@@ -77,17 +81,26 @@ The Track A implementation may use additional internal DTOs, helper structures, 
 
 ## 4. Source fidelity criteria
 
-### 4.1 Authentic source
+### 4.1 Source-mode fidelity
 
-For the real validation case:
-
-- the source must be a real expert demonstration;
+**Forward validation:**
+- source must be a real accountable expert demonstration;
 - permission/consent must be documented;
-- the skill must be bounded enough to evaluate;
-- the source artifact must have stable identity;
-- the implementation must retain a source identifier that can be re-opened or otherwise audited.
+- source identity must be stable and auditable;
+- material claims must be reviewable by the expert.
 
-Synthetic fixtures are acceptable for engineering replay, but they are **not** product validation.
+**Goal-conditioned validation:**
+- target asset identity must be stable and authorized;
+- visible target properties must be distinguished from inferred construction strategy;
+- inferred steps must remain explicitly inferred;
+- no original creator process/intent may be asserted without independent evidence.
+
+**Corrective validation:**
+- learner attempt evidence must be observable;
+- the divergence claim must be tied to learner evidence and rubric criteria;
+- the resulting intervention must be grounded in the identified divergence.
+
+Synthetic/replay fixtures are acceptable for engineering replay, but they are **not product validation**.
 
 ### 4.2 Structured extraction
 
@@ -349,3 +362,29 @@ Track A is correctly done when an independent reviewer can take the selected aut
 - Can Track B consume the outputs without depending on Track A implementation details?
 
 That is the minimum bar for Track A to claim **READY FOR INTEGRATION**, not merely “code complete.”
+
+
+## 20. Current prototype / GenUI integration context
+
+The current prototype demonstrates an adaptive workspace compiler. Track A does not implement the UI, but its outputs should make the following downstream decisions possible without adding a common contract:
+
+    source mode + evidence modalities + capability characteristics + uncertainty
+            ↓
+    downstream workspace composition adapter
+            ↓
+    case-specific practice workspace
+
+Representative workspaces include:
+- Kolam → Spatial Practice Canvas;
+- Micrometer → Forensic Transmission Instrument;
+- Bicycle repair → Diagnostic Workspace;
+- Tabla → Rhythm Practice Instrument;
+- Weaving → State Transition Workspace;
+- Origami → Spatial Sequence Workspace;
+- Knot → First-Divergence Workspace.
+
+These are capability archetypes, not seven separate product architectures.
+
+Track A must never fabricate evidence, timestamps, expert approval, calibration, certification, or live-model status to make a workspace appear complete. Replay/synthetic data must remain explicitly labeled downstream.
+
+For target-first cases, the UI may render UNVERIFIED as UNKNOWN, but the underlying evidence semantics must remain unchanged.

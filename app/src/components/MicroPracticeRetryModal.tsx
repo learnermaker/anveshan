@@ -68,7 +68,7 @@ export function MicroPracticeRetryModal({
             </div>
             {interactiveState === 3 && (
               <p className="text-xs text-transmission-emerald font-mono bg-transmission-emerald/10 p-2.5 rounded border border-transmission-emerald/30">
-                PASS: Exactly 3 clicks calibrated release verified. Constant 5.0 Newton anvil force achieved.
+                PASS: Exactly 3 clicks reached in the replay simulation. Physical torque is not measured by this fixture.
               </p>
             )}
             {interactiveState > 3 && (
@@ -343,7 +343,7 @@ export function MicroPracticeRetryModal({
             </div>
             {interactiveState === 2 && (
               <p className="text-xs text-transmission-emerald font-mono bg-transmission-emerald/10 p-2.5 rounded border border-transmission-emerald/30">
-                PASS: True Reef (Square) Knot bights formed. Tensile lock verified at 25 Newtons.
+                PASS: Square-knot topology achieved in the replay simulation. Tensile force is not measured by this fixture.
               </p>
             )}
           </div>
@@ -436,7 +436,7 @@ export function MicroPracticeRetryModal({
                 : 'bg-surface-bright text-on-surface-variant cursor-not-allowed opacity-50'
             }`}
           >
-            <span>SUBMIT VERIFIED RETRY</span>
+            <span>SUBMIT RETRY RESULT</span>
             <TrendingUp className="w-4 h-4" />
           </button>
         </div>

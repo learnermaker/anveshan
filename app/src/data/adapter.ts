@@ -64,7 +64,7 @@ export interface TransmissionTelemetry {
     gainPercentage: number;
     criteriaImprovedCount: number;
     totalCriteriaCount: number;
-    masteryAchieved: boolean;
+    rubricPassed: boolean;
   };
 }
 
@@ -151,9 +151,9 @@ export function getTransmissionTelemetry(
     {
       id: 'cue-ratchet-3',
       timeSec: 19.2,
-      label: 'ACOUSTIC: RATCHET CLICK #3 (CALIBRATED)',
+      label: 'ACOUSTIC: RATCHET CLICK #3',
       category: 'acoustic',
-      description: 'Third and terminal ratchet click at 19.2s. 5.0 Newton standard force verified.',
+      description: 'Third and terminal audible ratchet click at 19.2s in the replay fixture; physical force is not directly measured.',
       waveformRegion: { start: 19.0, end: 19.5 },
     },
     {
@@ -193,7 +193,7 @@ export function getTransmissionTelemetry(
       gainPercentage: Math.round(gainPercentage * 10) / 10,
       criteriaImprovedCount,
       totalCriteriaCount: rubric.criteria.length,
-      masteryAchieved: retryEval.passed,
+      rubricPassed: retryEval.passed,
     },
   };
 }

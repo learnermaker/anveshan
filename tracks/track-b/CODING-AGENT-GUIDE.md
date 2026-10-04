@@ -222,3 +222,49 @@ Keep the evaluator generic until the bounded M0 case is selected. Domain-specifi
 ## Handoff packet
 Before integration, provide the frozen Track A-compatible input fixture; baseline attempt; baseline evaluation; feedback; retry attempt; retry evaluation; TransmissionRecord; malformed/negative fixtures; replay command and expected result; and model/prompt metadata if applicable.
 Integration should replace fixture inputs with real Track A outputs without importing Track A internals.
+
+
+## Current prototype alignment — 2026-10-04
+
+The current frontend demonstrates an adaptive transmission loop. Track B remains UI-agnostic, but its outputs must support the following downstream behavior without changing common contracts.
+
+### Adaptive workspace and intervention
+
+The workspace may differ by capability archetype. Track B should provide validated criterion/evidence state that a downstream adapter can render as:
+
+- spatial trajectory/canvas;
+- diagnostic decision tree;
+- synchronized audio/visual timeline;
+- discrete state-transition table;
+- ordered spatial sequence;
+- first-divergence/topology workspace;
+- forensic multimodal instrument.
+
+Do not create UI-shaped evaluation schemas. The UI must derive these views from LearnerAttempt, Evaluation, Feedback, RubricDefinition, and evidence references.
+
+### First divergence
+
+When a criterion becomes the first meaningful divergence, preserve enough information for a downstream inspector to show:
+
+1. learner evidence;
+2. observed finding;
+3. model interpretation, if any;
+4. deterministic rubric consequence;
+5. uncertainty boundary;
+6. targeted corrective action.
+
+The model may interpret; the stored evaluation remains authoritative.
+
+### Adaptive retry
+
+A retry task may be narrowed to the failed criterion. This is a downstream transmission behavior, not a new common contract. Keep the same learner/task/rubric frame and make the changed retry evidence explicit.
+
+### Result semantics
+
+A positive deterministic gain is an observed improvement in the configured replay/validation frame. It is not automatically proof of mastery, generalization, causality, certification, or real-world capability transfer.
+
+In replay mode, downstream UI should say REPLAY EVALUATION / REPLAY TRANSMISSION RESULT, not CAPABILITY TRANSMISSION VERIFIED.
+
+### Goal-conditioned cases
+
+For target-first Kolam, evaluate the learner against observable target criteria. Do not score whether the learner reproduced an alleged original artist procedure unless that procedure is independently evidenced. Candidate construction strategy remains an inference, not the rubric's hidden ground truth.

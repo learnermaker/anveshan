@@ -64,7 +64,7 @@ export const LifecycleInspectorModal: React.FC<LifecycleInspectorModalProps> = (
           {/* STAGE 01: SOURCE */}
           {stage === 'source' && (
             <div className="space-y-4">
-              {/* Authentic Master Capture Preview */}
+              {/* Reference replay fixture preview */}
               <div className="relative aspect-video rounded-lg overflow-hidden border border-outline bg-surface-container-lowest">
                 <img
                   src="/assets/expert-reference.jpg"
@@ -84,7 +84,7 @@ export const LifecycleInspectorModal: React.FC<LifecycleInspectorModalProps> = (
               <div className="bg-surface-container p-4 rounded-lg border border-outline space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-xs font-bold text-caliper-cyan">
-                    SOURCE EVIDENCE ASSET: expert_micrometer_zeroing.mp4
+                    REPLAY FIXTURE ASSET: replay_micrometer_zeroing.mp4
                   </span>
                   <span className="px-2 py-0.5 rounded bg-transmission-emerald/10 text-transmission-emerald border border-transmission-emerald/30 font-mono text-[10px]">
                     4K / 60FPS / DUAL STEREO
@@ -100,7 +100,7 @@ export const LifecycleInspectorModal: React.FC<LifecycleInspectorModalProps> = (
                 <div className="bg-surface-container p-3 rounded border border-outline space-y-1">
                   <div className="font-mono text-[10px] text-transmission-emerald font-bold flex items-center gap-1">
                     <UserCheck className="w-3.5 h-3.5" />
-                    EXPERT CONSENT GRANTED:
+                    FIXTURE SOURCE METADATA:
                   </div>
                   <div className="text-xs font-medium text-on-surface">
                     Contributor: {kp.consent.contributor_name}
@@ -116,7 +116,7 @@ export const LifecycleInspectorModal: React.FC<LifecycleInspectorModalProps> = (
                 <div className="bg-surface-container p-3 rounded border border-outline space-y-1">
                   <div className="font-mono text-[10px] text-caliper-cyan font-bold flex items-center gap-1">
                     <Shield className="w-3.5 h-3.5" />
-                    EXPERT PEER REVIEW:
+                    REVIEW METADATA:
                   </div>
                   <div className="text-xs font-medium text-on-surface">
                     Reviewer: {kp.expert_review.reviewer_name}

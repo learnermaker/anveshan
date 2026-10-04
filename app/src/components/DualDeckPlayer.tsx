@@ -443,7 +443,7 @@ export const DualDeckPlayer: React.FC<DualDeckPlayerProps> = ({
           {/* Diagnostic Note */}
           <div className="mt-2 text-xs font-sans bg-surface-container p-2 rounded border border-outline flex items-start gap-2">
             <span className={`font-mono text-[10px] uppercase font-bold shrink-0 mt-0.5 ${learnerMode === 'baseline' ? 'text-divergence-crimson' : 'text-transmission-emerald'}`}>
-              {learnerMode === 'baseline' ? 'DIAGNOSTIC FAULT:' : 'REPLAY RETRY:'
+              {learnerMode === 'baseline' ? 'DIAGNOSTIC FAULT:' : 'REPLAY RETRY:'}
             </span>
             <span className="text-on-surface-variant">
               {learnerMode === 'baseline'

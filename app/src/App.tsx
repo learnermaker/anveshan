@@ -116,7 +116,7 @@ export function App() {
     setIsPlaying(false);
   };
 
-  // Handle successful retry completion: transitions to verified transmission view
+  // Handle successful retry completion: transitions to the replay transmission result view
   const handleCompleteRetry = () => {
     setIsMicroPracticeOpen(false);
     setCurrentView('transmission');
@@ -206,7 +206,7 @@ export function App() {
           >
             VIEW PROVENANCE DAG
           </button>
-          <span>FIXTURE: REPLAY VERIFIED // HONEST SPEC</span>
+          <span>FIXTURE: REPLAY // CONTRACTS VALID</span>
         </div>
       </footer>
 
