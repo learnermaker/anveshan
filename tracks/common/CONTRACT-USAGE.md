@@ -33,6 +33,22 @@ A selected domain may define its own:
 
 Those belong in the owning track or an integration adapter. They must normalize into the common contracts.
 
+
+## Source-type flexibility
+
+The common seam intentionally does not require a video demonstration as the source.
+
+A normalized transmission flow may originate from:
+- a demonstration;
+- a desired state/image;
+- a learner attempt;
+- or a combination.
+
+This does not change the eight frozen contracts. Source modality and UI composition remain upstream/downstream concerns.
+
+For target-first cases, preserve the evidence distinction between visible target facts and inferred candidate procedures. Do not manufacture historical procedure, intent, provenance, or cultural meaning from a final image.
+
+
 ## Contract direction
 
 ```
