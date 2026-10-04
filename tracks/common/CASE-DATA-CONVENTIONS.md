@@ -1,6 +1,6 @@
 # Case Data & Operational Conventions
 
-**Status:** DECIDED execution convention for Track A, Track B, fixtures, and integration
+**Status:** DECIDED execution convention for Track A, Track B, fixtures, and integration  
 **Purpose:** Make cases, artifacts, replay runs, versions, failures, and review state discoverable and deterministic for coding agents.
 
 ## 1. Scope
@@ -10,34 +10,47 @@ Do not introduce a database, service, or shared runtime merely to satisfy this c
 
 ## 2. Scalable case layout
 
-Each track may organize case-local data as:
+**Canonical shared case content lives in `tracks/cases/<case_id>/`.**
 
-    tracks/<track>/data/
-    └── cases/
-        └── <case_id>/
-            ├── manifest.yaml
-            ├── source/       # Track A: source assets/metadata
-            ├── expected/     # expected normalized outputs/replay assertions
-            ├── attempts/     # Track B: learner evidence/attempt fixtures
-            └── metadata/     # run/review/supporting metadata
+Each case pack has a predictable cross-track layout:
 
-Only create subdirectories a case needs. Empty directories do not need to be committed.
-The same case_id should identify the corresponding Track A and Track B case when they represent one integrated proof.
+    tracks/cases/
+    ├── index.json
+    └── <case_id>/
+        ├── manifest.json
+        ├── source/
+        ├── knowledge/
+        ├── practice/
+        ├── replay/
+        └── media/
+
+The case pack is shared by Track A and Track B. Do not duplicate the same case definition under both tracks.
+
+Track-local data may still exist when it is genuinely implementation-specific:
+
+    tracks/track-a/data/   # Track A-only intermediate fixtures/adapters/tests
+    tracks/track-b/data/   # Track B-only learner/evaluation fixtures
+
+Track-local data must reference the canonical `case_id` and must not silently redefine the shared case manifest, rubric, practice task, or replay bundle.
+
+Only create subdirectories a track actually needs. Empty directories do not need to be committed.
 
 ## 3. Case manifest
 
-Every executable case must have manifest.yaml with at least:
+Every executable case pack must have `tracks/cases/<case_id>/manifest.json` with at least:
 
-    case_id: <stable-case-id>
-    case_version: <semver-or-vN>
+    case_id: <stable semantic slug>
+    case_version: <version>
     status: CANDIDATE | ENGINEERING_FIXTURE | AUTHENTIC_SOURCE_READY | M0_VALIDATION | VALIDATED | INTEGRATED | REJECTED | SUPERSEDED
     source_mode: FORWARD | GOAL_CONDITIONED | CORRECTIVE
     runtime_class: LIVE | REPLAY | SYNTHETIC | ILLUSTRATIVE
     domain: <domain-or-null-before-selection>
     skill: <skill-or-null-before-selection>
-    description: <short bounded purpose>
+    description/title: <short bounded purpose>
 
-The manifest is the case entry point. Agents must not infer case status from a directory name alone.
+The manifest is the case entry point. Agents must not infer validation status from a directory name alone.
+
+`tracks/cases/index.json` is the discovery registry. Add a case there when a new case pack is introduced.
 
 ## 4. Artifact identity and versioning
 
@@ -88,8 +101,10 @@ Case metadata should reference stable source artifacts rather than copying them 
 
 ## 9. Agent write boundaries
 
-Agents may create/change track-local case fixtures, prompts, adapters, tests, implementation modules, and metadata.
+Agents may create/change track-local fixtures, prompts, adapters, tests, implementation modules, and metadata.
 Agents must not create/change without an explicit cross-track issue/decision: the eight common contracts, shared enum semantics, cross-track interfaces, product scope, deployment topology, or a database/service solely for future scalability.
+
+Changes to `tracks/cases/` are cross-track data changes and should preserve manifest/replay validation.
 
 ## 10. Canonical replay expectation
 
