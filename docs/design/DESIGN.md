@@ -116,7 +116,7 @@ Anveshan is not a chatbot and not a corporate dashboard. It is a **living transm
 
 ## 3. Typographic Hierarchy
 
-- **Authority & Heritage (Serif):** *Playfair Display* (or *Fraunces*). Used for procedure titles, expert quotes, and skill titles. Conveys mastery, tradition, and human knowledge continuity.
+- **Authority & Heritage (Serif):** *Playfair Display* (or *Fraunces*). Used for procedure titles, source/skill titles, and documentary emphasis. Conveys craft and human knowledge continuity without implying validated authority.
 - **Telemetry & Tele-Inspection (Monospace):** *JetBrains Mono*. Used for all timecodes (`00:19.2`), criterion IDs (`CRIT-WIPE`), cryptographic hashes, and score deltas (`+5.5 PTS`).
 - **Instructional Clarity (Geometric Sans):** *Plus Jakarta Sans*. Clean, legible, high-x-height body text for step explanations and corrective coaching advice.
 
@@ -125,7 +125,7 @@ Anveshan is not a chatbot and not a corporate dashboard. It is a **living transm
 ## 4. Key UI Primitives
 
 ### 4.1 The Dual-Deck Comparative Scrubber
-- Two synchronized video feeds: **Expert Reference** vs. **Learner Attempt** (toggleable between Baseline and Retry).
+- Two synchronized video feeds: **Reference / Target** vs. **Learner Attempt** (toggleable between Baseline and Retry), with source mode made explicit.
 - Single unified master scrubber timeline below both decks.
 - Hotkey / button: **"Jump to First Divergence"** immediately snaps both video playheads to the precise millisecond where the learner's technique differed.
 
@@ -147,8 +147,8 @@ Anveshan is not a chatbot and not a corporate dashboard. It is a **living transm
 
 ### 4.4 The Living Lineage Drawer
 - Accessible via a prominent header trigger.
-- Displays the cryptographic lineage DAG:
-  - Source Expert $\to$ KnowledgePackage $\to$ Learner Baseline $\to$ Feedback Loop $\to$ Retry $\to$ Transmission Record.
+- Displays the provenance/lineage record:
+  - Source / Target Evidence $\to$ KnowledgePackage $\to$ Learner Baseline $\to$ Feedback Loop $\to$ Retry $\to$ Transmission Record.
   - Proves the permanent provenance record of the transfer event.
 
 ---
