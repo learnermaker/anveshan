@@ -275,7 +275,7 @@ Before implementing a case, read:
 - `tracks/common/CASE-DATA-CONVENTIONS.md`
 - `tracks/common/MODEL-GATEWAY-CONVENTIONS.md`
 
-Use `tracks/track-b/data/cases/<case_id>/manifest.yaml` as the case entry point. Keep learner attempt fixtures under the case; keep generic engineering fixtures under `fixtures/`.
+Use `tracks/cases/<case_id>/manifest.json` as the canonical shared case entry point. Keep Track-B-only learner/evaluation fixtures under `tracks/track-b/data/`; do not duplicate the shared case definition.
 
 Every materially outcome-affecting model run must retain model/configuration, prompt ID/version, input fixture/artifact, runtime class, run ID, and expected behavior. Provider output remains quarantined until normalization and deterministic validation.
 
