@@ -12,7 +12,7 @@
       "evidence_refs": [
         {
           "evidence_id": "EV-EXP-01",
-          "source_id": "expert_micrometer_zeroing.mp4",
+          "source_id": "replay_micrometer_zeroing.mp4",
           "modality": "video",
           "start_sec": 4.5,
           "end_sec": 12.0,
@@ -30,7 +30,7 @@
       "evidence_refs": [
         {
           "evidence_id": "EV-EXP-02",
-          "source_id": "expert_micrometer_zeroing.mp4",
+          "source_id": "replay_micrometer_zeroing.mp4",
           "modality": "video",
           "start_sec": 18.0,
           "end_sec": 22.5,
@@ -48,7 +48,7 @@
       "evidence_refs": [
         {
           "evidence_id": "EV-EXP-03",
-          "source_id": "expert_micrometer_zeroing.mp4",
+          "source_id": "replay_micrometer_zeroing.mp4",
           "modality": "video",
           "start_sec": 26.0,
           "end_sec": 31.0,
@@ -60,15 +60,15 @@
     }
   ],
   "consent": {
-    "contributor_name": "Marcus Vance",
-    "consent_scope": "hackathon_prototype",
+    "contributor_name": "Reference Expert (Synthetic Fixture)",
+    "consent_scope": "engineering_replay_only",
     "revocable": true,
     "granted_at": "2026-10-04T08:00:00Z",
-    "notes": "Approved for Google Cloud AI Builder Cup demonstration."
+    "notes": "Engineering replay metadata only; no real-world expert approval."
   },
   "expert_review": {
-    "reviewer_name": "Marcus Vance",
-    "status": "approved",
+    "reviewer_name": "Replay Fixture Reviewer",
+    "status": "pending",
     "reviewed_at": "2026-10-04T09:30:00Z",
     "notes": "Step sequence and 3-click ratchet cadence are accurate."
   }
