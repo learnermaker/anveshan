@@ -56,13 +56,13 @@ export const TransmissionGainHero: React.FC<TransmissionGainHeroProps> = ({
             <ShieldCheck className="w-5 h-5 text-transmission-emerald shrink-0 mt-0.5" />
             <div className="text-xs font-sans">
               <div className="font-mono text-[10px] text-transmission-emerald font-bold mb-0.5">
-                EXPERT & MULTIMODAL EVALUATOR CONSENSUS:
+                REPLAY FIXTURE SUMMARY:
               </div>
               <p className="text-on-surface-variant italic">
-                &ldquo;Apprentice Marcus Vance corrected spindle over-compression; uniform 3-click clutch cadence now matches standard Elena Rostova reference at 19.2s.&rdquo;
+                &ldquo;Replay fixture shows improvement on the configured ratchet criterion at the first-divergence timestamp.&rdquo;
               </p>
               <div className="font-mono text-[10px] text-on-surface-variant mt-1">
-                — Gemini 2.5 Flash Evaluator &bull; Lineage Node TX-REC-001
+                — Replay fixture evaluator record &bull; Lineage Node TX-REC-001
               </div>
             </div>
           </div>
