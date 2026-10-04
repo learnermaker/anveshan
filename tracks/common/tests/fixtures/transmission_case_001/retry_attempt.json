@@ -3,7 +3,7 @@
   "task_id": "TASK-OPT-001",
   "learner": {
     "participant_id": "LRN-ELENA-01",
-    "name": "Elena Rostova",
+    "name": "Learner (Replay Fixture)",
     "role": "learner",
     "notes": "Novice technician trainee - 2nd attempt"
   },
