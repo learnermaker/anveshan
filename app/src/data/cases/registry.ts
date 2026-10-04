@@ -1768,7 +1768,7 @@ export const CAPABILITY_CASES: Record<string, CapabilityCase> = {
     shortDescription: 'Calibrated zero-setting, spindle wipe, and ratchet stop speeder torque-limiting measurement.',
     expertName: 'Reference Expert (Synthetic Fixture)',
     expertRole: 'Senior Metrology Specialist',
-    learnerName: 'Marcus Vance',
+    learnerName: 'Learner (Replay Fixture)',
     learnerBackground: 'Apprentice Toolmaker (Month 2)',
     primaryModalities: ['video', 'audio', 'numeric', 'sensor'],
     workspaceSpec: micrometerSpec,
