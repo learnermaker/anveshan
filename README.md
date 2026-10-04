@@ -140,7 +140,7 @@ See docs/README.md for the complete map. The repository separates EXPLORED, DECI
 
 ### Parallel implementation workspaces
 
-Once M0 authorizes implementation, two developers can work independently under `tracks/track-a/` and `tracks/track-b/`, using the contract and replay-fixture boundary documented in `docs/architecture/parallel-work-contract.md` and `docs/diagrams/DP-01-parallel-development-roadmap.mmd`.
+Once M0 authorizes implementation, two developers can work independently under `tracks/track-a/` and `tracks/track-b/`, using the contract and replay-fixture boundary documented in `docs/architecture/parallel-work-contract.md`, with current execution gates in `docs/status/NOW.md`.
 
 ## Implementation Status
 
