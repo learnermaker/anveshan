@@ -170,3 +170,34 @@ Stop and narrow scope if:
 - the workflow becomes a generic LMS/tutoring system.
 
 Do not add analytics/platform infrastructure to compensate for a weak proof.
+
+
+## Parallel UI coexistence
+UI work is happening independently. Track B must remain UI-agnostic and must not make canonical evaluation/transmission data match a screen-specific JSON shape. UI-specific projections belong downstream of validated Evaluation, Feedback, and TransmissionRecord objects.
+Do not import UI components, route state, or presentation models into the evaluation engine. Never weaken validation because a UI cannot currently display an uncertainty or evidence state.
+
+## Required implementation sequence
+1. Boundary fixture — consume a frozen Track A-compatible package/task/rubric; do not wait for Track A implementation.
+2. Attempt capture — represent baseline and retry as distinct observable evidence events.
+3. Rubric validator — enforce criterion existence, required criteria, score bounds, total arithmetic, and passing semantics.
+4. Deterministic evaluator core — keep aggregation and authoritative metrics deterministic.
+5. Model adapter — if Gemini is used, constrain it to evidence location/interpretation/comparison/feedback drafting.
+6. Feedback linkage — tie every actionable finding to criterion/evidence and an explicit retry action.
+7. Retry comparison — compare baseline and retry under the same learner/task/rubric frame.
+8. Transmission record — derive gain and lineage from recorded objects, never from model prose.
+9. Replay gate — execute the complete loop without live Gemini.
+
+## Evidence-first evaluation ledger
+For each criterion, preserve enough information to reconstruct: criterion → learner evidence → observed finding → status → score → feedback → retry result.
+If evidence is insufficient, represent uncertainty explicitly. Never convert an unobservable criterion into a guessed score.
+
+## Authoritative metric guardrail
+The authoritative transmission metric is computed from stored evaluations: transmission_gain = retry_score - baseline_score.
+A model may recommend or explain; it may not author the authoritative gain, rubric weights, pass semantics, or criteria.
+
+## Domain selection guardrail
+Keep the evaluator generic until the bounded M0 case is selected. Domain-specific observation logic should enter through explicit adapters/configuration/fixtures. Reusable evaluation code must not encode one industry, physical action, tool, modality, or vocabulary.
+
+## Handoff packet
+Before integration, provide the frozen Track A-compatible input fixture; baseline attempt; baseline evaluation; feedback; retry attempt; retry evaluation; TransmissionRecord; malformed/negative fixtures; replay command and expected result; and model/prompt metadata if applicable.
+Integration should replace fixture inputs with real Track A outputs without importing Track A internals.
