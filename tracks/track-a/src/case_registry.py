@@ -1,7 +1,18 @@
 from dataclasses import dataclass
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Literal
+from typing import Any, Dict, List, Literal, Optional
+
+
+@dataclass(frozen=True)
+class SourceMediaDescriptor:
+    """Descriptor for case source media (local file or external URL)."""
+
+    type: Literal["local_file", "url"]
+    path: Optional[str] = None
+    url: Optional[str] = None
+    mime_type: Optional[str] = None
+    attribution: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -24,6 +35,7 @@ class CaseManifest:
     status: Literal["ENGINEERING_FIXTURE", "AUTHENTIC_SOURCE_READY"]
     source_mode: Literal["FORWARD", "GOAL_CONDITIONED", "CORRECTIVE"]
     runtime_class: Literal["REPLAY", "AUTHENTIC"]
+    source_media: Optional[SourceMediaDescriptor] = None
 
 
 def discover_cases(cases_root: Path) -> List[str]:
@@ -45,6 +57,17 @@ def load_manifest(cases_root: Path, case_id: str) -> CaseManifest:
         raise FileNotFoundError(f"Case manifest not found: {manifest_path}")
 
     raw = json.loads(manifest_path.read_text(encoding="utf-8"))
+    media_raw = raw.get("source_media")
+    source_media = None
+    if media_raw and isinstance(media_raw, dict):
+        source_media = SourceMediaDescriptor(
+            type=media_raw.get("type", "local_file"),
+            path=media_raw.get("path"),
+            url=media_raw.get("url"),
+            mime_type=media_raw.get("mime_type"),
+            attribution=media_raw.get("attribution"),
+        )
+
     manifest = CaseManifest(
         schema_version=raw["schema_version"],
         case_id=raw["case_id"],
@@ -62,6 +85,7 @@ def load_manifest(cases_root: Path, case_id: str) -> CaseManifest:
         status=raw["status"],
         source_mode=raw["source_mode"],
         runtime_class=raw["runtime_class"],
+        source_media=source_media,
     )
     semantic_failures = validate_manifest_semantics(manifest)
     if semantic_failures:

@@ -92,12 +92,52 @@ def main() -> int:
         default=REPO_ROOT / "tracks" / "track-a" / "data" / "cases",
         help="Destination directory for emitted Track A artifacts",
     )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Estimate token cost and inspect media discovery without calling Gemini API",
+    )
     args = parser.parse_args()
 
     cases_root = REPO_ROOT / "tracks" / "cases"
     if not cases_root.exists():
         print(f"Error: cases root not found: {cases_root}", file=sys.stderr)
         return 1
+
+    if args.dry_run:
+        from media_service import MediaService
+
+        cases_to_check = discover_cases(cases_root) if args.all else ([args.case] if args.case else [])
+        if not cases_to_check:
+            print("Error: Specify --case <id> or --all with --dry-run", file=sys.stderr)
+            return 1
+
+        print("=== Track A Live Pipeline Dry-Run Audit ===")
+        media_svc = MediaService(cases_root)
+        for c in cases_to_check:
+            try:
+                desc = media_svc.discover_media(c)
+                print(f"\n[Case: {c}]")
+                print(f"  Source Type: {desc.type}")
+                if desc.type == "url":
+                    print(f"  Source URL:  {desc.url}")
+                elif desc.type == "local_file":
+                    print(f"  Local Path:  {desc.path}")
+                print(f"  MIME Type:   {desc.mime_type}")
+                print(f"  Attribution: {desc.attribution}")
+
+                local_p = media_svc.resolve_media_path(c, desc)
+                size_mb = local_p.stat().st_size / (1024 * 1024)
+                print(f"  Resolved:    {local_p} ({size_mb:.2f} MB)")
+                # Token estimation rule of thumb: ~258 tokens/sec video, ~1000 tokens for image/prompt
+                if desc.mime_type and "video" in desc.mime_type:
+                    print("  Token Est:   ~250 tokens/sec of video + ~1,500 prompt tokens (±20% depending on FPS/resolution)")
+                else:
+                    print("  Token Est:   ~1,500 - 3,000 multimodal tokens (image/structured prompt)")
+            except Exception as e:
+                print(f"\n[Case: {c}]")
+                print(f"  Media Status: NOT CONFIGURED / FAILED ({e})")
+        return 0
 
     pipeline = TrackAPipeline(cases_root=cases_root, mode=args.mode)
 

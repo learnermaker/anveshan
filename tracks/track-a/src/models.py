@@ -330,6 +330,30 @@ def normalize_dto_to_knowledge_package(
         )
         claim_counter += 1
 
+    # 7. Divergences (Corrective Mode)
+    for idx, div in enumerate(dto.divergences, 1):
+        is_obs = div.evidence_sufficiency == "OBSERVED"
+        ev_ref = EvidenceRef(
+            evidence_id=generate_evidence_id(dto.case_id, "div", idx),
+            source_id=dto.source_media_id,
+            modality=Modality.VIDEO,
+            start_sec=div.timestamp_sec,
+            end_sec=div.timestamp_sec + 1.0 if div.timestamp_sec is not None else None,
+            cue_excerpt=f"Divergence on {div.criterion_id}: Observed '{div.observed_behavior}' vs Expected '{div.expected_behavior}'",
+            verification_state=VerificationState.OBSERVED if is_obs else VerificationState.INFERRED,
+            confidence=1.0 if is_obs else 0.5,
+        )
+        claims.append(
+            KnowledgeClaim(
+                claim_id=f"CLM-{claim_counter:02d}",
+                claim_type=ClaimType.FAILURE_MODE,
+                statement=f"Divergence ({div.criterion_id}): {div.observed_behavior}",
+                is_observed=is_obs,
+                evidence_refs=[ev_ref],
+            )
+        )
+        claim_counter += 1
+
     # Fallback if DTO produced no items
     if not claims:
         raise TrackAFailure(

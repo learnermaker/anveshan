@@ -24,7 +24,11 @@ class ModelGateway:
         if mode == "replay":
             self.adapter: BaseProviderAdapter = ReplayProviderAdapter(cases_root=cases_root)
         elif mode == "live":
-            self.adapter = GeminiProviderAdapter(model_id=model_id, api_key=api_key)
+            self.adapter = GeminiProviderAdapter(
+                cases_root=cases_root,
+                model_id=model_id,
+                api_key=api_key,
+            )
         else:
             raise TrackAFailure(
                 FailureCategory.INVALID_INPUT,
