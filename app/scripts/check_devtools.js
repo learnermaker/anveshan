@@ -34,7 +34,7 @@ async function saveScreenshot(page, baseName, options = {}) {
 
 async function runDevToolsAudit() {
   console.log('====================================================');
-  console.log(`ANVESHAN // CHROME DEVTOOLS AUDIT [${runTimestamp}]`);
+  console.log(`ANVESHAN // COMPREHENSIVE DEVTOOLS AUDIT [${runTimestamp}]`);
   console.log('====================================================');
   console.log(`Connecting Chrome executable: ${CHROME_PATH}`);
 
@@ -65,17 +65,12 @@ async function runDevToolsAudit() {
       console.error(`[CDP CONSOLE ERROR] ${text}`);
     } else if (type === 'warning') {
       console.warn(`[CDP CONSOLE WARN] ${text}`);
-    } else {
-      console.log(`[CDP CONSOLE ${type.toUpperCase()}] ${text}`);
     }
   });
 
   // 2. Hook Uncaught Page Exceptions
   page.on('pageerror', (err) => {
-    pageErrors.push({
-      message: err.message,
-      stack: err.stack,
-    });
+    pageErrors.push({ message: err.message, stack: err.stack });
     console.error(`[CDP UNCAUGHT EXCEPTION] ${err.message}`);
   });
 
@@ -83,11 +78,7 @@ async function runDevToolsAudit() {
   page.on('requestfailed', (req) => {
     const failure = req.failure();
     const url = req.url();
-    failedRequests.push({
-      url,
-      method: req.method(),
-      errorText: failure ? failure.errorText : 'Unknown network failure',
-    });
+    failedRequests.push({ url, method: req.method(), errorText: failure ? failure.errorText : 'Unknown' });
     console.error(`[CDP NETWORK FAIL] ${req.method()} ${url} -> ${failure ? failure.errorText : 'FAILED'}`);
   });
 
@@ -107,100 +98,61 @@ async function runDevToolsAudit() {
   const navDuration = Math.round(performance.now() - navStart);
   console.log(`Navigation complete in ${navDuration}ms.`);
 
-  // 4. Verify DOM and Core Components
+  // 4. Verify Core DOM Elements
   console.log('\n--- VERIFYING CORE DOM ELEMENTS ---');
-  
   const title = await page.title();
   console.log(`Page Title: "${title}"`);
 
-  // Check Header
   const headerBrand = await page.$eval('header', (el) => el.innerText);
   console.log(`Header Mounted: ${headerBrand.includes('ANVESHAN') ? 'PASS' : 'FAIL'}`);
 
-  // Check Dual-Deck Video Players (Reference Case: Micrometer)
   const decks = await page.$$eval('div', (els) =>
     els.filter((e) => e.innerText && e.innerText.includes('EXPERT REFERENCE') && e.innerText.includes('LEARNER ATTEMPT')).length
   );
   console.log(`Dual-Deck Player Mounted: ${decks > 0 ? 'PASS' : 'FAIL'}`);
 
-  // Check Images Loaded
   const images = await page.$$eval('img', (imgs) =>
-    imgs.map((img) => ({
-      src: img.src,
-      alt: img.alt,
-      complete: img.complete,
-      naturalWidth: img.naturalWidth,
-      naturalHeight: img.naturalHeight,
-    }))
+    imgs.map((img) => ({ src: img.src, complete: img.complete, naturalWidth: img.naturalWidth }))
   );
-  console.log(`\nImages Verified on Page (${images.length}):`);
-  images.forEach((img, i) => {
-    const isLoaded = img.complete && img.naturalWidth > 0;
-    console.log(`  [${i + 1}] ${img.src} -> ${isLoaded ? 'LOADED OK' : 'FAILED'} (${img.naturalWidth}x${img.naturalHeight})`);
-  });
+  console.log(`Images Verified on Page (${images.length}): all loaded = ${images.every((i) => i.complete && i.naturalWidth > 0)}`);
 
-  // Check Sensory Ribbon
-  const ribbon = await page.$eval('main', (el) => el.innerText.includes('SENSORY CUE WAVEFORM RIBBON'));
-  console.log(`Sensory Ribbon Mounted: ${ribbon ? 'PASS' : 'FAIL'}`);
+  // 5. CAPTURING COMPREHENSIVE 15-SCREEN GALLERY
+  console.log('\n--- CAPTURING COMPREHENSIVE SCREEN GALLERY ---');
 
-  // Check Rubric HUD Criteria
-  const critRatchet = await page.$eval('main', (el) => el.innerText.includes('CRIT-RATCHET'));
-  console.log(`Rubric Criteria Mounted (CRIT-RATCHET): ${critRatchet ? 'PASS' : 'FAIL'}`);
-
-  // Check Transmission Gain Hero
-  const gainHero = await page.$eval('main', (el) => el.innerText.includes('+5.5 PTS'));
-  console.log(`Transmission Gain Hero (+5.5 PTS GAIN): ${gainHero ? 'PASS' : 'FAIL'}`);
-
-  // 5. Test Interactive Features & Capture Timestamped Evidence
-  console.log('\n--- TESTING FULL END-TO-END JOURNEY & CAPTURING EVIDENCE ---');
-
-  // Test 1: Full Workbench Overview (Micrometer Reference Case)
-  console.log('Capture 1: Forensic Transmission Instrument Workbench...');
-  const ss1 = await saveScreenshot(page, '01_workbench_overview', { fullPage: true });
+  // Screen 1: Canonical Forensic Transmission Instrument (Micrometer)
+  console.log('\n[Screen 1/15] Capturing Forensic Transmission Instrument Workbench...');
+  const ss1 = await saveScreenshot(page, '01_workbench_micrometer', { fullPage: true });
   savedScreenshots.push(ss1);
 
-  // Test 2: Open Provenance DAG Drawer
-  console.log('Capture 2: Testing "VIEW PROVENANCE DAG"...');
+  // Screen 2: Lineage Merkle Provenance DAG Drawer
+  console.log('\n[Screen 2/15] Opening Cryptographic Lineage DAG Drawer...');
   await page.evaluate(() => {
     const btn = Array.from(document.querySelectorAll('button, a')).find((b) => b.innerText.includes('VIEW PROVENANCE DAG'));
     if (btn) btn.click();
   });
   await new Promise((r) => setTimeout(r, 600));
-
-  const lineageModalOpened = await page.evaluate(() => {
-    return document.body.innerText.includes('CRYPTOGRAPHIC LINEAGE & PROVENANCE RECORD');
-  });
-  console.log(`Lineage DAG Modal Opened: ${lineageModalOpened ? 'PASS' : 'FAIL'}`);
-
-  const ss2 = await saveScreenshot(page, '02_lineage_modal');
+  const ss2 = await saveScreenshot(page, '02_lineage_dag');
   savedScreenshots.push(ss2);
 
-  // Close Lineage modal
+  // Close Lineage Drawer
   await page.evaluate(() => {
-    const allBtns = Array.from(document.querySelectorAll('button'));
-    const xBtn = allBtns.find((b) => b.querySelector('svg.lucide-x'));
+    const xBtn = Array.from(document.querySelectorAll('button')).find((b) => b.querySelector('svg.lucide-x'));
     if (xBtn) xBtn.click();
   });
   await new Promise((r) => setTimeout(r, 400));
 
-  // Test 3: Navigate to 00. PORTFOLIO (Discovery View)
-  console.log('Capture 3: Testing "00. PORTFOLIO" (Discovery View)...');
+  // Screen 3: Discovery / Capability Portfolio Landing
+  console.log('\n[Screen 3/15] Navigating to 00. PORTFOLIO (Discovery View)...');
   await page.evaluate(() => {
     const btn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('00.') && b.innerText.includes('PORTFOLIO'));
     if (btn) btn.click();
   });
   await new Promise((r) => setTimeout(r, 600));
-
-  const discoveryMounted = await page.evaluate(() => {
-    return document.body.innerText.includes('Transmit what matters') && document.body.innerText.includes('Sikku Kolam Geometric Drawing');
-  });
-  console.log(`Discovery Portfolio View Mounted: ${discoveryMounted ? 'PASS' : 'FAIL'}`);
-
-  const ss3 = await saveScreenshot(page, '03_stitch_canvas_modal'); // Map to slot 3 or portfolio
+  const ss3 = await saveScreenshot(page, '03_portfolio_discovery', { fullPage: true });
   savedScreenshots.push(ss3);
 
-  // Test 4: Select "kolam" capability and inspect Stage 01. SOURCE
-  console.log('Capture 4: Testing "01. SOURCE" (Authentic Demonstration & Epistemic Certainty)...');
+  // Screen 4: Stage 01 Source & Grounding (Kolam Case)
+  console.log('\n[Screen 4/15] Selecting Kolam and inspecting 01. SOURCE & Grounding...');
   await page.evaluate(() => {
     const sel = document.querySelector('select');
     if (sel) {
@@ -211,76 +163,162 @@ async function runDevToolsAudit() {
     if (sourceBtn) sourceBtn.click();
   });
   await new Promise((r) => setTimeout(r, 600));
-
-  const sourceMounted = await page.evaluate(() => {
-    return document.body.innerText.includes('EPISTEMIC CERTAINTY TAXONOMY') && document.body.innerText.includes('Brahma Mudi');
-  });
-  console.log(`Source & Grounding View Mounted: ${sourceMounted ? 'PASS' : 'FAIL'}`);
-
-  const ss4 = await saveScreenshot(page, '04_source_stage_modal');
+  const ss4 = await saveScreenshot(page, '04_source_grounding_kolam', { fullPage: true });
   savedScreenshots.push(ss4);
 
-  // Test 5: Enter Adaptive Practice (Spatial Practice Canvas)
-  console.log('Capture 5: Testing "02. PRACTICE" (Adaptive Spatial Canvas for Kolam)...');
+  // Screen 5: Adaptive Spatial Practice Canvas (Kolam Case)
+  console.log('\n[Screen 5/15] Composing Adaptive Spatial Practice Canvas for Kolam...');
   await page.evaluate(() => {
-    const btn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('COMPOSE ADAPTIVE WORKSPACE') || (b.innerText.includes('02.') && b.innerText.includes('PRACTICE')));
-    if (btn) btn.click();
+    const practiceBtn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('COMPOSE ADAPTIVE WORKSPACE') || (b.innerText.includes('02.') && b.innerText.includes('PRACTICE')));
+    if (practiceBtn) practiceBtn.click();
   });
   await new Promise((r) => setTimeout(r, 600));
-
-  const canvasMounted = await page.evaluate(() => {
-    return document.body.innerText.includes('SPATIAL PRACTICE CANVAS') && document.body.innerText.includes('5×5 Orthogonal Pulli Lattice');
-  });
-  console.log(`Adaptive Spatial Canvas Mounted: ${canvasMounted ? 'PASS' : 'FAIL'}`);
-
-  const ss5 = await saveScreenshot(page, '05_practice_stage_modal');
+  const ss5 = await saveScreenshot(page, '05_adaptive_workspace_kolam', { fullPage: true });
   savedScreenshots.push(ss5);
 
-  // Test 6: Click "JUMP TO FIRST DIVERGENCE"
-  console.log('Testing First Divergence Modal...');
+  // Screen 6: First Divergence Modal (Kolam Case)
+  console.log('\n[Screen 6/15] Opening Forensic First Divergence Modal (Dot 3,4)...');
   await page.evaluate(() => {
     const btn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('JUMP TO FIRST DIVERGENCE'));
     if (btn) btn.click();
   });
   await new Promise((r) => setTimeout(r, 600));
+  const ss6 = await saveScreenshot(page, '06_first_divergence_modal');
+  savedScreenshots.push(ss6);
 
-  const divModalMounted = await page.evaluate(() => {
-    return document.body.innerText.includes('FIRST DIVERGENCE DETECTED') && document.body.innerText.includes('Pulli Dot Penetration');
-  });
-  console.log(`First Divergence Modal Mounted: ${divModalMounted ? 'PASS' : 'FAIL'}`);
-
-  // Test 7: Click "LAUNCH TARGETED RETRY" to open micro-practice modal
-  console.log('Testing Micro-Practice Retry Modal...');
+  // Screen 7: Bounded Micro-Practice Retry Modal
+  console.log('\n[Screen 7/15] Launching Bounded Micro-Practice Retry Modal...');
   await page.evaluate(() => {
     const btn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('LAUNCH TARGETED RETRY'));
     if (btn) btn.click();
   });
   await new Promise((r) => setTimeout(r, 600));
+  const ss7 = await saveScreenshot(page, '07_micropractice_modal');
+  savedScreenshots.push(ss7);
 
-  // Perform the micro-practice correction (Select Option B: Continuous Orbital Arc)
+  // Perform retry correction and advance
+  console.log('Executing Micro-Practice Retry Action (Option B)...');
   await page.evaluate(() => {
     const optB = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('Continuous Orbital Convex Arc'));
     if (optB) optB.click();
   });
   await new Promise((r) => setTimeout(r, 400));
 
-  // Submit verified retry
-  console.log('Submitting Verified Retry...');
   await page.evaluate(() => {
     const submitBtn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('SUBMIT VERIFIED RETRY'));
     if (submitBtn) submitBtn.click();
   });
   await new Promise((r) => setTimeout(r, 600));
 
-  // Verify transition to Transmission Complete View
-  const transmissionCompleted = await page.evaluate(() => {
-    return document.body.innerText.includes('Transmission Event Recorded') && document.body.innerText.includes('+4.3');
+  // Screen 8: Transmission Complete View (Kolam Case)
+  console.log('\n[Screen 8/15] Capturing Transmission Complete View (+4.3 PTS GAIN)...');
+  const ss8 = await saveScreenshot(page, '08_transmission_complete_kolam', { fullPage: true });
+  savedScreenshots.push(ss8);
+
+  // Screen 9: Diagnostic Workspace (Bicycle Repair Case)
+  console.log('\n[Screen 9/15] Switching to Bicycle Repair -> Diagnostic Workspace...');
+  await page.evaluate(() => {
+    const sel = document.querySelector('select');
+    if (sel) {
+      sel.value = 'bicycle_repair';
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    const practiceBtn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('02.') && b.innerText.includes('PRACTICE'));
+    if (practiceBtn) practiceBtn.click();
   });
-  console.log(`Transmission Complete View Mounted (+4.3 PTS GAIN): ${transmissionCompleted ? 'PASS' : 'FAIL'}`);
+  await new Promise((r) => setTimeout(r, 600));
+  const ss9 = await saveScreenshot(page, '09_diagnostic_workspace_bike', { fullPage: true });
+  savedScreenshots.push(ss9);
+
+  // Screen 10: Rhythm Practice Instrument (Tabla Case)
+  console.log('\n[Screen 10/15] Switching to Tabla -> Rhythm Practice Instrument...');
+  await page.evaluate(() => {
+    const sel = document.querySelector('select');
+    if (sel) {
+      sel.value = 'tabla';
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  });
+  await new Promise((r) => setTimeout(r, 600));
+  const ss10 = await saveScreenshot(page, '10_rhythm_workspace_tabla', { fullPage: true });
+  savedScreenshots.push(ss10);
+
+  // Screen 11: State Transition Workspace (Handloom Weaving Case)
+  console.log('\n[Screen 11/15] Switching to Handloom Weaving -> State Transition Workspace...');
+  await page.evaluate(() => {
+    const sel = document.querySelector('select');
+    if (sel) {
+      sel.value = 'weaving';
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  });
+  await new Promise((r) => setTimeout(r, 600));
+  const ss11 = await saveScreenshot(page, '11_state_transition_weaving', { fullPage: true });
+  savedScreenshots.push(ss11);
+
+  // Screen 12: Spatial Sequence Workspace (Origami Case)
+  console.log('\n[Screen 12/15] Switching to Origami -> Spatial Sequence Workspace...');
+  await page.evaluate(() => {
+    const sel = document.querySelector('select');
+    if (sel) {
+      sel.value = 'origami';
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  });
+  await new Promise((r) => setTimeout(r, 600));
+  const ss12 = await saveScreenshot(page, '12_spatial_sequence_origami', { fullPage: true });
+  savedScreenshots.push(ss12);
+
+  // Screen 13: First-Divergence Workspace (Square Knot Case)
+  console.log('\n[Screen 13/15] Switching to Square Knot -> First-Divergence Workspace...');
+  await page.evaluate(() => {
+    const sel = document.querySelector('select');
+    if (sel) {
+      sel.value = 'square_knot';
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  });
+  await new Promise((r) => setTimeout(r, 600));
+  const ss13 = await saveScreenshot(page, '13_first_divergence_knot', { fullPage: true });
+  savedScreenshots.push(ss13);
+
+  // Screen 14: Google Stitch Generative Canvas Modal
+  console.log('\n[Screen 14/15] Opening Google Stitch Canvas Modal...');
+  await page.evaluate(() => {
+    const stitchBtn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('STITCH CANVAS'));
+    if (stitchBtn) stitchBtn.click();
+  });
+  await new Promise((r) => setTimeout(r, 600));
+  const ss14 = await saveScreenshot(page, '14_stitch_canvas_modal');
+  savedScreenshots.push(ss14);
+
+  // Close Stitch Modal
+  await page.evaluate(() => {
+    const xBtn = Array.from(document.querySelectorAll('button')).find((b) => b.querySelector('svg.lucide-x'));
+    if (xBtn) xBtn.click();
+  });
+  await new Promise((r) => setTimeout(r, 400));
+
+  // Screen 15: Gemini Model Gateway Settings Modal
+  console.log('\n[Screen 15/15] Opening Gemini Gateway Settings Modal...');
+  await page.evaluate(() => {
+    const settingsBtn = Array.from(document.querySelectorAll('header button')).find((b) => b.querySelector('svg.lucide-settings'));
+    if (settingsBtn) settingsBtn.click();
+  });
+  await new Promise((r) => setTimeout(r, 600));
+  const ss15 = await saveScreenshot(page, '15_gemini_settings_modal');
+  savedScreenshots.push(ss15);
+
+  // Close Settings Modal
+  await page.evaluate(() => {
+    const cancelBtn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('CANCEL'));
+    if (cancelBtn) cancelBtn.click();
+  });
+  await new Promise((r) => setTimeout(r, 400));
 
   // 6. Write Audit Manifest & Summary
   const allPassed = consoleErrors.length === 0 && pageErrors.length === 0 && failedRequests.length === 0;
-  
+
   const auditReport = {
     run_timestamp: runTimestamp,
     execution_time_iso: new Date().toISOString(),

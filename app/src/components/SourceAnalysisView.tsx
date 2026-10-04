@@ -41,8 +41,13 @@ export function SourceAnalysisView({
 
       {/* Case Header Hero */}
       <div className="space-y-3">
-        <div className="inline-block px-2.5 py-0.5 rounded text-[10px] font-mono uppercase font-semibold bg-caliper-cyan/15 text-caliper-cyan border border-caliper-cyan/30">
-          STAGE 01 // CAPTURE & GROUNDED KNOWLEDGE
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="inline-block px-2.5 py-0.5 rounded text-[10px] font-mono uppercase font-semibold bg-caliper-cyan/15 text-caliper-cyan border border-caliper-cyan/30">
+            STAGE 01 // CAPTURE & GROUNDED KNOWLEDGE
+          </div>
+          <div className="inline-block px-2.5 py-0.5 rounded text-[10px] font-mono uppercase font-bold bg-surface-dim text-cadmium-amber border border-cadmium-amber/40">
+            MODE: {capCase.transmissionMode === 'goal_conditioned' ? 'GOAL-CONDITIONED (TARGET-FIRST)' : capCase.transmissionMode === 'corrective' ? 'CORRECTIVE (DIVERGENCE-FIRST)' : 'FORWARD (DEMO-FIRST)'}
+          </div>
         </div>
         <h1 className="text-3xl sm:text-4xl font-serif font-normal text-on-surface">
           {capCase.title}

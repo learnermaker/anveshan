@@ -132,6 +132,9 @@ export function WorkspaceCompiler({
               <span className="text-on-surface-variant">ARCHETYPE:</span>
               <span className="font-bold text-on-surface">{capCase.archetype}</span>
               <span className="text-outline">→</span>
+              <span className="text-on-surface-variant">MODE:</span>
+              <span className="font-bold text-cadmium-amber uppercase">{capCase.transmissionMode.replace('_', '-')}</span>
+              <span className="text-outline">→</span>
               <span className="text-on-surface-variant">COMPOSED:</span>
               <span className="font-bold text-transmission-emerald uppercase">
                 {spec.title}
