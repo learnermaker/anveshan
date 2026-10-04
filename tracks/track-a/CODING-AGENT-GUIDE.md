@@ -64,6 +64,25 @@ Do not hard-code:
 
 Use configurable/adaptable extraction logic and small domain-specific fixtures.
 
+
+## Source-type flexibility
+
+The selected capability does not have to begin with an expert demonstration video.
+
+Track A must support three source patterns:
+
+1. **Forward:** demonstration → structured knowledge;
+2. **Goal-conditioned:** desired state/image → observable target structure + explicitly inferred candidate construction strategy;
+3. **Corrective:** learner attempt → evidence of divergence → targeted teaching input.
+
+For goal-conditioned cases such as Kolam, do not claim to recover an original procedure from a final image unless a source demonstration establishes it. Preserve target facts as OBSERVED and candidate construction steps as INFERRED.
+
+The handoff remains the frozen common contracts. Source modality is not a reason to create a parallel contract.
+
+See:
+- docs/research/source-strategy-and-transmission-modes-2026-10-04.md
+- docs/research/multimodal-capability-case-portfolio.md
+
 ## Gemini rules
 
 Gemini may:

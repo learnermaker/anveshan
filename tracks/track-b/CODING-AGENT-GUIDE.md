@@ -89,6 +89,27 @@ Each result should make clear:
 
 The common validator already protects important invariants. Extend it only when a real cross-contract invariant is missing.
 
+
+## Source-type flexibility
+
+Track B must not assume that every PracticeTask originated from a demonstration video.
+
+A practice task may be derived from:
+
+1. **Forward transmission:** demonstrated procedure/behavior;
+2. **Goal-conditioned transmission:** observable target state, with candidate intermediate steps explicitly marked as inferred;
+3. **Corrective transmission:** learner attempt and identified divergence.
+
+For a goal-conditioned case such as Kolam, evaluate the learner against observable target criteria. Do not score whether the learner reproduced an alleged original artist procedure unless that procedure is independently evidenced.
+
+The authoritative path remains:
+
+source/evidence → PracticeTask → LearnerAttempt → Evaluation → Feedback → retry → TransmissionRecord.
+
+See:
+- docs/research/source-strategy-and-transmission-modes-2026-10-04.md
+- docs/research/multimodal-capability-case-portfolio.md
+
 ## Gemini rules
 
 Gemini may:
