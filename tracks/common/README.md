@@ -6,7 +6,7 @@
 > This seam is deliberately **domain-agnostic and small**. It describes the proof boundary, not a particular skill, industry, framework, or deployment architecture.
 
 ## Start here
-Track A, Track B, UI, fixture, and integration agents should read README.md, CONTRACT-USAGE.md, schemas/*.py, validator.py, tests/, and tests/fixtures/transmission_case_001/.
+Track A, Track B, UI, fixture, and integration agents should read README.md, CONTRACT-USAGE.md, schemas/, validator.py, tests/, and tests/fixtures/transmission_case_001/.
 
 ## The 8 contracts
 1. EvidenceRef — source/attempt evidence locator.
