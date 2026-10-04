@@ -13,7 +13,7 @@ Track B makes “transmitted” measurable.
 Read:
 1. `tracks/common/README.md`
 2. `tracks/common/CONTRACT-USAGE.md`
-3. `tracks/common/schemas/*.py`
+3. `tracks/common/schemas/`
 4. `tracks/common/validator.py`
 5. `tracks/common/tests/`
 6. `docs/architecture/parallel-work-contract.md`
