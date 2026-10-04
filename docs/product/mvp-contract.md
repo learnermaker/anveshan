@@ -16,9 +16,18 @@ A real person with authentic knowledge.
 
 A task that can be demonstrated and attempted within a short session.
 
-### 3. One Authentic Demonstration
+### 3. One Accountable Source
 
-Video and/or audio showing the expert performing and explaining the task.
+The selected bounded case must have an accountable, authorized source/input that supports observable practice and measurable verification.
+
+For the original expert-transfer validation wedge, this is a real expert demonstration (video and/or audio) showing the expert performing and/or explaining the task.
+
+The source-flexible prototype may additionally exercise:
+- a desired target state/image;
+- a learner attempt;
+- or a combination.
+
+Those modes must preserve their evidence boundaries and do not automatically constitute validated expert-procedure recovery.
 
 ### 4. One Knowledge Representation
 
@@ -106,5 +115,7 @@ The following are explicitly not required to prove the thesis:
 
 The MVP is not complete because every screen exists.
 
-It is complete when the end-to-end transmission loop works with authentic data and survives expert review.
+It is complete when the end-to-end transmission loop works for the selected validation mode with the appropriate accountable evidence and survives the required review/verification gate.
+
+A replay/synthetic fixture can demonstrate engineering behavior, contract integrity, and deterministic evaluation. It does not by itself satisfy real-world product validation.
 
