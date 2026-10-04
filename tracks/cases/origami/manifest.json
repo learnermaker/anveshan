@@ -1,6 +1,7 @@
 {
   "schema_version": "1.0",
   "case_id": "origami",
+  "bundle_case_id": "origami_case_006",
   "title": "Origami Crane Petal Folding",
   "domain": "Mathematical Origami & Computational Paper Geometry",
   "archetype": "sequential-spatial-transformation",
