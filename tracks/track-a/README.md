@@ -1,63 +1,28 @@
 # Track A — Expert Intelligence & Grounding
 
-**Owner boundary:** source understanding, structured knowledge, evidence grounding, and generation of the bounded teaching/practice inputs.
+**Owner boundary:** source understanding, structured knowledge, evidence grounding, and generation of bounded teaching/practice inputs.
+
+## Start here
+Read CODING-AGENT-GUIDE.md, SUCCESS-CRITERIA.md, tracks/common/README.md, tracks/common/CONTRACT-USAGE.md, tracks/common/schemas/, tracks/common/validator.py, docs/architecture/parallel-work-contract.md, and docs/architecture/google-stack-integration.md before coding.
+
+The domain/skill is intentionally **not fixed yet**. Keep implementation domain-agnostic until M0 selects the bounded authentic case.
 
 ## Objective
+Prove that an authentic expert demonstration can become a source-grounded knowledge representation and bounded teaching/practice input without material invention.
 
-Prove that an authentic expert demonstration can be transformed into a source-grounded knowledge representation and a bounded teaching/practice input without material invention.
+## Boundary
+Own source/media representation, multimodal understanding, structured steps/cues/conditions/exceptions/failure modes, claim→evidence links, grounded teaching, rubric/practice-task generation, expert review, replay, and deterministic validation.
 
-## Work boundary
+Do not own learner scoring, feedback/retry, transmission-gain calculation, production learner runtime, or generalized platform infrastructure.
 
-In scope for this track:
+## Authoritative outputs
+Track A produces EvidenceRef, KnowledgePackage, RubricDefinition, and PracticeTask. The authoritative models are in tracks/common/schemas/. Internal DTOs and Gemini response shapes are adapters only; normalize them into the common contracts.
 
-1. source/media ingestion representation;
-2. multimodal understanding;
-3. structured procedure, cues, conditions, exceptions, and failure modes;
-4. claim → evidence references;
-5. grounded explanation/lesson generation;
-6. practice-task generation as an output contract;
-7. expert-review/replay support;
-8. deterministic validation of provenance and contract conformance.
-
-Out of scope:
-
-- learner attempt evaluation;
-- learner feedback/retry logic;
-- transmission-gain calculation;
-- production integration with the learner runtime.
-
-## Expected contract outputs
-
-Track A may produce:
-
-- `KnowledgePackage`
-- `EvidenceRef`
-- `PracticeTask`
-
-Use frozen fixtures when Track B is not integrated.
+## Domain-agnostic rule
+Do not hard-code a profession, skill, tool, vocabulary, camera setup, or evaluation method into reusable Track A infrastructure. Domain-specific behavior belongs in the selected case, fixture, prompt, or adapter.
 
 ## Starter validation
+Use synthetic-but-structurally-realistic replay fixtures that distinguish observed/source-backed content, derived interpretation, uncertainty, and missing evidence. Fixtures are engineering scaffolding, not product validation.
 
-The initial replay fixture should contain a synthetic-but-structurally-realistic source package and expected evidence links. It must distinguish:
-
-- observed/source-backed content;
-- derived interpretation;
-- uncertainty;
-- missing evidence.
-
-The fixture is scaffolding only; it is not validation of the product hypothesis.
-
-## Suggested worktree
-
-```text
-tracks/track-a/
-├── README.md
-├── fixtures/
-│   └── replay/
-├── prompts/
-├── src/
-├── tests/
-└── notes/
-```
-
-Create implementation files only through bounded issues. See `docs/architecture/google-stack-integration.md` for Gemini File API, Agentic Video Understanding, and Pydantic structured output patterns.
+## Worktree
+tracks/track-a/ contains README.md, CODING-AGENT-GUIDE.md, SUCCESS-CRITERIA.md, fixtures/, prompts/, src/, tests/, and notes/. Create implementation files only through bounded issues.
