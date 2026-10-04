@@ -1,0 +1,25 @@
+{
+  "rubric_id": "rubric.square-knot.1",
+  "skill_id": "skill-knot-square",
+  "title": "Rubric: Reef (Square) Knot Dual-Throw Topology & Anti-Granny Rule",
+  "description": "Observable rubric synthesized for skill-knot-square",
+  "criteria": [
+    {
+      "criterion_id": "CRIT-01",
+      "name": "Criterion for CLM-01",
+      "description": "Step 1: Cross active working end right-over-left and wrap under once to create the foundational half-knot. [source_claim_id: CLM-01]",
+      "observable_indicator": "Cross active working end right-over-left and wrap under once to create the foundational half-knot.",
+      "weight": 2.0,
+      "required": true
+    },
+    {
+      "criterion_id": "CRIT-02",
+      "name": "Criterion for CLM-02",
+      "description": "Step 2: The second throw must cross Left-over-Right (the exact reverse of throw 1). Repeating right-over-left produces an unstable Granny Knot. [source_claim_id: CLM-02]",
+      "observable_indicator": "The second throw must cross Left-over-Right (the exact reverse of throw 1). Repeating right-over-left produces an unstable Granny Knot.",
+      "weight": 2.0,
+      "required": true
+    }
+  ],
+  "passing_score": 2.8
+}

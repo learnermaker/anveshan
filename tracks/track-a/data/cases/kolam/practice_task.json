@@ -1,0 +1,18 @@
+{
+  "task_id": "task.kolam.1",
+  "package_id": "kp.kolam.1",
+  "rubric_id": "rubric.kolam.1",
+  "title": "Practice: Sikku Kolam 5x5 Pulli Dot Matrix Trajectory",
+  "instructions": "Demonstrate mastery of Sikku Kolam 5x5 Pulli Dot Matrix Trajectory adhering strictly to observed conditions and cues.",
+  "constraints": [
+    {
+      "constraint_type": "environment",
+      "description": "Standard physical observation environment",
+      "value": null
+    }
+  ],
+  "target_criteria_ids": [
+    "CRIT-01",
+    "CRIT-02"
+  ]
+}

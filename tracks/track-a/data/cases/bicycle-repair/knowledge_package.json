@@ -1,0 +1,57 @@
+{
+  "package_id": "kp.bicycle-repair.1",
+  "skill_id": "skill-bike-puncture",
+  "title": "Pneumatic Tube Diagnosis & Chemical Vulcanization",
+  "summary": "Systematic observation, water immersion acoustic leak localization, abrasive butyl buffing, and chemical cold-vulcanization.",
+  "claims": [
+    {
+      "claim_id": "CLM-01",
+      "claim_type": "step",
+      "statement": "Step 1: Submerge partially inflated tube in clean water vessel section by section while applying gentle stretch to identify micro-bubbles.",
+      "is_observed": true,
+      "evidence_refs": [
+        {
+          "evidence_id": "ev.bicycle-repair.step.01",
+          "source_id": "src-bike-01",
+          "modality": "video",
+          "start_sec": 14.0,
+          "end_sec": 25.0,
+          "cue_excerpt": "Submerge partially inflated tube in clean water vessel section by section while applying gentle stretch to identify micro-bubbles.",
+          "verification_state": "observed",
+          "confidence": 1.0
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-02",
+      "claim_type": "step",
+      "statement": "Step 2: Sandpaper scuffing must abrade the glazed butyl mold-release layer in a circular zone larger than the patch to allow chemical solvent cross-linking.",
+      "is_observed": true,
+      "evidence_refs": [
+        {
+          "evidence_id": "ev.bicycle-repair.step.02",
+          "source_id": "src-bike-01",
+          "modality": "video",
+          "start_sec": 32.0,
+          "end_sec": 45.0,
+          "cue_excerpt": "Sandpaper scuffing must abrade the glazed butyl mold-release layer in a circular zone larger than the patch to allow chemical solvent cross-linking.",
+          "verification_state": "observed",
+          "confidence": 1.0
+        }
+      ]
+    }
+  ],
+  "consent": {
+    "contributor_name": "Synthetic Fixture Contributor",
+    "consent_scope": "engineering_replay_only",
+    "revocable": true,
+    "granted_at": "2026-09-15T09:00:00Z",
+    "notes": null
+  },
+  "expert_review": {
+    "reviewer_name": "Track A Automated Review Gate",
+    "status": "pending",
+    "reviewed_at": null,
+    "notes": "Awaiting domain expert inspection."
+  }
+}

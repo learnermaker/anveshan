@@ -1,0 +1,11 @@
+{
+  "provider": "replay",
+  "model_id": "deterministic-case-pack",
+  "prompt_id": "replay_extraction",
+  "prompt_version": "v1",
+  "input_artifact_id": "bundle_micrometer",
+  "runtime_class": "REPLAY",
+  "run_id": "run_replay_micrometer",
+  "expected_behavior": "100% deterministic deserialization",
+  "evaluation_reference": "tracks/cases/micrometer/replay/bundle.json"
+}

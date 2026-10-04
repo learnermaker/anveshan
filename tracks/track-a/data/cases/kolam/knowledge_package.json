@@ -1,0 +1,57 @@
+{
+  "package_id": "kp.kolam.1",
+  "skill_id": "skill-kolam-geometry",
+  "title": "Sikku Kolam 5x5 Pulli Dot Matrix Trajectory",
+  "summary": "Execution of Brahma Mudi continuous uncrossed loop around a 5x5 orthogonal dot lattice with 4-fold rotational symmetry.",
+  "claims": [
+    {
+      "claim_id": "CLM-01",
+      "claim_type": "step",
+      "statement": "Step 1: Establish a 5x5 staggered matrix of dots (pulli) with equal 40mm Euclidean spacing on a clean horizontal surface.",
+      "is_observed": true,
+      "evidence_refs": [
+        {
+          "evidence_id": "ev.kolam.step.01",
+          "source_id": "src-kolam-01",
+          "modality": "video",
+          "start_sec": 2.0,
+          "end_sec": 8.5,
+          "cue_excerpt": "Establish a 5x5 staggered matrix of dots (pulli) with equal 40mm Euclidean spacing on a clean horizontal surface.",
+          "verification_state": "observed",
+          "confidence": 1.0
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-02",
+      "claim_type": "step",
+      "statement": "Step 2: The line must weave around each pulli dot without touching, intersecting, or lifting the drawing medium, completing a single continuous closed topological path.",
+      "is_observed": true,
+      "evidence_refs": [
+        {
+          "evidence_id": "ev.kolam.step.02",
+          "source_id": "src-kolam-01",
+          "modality": "video",
+          "start_sec": 12.0,
+          "end_sec": 28.0,
+          "cue_excerpt": "The line must weave around each pulli dot without touching, intersecting, or lifting the drawing medium, completing a single continuous closed topological path.",
+          "verification_state": "observed",
+          "confidence": 1.0
+        }
+      ]
+    }
+  ],
+  "consent": {
+    "contributor_name": "Synthetic Fixture Contributor",
+    "consent_scope": "engineering_replay_only",
+    "revocable": true,
+    "granted_at": "2026-09-18T10:00:00Z",
+    "notes": null
+  },
+  "expert_review": {
+    "reviewer_name": "Track A Automated Review Gate",
+    "status": "pending",
+    "reviewed_at": null,
+    "notes": "Awaiting domain expert inspection."
+  }
+}

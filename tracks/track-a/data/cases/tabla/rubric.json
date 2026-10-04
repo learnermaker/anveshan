@@ -1,0 +1,25 @@
+{
+  "rubric_id": "rubric.tabla.1",
+  "skill_id": "skill-tabla-dha",
+  "title": "Rubric: Acoustic Synchronization of Dha (Ge + Na Compound Stroke)",
+  "description": "Observable rubric synthesized for skill-tabla-dha",
+  "criteria": [
+    {
+      "criterion_id": "CRIT-01",
+      "name": "Criterion for CLM-01",
+      "description": "Step 1: The flat wrist heel slide on the Bayan (Ge) and the index finger rim strike on the Dayan (Na) must impact within +/- 15ms. [source_claim_id: CLM-01]",
+      "observable_indicator": "The flat wrist heel slide on the Bayan (Ge) and the index finger rim strike on the Dayan (Na) must impact within +/- 15ms.",
+      "weight": 2.0,
+      "required": true
+    },
+    {
+      "criterion_id": "CRIT-02",
+      "name": "Criterion for CLM-02",
+      "description": "Step 2: Simultaneous strike generates a composite acoustic spectrum combining 85Hz bass modulation with 440Hz ringing harmonic overtone. [source_claim_id: CLM-02]",
+      "observable_indicator": "Simultaneous strike generates a composite acoustic spectrum combining 85Hz bass modulation with 440Hz ringing harmonic overtone.",
+      "weight": 2.0,
+      "required": true
+    }
+  ],
+  "passing_score": 2.8
+}

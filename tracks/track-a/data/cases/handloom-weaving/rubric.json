@@ -1,0 +1,25 @@
+{
+  "rubric_id": "rubric.handloom-weaving.1",
+  "skill_id": "skill-weave-shed",
+  "title": "Rubric: Two-Shaft Plain Weave Shed Transition & Selvage Control",
+  "description": "Observable rubric synthesized for skill-weave-shed",
+  "criteria": [
+    {
+      "criterion_id": "CRIT-01",
+      "name": "Criterion for CLM-01",
+      "description": "Step 1: Depress treadle #1 fully to separate odd and even warp threads into a clean 45mm open shed before throwing shuttle. [source_claim_id: CLM-01]",
+      "observable_indicator": "Depress treadle #1 fully to separate odd and even warp threads into a clean 45mm open shed before throwing shuttle.",
+      "weight": 2.0,
+      "required": true
+    },
+    {
+      "criterion_id": "CRIT-02",
+      "name": "Criterion for CLM-02",
+      "description": "Step 2: The reed must beat the newly laid weft pick into the cloth fell only after the treadles alternate to lock the thread in place. [source_claim_id: CLM-02]",
+      "observable_indicator": "The reed must beat the newly laid weft pick into the cloth fell only after the treadles alternate to lock the thread in place.",
+      "weight": 2.0,
+      "required": true
+    }
+  ],
+  "passing_score": 2.8
+}

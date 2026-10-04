@@ -1,0 +1,25 @@
+{
+  "rubric_id": "rubric.origami.1",
+  "skill_id": "skill-origami-crane",
+  "title": "Rubric: Bird Base Petal Fold Crease Inversion Sequence",
+  "description": "Observable rubric synthesized for skill-origami-crane",
+  "criteria": [
+    {
+      "criterion_id": "CRIT-01",
+      "name": "Criterion for CLM-01",
+      "description": "Step 1: Crease diagonal valley folds and orthogonal mountain folds, then collapse into a 1/4 size preliminary square with open corner facing learner. [source_claim_id: CLM-01]",
+      "observable_indicator": "Crease diagonal valley folds and orthogonal mountain folds, then collapse into a 1/4 size preliminary square with open corner facing learner.",
+      "weight": 2.0,
+      "required": true
+    },
+    {
+      "criterion_id": "CRIT-02",
+      "name": "Criterion for CLM-02",
+      "description": "Step 2: Lift top flap upward while simultaneously reversing lateral mountain creases into valley folds along the central symmetry axis. [source_claim_id: CLM-02]",
+      "observable_indicator": "Lift top flap upward while simultaneously reversing lateral mountain creases into valley folds along the central symmetry axis.",
+      "weight": 2.0,
+      "required": true
+    }
+  ],
+  "passing_score": 2.8
+}

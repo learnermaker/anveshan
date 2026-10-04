@@ -1,0 +1,57 @@
+{
+  "package_id": "kp.origami.1",
+  "skill_id": "skill-origami-crane",
+  "title": "Bird Base Petal Fold Crease Inversion Sequence",
+  "summary": "Transform square paper base through precision preliminary folds into the inverted petal fold bird base.",
+  "claims": [
+    {
+      "claim_id": "CLM-01",
+      "claim_type": "step",
+      "statement": "Step 1: Crease diagonal valley folds and orthogonal mountain folds, then collapse into a 1/4 size preliminary square with open corner facing learner.",
+      "is_observed": true,
+      "evidence_refs": [
+        {
+          "evidence_id": "ev.origami.step.01",
+          "source_id": "src-origami-01",
+          "modality": "video",
+          "start_sec": 10.0,
+          "end_sec": 22.0,
+          "cue_excerpt": "Crease diagonal valley folds and orthogonal mountain folds, then collapse into a 1/4 size preliminary square with open corner facing learner.",
+          "verification_state": "observed",
+          "confidence": 1.0
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-02",
+      "claim_type": "step",
+      "statement": "Step 2: Lift top flap upward while simultaneously reversing lateral mountain creases into valley folds along the central symmetry axis.",
+      "is_observed": true,
+      "evidence_refs": [
+        {
+          "evidence_id": "ev.origami.step.02",
+          "source_id": "src-origami-01",
+          "modality": "video",
+          "start_sec": 25.0,
+          "end_sec": 38.0,
+          "cue_excerpt": "Lift top flap upward while simultaneously reversing lateral mountain creases into valley folds along the central symmetry axis.",
+          "verification_state": "observed",
+          "confidence": 1.0
+        }
+      ]
+    }
+  ],
+  "consent": {
+    "contributor_name": "Synthetic Fixture Contributor",
+    "consent_scope": "engineering_replay_only",
+    "revocable": true,
+    "granted_at": "2026-09-08T11:00:00Z",
+    "notes": null
+  },
+  "expert_review": {
+    "reviewer_name": "Track A Automated Review Gate",
+    "status": "pending",
+    "reviewed_at": null,
+    "notes": "Awaiting domain expert inspection."
+  }
+}

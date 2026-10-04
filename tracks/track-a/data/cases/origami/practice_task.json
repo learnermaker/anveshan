@@ -1,0 +1,18 @@
+{
+  "task_id": "task.origami.1",
+  "package_id": "kp.origami.1",
+  "rubric_id": "rubric.origami.1",
+  "title": "Practice: Bird Base Petal Fold Crease Inversion Sequence",
+  "instructions": "Demonstrate mastery of Bird Base Petal Fold Crease Inversion Sequence adhering strictly to observed conditions and cues.",
+  "constraints": [
+    {
+      "constraint_type": "environment",
+      "description": "Standard physical observation environment",
+      "value": null
+    }
+  ],
+  "target_criteria_ids": [
+    "CRIT-01",
+    "CRIT-02"
+  ]
+}

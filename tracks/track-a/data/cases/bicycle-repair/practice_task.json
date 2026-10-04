@@ -1,0 +1,18 @@
+{
+  "task_id": "task.bicycle-repair.1",
+  "package_id": "kp.bicycle-repair.1",
+  "rubric_id": "rubric.bicycle-repair.1",
+  "title": "Practice: Pneumatic Tube Diagnosis & Chemical Vulcanization",
+  "instructions": "Demonstrate mastery of Pneumatic Tube Diagnosis & Chemical Vulcanization adhering strictly to observed conditions and cues.",
+  "constraints": [
+    {
+      "constraint_type": "environment",
+      "description": "Standard physical observation environment",
+      "value": null
+    }
+  ],
+  "target_criteria_ids": [
+    "CRIT-01",
+    "CRIT-02"
+  ]
+}

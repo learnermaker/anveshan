@@ -1,0 +1,25 @@
+{
+  "rubric_id": "rubric.kolam.1",
+  "skill_id": "skill-kolam-geometry",
+  "title": "Rubric: Sikku Kolam 5x5 Pulli Dot Matrix Trajectory",
+  "description": "Observable rubric synthesized for skill-kolam-geometry",
+  "criteria": [
+    {
+      "criterion_id": "CRIT-01",
+      "name": "Criterion for CLM-01",
+      "description": "Step 1: Establish a 5x5 staggered matrix of dots (pulli) with equal 40mm Euclidean spacing on a clean horizontal surface. [source_claim_id: CLM-01]",
+      "observable_indicator": "Establish a 5x5 staggered matrix of dots (pulli) with equal 40mm Euclidean spacing on a clean horizontal surface.",
+      "weight": 2.0,
+      "required": true
+    },
+    {
+      "criterion_id": "CRIT-02",
+      "name": "Criterion for CLM-02",
+      "description": "Step 2: The line must weave around each pulli dot without touching, intersecting, or lifting the drawing medium, completing a single continuous closed topological path. [source_claim_id: CLM-02]",
+      "observable_indicator": "The line must weave around each pulli dot without touching, intersecting, or lifting the drawing medium, completing a single continuous closed topological path.",
+      "weight": 2.0,
+      "required": true
+    }
+  ],
+  "passing_score": 2.8
+}

@@ -1,0 +1,33 @@
+{
+  "rubric_id": "rubric.micrometer.1",
+  "skill_id": "SKILL-OPT-CALIB",
+  "title": "Rubric: Precision Optical Dial Micrometer Zeroing",
+  "description": "Observable rubric synthesized for SKILL-OPT-CALIB",
+  "criteria": [
+    {
+      "criterion_id": "CRIT-01",
+      "name": "Criterion for CLM-01",
+      "description": "Step 1: Wipe measuring faces with optical lint-free paper using a single continuous drag motion. [source_claim_id: CLM-01]",
+      "observable_indicator": "Wipe measuring faces with optical lint-free paper using a single continuous drag motion.",
+      "weight": 2.0,
+      "required": true
+    },
+    {
+      "criterion_id": "CRIT-02",
+      "name": "Criterion for CLM-02",
+      "description": "Audible ratchet thimble must click exactly 3 times at uniform 0.5s cadence to apply standard 5N contact pressure. (Observable: Three distinct uniform ratchet clicks audible at 19.1s, 19.6s, 20.1s.) [source_claim_id: CLM-02]",
+      "observable_indicator": "Three distinct uniform ratchet clicks audible at 19.1s, 19.6s, 20.1s.",
+      "weight": 3.0,
+      "required": true
+    },
+    {
+      "criterion_id": "CRIT-03",
+      "name": "Criterion for CLM-03",
+      "description": "Lock barrel screw must only be engaged after needle settles completely within +/- 0.5 division indicator. [source_claim_id: CLM-03]",
+      "observable_indicator": "Required tools/materials: Indicator needle stabilizes at zero index line before thumb engages lock ring.",
+      "weight": 2.0,
+      "required": true
+    }
+  ],
+  "passing_score": 4.9
+}
