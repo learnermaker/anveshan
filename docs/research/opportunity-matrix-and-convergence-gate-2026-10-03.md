@@ -198,28 +198,6 @@ This is stronger than a one-shot classifier because success is measurable.
 
 ### P6 — Skill Variant Mining
 
-### P7 — Goal-Conditioned Reconstruction
-
-Given a desired end state rather than a demonstration, infer the observable structure of that target and construct a plausible path of intermediate states/actions that could reach it.
-
-A useful first case is image-based Kolam reconstruction:
-
-~~~text
-TARGET → STRUCTURE → PLAUSIBLE PATH → PRACTICE → VERIFY
-~~~
-
-Why interesting:
-- changes the direction of transmission from demonstration-first to goal-first;
-- makes GenUI composition visibly dependent on reasoning requirements;
-- supports image-only source cases;
-- creates a natural distinction between OBSERVED target structure and INFERRED construction strategy;
-- can be evaluated against an explicit target without claiming recovery of an original procedure.
-
-Important caveat:
-- a final image generally does not establish original stroke order, intent, or historical procedure;
-- generated paths are hypotheses unless corroborated by demonstrations or authoritative sources;
-- cultural/process claims require appropriate source attribution.
-
 
 Given several demonstrations that all succeed, discover:
 - invariant actions;
@@ -457,4 +435,26 @@ The next phase should be experimental rather than architectural:
 8. Produce 3–5 product theses from surviving phenomena.
 9. Only then freeze MVP scope.
 
-No production architecture should be frozen before this gate.
+No production architecture should be frozen before this gate.### P7 — Goal-Conditioned Reconstruction
+
+Given a desired end state rather than a demonstration, infer the observable structure of that target and construct a plausible path of intermediate states/actions that could reach it.
+
+A useful first case is image-based Kolam reconstruction:
+
+~~~text
+TARGET → STRUCTURE → PLAUSIBLE PATH → PRACTICE → VERIFY
+~~~
+
+Why interesting:
+- changes the direction of transmission from demonstration-first to goal-first;
+- makes GenUI composition visibly dependent on reasoning requirements;
+- supports image-only source cases;
+- creates a natural distinction between OBSERVED target structure and INFERRED construction strategy;
+- can be evaluated against an explicit target without claiming recovery of an original procedure.
+
+Important caveat:
+- a final image generally does not establish original stroke order, intent, or historical procedure;
+- generated paths are hypotheses unless corroborated by demonstrations or authoritative sources;
+- cultural/process claims require appropriate source attribution.
+
+
