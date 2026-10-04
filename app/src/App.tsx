@@ -1,28 +1,46 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Header, LifecycleStage } from './components/Header';
-import { DualDeckPlayer } from './components/DualDeckPlayer';
-import { SensoryRibbon } from './components/SensoryRibbon';
-import { RubricHUD } from './components/RubricHUD';
-import { TransmissionGainHero } from './components/TransmissionGainHero';
+import { Header } from './components/Header';
+import { DiscoveryView } from './components/DiscoveryView';
+import { SourceAnalysisView } from './components/SourceAnalysisView';
+import { WorkspaceCompiler } from './workspaces/WorkspaceCompiler';
+import { TransmissionCompleteView } from './components/TransmissionCompleteView';
+import { FirstDivergenceModal } from './components/FirstDivergenceModal';
+import { MicroPracticeRetryModal } from './components/MicroPracticeRetryModal';
 import { LineageDrawer } from './components/LineageDrawer';
-import { LifecycleInspectorModal } from './components/LifecycleInspectorModal';
 import { StitchModal } from './components/StitchModal';
-import { getTransmissionTelemetry } from './data/adapter';
+import { SettingsModal } from './components/SettingsModal';
+import { LifecycleInspectorModal } from './components/LifecycleInspectorModal';
+
+import { getCapabilityCase, DEFAULT_CASE_ID } from './data/cases/registry';
+import { getStoredGeminiConfig, saveStoredGeminiConfig } from './model/geminiGateway';
+import type { AppView } from './types/workspace';
+import type { GeminiConfig } from './types/gemini';
+import type { LifecycleStage } from './components/LifecycleInspectorModal';
 
 export function App() {
-  const telemetry = getTransmissionTelemetry();
-  const [currentTime, setCurrentTime] = useState<number>(19.2); // Start at key divergence moment!
+  const [currentView, setCurrentView] = useState<AppView>('practice');
+  const [selectedCaseId, setSelectedCaseId] = useState<string>(DEFAULT_CASE_ID);
+  const [geminiConfig, setGeminiConfig] = useState<GeminiConfig>(getStoredGeminiConfig());
+
+  // Dynamic Case state
+  const capCase = getCapabilityCase(selectedCaseId);
+
+  // Playhead state for temporal cases (micrometer, etc.)
+  const [currentTime, setCurrentTime] = useState<number>(19.2); // Key first divergence locus
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [activeStage, setActiveStage] = useState<LifecycleStage>('transmission');
-  const [selectedCriterionId, setSelectedCriterionId] = useState<string | null>('CRIT-RATCHET');
+
+  // Modals
+  const [isDivergenceModalOpen, setIsDivergenceModalOpen] = useState<boolean>(false);
+  const [isMicroPracticeOpen, setIsMicroPracticeOpen] = useState<boolean>(false);
   const [isLineageOpen, setIsLineageOpen] = useState<boolean>(false);
   const [isStitchOpen, setIsStitchOpen] = useState<boolean>(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [modalStage, setModalStage] = useState<LifecycleStage | null>(null);
 
   const animationFrameRef = useRef<number | null>(null);
   const lastTimestampRef = useRef<number | null>(null);
 
-  // Playback loop
+  // Playback loop for video/temporal workspaces
   useEffect(() => {
     if (!isPlaying) {
       if (animationFrameRef.current) {
@@ -56,65 +74,84 @@ export function App() {
     };
   }, [isPlaying]);
 
-  const handleStageSelect = (stage: LifecycleStage) => {
-    if (stage === 'transmission') {
-      setActiveStage('transmission');
-    } else {
-      setModalStage(stage);
-    }
+  // Handle case selection
+  const handleSelectCase = (caseId: string) => {
+    setSelectedCaseId(caseId);
+    setCurrentTime(19.2);
+    setIsPlaying(false);
+  };
+
+  // Handle successful retry completion: transitions to verified transmission view
+  const handleCompleteRetry = () => {
+    setIsMicroPracticeOpen(false);
+    setCurrentView('transmission');
+  };
+
+  const handleSaveConfig = (newConfig: GeminiConfig) => {
+    setGeminiConfig(newConfig);
+    saveStoredGeminiConfig(newConfig);
   };
 
   return (
-    <div className="min-h-screen bg-background text-on-surface flex flex-col noise-overlay">
+    <div className="min-h-screen bg-background text-on-surface flex flex-col noise-overlay selection:bg-cadmium-amber/30 selection:text-white">
       {/* Precision Instrument Header */}
       <Header
-        telemetry={telemetry}
-        activeStage={activeStage}
-        onSelectStage={handleStageSelect}
+        currentView={currentView}
+        onSelectView={setCurrentView}
+        currentCase={capCase}
+        onSelectCase={handleSelectCase}
+        analysisMode={geminiConfig.mode}
+        onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenStitchDesign={() => setIsStitchOpen(true)}
       />
 
-      {/* Main Workbench Body */}
+      {/* Main Dynamic Viewport */}
       <main className="flex-1 max-w-workbench w-full mx-auto p-4 lg:p-6 flex flex-col gap-6">
-        {/* Top Section: Comparative Decks & Rubric HUD */}
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
-          {/* Left/Center Workspace: Dual Video Deck + Waveform Ribbon (8 columns) */}
-          <div className="xl:col-span-8 flex flex-col gap-4">
-            <DualDeckPlayer
-              telemetry={telemetry}
-              currentTime={currentTime}
-              onTimeChange={setCurrentTime}
-              isPlaying={isPlaying}
-              onTogglePlay={() => setIsPlaying(!isPlaying)}
-            />
+        {currentView === 'discovery' && (
+          <DiscoveryView
+            selectedCaseId={selectedCaseId}
+            onSelectCase={(id) => {
+              handleSelectCase(id);
+              setCurrentView('source');
+            }}
+          />
+        )}
 
-            <SensoryRibbon
-              telemetry={telemetry}
-              currentTime={currentTime}
-              onTimeChange={setCurrentTime}
-            />
-          </div>
+        {currentView === 'source' && (
+          <SourceAnalysisView
+            capCase={capCase}
+            onEnterPractice={() => setCurrentView('practice')}
+            onBackToDiscovery={() => setCurrentView('discovery')}
+          />
+        )}
 
-          {/* Right Telemetry Column: Rubric HUD (4 columns) */}
-          <div className="xl:col-span-4 h-full">
-            <RubricHUD
-              telemetry={telemetry}
-              currentTime={currentTime}
-              onTimeChange={setCurrentTime}
-              selectedCriterionId={selectedCriterionId}
-              onSelectCriterion={setSelectedCriterionId}
-            />
-          </div>
-        </div>
+        {currentView === 'practice' && (
+          <WorkspaceCompiler
+            capCase={capCase}
+            currentTime={currentTime}
+            onTimeChange={setCurrentTime}
+            isPlaying={isPlaying}
+            onTogglePlay={() => setIsPlaying(!isPlaying)}
+            onOpenLineage={() => setIsLineageOpen(true)}
+            onJumpFirstDivergence={() => setIsDivergenceModalOpen(true)}
+            onLaunchRetry={() => setIsMicroPracticeOpen(true)}
+          />
+        )}
 
-        {/* Bottom Section: Quantitative Transmission Gain Hero Card */}
-        <TransmissionGainHero
-          telemetry={telemetry}
-          onOpenLineage={() => setIsLineageOpen(true)}
-        />
+        {currentView === 'transmission' && (
+          <TransmissionCompleteView
+            capCase={capCase}
+            onOpenLineage={() => setIsLineageOpen(true)}
+            onRestartCase={() => {
+              setCurrentTime(0.0);
+              setCurrentView('practice');
+            }}
+            onExploreMore={() => setCurrentView('discovery')}
+          />
+        )}
       </main>
 
-      {/* Footer / System Status Line */}
+      {/* Global Precision Instrument Footer */}
       <footer className="border-t border-outline bg-surface-dim px-6 py-3 text-[11px] font-mono text-on-surface-variant flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1.5 text-on-surface font-semibold">
@@ -122,7 +159,7 @@ export function App() {
             ANVESHAN CORE v1.0.0
           </span>
           <span className="text-outline">|</span>
-          <span>FIXTURE: transmission_case_001</span>
+          <span>CAPABILITY: {capCase.id}</span>
           <span className="text-outline">|</span>
           <span className="text-cadmium-amber">GOOGLE CLOUD AI BUILDER CUP 2026</span>
         </div>
@@ -134,31 +171,54 @@ export function App() {
           >
             VIEW PROVENANCE DAG
           </button>
-          <span>BUILD: PRODUCTION VERIFIED</span>
+          <span>FIXTURE: REPLAY VERIFIED // HONEST SPEC</span>
         </div>
       </footer>
 
-      {/* Lineage & Provenance Modal */}
+      {/* Forensic First Divergence Modal */}
+      <FirstDivergenceModal
+        capCase={capCase}
+        isOpen={isDivergenceModalOpen}
+        onClose={() => setIsDivergenceModalOpen(false)}
+        onLaunchMicroPractice={() => setIsMicroPracticeOpen(true)}
+      />
+
+      {/* Bounded Adaptive Micro-Practice Modal */}
+      <MicroPracticeRetryModal
+        capCase={capCase}
+        isOpen={isMicroPracticeOpen}
+        onClose={() => setIsMicroPracticeOpen(false)}
+        onCompleteRetry={handleCompleteRetry}
+      />
+
+      {/* Cryptographic Lineage & Merkle Provenance DAG Drawer */}
       <LineageDrawer
-        telemetry={telemetry}
+        telemetry={capCase.telemetry}
         isOpen={isLineageOpen}
         onClose={() => setIsLineageOpen(false)}
       />
 
-      {/* Upstream Lifecycle Stage Inspector (01. Source, 02. Knowledge, 03. Practice) */}
-      <LifecycleInspectorModal
-        stage={modalStage}
-        onClose={() => setModalStage(null)}
-        telemetry={telemetry}
-      />
-
-      {/* Google Stitch Generative Canvas Modal */}
+      {/* Google Stitch Reference Canvas Modal */}
       <StitchModal
         isOpen={isStitchOpen}
         onClose={() => setIsStitchOpen(false)}
       />
+
+      {/* Gemini Model Gateway Settings Modal */}
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        config={geminiConfig}
+        onSaveConfig={handleSaveConfig}
+      />
+
+      {/* Raw Stage Inspector Modal */}
+      <LifecycleInspectorModal
+        stage={modalStage}
+        onClose={() => setModalStage(null)}
+        telemetry={capCase.telemetry}
+      />
     </div>
   );
 }
-
 export default App;
