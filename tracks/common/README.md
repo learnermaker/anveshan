@@ -42,3 +42,13 @@ Live Gemini is never required for deterministic contract/replay tests.
 Do not reshape the eight contracts for convenience. If a genuine cross-track invariant is missing, open an issue, prove an adapter is insufficient, propose the smallest change, update tests/docs, and treat it as an explicit cross-track architecture decision.
 
 See CONTRACT-USAGE.md for detailed guidance.
+
+## Current prototype alignment — 2026-10-04
+
+The frontend now demonstrates an adaptive workspace compiler, first-divergence inspection, adaptive micro-practice, deterministic gain, and lineage. These are downstream uses of the frozen seam, not new contracts.
+
+The current workspace archetypes include Spatial Practice, Forensic Multimodal, Diagnostic, Rhythm, State Transition, Spatial Sequence, and First-Divergence workspaces. The common seam remains domain-agnostic.
+
+Runtime/epistemic states are also downstream concerns. Replay fixtures may be labeled REPLAY, SYNTHETIC, or ILLUSTRATIVE; live Gemini may be labeled LIVE. Never encode UI-only runtime state into the eight contracts.
+
+For target-first cases, EvidenceRef may point to a target image and its derived evidence. Visible target properties and inferred candidate procedures must remain distinguishable. The common seam does not assert creator intent or historical procedure.
