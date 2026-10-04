@@ -1766,7 +1766,7 @@ export const CAPABILITY_CASES: Record<string, CapabilityCase> = {
     archetype: 'Precision / Forensic Multimodal Evidence',
     transmissionMode: 'forward',
     shortDescription: 'Calibrated zero-setting, spindle wipe, and ratchet stop speeder torque-limiting measurement.',
-    expertName: 'Elena Rostova',
+    expertName: 'Reference Expert (Synthetic Fixture)',
     expertRole: 'Senior Metrology Specialist',
     learnerName: 'Marcus Vance',
     learnerBackground: 'Apprentice Toolmaker (Month 2)',
