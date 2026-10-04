@@ -32,7 +32,7 @@ Existing systems commonly specialize in one of the following:
 - cultural archiving
 - expert support
 
-Anveshan explores the intersection where authentic expert demonstration becomes source-grounded knowledge, adaptive teaching, learner practice, evidence-based verification, and lineage.
+Anveshan explores the intersection where an appropriate source becomes source-grounded knowledge, adaptive transmission, learner practice, evidence-based verification, and lineage. A source may be a demonstration, desired target state, learner attempt, or combination.
 
 ## 4. Target Users
 
@@ -113,7 +113,7 @@ Expert → Knowledge → Evidence → Lesson → Learner → Attempt → Feedbac
 4. AI extracts structured knowledge.
 5. Evidence links are created.
 6. Expert reviews and corrects the representation.
-7. A learner is given a source-grounded lesson.
+7. A learner is given a source-grounded transmission experience appropriate to the source mode.
 8. Learner performs a bounded practice task.
 9. Learner submits an attempt.
 10. Anveshan evaluates observable differences.
@@ -249,7 +249,9 @@ The MVP should be intentionally narrow.
 
 Required conceptual path:
 
-**One expert → one skill → one demonstration → one knowledge representation → one lesson → one learner → one attempt → one feedback loop → one improvement measurement → one transmission record.**
+**One accountable source → one bounded skill → one source-grounded representation → one learner → one attempt → one feedback loop → one improvement measurement → one transmission record.**
+
+The original expert-transfer wedge uses one real expert as the accountable source. Goal-conditioned and corrective source modes are documented research extensions.
 
 The exact domain and skill are not yet locked.
 
@@ -333,14 +335,15 @@ Stop, simplify, or pivot if:
 - Community control matters.
 - Transmission matters more than storage.
 - Human expertise remains authoritative within context.
+- Source evidence outranks generated explanation.
 - No fabricated authority.
-- Demonstration matters.
+- The interface should adapt to the reasoning problem.
 
 ## 16. Dependencies
 
 - authentic expert
 - authentic learner
-- authentic source media
+- authorized source evidence
 - suitable bounded skill
 - Gemini/Google AI capabilities
 - Google Cloud deployment
