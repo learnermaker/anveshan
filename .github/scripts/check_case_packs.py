@@ -7,7 +7,20 @@ atomic replay bundle.
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
+from tracks.common.schemas import (  # noqa: E402
+    Evaluation,
+    Feedback,
+    KnowledgePackage,
+    LearnerAttempt,
+    PracticeTask,
+    RubricDefinition,
+    TransmissionRecord,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 CASES = ROOT / "tracks" / "cases"
@@ -99,6 +112,25 @@ def main() -> int:
             failures.append(f"{case_id}: replay bundle missing {sorted(missing)}")
         if bundle.get("case_id") is None:
             failures.append(f"{case_id}: replay bundle missing case_id")
+        if manifest.get("bundle_case_id") != bundle.get("case_id"):
+            failures.append(f"{case_id}: manifest.bundle_case_id does not match replay bundle.case_id")
+
+        model_checks = [
+            ("knowledge_package", KnowledgePackage),
+            ("rubric", RubricDefinition),
+            ("practice_task", PracticeTask),
+            ("baseline_attempt", LearnerAttempt),
+            ("baseline_evaluation", Evaluation),
+            ("feedback", Feedback),
+            ("retry_attempt", LearnerAttempt),
+            ("retry_evaluation", Evaluation),
+            ("transmission_record", TransmissionRecord),
+        ]
+        for field_name, model in model_checks:
+            try:
+                model.model_validate(bundle[field_name])
+            except Exception as exc:
+                failures.append(f"{case_id}: {field_name} fails canonical validation: {exc}")
 
     if failures:
         print("CASE PACKS: FAIL")
