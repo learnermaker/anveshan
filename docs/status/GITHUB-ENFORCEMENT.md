@@ -1,38 +1,35 @@
-# GitHub Enforcement Configuration
+# GitHub Merge Enforcement
 
 ## Repository reality
 
-Anveshan is a **private repository on a GitHub personal Free account**.
+Anveshan is a private repository on a GitHub personal Free account. Do not depend on paid-only branch protection, rulesets, required reviews, or auto-merge.
 
-For private repositories, GitHub Free does not provide protected branches/branch rulesets or pull-request auto-merge; those capabilities are available for private repositories on paid plans. (Verified against current GitHub documentation.)
+## Canonical state
 
-Therefore the project must not depend on paid repository controls.
+`main` is the canonical latest integrated state.
 
-The repository contains agent-level and CI-level governance. GitHub repository administration must additionally enforce the merge boundary.
+Short-lived branches are implementation workspaces, not alternate product states. Completed work should move through PR → CI → merge promptly.
 
-## What remains manual
+## Minimum path
 
-Only controls that GitHub Free/private cannot enforce remain manual:
+**Issue → branch → implementation → validation → PR → merge → verify main**
 
-- final human merge into `main`;
-- product-scope decisions;
-- architectural conflict resolution;
-- acceptance of scope trades.
+An agent may stop before merge only when:
 
-This is intentional. Do not create ceremonies to compensate for unavailable GitHub features.
+- the user explicitly asked to wait for review;
+- a genuine product/architecture/security decision remains unresolved;
+- a real merge conflict or dependency makes merging unsafe;
+- required validation is failing or unavailable;
+- the agent lacks permission to merge.
 
-## Agent operating model
+If the agent lacks merge permission, that is an explicit tooling/permission blocker, not a normal workflow stage.
 
-Normal path:
+## Operating rule
 
-**Issue → short-lived branch → implementation → PR → CI → human merge**
+After a PR is green and acceptance criteria are satisfied, merge it when permitted. Then verify that `main` contains the intended change.
 
-Agents must not intentionally push directly to `main` as part of normal development.
+The purpose of the workflow is not to accumulate open PRs. It is to keep `main` as the latest known-good integrated baseline for parallel work.
 
 ## Principle
 
-AGENTS.md governs agent behavior, issue forms standardize work intake, CODEOWNERS identifies ownership, and CI validates machine-checkable invariants. Under the current GitHub plan, the final merge boundary is human discipline rather than paid branch protection.
-
-## Current repository owner
-
-@learnermaker
+Use automation and GitHub as the coordination system. Do not add meetings, ceremonies, or manual handoffs that do not protect a real decision boundary or improve product progress.
