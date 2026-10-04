@@ -2,6 +2,12 @@
  * Anveshan Multimodal Capability Cases Registry
  * Houses the 7 canonical capability cases representing diverse multimodal reasoning archetypes.
  * Each case is strictly grounded in the 8-contract common seam and includes declarative workspace specifications.
+ *
+ * Transitional ownership rule:
+ * - Canonical case content lives in tracks/cases/<case_id>/.
+ * - This file is a downstream UI projection and may contain UI-only workspace/telemetry
+ *   configuration, but must not silently diverge from the canonical case-pack bundle.
+ * - Origami presentation assets are UI assets only; they are never evidence of expert provenance.
  */
 
 import { canonicalBundle, normalizeTransmissionBundle } from '../adapter';
