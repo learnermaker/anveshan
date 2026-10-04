@@ -13,6 +13,9 @@ from pathlib import Path
 from typing import Union, get_args, get_origin
 
 ROOT = Path(__file__).resolve().parents[2]
+import sys
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 TS_PATH = ROOT / "app" / "src" / "types" / "contracts.ts"
 
 MODEL_MAP = {
