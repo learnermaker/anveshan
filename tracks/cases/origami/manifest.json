@@ -7,12 +7,12 @@
   "archetype": "sequential-spatial-transformation",
   "workspace_type": "fold_sequence",
   "transmission_mode": "forward",
-  "source_posture": "synthetic_replay",
-  "epistemic_status": "REPLAY_FIXTURE_NOT_AUTHENTIC_VALIDATION",
-  "data_status": "prototype_replay",
-  "pack_version": "1.0",
-  "case_version": "1.0",
-  "status": "ENGINEERING_FIXTURE",
+  "source_posture": "external_source_plus_replay_fixture",
+  "epistemic_status": "EXTERNAL_SOURCE_AVAILABLE_REPLAY_NOT_AUTHENTIC_VALIDATION",
+  "data_status": "external_source_catalogued_replay_bundle",
+  "pack_version": "1.1",
+  "case_version": "1.1",
+  "status": "AUTHENTIC_SOURCE_READY",
   "source_mode": "FORWARD",
   "runtime_class": "REPLAY"
 }
