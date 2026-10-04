@@ -46,7 +46,7 @@ export const LifecycleInspectorModal: React.FC<LifecycleInspectorModalProps> = (
                 STAGE {stage === 'source' ? '01: CAPTURE & CONSENT' : stage === 'knowledge' ? '02: GROUNDED KNOWLEDGE PACKAGE' : '03: PRACTICE TASK SPECIFICATION'}
               </div>
               <div className="text-xs font-sans text-on-surface-variant">
-                Upstream authentic evidence feeding the transmission instrument
+                Upstream source evidence feeding the transmission instrument
               </div>
             </div>
           </div>
@@ -119,13 +119,13 @@ export const LifecycleInspectorModal: React.FC<LifecycleInspectorModalProps> = (
                     REVIEW METADATA:
                   </div>
                   <div className="text-xs font-medium text-on-surface">
-                    Reviewer: {kp.expert_review.reviewer_name}
+                    Reviewer: {kp.expert_review?.reviewer_name ?? 'Not supplied'}
                   </div>
                   <div className="text-[11px] text-transmission-emerald font-mono">
-                    STATUS: {kp.expert_review.status.toUpperCase()}
+                    STATUS: {(kp.expert_review?.status ?? 'not supplied').toUpperCase()}
                   </div>
                   <div className="text-[10px] font-sans text-on-surface-variant">
-                    &ldquo;{kp.expert_review.notes}&rdquo;
+                    &ldquo;{kp.expert_review?.notes ?? 'No human review note is present in this replay fixture.'}&rdquo;
                   </div>
                 </div>
               </div>
