@@ -1,14 +1,15 @@
 """Validate the cross-track capability case-pack layer.
 
 Case packs are data, not a new contract seam. This check enforces stable IDs,
-predictable pack structure, manifest/index parity, and the presence of an
-atomic replay bundle.
+predictable pack structure, manifest/index parity, canonical manifest metadata,
+and the presence of an atomic replay bundle.
 """
 from __future__ import annotations
 
 import json
 import sys
 from pathlib import Path
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
@@ -25,21 +26,8 @@ from tracks.common.schemas import (  # noqa: E402
 ROOT = Path(__file__).resolve().parents[2]
 CASES = ROOT / "tracks" / "cases"
 INDEX = CASES / "index.json"
+MANIFEST_SCHEMA = CASES / "manifest.schema.json"
 
-REQUIRED_MANIFEST = {
-    "schema_version",
-    "case_id",
-    "title",
-    "domain",
-    "archetype",
-    "workspace_type",
-    "transmission_mode",
-    "source_posture",
-    "epistemic_status",
-    "data_status",
-    "pack_version",
-    "bundle_case_id",
-}
 REQUIRED_BUNDLE = {
     "case_id",
     "domain",
@@ -56,14 +44,86 @@ REQUIRED_BUNDLE = {
 }
 
 
+def validate_manifest(manifest: dict[str, Any], case_id: str, schema: dict[str, Any]) -> list[str]:
+    """Validate the manifest subset needed by the repository's case-pack gate.
+
+    This intentionally implements the small JSON-Schema subset used by the
+    canonical manifest schema without adding a runtime dependency on a schema
+    library. The schema remains the single source of truth for vocabulary.
+    """
+    failures: list[str] = []
+    required = schema.get("required", [])
+    missing = sorted(set(required) - set(manifest))
+    if missing:
+        failures.append(f"{case_id}: manifest missing {missing}")
+
+    properties = schema.get("properties", {})
+    unknown = sorted(set(manifest) - set(properties))
+    if unknown:
+        failures.append(f"{case_id}: manifest has unknown field(s) {unknown}")
+
+    for field, definition in properties.items():
+        if field not in manifest:
+            continue
+        value = manifest[field]
+        expected_type = definition.get("type")
+        if expected_type == "string" and not isinstance(value, str):
+            failures.append(f"{case_id}: manifest.{field} must be a string")
+            continue
+        if isinstance(value, str):
+            if "minLength" in definition and len(value) < definition["minLength"]:
+                failures.append(f"{case_id}: manifest.{field} must not be empty")
+            if "pattern" in definition:
+                import re
+                if not re.fullmatch(definition["pattern"], value):
+                    failures.append(f"{case_id}: manifest.{field} has invalid format: {value!r}")
+        if "const" in definition and value != definition["const"]:
+            failures.append(
+                f"{case_id}: manifest.{field}={value!r} must equal {definition['const']!r}"
+            )
+        if "enum" in definition and value not in definition["enum"]:
+            allowed = ", ".join(repr(item) for item in definition["enum"])
+            failures.append(
+                f"{case_id}: manifest.{field}={value!r} is invalid; allowed values: {allowed}; "
+                f"source: tracks/cases/manifest.schema.json"
+            )
+
+    if manifest.get("case_id") != case_id:
+        failures.append(f"{case_id}: manifest.case_id mismatch")
+
+    if manifest.get("runtime_class") == "REPLAY" and manifest.get("status") == "AUTHENTIC_SOURCE_READY":
+        failures.append(
+            f"{case_id}: manifest status AUTHENTIC_SOURCE_READY contradicts runtime_class REPLAY; "
+            "replay is not authentic expert validation"
+        )
+
+    if manifest.get("status") == "AUTHENTIC_SOURCE_READY":
+        if manifest.get("source_posture") != "authentic_expert":
+            failures.append(
+                f"{case_id}: status AUTHENTIC_SOURCE_READY requires "
+                "source_posture=authentic_expert"
+            )
+        if manifest.get("runtime_class") == "REPLAY":
+            failures.append(
+                f"{case_id}: status AUTHENTIC_SOURCE_READY requires a non-REPLAY runtime class"
+            )
+
+    return failures
+
+
 def main() -> int:
     failures: list[str] = []
     if not INDEX.exists():
         failures.append("missing tracks/cases/index.json")
         print("\n".join(failures))
         return 1
+    if not MANIFEST_SCHEMA.exists():
+        failures.append("missing tracks/cases/manifest.schema.json")
+        print("\n".join(failures))
+        return 1
 
     index = json.loads(INDEX.read_text(encoding="utf-8"))
+    schema = json.loads(MANIFEST_SCHEMA.read_text(encoding="utf-8"))
     ids = index.get("cases")
     if not isinstance(ids, list) or not ids or not all(isinstance(x, str) for x in ids):
         failures.append("index.json: cases must be a non-empty string list")
@@ -94,13 +154,7 @@ def main() -> int:
             continue
 
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        missing = REQUIRED_MANIFEST - set(manifest)
-        if missing:
-            failures.append(f"{case_id}: manifest missing {sorted(missing)}")
-        if manifest.get("case_id") != case_id:
-            failures.append(f"{case_id}: manifest.case_id mismatch")
-        if manifest.get("source_posture") not in {"synthetic_replay", "external_reference", "owned_source", "authentic_expert"}:
-            failures.append(f"{case_id}: invalid source_posture")
+        failures.extend(validate_manifest(manifest, case_id, schema))
 
         if not bundle_path.exists():
             failures.append(f"{case_id}: missing replay/bundle.json")

@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/learnermaker/anveshan/tracks/cases/manifest.schema.json",
+  "title": "Anveshan Capability Case Pack Manifest",
+  "description": "Canonical vocabulary and shape for tracks/cases/*/manifest.json. This is case-pack metadata, not one of the eight shared runtime contracts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "case_id",
+    "bundle_case_id",
+    "title",
+    "domain",
+    "archetype",
+    "workspace_type",
+    "transmission_mode",
+    "source_posture",
+    "epistemic_status",
+    "data_status",
+    "pack_version",
+    "case_version",
+    "status",
+    "source_mode",
+    "runtime_class"
+  ],
+  "properties": {
+    "schema_version": {"type": "string", "const": "1.0"},
+    "case_id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "bundle_case_id": {"type": "string", "minLength": 1},
+    "title": {"type": "string", "minLength": 1},
+    "domain": {"type": "string", "minLength": 1},
+    "archetype": {"type": "string", "minLength": 1},
+    "workspace_type": {"type": "string", "minLength": 1},
+    "transmission_mode": {"enum": ["forward", "goal-conditioned", "corrective"]},
+    "source_posture": {"enum": ["synthetic_replay", "external_reference", "owned_source", "authentic_expert"]},
+    "epistemic_status": {"enum": ["REPLAY_FIXTURE_NOT_AUTHENTIC_VALIDATION", "EXTERNAL_SOURCE_AVAILABLE_REPLAY_NOT_AUTHENTIC_VALIDATION"]},
+    "data_status": {"enum": ["prototype_replay", "external_source_catalogued_replay_bundle"]},
+    "pack_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+$"},
+    "case_version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+$"},
+    "status": {"enum": ["ENGINEERING_FIXTURE", "AUTHENTIC_SOURCE_READY"]},
+    "source_mode": {"enum": ["FORWARD", "GOAL_CONDITIONED", "CORRECTIVE"]},
+    "runtime_class": {"enum": ["REPLAY"]}
+  },
+  "x-semantic-rules": [
+    "runtime_class=REPLAY must not use status=AUTHENTIC_SOURCE_READY",
+    "status=AUTHENTIC_SOURCE_READY requires source_posture=authentic_expert and a non-REPLAY runtime class"
+  ]
+}

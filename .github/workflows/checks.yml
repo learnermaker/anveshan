@@ -25,7 +25,7 @@ jobs:
       - name: Check capability case-pack structure
         run: python .github/scripts/check_case_packs.py
 
-      - name: Check canonical Python -> UI contract parity
+      - name: Test case-pack manifest validation\n        run: python -m pytest .github/scripts/test_check_case_packs.py\n\n      - name: Check canonical Python -> UI contract parity
         run: python .github/scripts/check_contract_parity.py
 
       - name: Run common contract tests
