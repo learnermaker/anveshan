@@ -73,3 +73,6 @@ npm run build
 npm run audit:devtools
 ```
 
+
+
+> **Replay boundary:** current fixture identities, consent metadata, review state, scores, and provenance displays are engineering fixtures unless explicitly replaced by authorized real evidence.
