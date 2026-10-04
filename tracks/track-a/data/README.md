@@ -1,17 +1,13 @@
-# Track A Case Data
+# Track A — Track-Local Data
 
-Case data is organized as:
+Canonical capability case content lives in:
 
-    data/
-    └── cases/
-        └── <case_id>/
-            ├── manifest.json
-            ├── source/
-            ├── expected/
-            └── metadata/
+    tracks/cases/<case_id>/
 
-Use the shared rules in tracks/common/CASE-DATA-CONVENTIONS.md and tracks/common/MODEL-GATEWAY-CONVENTIONS.md.
+Use the shared rules in `tracks/common/CASE-DATA-CONVENTIONS.md` and `tracks/common/MODEL-GATEWAY-CONVENTIONS.md`.
 
-No bounded domain is preselected. Do not create a fake real case just to populate this directory. Synthetic fixtures belong in fixtures/ and must be labeled accordingly.
+Track A `data/` is reserved for implementation-specific intermediate fixtures, adapter outputs, and metadata that should not become part of the shared case pack.
 
-For a shared implementation-ready case, `tracks/cases/<case_id>/manifest.json` is the entry point. Track-local `data/` is reserved for implementation-specific fixtures and metadata.
+Do not create a duplicate case manifest, rubric, practice task, or replay bundle here. Reference the canonical `case_id` under `tracks/cases/`.
+
+No bounded domain is authorized merely by creating local fixture files. Synthetic/replay fixtures are engineering scaffolding and must be labeled accordingly.
