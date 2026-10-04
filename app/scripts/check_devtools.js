@@ -1,13 +1,18 @@
 import puppeteer from 'puppeteer-core';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 const URL = 'http://localhost:5173';
 
 // Generate filesystem-safe ISO timestamp: YYYY-MM-DDTHH-mm-ssZ
 const runTimestamp = new Date().toISOString().replace(/:/g, '-').replace(/\..+/, '') + 'Z';
-const BASE_SCREENSHOT_DIR = path.resolve('screenshots');
+// Always target root/screenshots directory
+const BASE_SCREENSHOT_DIR = path.resolve(__dirname, '../../screenshots');
 const RUN_DIR = path.join(BASE_SCREENSHOT_DIR, 'runs', runTimestamp);
 const LATEST_DIR = path.join(BASE_SCREENSHOT_DIR, 'latest');
 
