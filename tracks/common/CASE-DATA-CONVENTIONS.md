@@ -12,7 +12,7 @@ Do not introduce a database, service, or shared runtime merely to satisfy this c
 
 **Canonical shared case content lives in `tracks/cases/<case_id>/`.**
 
-Each case pack has a predictable cross-track layout:
+Each case pack uses the same predictable structure:
 
     tracks/cases/
     ├── index.json
@@ -24,12 +24,12 @@ Each case pack has a predictable cross-track layout:
         ├── replay/
         └── media/
 
-The case pack is shared by Track A and Track B. Do not duplicate the same case definition under both tracks.
+The case pack is cross-track content. Track A and Track B consume it; neither owns a duplicate copy.
 
 Track-local data may still exist when it is genuinely implementation-specific:
 
-    tracks/track-a/data/   # Track A-only intermediate fixtures/adapters/tests
-    tracks/track-b/data/   # Track B-only learner/evaluation fixtures
+    tracks/track-a/data/   # Track-A-only intermediate fixtures/adapters/tests
+    tracks/track-b/data/   # Track-B-only learner/evaluation fixtures
 
 Track-local data must reference the canonical `case_id` and must not silently redefine the shared case manifest, rubric, practice task, or replay bundle.
 
@@ -37,7 +37,7 @@ Only create subdirectories a track actually needs. Empty directories do not need
 
 ## 3. Case manifest
 
-Every executable case pack must have `tracks/cases/<case_id>/manifest.json` with at least:
+Every implementation-ready case pack must have `tracks/cases/<case_id>/manifest.json` with at least:
 
     case_id: <stable semantic slug>
     case_version: <version>
@@ -46,11 +46,10 @@ Every executable case pack must have `tracks/cases/<case_id>/manifest.json` with
     runtime_class: LIVE | REPLAY | SYNTHETIC | ILLUSTRATIVE
     domain: <domain-or-null-before-selection>
     skill: <skill-or-null-before-selection>
-    description/title: <short bounded purpose>
 
 The manifest is the case entry point. Agents must not infer validation status from a directory name alone.
 
-`tracks/cases/index.json` is the discovery registry. Add a case there when a new case pack is introduced.
+`tracks/cases/index.json` is the discovery registry. Add the case there when a new case pack is introduced.
 
 ## 4. Artifact identity and versioning
 
