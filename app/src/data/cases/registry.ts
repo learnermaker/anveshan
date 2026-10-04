@@ -2008,6 +2008,10 @@ export const CAPABILITY_CASES: Record<string, CapabilityCase> = {
 export const ALL_CAPABILITY_IDS = Object.keys(CAPABILITY_CASES);
 export const DEFAULT_CASE_ID = 'micrometer';
 
+export function hasCapabilityCase(id: string): boolean {
+  return Object.prototype.hasOwnProperty.call(CAPABILITY_CASES, id);
+}
+
 export function getCapabilityCase(id: string): CapabilityCase {
   return CAPABILITY_CASES[id] ?? CAPABILITY_CASES[DEFAULT_CASE_ID];
 }
