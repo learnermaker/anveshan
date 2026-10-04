@@ -45,7 +45,7 @@ export const RubricHUD: React.FC<RubricHUDProps> = ({
               RUBRIC HUD // 8-CONTRACT SEAM
             </div>
             <div className="text-[10px] font-sans text-on-surface-variant">
-              RUBRIC-OPT-001 (ISO 3611 / JIS B 7502)
+              RUBRIC-OPT-001 • REPLAY FIXTURE STANDARD
             </div>
           </div>
         </div>
@@ -202,7 +202,7 @@ export const RubricHUD: React.FC<RubricHUDProps> = ({
                     <div className="bg-transmission-emerald/5 p-2 rounded border border-transmission-emerald/20">
                       <div className="font-mono text-[10px] text-transmission-emerald font-bold flex items-center gap-1 mb-1">
                         <CheckCircle2 className="w-3 h-3" />
-                        VERIFIED RETRY OBSERVATION:
+                        REPLAY RETRY OBSERVATION:
                       </div>
                       <p className="text-on-surface-variant font-sans">
                         {c.retryNotes}
