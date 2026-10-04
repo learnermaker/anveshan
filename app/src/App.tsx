@@ -171,7 +171,7 @@ export function App() {
           >
             VIEW PROVENANCE DAG
           </button>
-          <span>FIXTURE: REPLAY VERIFIED // HONEST SPEC</span>
+          <span>FIXTURE: REPLAY DATA // DETERMINISTIC CHECKS</span>
         </div>
       </footer>
 
