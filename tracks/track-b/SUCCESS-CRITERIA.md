@@ -517,3 +517,56 @@ Track B is correctly done when an independent reviewer can take the selected bou
 - Does the result demonstrate knowledge transmission rather than merely tutoring?
 
 That is the minimum bar for Track B to claim **READY FOR INTEGRATION**, not merely “tests pass.”
+
+
+## 20. Current prototype / adaptive transmission context
+
+The current prototype makes the evaluation loop visible through capability-specific workspaces. Track B does not own the UI, but its validated outputs must remain sufficient for a downstream adapter to compose those views.
+
+### Capability-specific evaluation views
+
+| Capability | Workspace | Evaluation emphasis |
+|---|---|---|
+| Kolam | Spatial Practice Canvas | target geometry, topology, symmetry, trajectory |
+| Micrometer | Forensic Transmission Instrument | synchronized visual/audio/numeric evidence |
+| Bicycle repair | Diagnostic Workspace | state → diagnosis → corrective sequence |
+| Tabla | Rhythm Practice Instrument | onset/timing/acoustic alignment |
+| Weaving | State Transition Workspace | discrete material-state transitions |
+| Origami | Spatial Sequence Workspace | ordered fold/state transformations |
+| Knot | First-Divergence Workspace | topology, first divergence, load behavior |
+
+These are capability archetypes, not separate evaluation engines. Domain-specific observation logic belongs in explicit adapters/fixtures; common evaluation remains criterion-first.
+
+### First-divergence inspector
+
+The downstream UI may expose a first-divergence inspector. Track B should preserve enough validated information to reconstruct:
+
+- criterion ID and rubric description;
+- learner evidence locator;
+- observed finding;
+- model-assisted interpretation when present;
+- deterministic consequence/criterion status;
+- uncertainty or insufficient evidence;
+- feedback/corrective action.
+
+Do not store presentation copy as the authoritative finding.
+
+### Adaptive micro-practice
+
+If a criterion is the first meaningful divergence, a bounded retry may focus on that criterion. The retry remains a normal PracticeTask/LearnerAttempt/Evaluation flow; do not create a UI-specific retry contract.
+
+### Replay honesty
+
+The current prototype deliberately distinguishes replay fixtures from live Gemini. Track B must preserve that distinction in test metadata and handoff documentation. A deterministic replay may prove scoring/retry mechanics, but it does not prove that a real learner acquired a real-world skill.
+
+### Goal-conditioned evaluation
+
+For target-first cases such as Kolam, the rubric should evaluate observable target properties. If the system proposes a candidate construction path, that path is an inference and must not become hidden ground truth unless independently validated.
+
+### Demo result semantics
+
+A result surface may report:
+
+baseline → retry → deterministic gain → criteria improved → lineage
+
+For replay, describe this as a replay/configured-rubric result. Do not use the result to imply certification, mastery, or verified real-world transfer.
