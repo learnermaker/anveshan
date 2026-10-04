@@ -5,48 +5,84 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const CHROME_PATH =
+  process.env.CHROME_PATH ||
+  (process.platform === 'win32'
+    ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+    : '/usr/bin/google-chrome');
+const URL = process.env.ANVESHAN_URL || 'http://localhost:5173';
 
-const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
-const URL = 'http://localhost:5173';
-
-// Generate filesystem-safe ISO timestamp: YYYY-MM-DDTHH-mm-ssZ
 const runTimestamp = new Date().toISOString().replace(/:/g, '-').replace(/\..+/, '') + 'Z';
-// Always target root/screenshots directory
 const BASE_SCREENSHOT_DIR = path.resolve(__dirname, '../../screenshots');
 const RUN_DIR = path.join(BASE_SCREENSHOT_DIR, 'runs', runTimestamp);
 const LATEST_DIR = path.join(BASE_SCREENSHOT_DIR, 'latest');
-
 fs.mkdirSync(RUN_DIR, { recursive: true });
 fs.mkdirSync(LATEST_DIR, { recursive: true });
+
+const assertions = [];
+
+function assertState(condition, message) {
+  assertions.push({ message, passed: Boolean(condition) });
+  if (!condition) throw new Error(message);
+}
+
+async function clickByText(page, text, label = text) {
+  const clicked = await page.evaluate((needle) => {
+    const button = Array.from(document.querySelectorAll('button, a')).find((el) =>
+      el.innerText.includes(needle)
+    );
+    if (!button) return false;
+    button.click();
+    return true;
+  }, text);
+  assertState(clicked, `Missing actionable control: ${label}`);
+}
+
+async function assertBodyContains(page, text, label = text) {
+  const body = await page.$eval('body', (el) => el.innerText);
+  assertState(body.includes(text), `Expected UI state "${label}" containing "${text}"`);
+}
+
+async function selectCaseAndAssert(page, caseId, workspaceTitle) {
+  const selected = await page.$eval(
+    'select',
+    (el, value) => {
+      const select = el;
+      select.value = value;
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+      return select.value;
+    },
+    caseId
+  );
+  assertState(selected === caseId, `Case selector rejected canonical case ID "${caseId}"`);
+  await page.waitForTimeout(500);
+
+  const actualSelected = await page.$eval('select', (el) => el.value);
+  assertState(
+    actualSelected === caseId,
+    `Case transition failed: expected "${caseId}", got "${actualSelected}"`
+  );
+  // Workspace identity is asserted at the point the workspace is expected to be rendered.
+}
 
 async function saveScreenshot(page, baseName, options = {}) {
   const timestampedFileName = `${baseName}_${runTimestamp}.png`;
   const runPath = path.join(RUN_DIR, timestampedFileName);
   const latestPath = path.join(LATEST_DIR, `${baseName}.png`);
-
   await page.screenshot({ path: runPath, ...options });
   fs.copyFileSync(runPath, latestPath);
-  console.log(`Screenshot saved:`);
-  console.log(`  ├─ Timestamped: ${runPath}`);
-  console.log(`  └─ Latest:      ${latestPath}`);
   return { runPath, latestPath, baseName, timestampedFileName };
 }
 
 async function runDevToolsAudit() {
-  console.log('====================================================');
-  console.log(`ANVESHAN // COMPREHENSIVE DEVTOOLS AUDIT [${runTimestamp}]`);
-  console.log('====================================================');
-  console.log(`Connecting Chrome executable: ${CHROME_PATH}`);
-
+  console.log(`ANVESHAN // STATEFUL DEVTOOLS AUDIT [${runTimestamp}]`);
   const browser = await puppeteer.launch({
     executablePath: CHROME_PATH,
     headless: 'new',
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1920,1080'],
     defaultViewport: { width: 1920, height: 1080 },
   });
-
   const page = await browser.newPage();
-
   const consoleLogs = [];
   const consoleErrors = [];
   const pageErrors = [];
@@ -54,281 +90,137 @@ async function runDevToolsAudit() {
   const loadedResources = [];
   const savedScreenshots = [];
 
-  // 1. Hook Chrome DevTools Console Listener
   page.on('console', (msg) => {
-    const type = msg.type();
-    const text = msg.text();
-    consoleLogs.push({ type, text, location: msg.location() });
-
-    if (type === 'error') {
-      consoleErrors.push({ text, location: msg.location() });
-      console.error(`[CDP CONSOLE ERROR] ${text}`);
-    } else if (type === 'warning') {
-      console.warn(`[CDP CONSOLE WARN] ${text}`);
-    }
+    const entry = { type: msg.type(), text: msg.text(), location: msg.location() };
+    consoleLogs.push(entry);
+    if (msg.type() === 'error') consoleErrors.push(entry);
   });
-
-  // 2. Hook Uncaught Page Exceptions
-  page.on('pageerror', (err) => {
-    pageErrors.push({ message: err.message, stack: err.stack });
-    console.error(`[CDP UNCAUGHT EXCEPTION] ${err.message}`);
-  });
-
-  // 3. Hook Network Interceptor
+  page.on('pageerror', (err) => pageErrors.push({ message: err.message, stack: err.stack }));
   page.on('requestfailed', (req) => {
     const failure = req.failure();
-    const url = req.url();
-    failedRequests.push({ url, method: req.method(), errorText: failure ? failure.errorText : 'Unknown' });
-    console.error(`[CDP NETWORK FAIL] ${req.method()} ${url} -> ${failure ? failure.errorText : 'FAILED'}`);
+    failedRequests.push({
+      url: req.url(),
+      method: req.method(),
+      errorText: failure?.errorText || 'FAILED',
+    });
   });
-
   page.on('response', (res) => {
-    const status = res.status();
-    const url = res.url();
-    loadedResources.push({ url, status, type: res.request().resourceType() });
-    if (status >= 400) {
-      console.error(`[CDP HTTP ${status}] ${url}`);
-      failedRequests.push({ url, method: res.request().method(), status, errorText: `HTTP ${status}` });
+    loadedResources.push({ url: res.url(), status: res.status(), type: res.request().resourceType() });
+    if (res.status() >= 400) {
+      failedRequests.push({
+        url: res.url(),
+        method: res.request().method(),
+        status: res.status(),
+        errorText: `HTTP ${res.status()}`,
+      });
     }
   });
 
-  console.log(`Navigating to ${URL}...`);
-  const navStart = performance.now();
   await page.goto(URL, { waitUntil: 'networkidle0', timeout: 30000 });
-  const navDuration = Math.round(performance.now() - navStart);
-  console.log(`Navigation complete in ${navDuration}ms.`);
+  await assertBodyContains(page, 'ANVESHAN', 'application shell');
 
-  // 4. Verify Core DOM Elements
-  console.log('\n--- VERIFYING CORE DOM ELEMENTS ---');
-  const title = await page.title();
-  console.log(`Page Title: "${title}"`);
+  savedScreenshots.push(await saveScreenshot(page, '01_landing_discovery', { fullPage: true }));
 
-  const headerBrand = await page.$eval('header', (el) => el.innerText);
-  console.log(`Header Mounted: ${headerBrand.includes('ANVESHAN') ? 'PASS' : 'FAIL'}`);
+  // Kolam: lifecycle path and modal state assertions.
+  await selectCaseAndAssert(page, 'kolam', 'Spatial Practice Canvas');
+  await clickByText(page, '01.', 'SOURCE stage');
+  await page.waitForTimeout(300);
+  await assertBodyContains(page, 'SOURCE', 'Kolam source stage');
+  savedScreenshots.push(await saveScreenshot(page, '02_source_grounding_kolam', { fullPage: true }));
 
-  const hasHeadline = await page.$eval('h1', (el) => el.innerText);
-  console.log(`Landing Headline: "${hasHeadline}"`);
+  await clickByText(page, 'COMPOSE ADAPTIVE WORKSPACE', 'adaptive workspace');
+  await page.waitForTimeout(300);
+  await assertBodyContains(page, 'Spatial Practice Canvas', 'Kolam practice workspace');
+  savedScreenshots.push(await saveScreenshot(page, '03_adaptive_workspace_kolam', { fullPage: true }));
 
-  const images = await page.$$eval('img', (imgs) =>
-    imgs.map((img) => ({ src: img.src, complete: img.complete, naturalWidth: img.naturalWidth }))
-  );
-  console.log(`Images Verified on Page (${images.length}): all loaded = ${images.every((i) => i.complete && i.naturalWidth > 0)}`);
+  await clickByText(page, 'JUMP TO FIRST DIVERGENCE', 'first divergence');
+  await page.waitForTimeout(300);
+  await assertBodyContains(page, 'FIRST DIVERGENCE', 'first-divergence modal');
+  savedScreenshots.push(await saveScreenshot(page, '04_first_divergence_modal'));
 
-  // 5. CAPTURING COMPREHENSIVE 15-SCREEN GALLERY IN EXACT PRODUCT LIFECYCLE ORDER
-  console.log('\n--- CAPTURING COMPREHENSIVE SCREEN GALLERY (CHRONOLOGICAL LIFECYCLE ORDER) ---');
+  await clickByText(page, 'LAUNCH TARGETED RETRY', 'targeted retry');
+  await page.waitForTimeout(300);
+  await assertBodyContains(page, 'MICRO-PRACTICE', 'micro-practice modal');
+  savedScreenshots.push(await saveScreenshot(page, '05_micropractice_modal'));
 
-  // Screen 1: Discovery / Capability Portfolio Landing (Stage 00)
-  console.log('\n[Screen 1/15] Capturing 00. PORTFOLIO & Discovery Landing View...');
-  const ss1 = await saveScreenshot(page, '01_landing_discovery', { fullPage: true });
-  savedScreenshots.push(ss1);
+  await clickByText(page, 'Continuous Orbital Convex Arc', 'retry correction');
+  await page.waitForTimeout(200);
+  await clickByText(page, 'SUBMIT VERIFIED RETRY', 'verified retry');
+  await page.waitForTimeout(400);
+  await assertBodyContains(page, 'TRANSMISSION', 'transmission result');
+  savedScreenshots.push(await saveScreenshot(page, '06_transmission_complete_kolam', { fullPage: true }));
 
-  // Screen 2: Stage 01 Source & Grounding (Kolam Case)
-  console.log('\n[Screen 2/15] Navigating to Kolam -> 01. SOURCE & Grounding...');
+  await clickByText(page, 'PROVENANCE DAG', 'provenance DAG');
+  await page.waitForTimeout(300);
+  await assertBodyContains(page, 'PROVENANCE', 'lineage/provenance drawer');
+  savedScreenshots.push(await saveScreenshot(page, '07_lineage_dag'));
   await page.evaluate(() => {
-    const sel = document.querySelector('select');
-    if (sel) {
-      sel.value = 'kolam';
-      sel.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-    const sourceBtn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('01.') && b.innerText.includes('SOURCE'));
-    if (sourceBtn) sourceBtn.click();
+    const button = Array.from(document.querySelectorAll('button')).find((b) => b.querySelector('svg.lucide-x'));
+    if (button) button.click();
   });
-  await new Promise((r) => setTimeout(r, 600));
-  const ss2 = await saveScreenshot(page, '02_source_grounding_kolam', { fullPage: true });
-  savedScreenshots.push(ss2);
+  await page.waitForTimeout(200);
 
-  // Screen 3: Adaptive Spatial Practice Canvas (Kolam Case, Stage 02)
-  console.log('\n[Screen 3/15] Composing Adaptive Spatial Practice Canvas for Kolam...');
+  const cases = [
+    ['micrometer', 'Forensic Transmission Instrument', '08_workbench_micrometer'],
+    ['bicycle_repair', 'Diagnostic Workspace', '09_diagnostic_workspace_bike'],
+    ['tabla', 'Rhythm Practice Instrument', '10_rhythm_workspace_tabla'],
+    ['weaving', 'State Transition Workspace', '11_state_transition_weaving'],
+    ['origami', 'Spatial Sequence Workspace', '12_spatial_sequence_origami'],
+    ['square_knot', 'First-Divergence Workspace', '13_first_divergence_knot'],
+  ];
+  for (const [caseId, workspaceTitle, screenshotName] of cases) {
+    await selectCaseAndAssert(page, caseId, workspaceTitle);
+    await assertBodyContains(page, workspaceTitle, \`${caseId} -> ${workspaceTitle}\`);
+    savedScreenshots.push(await saveScreenshot(page, screenshotName, { fullPage: true }));
+  }
+
+  await clickByText(page, 'STITCH CANVAS', 'Stitch canvas');
+  await page.waitForTimeout(300);
+  await assertBodyContains(page, 'STITCH', 'Stitch modal');
+  savedScreenshots.push(await saveScreenshot(page, '14_stitch_canvas_modal'));
   await page.evaluate(() => {
-    const practiceBtn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('COMPOSE ADAPTIVE WORKSPACE') || (b.innerText.includes('02.') && b.innerText.includes('PRACTICE')));
-    if (practiceBtn) practiceBtn.click();
+    const button = Array.from(document.querySelectorAll('button')).find((b) => b.querySelector('svg.lucide-x'));
+    if (button) button.click();
   });
-  await new Promise((r) => setTimeout(r, 600));
-  const ss3 = await saveScreenshot(page, '03_adaptive_workspace_kolam', { fullPage: true });
-  savedScreenshots.push(ss3);
+  await page.waitForTimeout(200);
 
-  // Screen 4: First Divergence Modal (Kolam Case)
-  console.log('\n[Screen 4/15] Opening Forensic First Divergence Modal (Dot 3,4)...');
+  const settingsButton = await page.$('header button');
+  assertState(Boolean(settingsButton), 'Settings control is mounted');
   await page.evaluate(() => {
-    const btn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('JUMP TO FIRST DIVERGENCE'));
-    if (btn) btn.click();
+    const button = Array.from(document.querySelectorAll('header button')).find((b) =>
+      b.querySelector('svg.lucide-settings')
+    );
+    if (button) button.click();
   });
-  await new Promise((r) => setTimeout(r, 600));
-  const ss4 = await saveScreenshot(page, '04_first_divergence_modal');
-  savedScreenshots.push(ss4);
-
-  // Screen 5: Bounded Micro-Practice Retry Modal
-  console.log('\n[Screen 5/15] Launching Bounded Micro-Practice Retry Modal...');
+  await page.waitForTimeout(300);
+  await assertBodyContains(page, 'GEMINI', 'Gemini gateway settings modal');
+  await assertBodyContains(page, 'REPLAY FIXTURE', 'replay/live execution mode');
+  savedScreenshots.push(await saveScreenshot(page, '15_gemini_settings_modal'));
   await page.evaluate(() => {
-    const btn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('LAUNCH TARGETED RETRY'));
-    if (btn) btn.click();
+    const button = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('CANCEL'));
+    if (button) button.click();
   });
-  await new Promise((r) => setTimeout(r, 600));
-  const ss5 = await saveScreenshot(page, '05_micropractice_modal');
-  savedScreenshots.push(ss5);
 
-  // Perform retry correction and advance to Transmission Event
-  console.log('Executing Micro-Practice Retry Action (Option B: Convex Arc)...');
-  await page.evaluate(() => {
-    const optB = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('Continuous Orbital Convex Arc'));
-    if (optB) optB.click();
-  });
-  await new Promise((r) => setTimeout(r, 400));
-
-  await page.evaluate(() => {
-    const submitBtn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('SUBMIT VERIFIED RETRY'));
-    if (submitBtn) submitBtn.click();
-  });
-  await new Promise((r) => setTimeout(r, 600));
-
-  // Screen 6: Transmission Complete View (Stage 03)
-  console.log('\n[Screen 6/15] Capturing Stage 03 Transmission Complete View (+4.3 PTS GAIN)...');
-  const ss6 = await saveScreenshot(page, '06_transmission_complete_kolam', { fullPage: true });
-  savedScreenshots.push(ss6);
-
-  // Screen 7: Cryptographic Lineage & Merkle Provenance DAG Drawer
-  console.log('\n[Screen 7/15] Opening Cryptographic Lineage DAG Drawer...');
-  await page.evaluate(() => {
-    const btn = Array.from(document.querySelectorAll('button, a')).find((b) => b.innerText.includes('INSPECT PROVENANCE DAG') || b.innerText.includes('VIEW PROVENANCE DAG'));
-    if (btn) btn.click();
-  });
-  await new Promise((r) => setTimeout(r, 600));
-  const ss7 = await saveScreenshot(page, '07_lineage_dag');
-  savedScreenshots.push(ss7);
-
-  // Close Lineage Drawer
-  await page.evaluate(() => {
-    const xBtn = Array.from(document.querySelectorAll('button')).find((b) => b.querySelector('svg.lucide-x'));
-    if (xBtn) xBtn.click();
-  });
-  await new Promise((r) => setTimeout(r, 400));
-
-  // Screen 8: Mechanical Micrometer Zeroing (Forensic Transmission Instrument)
-  console.log('\n[Screen 8/15] Switching to Mechanical Micrometer -> Forensic Transmission Instrument...');
-  await page.evaluate(() => {
-    const sel = document.querySelector('select');
-    if (sel) {
-      sel.value = 'micrometer-calibration';
-      sel.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-    const practiceBtn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('02.') && b.innerText.includes('PRACTICE'));
-    if (practiceBtn) practiceBtn.click();
-  });
-  await new Promise((r) => setTimeout(r, 600));
-  const ss8 = await saveScreenshot(page, '08_workbench_micrometer', { fullPage: true });
-  savedScreenshots.push(ss8);
-
-  // Screen 9: Diagnostic Workspace (Bicycle Repair Case)
-  console.log('\n[Screen 9/15] Switching to Bicycle Repair -> Diagnostic Workspace...');
-  await page.evaluate(() => {
-    const sel = document.querySelector('select');
-    if (sel) {
-      sel.value = 'bicycle_repair';
-      sel.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-  });
-  await new Promise((r) => setTimeout(r, 600));
-  const ss9 = await saveScreenshot(page, '09_diagnostic_workspace_bike', { fullPage: true });
-  savedScreenshots.push(ss9);
-
-  // Screen 10: Rhythm Practice Instrument (Tabla Case)
-  console.log('\n[Screen 10/15] Switching to Tabla -> Rhythm Practice Instrument...');
-  await page.evaluate(() => {
-    const sel = document.querySelector('select');
-    if (sel) {
-      sel.value = 'tabla';
-      sel.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-  });
-  await new Promise((r) => setTimeout(r, 600));
-  const ss10 = await saveScreenshot(page, '10_rhythm_workspace_tabla', { fullPage: true });
-  savedScreenshots.push(ss10);
-
-  // Screen 11: State Transition Workspace (Handloom Weaving Case)
-  console.log('\n[Screen 11/15] Switching to Handloom Weaving -> State Transition Workspace...');
-  await page.evaluate(() => {
-    const sel = document.querySelector('select');
-    if (sel) {
-      sel.value = 'weaving';
-      sel.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-  });
-  await new Promise((r) => setTimeout(r, 600));
-  const ss11 = await saveScreenshot(page, '11_state_transition_weaving', { fullPage: true });
-  savedScreenshots.push(ss11);
-
-  // Screen 12: Spatial Sequence Workspace (Origami Case)
-  console.log('\n[Screen 12/15] Switching to Origami -> Spatial Sequence Workspace...');
-  await page.evaluate(() => {
-    const sel = document.querySelector('select');
-    if (sel) {
-      sel.value = 'origami';
-      sel.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-  });
-  await new Promise((r) => setTimeout(r, 600));
-  const ss12 = await saveScreenshot(page, '12_spatial_sequence_origami', { fullPage: true });
-  savedScreenshots.push(ss12);
-
-  // Screen 13: First-Divergence Workspace (Square Knot Case)
-  console.log('\n[Screen 13/15] Switching to Square Knot -> First-Divergence Workspace...');
-  await page.evaluate(() => {
-    const sel = document.querySelector('select');
-    if (sel) {
-      sel.value = 'square_knot';
-      sel.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-  });
-  await new Promise((r) => setTimeout(r, 600));
-  const ss13 = await saveScreenshot(page, '13_first_divergence_knot', { fullPage: true });
-  savedScreenshots.push(ss13);
-
-  // Screen 14: Google Stitch Generative Canvas Modal
-  console.log('\n[Screen 14/15] Opening Google Stitch Canvas Modal...');
-  await page.evaluate(() => {
-    const stitchBtn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('STITCH CANVAS'));
-    if (stitchBtn) stitchBtn.click();
-  });
-  await new Promise((r) => setTimeout(r, 600));
-  const ss14 = await saveScreenshot(page, '14_stitch_canvas_modal');
-  savedScreenshots.push(ss14);
-
-  // Close Stitch Modal
-  await page.evaluate(() => {
-    const xBtn = Array.from(document.querySelectorAll('button')).find((b) => b.querySelector('svg.lucide-x'));
-    if (xBtn) xBtn.click();
-  });
-  await new Promise((r) => setTimeout(r, 400));
-
-  // Screen 15: Gemini Model Gateway Settings Modal
-  console.log('\n[Screen 15/15] Opening Gemini Gateway Settings Modal...');
-  await page.evaluate(() => {
-    const settingsBtn = Array.from(document.querySelectorAll('header button')).find((b) => b.querySelector('svg.lucide-settings'));
-    if (settingsBtn) settingsBtn.click();
-  });
-  await new Promise((r) => setTimeout(r, 600));
-  const ss15 = await saveScreenshot(page, '15_gemini_settings_modal');
-  savedScreenshots.push(ss15);
-
-  // Close Settings Modal
-  await page.evaluate(() => {
-    const cancelBtn = Array.from(document.querySelectorAll('button')).find((b) => b.innerText.includes('CANCEL'));
-    if (cancelBtn) cancelBtn.click();
-  });
-  await new Promise((r) => setTimeout(r, 400));
-
-  // 6. Write Audit Manifest & Summary
-  const allPassed = consoleErrors.length === 0 && pageErrors.length === 0 && failedRequests.length === 0;
+  const browserVersion = await browser.version();
+  const allPassed =
+    assertions.every((item) => item.passed) &&
+    consoleErrors.length === 0 &&
+    pageErrors.length === 0 &&
+    failedRequests.length === 0;
 
   const auditReport = {
     run_timestamp: runTimestamp,
     execution_time_iso: new Date().toISOString(),
-    navigation_duration_ms: navDuration,
+    url: URL,
+    browser_version: browserVersion,
     resources_loaded_count: loadedResources.length,
     console_messages_count: consoleLogs.length,
     console_errors_count: consoleErrors.length,
     uncaught_exceptions_count: pageErrors.length,
     failed_requests_count: failedRequests.length,
+    state_assertions_count: assertions.length,
+    state_assertions_passed: assertions.filter((item) => item.passed).length,
+    state_assertions_failed: assertions.filter((item) => !item.passed).length,
     audit_passed: allPassed,
     screenshots: savedScreenshots.map((s) => ({
       name: s.baseName,
@@ -340,7 +232,6 @@ async function runDevToolsAudit() {
   const reportPath = path.join(RUN_DIR, 'audit_report.json');
   fs.writeFileSync(reportPath, JSON.stringify(auditReport, null, 2));
 
-  // Update master manifest
   const masterManifestPath = path.join(BASE_SCREENSHOT_DIR, 'manifest.json');
   let masterManifest = [];
   if (fs.existsSync(masterManifestPath)) {
@@ -354,35 +245,28 @@ async function runDevToolsAudit() {
     run_timestamp: runTimestamp,
     report_file: `runs/${runTimestamp}/audit_report.json`,
     audit_passed: allPassed,
+    state_assertions_passed: auditReport.state_assertions_passed,
     screenshots_count: savedScreenshots.length,
   });
   fs.writeFileSync(masterManifestPath, JSON.stringify(masterManifest, null, 2));
 
-  console.log('\n====================================================');
-  console.log('CHROME DEVTOOLS AUDIT SUMMARY:');
-  console.log('====================================================');
-  console.log(`Run Timestamp:            ${runTimestamp}`);
-  console.log(`Total Resources Loaded:   ${loadedResources.length}`);
-  console.log(`Total Console Messages:   ${consoleLogs.length}`);
-  console.log(`Console Errors:           ${consoleErrors.length}`);
-  console.log(`Uncaught Page Errors:     ${pageErrors.length}`);
-  console.log(`Failed Network Requests:  ${failedRequests.length}`);
-  console.log(`Screenshots Captured:     ${savedScreenshots.length}`);
-  console.log(`Run Directory:            ${RUN_DIR}`);
-  console.log(`Latest Pointer Directory: ${LATEST_DIR}`);
-  console.log(`Audit Report:             ${reportPath}`);
-  console.log(`Master Manifest:          ${masterManifestPath}`);
-
-  console.log(`\nALL IN TACT AUDIT RESULT: ${allPassed ? '>>> 100% HEALTHY & INTACT <<<' : 'ISSUES DETECTED'}`);
+  console.log(JSON.stringify({
+    audit_passed: allPassed,
+    browser_version: browserVersion,
+    console_errors: consoleErrors.length,
+    page_errors: pageErrors.length,
+    failed_requests: failedRequests.length,
+    state_assertions: assertions.length,
+    screenshots: savedScreenshots.length,
+    report: reportPath,
+  }, null, 2));
 
   await browser.close();
   return allPassed;
 }
 
 runDevToolsAudit()
-  .then((passed) => {
-    process.exit(passed ? 0 : 1);
-  })
+  .then((passed) => process.exit(passed ? 0 : 1))
   .catch((err) => {
     console.error('Fatal audit failure:', err);
     process.exit(1);
