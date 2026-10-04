@@ -211,3 +211,17 @@ The repository is the durable record. Chat, screenshots, PDFs, and generated pro
 The repository is currently a research/validation workspace. Do not assume a runnable application exists unless the current tree and implementation-status documents show it.
 
 The current competition domain, skill, expert, learner, and evaluation rubric remain open until the validation gate records a decision.
+
+
+## Canonical case-pack boundary
+
+Shared capability-case content lives under `tracks/cases/<case_id>/`, discovered through `tracks/cases/index.json`, with `manifest.json` as the case entry point.
+
+Track A and Track B may keep track-local implementation fixtures under their own `data/` directories, but must not duplicate or silently redefine the shared case pack.
+
+For case-data work, read:
+- `tracks/cases/README.md`
+- `docs/architecture/case-packs.md`
+- `tracks/common/CASE-DATA-CONVENTIONS.md`
+
+Do not introduce a database or service solely to make seven prototype cases appear scalable. Keep versioned case content separate from future mutable runtime state and large media.
