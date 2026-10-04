@@ -67,7 +67,7 @@ export const RubricHUD: React.FC<RubricHUDProps> = ({
         {telemetry.criteriaComparisons.map((c) => {
           const isSelected = selectedCriterionId === c.criterionId;
           const isExpanded = expandedCriterionId === c.criterionId;
-          const isRetryMastered = c.retryStatus === 'satisfied';
+          const isRetrySatisfied = c.retryStatus === 'satisfied';
 
           return (
             <div
@@ -137,8 +137,10 @@ export const RubricHUD: React.FC<RubricHUDProps> = ({
                       className={`font-mono text-[9px] px-1.5 py-0.5 rounded font-bold ${
                         c.baselineStatus === 'satisfied'
                           ? 'bg-transmission-emerald/10 text-transmission-emerald border border-transmission-emerald/30'
-                          : c.baselineStatus === 'partial'
+                          : c.baselineStatus === 'partially_satisfied'
                           ? 'bg-cadmium-amber/10 text-cadmium-amber border border-cadmium-amber/30'
+                          : c.baselineStatus === 'uncertain'
+                          ? 'bg-surface-container-highest text-on-surface-variant border border-outline'
                           : 'bg-divergence-crimson/10 text-divergence-crimson border border-divergence-crimson/30'
                       }`}
                     >
@@ -179,7 +181,7 @@ export const RubricHUD: React.FC<RubricHUDProps> = ({
                         DIVERGENCE OBSERVED:
                       </div>
                       <p className="text-on-surface-variant font-sans">
-                        {c.feedback.divergence_observed}
+                        {c.feedback.what_differed}
                       </p>
                     </div>
                   )}
@@ -192,7 +194,7 @@ export const RubricHUD: React.FC<RubricHUDProps> = ({
                         CORRECTIVE INSTRUCTION:
                       </div>
                       <p className="text-on-surface font-sans">
-                        {c.feedback.corrective_instruction}
+                        {c.feedback.corrective_advice}
                       </p>
                     </div>
                   )}
