@@ -35,6 +35,22 @@ Human expertise has a transmission lifecycle:
 
 Anveshan makes that lifecycle explicit.
 
+## 4A. Source-flexible transmission hypothesis
+
+The MVP thesis should not assume that every transmission begins with an expert demonstration video.
+
+Three source/interaction directions are now documented as a product hypothesis:
+
+1. **Forward:** demonstration → capability;
+2. **Goal-conditioned:** desired state/image → plausible capability path;
+3. **Corrective:** learner attempt → divergence → intervention → retry.
+
+The second and third forms extend the expression of the core thesis; they do not replace the MVP's requirement for measurable transmission.
+
+**Status:** unvalidated. See `docs/research/source-strategy-and-transmission-modes-2026-10-04.md`.
+
+For target-first cases, visible target properties must remain distinct from inferred candidate procedures. An image alone must not be represented as evidence of an original creator's exact construction sequence or intent.
+
 ## 5. What It Does
 
 Anveshan aims to make observable expertise capturable, structured, searchable, source-grounded, explainable, teachable, practiceable, verifiable, permission-aware, traceable and transmissible.

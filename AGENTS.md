@@ -166,6 +166,14 @@ Measure progress by product capability and evidence:
 
 The current machine-readable state is docs/status/project.yaml.
 
+## Canonical project source
+
+`docs/status/CANONICAL-SOURCES.md` is the concise index of the repository's canonical sources and current promoted research/product/prototype decisions.
+
+Agents MUST consult it before interpreting cross-cutting product/research/prototype direction. It does not override the hierarchy above; it maps each concern to its authoritative document.
+
+The repository is the durable record. Chat, screenshots, PDFs, and generated prompts are reference inputs unless their relevant decisions are explicitly promoted into repository documentation.
+
 ## Documentation rules
 
 - Prefer one canonical statement over duplicated statements.
