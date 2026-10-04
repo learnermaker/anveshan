@@ -79,3 +79,12 @@ Do not put these here:
 - generic cross-case business logic.
 
 See \`docs/architecture/case-packs.md\` for the architecture and migration boundary.
+
+
+## Scaling rule
+
+Do not create `case-008`, `case-009`, or other ordinal directory names. Add a stable semantic slug under `tracks/cases/` and register it in `index.json`.
+
+Do not duplicate the same canonical case content under `tracks/track-a/` and `tracks/track-b/`. Track-local `data/` is reserved for implementation-specific artifacts.
+
+For production, keep this ownership model even when storage changes: versioned case content, large media, and mutable runtime state are separate concerns.
