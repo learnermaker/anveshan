@@ -8,6 +8,14 @@ Use this as the coding-agent gate. It complements SUCCESS-CRITERIA.md.
 - [ ] Identify LearnerAttempt, Evaluation, Feedback, and TransmissionRecord as Track B outputs.
 - [ ] Confirm the same learner/task/rubric frame is used for baseline and retry.
 - [ ] Define observable criterion evidence and negative cases before live Gemini work.
+- [ ] Define whether each fixture is LIVE, REPLAY, SYNTHETIC, or ILLUSTRATIVE.
+
+## Prototype-aware readiness
+- [ ] Evaluation data remains UI-agnostic and can drive a downstream adaptive workspace.
+- [ ] First-divergence state can be reconstructed from learner evidence + criterion result + uncertainty.
+- [ ] Adaptive retry is derived from evaluated criteria, not a generic retry action.
+- [ ] Replay/synthetic results are not represented as real-world capability verification.
+- [ ] Goal-conditioned evaluation uses observable target criteria, not alleged creator procedure.
 
 ## During implementation
 - [ ] Keep evaluation criterion-first, not single-score-first.
