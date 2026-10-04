@@ -67,4 +67,4 @@ tracks/track-b/
 └── notes/
 ```
 
-Create implementation files only through bounded issues.
+Create implementation files only through bounded issues. See `docs/architecture/google-stack-integration.md` for Gemini comparative evaluation and deterministic scoring patterns.

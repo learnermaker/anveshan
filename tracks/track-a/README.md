@@ -60,4 +60,4 @@ tracks/track-a/
 └── notes/
 ```
 
-Create implementation files only through bounded issues.
+Create implementation files only through bounded issues. See `docs/architecture/google-stack-integration.md` for Gemini File API, Agentic Video Understanding, and Pydantic structured output patterns.

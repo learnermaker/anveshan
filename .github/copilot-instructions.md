@@ -10,7 +10,7 @@ Anveshan is a research/validation workspace for the Google Cloud AI Builder Cup 
 - `docs/product/product-thesis.md` — current competition/MVP wedge
 - `docs/product/BRD.md` and `docs/product/mvp-contract.md` — current requirements/scope
 - `docs/validation/` — evidence and validation state
-- `docs/architecture/` — implementation architecture
+- `docs/architecture/` — implementation architecture (including `docs/architecture/google-stack-integration.md` for Gemini SDK/Cloud Run standards)
 - `docs/status/NOW.md` — shortest current execution scope
 - `docs/status/DECISIONS.md` — durable decisions
 

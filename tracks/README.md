@@ -31,4 +31,4 @@ These are contract names, not authorization to implement every object immediatel
 
 Real expert and learner evidence is joined only at the explicit integration point described in DP-01. Keep integration-specific code outside the two ownership folders unless ownership is explicitly reassigned.
 
-See `AGENTS.md`, `docs/status/NOW.md`, `docs/architecture/data-flow.md`, and DP-01 before starting implementation.
+See `AGENTS.md`, `docs/status/NOW.md`, `docs/architecture/google-stack-integration.md`, `docs/architecture/data-flow.md`, and `docs/architecture/parallel-work-contract.md` before starting implementation.

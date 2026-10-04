@@ -112,7 +112,7 @@ Current research supports a credible implementation using:
 - Cloud Run;
 - agent evaluation.
 
-Model names, feature compatibility, quotas, pricing and launch stages must be checked again immediately before implementation.
+Model names, feature compatibility, quotas, pricing and launch stages must be checked again immediately before implementation. See `docs/architecture/google-stack-integration.md` for the official Gemini model mapping, SDK patterns (`google-genai`), Pydantic structured outputs, and Google Cloud Run deployment standards.
 
 ## Governance principle
 

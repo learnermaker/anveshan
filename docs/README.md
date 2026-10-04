@@ -44,6 +44,7 @@ For coding-agent operating rules, read `AGENTS.md` first.
 - AI Agent Architecture
 - Data Flow
 - Parallel Work Contract
+- Google Ecosystem & Gemini Integration Guide
 - Architecture Decision Records
 
 ## Parallel implementation workspaces
