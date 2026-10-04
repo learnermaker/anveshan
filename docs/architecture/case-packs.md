@@ -124,3 +124,71 @@ The exact database choice remains an implementation decision until runtime persi
 The UI registry is a downstream projection during this bounded migration. Do not introduce a second contract vocabulary to make the migration easier.
 
 When the case-pack loader is introduced, the registry should consume pack data rather than re-author it. Until then, any UI-only fields may remain in the registry, but case payloads must not silently diverge from the pack.
+
+
+## Architectural assessment
+
+This is the preferred architecture for the current prototype and is intentionally **not** described as a universal final infrastructure design.
+
+### Why this boundary is the right one now
+
+The central problem at the seven-case stage is separation of **case content** from **track implementation**. A database does not solve that problem; a canonical case-pack does.
+
+The design optimizes for four properties:
+
+1. **Single ownership** — one canonical case definition is shared by Track A and Track B.
+2. **Stable identity** — semantic `case_id` values survive UI, provider, and workspace changes.
+3. **Deterministic replay** — small structured fixtures can be versioned and validated in Git.
+4. **Clean production migration** — large media and mutable runtime state can move to dedicated systems later without changing the common contract seam.
+
+### When a database becomes justified
+
+Introduce a runtime database only when one or more of these requirements becomes real:
+
+- concurrent learner/session writes;
+- persistent attempts and evaluations across devices/sessions;
+- authenticated per-user authorization;
+- queries across many cases/learners/attempts;
+- mutable publication/version pointers;
+- operational lineage indexes that cannot be rebuilt efficiently from content artifacts;
+- transactional runtime updates.
+
+At that point, **do not migrate the case-pack itself into the database wholesale**. Keep versioned case content in an authoring/content layer, store media in object storage, and persist mutable runtime state separately.
+
+### Future split
+
+The intended evolution is:
+
+```text
+                 VERSIONED CONTENT
+Git case packs ──────────────────────────┐
+  manifest / knowledge / rubric / task   │
+                                          │
+                 LARGE MEDIA              │
+Cloud Storage ────────────────────────────┤
+  video / audio / images / artifacts      │
+                                          v
+                                  application adapters
+                                          │
+                 RUNTIME STATE             │
+Firestore or equivalent ──────────────────┘
+  sessions / attempts / evaluations /
+  feedback / transmission / lineage
+```
+
+The three layers may be introduced independently. This avoids both premature infrastructure and an expensive data-model rewrite later.
+
+### Non-goals
+
+The case-pack layer is not:
+
+- a database;
+- an event store;
+- a general CMS;
+- a replacement for the eight common contracts;
+- a place for React/UI configuration that is merely presentation-specific;
+- a place for live learner state.
+
+### Case-count scaling
+
+Seven, seventy, or several hundred cases should still use the same semantic directory/index pattern. At higher scale, the likely change is **storage/serving strategy**, not the conceptual ownership model: case packs can be published from Git/object storage and indexed for retrieval without redefining the case semantics.
