@@ -42,6 +42,22 @@ Track B (Evaluation & Transmission)    LearnerAttempt (Baseline & Retry)
 5. **Deterministic Transmission Gain Hero:** Quantitative progression display showing $+5.5$ pts gain ($7.0 - 1.5$) and $+3$ criteria mastered.
 6. **Cryptographic Lineage DAG:** Interactive Merkle provenance inspector showing SHA-256 hashes, parent links, and verified Ed25519 signatures across the entire 8-contract chain.
 
+## Canonical prototype direction
+
+The current Transmission Instrument is the canonical **forensic workspace** for the micrometer case, not the entire Anveshan product.
+
+The prototype direction now demonstrates multiple source/transmission modes:
+- demonstration-first;
+- target/image-first;
+- attempt/correction-first.
+
+The seven capability cases and adaptive workspace mapping are documented in:
+- `docs/research/multimodal-capability-case-portfolio.md`
+- `docs/research/source-strategy-and-transmission-modes-2026-10-04.md`
+- `docs/status/CANONICAL-SOURCES.md`
+
+Prototype data must distinguish live Gemini results, replay/fixture results, and synthetic/illustrative data.
+
 ## Running Locally
 
 ```bash
