@@ -2,69 +2,27 @@
 
 **Owner boundary:** learner practice, attempt representation, rubric-based evaluation, evidence-linked feedback, retry, transmission measurement, and lineage output.
 
-## Objective
+## Start here
+Read CODING-AGENT-GUIDE.md, SUCCESS-CRITERIA.md, tracks/common/README.md, tracks/common/CONTRACT-USAGE.md, tracks/common/schemas/, tracks/common/validator.py, docs/architecture/parallel-work-contract.md, and docs/architecture/google-stack-integration.md before coding.
 
+Track A implementation is **not** a dependency. Work from frozen fixtures until integration.
+
+## Objective
 Prove that a learner can consume a bounded practice input, submit observable evidence, receive traceable feedback, retry, and show measurable criterion-level change.
 
-## Work boundary
+## Boundary
+Own practice-task consumption, learner baseline/attempt capture, observable evidence, criterion-level evaluation, evidence-linked feedback, retry, baseline→retry measurement, TransmissionRecord, lineage, and deterministic replay.
 
-In scope for this track:
+Do not own expert-source ingestion, knowledge extraction, claim grounding, expert authoring, Track A internals, or generalized LMS/analytics infrastructure.
 
-1. practice-task consumption;
-2. learner baseline and attempt capture;
-3. observable attempt representation;
-4. domain-specific rubric interface;
-5. evaluation logic;
-6. evidence-linked feedback;
-7. retry/second-attempt flow;
-8. baseline → post-attempt measurement;
-9. `TransmissionRecord` and lineage output;
-10. deterministic replay validation.
+## Authoritative inputs/outputs
+Consumes KnowledgePackage, EvidenceRef, RubricDefinition, and PracticeTask. Produces LearnerAttempt, Evaluation, Feedback, and TransmissionRecord. Use the actual Pydantic contracts in tracks/common/; do not create parallel canonical schemas.
 
-Out of scope:
-
-- expert-source ingestion;
-- knowledge extraction;
-- claim grounding;
-- expert-side knowledge authoring;
-- production integration with Track A internals.
-
-## Expected contract inputs/outputs
-
-Consumes frozen:
-
-- `KnowledgePackage`;
-- `EvidenceRef`;
-- `PracticeTask`.
-
-Produces:
-
-- `LearnerAttempt`;
-- `Evaluation`;
-- `Feedback`;
-- `TransmissionRecord`.
-
-Use replay fixtures when Track A is not integrated.
+## Domain-agnostic rule
+The evaluation engine must not assume an industry, profession, physical activity, tool, or modality. The selected domain supplies observable criteria and evidence interpretation; common logic supplies contract validation, criterion alignment, score integrity, deterministic gain, and lineage.
 
 ## Starter validation
+Replay must prove: practice task → baseline attempt → evaluation → feedback → retry → retry evaluation → measured change. It must support criterion-level comparison and must not reduce evaluation to one unconstrained model score.
 
-A replay case should contain:
-
-`practice task → baseline attempt → second attempt → rubric observations → feedback → measured change`
-
-The fixture should allow comparison against expected criterion-level outcomes and must not reduce evaluation to one unconstrained model score.
-
-## Suggested worktree
-
-```text
-tracks/track-b/
-├── README.md
-├── fixtures/
-│   └── replay/
-├── prompts/
-├── src/
-├── tests/
-└── notes/
-```
-
-Create implementation files only through bounded issues. See `docs/architecture/google-stack-integration.md` for Gemini comparative evaluation and deterministic scoring patterns.
+## Worktree
+tracks/track-b/ contains README.md, CODING-AGENT-GUIDE.md, SUCCESS-CRITERIA.md, fixtures/, prompts/, src/, tests/, and notes/. Create implementation files only through bounded issues.
