@@ -138,7 +138,7 @@ Every implementation PR must:
 - identify an explicit trade if scope changed;
 - update durable documentation when required.
 
-The repository PR template and CI governance check enforce these expectations where technically possible.
+The repository PR template and CI validator enforce these expectations. Before opening a PR, agents should run `.github/scripts/check_pr_contract.py` against the proposed body; CI is the final enforcement gate.
 
 ## Scope firewall
 
