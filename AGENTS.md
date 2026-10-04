@@ -50,7 +50,7 @@ Do not silently promote research into product scope.
 
 Optimize for **maximum parallel execution with minimum coordination tax**.
 
-The team is three people working concurrently, mostly through coding agents. GitHub is the durable coordination system; chat is not.
+The team is three people working concurrently, mostly through coding agents. GitHub is the durable coordination system; chat is not. `main` is the canonical latest integrated state.
 
 Agents should make ordinary implementation decisions autonomously. Humans step in for product-scope changes, materially different architecture/security/cost implications, ownership collisions, or unresolved product/architecture conflicts.
 
@@ -79,22 +79,25 @@ Every coding agent MUST obey these rules:
 
 ## Required work lifecycle
 
-For implementation:
+Use the minimum path:
 
-1. BACKLOG — issue exists but is not ready.
-2. READY — objective, scope, acceptance criteria, dependencies, and owner are clear.
-3. IN_PROGRESS — one owner/agent is actively changing it.
-4. IN_REVIEW — PR opened and scope frozen.
-5. VALIDATING — tests/evaluations/manual verification are being run.
-6. DONE — acceptance criteria and required checks pass.
+**Issue → branch → implement → validate → PR → merge → verify main**
 
-Use BLOCKED when external work prevents progress. Use DEFERRED when consciously postponed. Use REJECTED when the proposed work is not accepted. Use SUPERSEDED when another decision replaces it.
+Do not stop at “PR opened” or “CI passed.”
 
-For decisions:
+1. **Issue** — one bounded outcome with acceptance criteria.
+2. **Branch** — short-lived branch from the current `main`.
+3. **Implement** — smallest coherent change.
+4. **Validate** — run relevant deterministic tests/replay/evaluation and fix failures.
+5. **PR** — link exactly one issue and report scope/validation.
+6. **Merge** — when acceptance and checks pass, merge immediately unless the user requested review, a real product/architecture/security decision remains unresolved, a merge conflict/dependency makes it unsafe, or GitHub blocks the merge.
+7. **Verify main** — confirm the change landed on `main`; then close/complete the issue and delete the branch when safe.
 
-EXPLORATION → PROPOSED → DECIDED → VALIDATED → IMPLEMENTED
+**A completed implementation is not DONE until it is merged into `main`.**
 
-A validation result can invalidate a proposal; it does not automatically authorize unrelated implementation.
+If the agent has merge permission, it should merge. If it does not, report the permission blocker explicitly; do not treat an open PR as the normal final state.
+
+`main` is the canonical latest integrated baseline so other agents can branch from current work.
 
 ## Parallel-agent rules
 
