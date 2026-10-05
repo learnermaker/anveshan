@@ -89,7 +89,7 @@ def main() -> int:
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=REPO_ROOT / "tracks" / "track-a" / "data" / "cases",
+        default=REPO_ROOT / "tracks" / "track-a" / "data" / "runs",
         help="Destination directory for emitted Track A artifacts",
     )
     parser.add_argument(

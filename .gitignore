@@ -99,6 +99,9 @@ logs/
 tmp/
 temp/
 
+# Track A derived pipeline outputs (not canonical case data)
+tracks/track-a/data/runs/
+
 # Secrets accidentally exported by local tooling
 secrets/
 .local/
