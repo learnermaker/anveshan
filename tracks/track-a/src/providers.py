@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 import os
 from pathlib import Path
+import time
 from typing import Any, Dict, List, Optional, Tuple
+import uuid
 
 from tracks.common.schemas import EvidenceRef, KnowledgePackage
 from case_registry import CaseManifest, load_manifest, load_replay_bundle
@@ -391,7 +393,7 @@ class GeminiProviderAdapter(BaseProviderAdapter):
             prompt_version=prompt_version,
             input_artifact_id=f"source_{case_id}",
             runtime_class="LIVE",
-            run_id=f"run_live_{case_id}_{int(os.environ.get('TEST_SEED', 0)) or int(id(self))}",
+            run_id=f"run_live_{case_id}_{int(time.time())}_{uuid.uuid4().hex[:8]}",
             expected_behavior="Live multimodal extraction with structured JSON output",
             evaluation_reference=f"tracks/cases/{case_id}/source/",
         )

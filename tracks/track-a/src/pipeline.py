@@ -59,40 +59,75 @@ class TrackAPipeline:
         case_id: str,
         enforce_approved: bool = False,
     ) -> TrackAOutputBundle:
-        """Execute full Track A pipeline for a given case."""
+        """Execute Track A pipeline for a given case.
+
+        Replay mode loads and validates authoritative canonical contracts directly
+        from tracks/cases/<case_id>/replay/bundle.json, preserving canonical IDs and semantics.
+        Live mode routes via ModelGateway -> normalizer -> grounding -> TaskGenerator.
+        """
         manifest = load_manifest(self.cases_root, case_id)
 
-        # 1. Gateway extraction (DTO isolation)
-        dto = self.gateway.extract_knowledge(case_id)
-
-        # 2. Consent loading
         if self.mode == "replay":
+            # -------------------------------------------------------------
+            # REPLAY PATH: Load canonical contracts directly from bundle
+            # -------------------------------------------------------------
             bundle_raw = load_replay_bundle(self.cases_root, case_id)
-            pkg_raw = bundle_raw.get("knowledge_package", {})
-            consent_raw = pkg_raw.get("consent", {})
-            consent = ConsentMetadata(
-                contributor_name=consent_raw.get("contributor_name", "Reference Expert (Synthetic Fixture)"),
-                consent_scope=consent_raw.get("consent_scope", "engineering_replay_only"),
-                revocable=consent_raw.get("revocable", True),
-                granted_at=consent_raw.get("granted_at"),
-                notes=consent_raw.get("notes"),
+            pkg_raw = bundle_raw.get("knowledge_package")
+            rubric_raw = bundle_raw.get("rubric")
+            task_raw = bundle_raw.get("practice_task")
+
+            if not pkg_raw or not rubric_raw or not task_raw:
+                raise TrackAFailure(
+                    FailureCategory.MISSING_EVIDENCE,
+                    f"Canonical replay bundle for {case_id} missing required Track A contracts",
+                )
+
+            package = KnowledgePackage.model_validate(pkg_raw)
+            rubric = RubricDefinition.model_validate(rubric_raw)
+            practice_task = PracticeTask.model_validate(task_raw)
+
+            # Grounding check on canonical package
+            uncertainty = self.grounding.validate_package_grounding(
+                package,
+                transmission_mode=manifest.transmission_mode,
+            )
+
+            run_metadata = RunMetadataDTO(
+                provider="replay",
+                model_id="canonical-replay-fixture",
+                prompt_id=f"{manifest.transmission_mode}_replay",
+                prompt_version="canonical",
+                input_artifact_id=f"bundle_{case_id}",
+                runtime_class="REPLAY",
+                run_id=f"run_replay_{case_id}",
+                expected_behavior="Authoritative canonical contract preservation",
+                evaluation_reference=f"tracks/cases/{case_id}/replay/bundle.json",
             )
         else:
+            # -------------------------------------------------------------
+            # LIVE PATH: Model extraction -> normalize -> ground -> generate
+            # -------------------------------------------------------------
+            dto = self.gateway.extract_knowledge(case_id)
+
             consent = ConsentMetadata(
                 contributor_name=f"Expert for {case_id}",
-                consent_scope="prototype_demonstration",
+                consent_scope="placeholder_no_real_consent",
             )
 
-        # 3. Normalization into canonical KnowledgePackage
-        package = normalize_dto_to_knowledge_package(dto=dto, consent=consent)
+            package = normalize_dto_to_knowledge_package(dto=dto, consent=consent)
 
-        # 4. Mode-aware Epistemological Grounding
-        uncertainty = self.grounding.validate_package_grounding(
-            package,
-            transmission_mode=manifest.transmission_mode,
-        )
+            uncertainty = self.grounding.validate_package_grounding(
+                package,
+                transmission_mode=manifest.transmission_mode,
+            )
 
-        # 5. Expert Review gate
+            rubric = self.task_generator.generate_rubric(package, case_id=case_id)
+            practice_task = self.task_generator.generate_practice_task(package, rubric, case_id=case_id)
+            run_metadata = dto.run_metadata
+
+        # -----------------------------------------------------------------
+        # Shared Review Status Gate
+        # -----------------------------------------------------------------
         if enforce_approved:
             if not package.expert_review or package.expert_review.status != ReviewStatus.APPROVED:
                 raise TrackAFailure(
@@ -101,12 +136,10 @@ class TrackAPipeline:
                     {"case_id": case_id, "status": package.expert_review.status if package.expert_review else None},
                 )
 
-        # 6. Synthesize Rubric & PracticeTask
-        rubric = self.task_generator.generate_rubric(package, case_id=case_id)
-        task = self.task_generator.generate_practice_task(package, rubric, case_id=case_id)
-
-        # Enforce cross-contract validity before handoff
-        errs = validate_practice_task_against_knowledge_and_rubric(task, package, rubric)
+        # -----------------------------------------------------------------
+        # Cross-Contract Invariant Verification Before Handoff
+        # -----------------------------------------------------------------
+        errs = validate_practice_task_against_knowledge_and_rubric(practice_task, package, rubric)
         if errs:
             raise TrackAFailure(
                 FailureCategory.CONTRACT_VIOLATION,
@@ -118,8 +151,8 @@ class TrackAPipeline:
         return TrackAOutputBundle(
             package=package,
             rubric=rubric,
-            practice_task=task,
-            run_metadata=dto.run_metadata,
+            practice_task=practice_task,
+            run_metadata=run_metadata,
             manifest=manifest,
             consent_summary=package.consent,
             uncertainty_summary=uncertainty,
