@@ -99,7 +99,7 @@ class MediaService:
                 if local_path.exists():
                     local_path.unlink(missing_ok=True)
                 raise TrackAFailure(
-                    FailureCategory.MODEL_FAILURE,
+                    FailureCategory.INVALID_INPUT,
                     f"Failed to download source media from {descriptor.url}: {exc}",
                     {"url": descriptor.url, "error": str(exc)},
                 ) from exc

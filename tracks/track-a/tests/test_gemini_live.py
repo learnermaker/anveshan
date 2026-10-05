@@ -21,7 +21,7 @@ from tracks.common.schemas import (
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 pytestmark = pytest.mark.skipif(
-    not GEMINI_API_KEY or "Ab8RN6Il" not in GEMINI_API_KEY,
+    not GEMINI_API_KEY,
     reason="Valid GEMINI_API_KEY required for live API integration tests.",
 )
 
