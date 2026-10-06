@@ -65,6 +65,17 @@ class FrameMatchDTO(BaseModel):
     state: Union[int, Literal["transition", "off_path", "unclear"]]
     note: str = ""
 
+    @field_validator("t", mode="before")
+    @classmethod
+    def _strip_s_suffix(cls, v: object) -> object:
+        """The model sometimes returns '12.0s' instead of 12.0; strip the trailing 's'."""
+        if isinstance(v, str):
+            try:
+                return float(v.rstrip("s"))
+            except ValueError:
+                pass
+        return v
+
     @field_validator("state", mode="before")
     @classmethod
     def _state(cls, v):
