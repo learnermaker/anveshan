@@ -83,3 +83,16 @@ This file records decisions that materially affect scope, architecture, validati
 
 **Revisit trigger:** The bounded domain is selected and the implementation topology requires a material change in ownership boundaries.
 
+
+## 2026-10-06 — Hero cases, evaluation core, and model choice
+**Status:** DECIDED
+
+**Decision:** Build three live hero cases: Kolam (final image only, goal-conditioned), Origami (demonstration video) and Tabla (audio; optional video not scored). Evaluation is Goal-Trajectory Verification (`docs/plans/evaluation-core.md`): a goal model derived from the source; learner trajectories checked for progress, constraint violations, first divergence and targeted change; scores come from deterministic bands only. Models: Gemma 4 26B (free) for text, images and video frames. Audio model calls are optional and off by default. Sources are licensed internet media and uploads.
+
+**Context:** 12 days to submission. The team chose breadth across modalities with one deep evaluation core. No human recordings are required for the build.
+
+**Alternatives considered:** human expert recordings (deferred: time and consent); a single deep case (rejected: weaker modality story); browser-side model calls (rejected: key exposure and dishonest labels).
+
+**Consequences:** The other four cases become SYNTHETIC replay showcase only. The eight contracts are unchanged; new case-data sidecars (goal model, criterion map, observers) and the locator convention are added. Validation evidence is produced from held-out references and labelled synthetic perturbations; it is not claimed as human-learner validation.
+
+**Revisit trigger:** real expert/learner recordings become available, or Gemma capabilities change.

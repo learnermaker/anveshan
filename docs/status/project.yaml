@@ -24,9 +24,15 @@ project:
     ai_changes_require_evaluation: true
     validation_claims_require_evidence: true
   current_mvp:
-    exact_domain: REFINING
-    exact_skill: REFINING
-    expert: REFINING
-    learner: REFINING
-    rubric: REFINING
+    exact_domain: DECIDED  # hero cases: kolam (image), origami (video), tabla (audio)
+    exact_skill: DECIDED   # kolam: Ithayakkamalam from final image; origami: crane to bird base; tabla: theka segment
+    expert: INTERNET_REFERENCE  # licensed internet sources; no human expert recordings for the hackathon build
+    learner: UPLOAD_OR_SYNTHETIC  # uploaded attempts or labelled synthetic perturbations
+    rubric: DECIDED  # generated from goal models (docs/plans/evaluation-core.md), human-approved
+  hero_cases: [kolam, origami, tabla]
+  showcase_cases_synthetic: [micrometer, bicycle-repair, handloom-weaving, square-knot]
+  models:
+    text_image: gemma-4-26b-a4b-it
+    video_frames: gemma-4-26b-a4b-it
+    audio: optional_disabled_by_default
   progress_unit: product_capability

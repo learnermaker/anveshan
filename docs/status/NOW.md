@@ -12,6 +12,20 @@ Implementation is now authorized and underway. Product validation continues in p
 
 Anveshan helps an expert transmit a bounded piece of real-world expertise to another person, grounded in authentic evidence, with observable practice and verification of whether the knowledge transferred.
 
+## Hero cases (decided 2026-10-06)
+
+Live, end to end, on Cloud Run:
+
+| Case | Input (source) | Learner attempt | Evaluation core |
+|---|---|---|---|
+| Kolam | final image only (goal-conditioned) | canvas trace or photo upload | goal-trajectory verification over the image-derived goal model |
+| Origami | demonstration video (forward) | video upload | Gemma frame-state recognition + deterministic trajectory |
+| Tabla | audio (forward; optional video displayed only) | audio upload | deterministic onsets/tempo/bayan alignment (optional audio model for bols) |
+
+Micrometer, bicycle repair, handloom and square knot are **SYNTHETIC replay showcase only** (scope trade for the hero cases).
+Sources are licensed internet media and user uploads; no human recordings are required for the hackathon build.
+See `docs/plans/track-plan-review-2026-10-06.md` §9 and `docs/plans/evaluation-core.md`.
+
 ## Scope firewall
 
 1. Research does not authorize implementation.
