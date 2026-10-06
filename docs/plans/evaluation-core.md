@@ -183,7 +183,7 @@ Bands are calibrated on the synthetic + hand-drawn set (§7) and versioned in th
 | Case | Goal source (committed or fetched) | Learner attempts |
 |---|---|---|
 | Kolam | `Ithayakkamalam - 2.jpg` (public domain, Mayooranathan) | Synthetic traces from the goal curves: perfect, jittered, one curve missing, a stray stroke, a wrong dot relation, a broken loop. Plus hand-drawn canvas attempts. Plus a photo-upload test (rendered trace raster rotated/scaled). |
-| Origami | `OrigamiCrane.ogv` (CC BY 3.0, Tavin), bird-base window | `Crane.ogv` (a separate recording, same licence) as a real second attempt. Synthetic: a segment cut (missing state), segments swapped (order), a truncation (incomplete). |
+| Origami | `OrigamiCrane.ogv` (CC BY 3.0, Tavin), bird-base window | `Crane.ogv` is the **same performance** re-encoded and cropped (verified frame-by-frame), so it is only a positive control for encode/crop robustness, **not** an independent learner. An independent licensed learner video is still needed (Kiro task 5 candidates, or a user upload). Synthetic: a segment cut (missing state), segments swapped (order), a truncation (incomplete). |
 | Tabla | A CC-licensed tabla theka recording (Wikimedia Commons; selected after analysis) | Synthetic perturbations of the goal audio: timing jitter, dropped strokes, bass removed in the wrong section, tempo drift. Plus any upload. |
 
 Synthetic attempts are labelled `SYNTHETIC` everywhere. Agreement metrics are computed against the known perturbation, which is exact ground truth. That is a stronger evaluation of the evaluator than hand labels.
