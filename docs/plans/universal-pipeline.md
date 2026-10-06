@@ -214,3 +214,68 @@ For the hackathon the hero cases keep their proven builders/evaluators (`kolam_i
 | K2b | Tabla timbre (rhythm specialist upgrade) |
 
 Shared schemas (`perception.py`, `skill_model.py`, `profile.py` v2) and the gateway's `embed()` are written by Claude Code before wave 2 starts, so K6 and K7 build on the same definitions.
+
+## 11. Calibration log
+
+Calibration decisions made during WP5 integration live checks (2026-10-06). All values are
+written justifications against observed live data on the actual hero media and synthetic test files.
+
+### 11.1 Quality gate thresholds (Layer 3 `_quality_gate` in `universal.py`)
+
+**Original WP2 values:** `blur_score < 15`, `brightness < 0.08`
+
+**Problem found during WP5 step 3 live checks:** The measurements in `perceive_image` normalise pixel values to `[0, 1]` before computing the Laplacian variance. All tested images — including high-quality photos of size 960×720 — returned `blur_score` values between 0.0 and 0.1. The original threshold of 15 was calibrated against the raw `[0, 255]` range and would reject every real-world image.
+
+**Images measured (WP5 step 3):**
+
+| File | brightness | blur_score |
+|---|---|---|
+| kolam_8_mayoo.png (dark background) | 0.061 | 0.1 |
+| colorful_kolam.jpg | 0.433 | 0.1 |
+| india_kolam_06_savage.jpg | 0.490 | 0.0 |
+| india_kolam_09_savage.jpg | 0.554 | 0.1 |
+| synthetic gradient 128×128 | ~0.60 | 0.0000 |
+| synthetic rangoli 256×256 | ~0.06 | 0.001 |
+
+**Decisions and rationale:**
+
+- `blur_score` threshold: **15 → 0.002**  
+  Rationale: All real images (even very sharp photos) produce blur_score ≤ 0.1 at [0,1] scale. The threshold 0.002 still rejects completely uniform blank images (gradient: 0.0) while accepting all valid photograph and drawing submissions. The synthetic gradient was correctly refused at 0.0000 < 0.002.
+
+- `brightness` threshold: **0.08 → 0.02**  
+  Rationale: The kolam_8_mayoo.png hero source has a black background with white lines, giving brightness = 0.061. At 0.08 threshold this was incorrectly refused. The threshold 0.02 still rejects near-blank white images (brightness close to 1.0 but with nothing in them — caught by blur_score) and truly black images, but allows dark-background artwork that is a valid teaching medium.
+
+### 11.2 Relevance gate (`min_similarity`) live observations
+
+**Default WP2 values:** `min_similarity = 0.72` for image, `0.70` for other modalities.
+
+**Live check results (WP5 step 3, kolam compose):**
+
+| Attempt | Embedding cosine similarity | Gate outcome |
+|---|---|---|
+| Same source image | 1.00 | PASS |
+| Half-erased (right half whitened) | 0.96 | PASS |
+| Synthetic gradient (uniform gradient) | caught by blur_score gate first | REFUSED (quality gate) |
+
+**Decision:** Retain `min_similarity = 0.72` for images.  
+Rationale: The half-erased image (0.96) was correctly passed as a valid attempt. No ambiguous-band case (0.72–0.90) was observed in these checks. The gradient was refused by the quality gate before the relevance gate was evaluated, which is the intended behaviour (quality gate runs first).
+
+### 11.3 Audio structure detection for synthetic waveforms
+
+**Observation:** A synthetic 8-second hand-clap WAV (1200 Hz damped sine bursts at 120 BPM) did not receive a proposal from `propose_skill_model`. The audio perceiver did not detect either `temporal_pattern` (rhythm) or `utterance` (speech) structures.
+
+**Decision:** No threshold change made.  
+Rationale: The synthetic waveform does not exhibit realistic percussive contrast (natural percussion has broadband energy and a sharp transient), so the rhythm specialist probe correctly returning no structures is expected behaviour. Synthetic waveforms are not valid learning media; the intake gate should reject them. The `tabla_chanderi_1.webm` real recording (a video with tabla audio) was correctly classified as `procedure + temporal_pattern` and evaluations passed.
+
+### 11.4 Model latency observations (WP5 live checks)
+
+| Check | Model call | Elapsed |
+|---|---|---|
+| Kolam compose (perceive + propose) | vision_fast + embedding | ~6 s |
+| Kolam evaluate: same image | vision_fast + embedding | ~6 s |
+| Kolam evaluate: half-erased | vision_fast + embedding | ~5 s |
+| Rangoli compose + evaluate | vision_fast + embedding | ~5 s |
+| Tabla_chanderi compose (video) | vision_fast + embedding + audio | ~20 s |
+
+All within the latency budget (case build < 45 s, attempt < 30 s per §9). The tabla chanderi video evaluation at 19.8 s is close to the 30 s budget; this was due to the procedure structure doing embedding-based step alignment over a long video.
+
