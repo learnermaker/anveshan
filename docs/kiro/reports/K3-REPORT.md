@@ -229,3 +229,33 @@ npm --prefix app run build
 | Definition of Done (00-COMMON.md) | ✓ |
 | 282 non-live tests pass | ✓ |
 | Case packs, governance, contract parity checks pass | ✓ |
+
+---
+
+## Final Verification Run
+
+Performed by acceptance-check step after implementation commit `6c0e77c`.
+
+```
+# Python non-live tests
+pytest -q tracks/common/tests tracks/track-a/tests tracks/track-b/tests service/tests -m "not live"
+→ 282 passed, 2 deselected, 1 warning in 57.73s   ✓
+
+# npm build (production)
+npm run build  (from app/)
+→ dist/assets/icons-DY5-Gf2A.js     32.28 kB │ gzip:  8.21 kB
+→ dist/assets/vendor-EwzeqkLW.js   133.93 kB │ gzip: 43.12 kB
+→ dist/assets/index-CMjXs7Fs.js    349.17 kB │ gzip: 86.13 kB
+→ ✓ built in 27.71s (all chunks < 500 kB, no TS errors)   ✓
+
+# check_case_packs.py
+→ CASE PACKS: PASS (7 packs)   ✓
+
+# check_governance.py
+→ Governance invariants: PASS   ✓
+
+# check_contract_parity.py
+→ CONTRACT PARITY: PASS (8 root contracts, 17 interfaces, 7 enums)   ✓
+```
+
+**All 5 acceptance checks: PASS.** Working tree clean on branch `kiro/k3-app`.
