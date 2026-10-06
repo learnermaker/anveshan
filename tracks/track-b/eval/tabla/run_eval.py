@@ -1,0 +1,150 @@
+"""Evaluate the tabla evaluator against SYNTHETIC attempts with exact ground truth.
+
+Reads labels/*.json + var/eval/tabla/*.wav (run make_synthetic.py first), runs
+track_b.evaluators.tabla.evaluate with the audio model disabled, and writes RESULTS.md:
+
+- onset F1 (±50 ms) of learner onsets vs the true (perturbed) stroke times;
+- first-divergence agreement: evaluator's first material event within ±0.10 s of the
+  expected time and of an expected kind (or no event when none is expected);
+- status agreement per criterion (score policy bands applied to the evaluator's metrics vs the
+  statuses expected from the ground truth).
+
+Usage: python tracks/track-b/eval/tabla/run_eval.py
+"""
+
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+from typing import Any, Dict, List
+
+import numpy as np
+
+ROOT = Path(__file__).resolve().parents[4]
+for p in (ROOT, ROOT / "tracks" / "track-b" / "src"):
+    if str(p) not in sys.path:
+        sys.path.insert(0, str(p))
+
+from tracks.common.casedata import GoalModel  # noqa: E402
+from tracks.common.media import sha256_file  # noqa: E402
+from tracks.common.models import ModelRegistry  # noqa: E402
+from tracks.common.runtime import RunContext  # noqa: E402
+from track_b.evaluators.tabla import evaluate  # noqa: E402
+from track_b.trajectory import AttemptMedia  # noqa: E402
+
+HERE = Path(__file__).resolve().parent
+LABELS = HERE / "labels"
+F1_TOL = 0.05
+FD_TOL = 0.10
+
+sys.path.insert(0, str(HERE))
+from make_synthetic import BANDS, status  # noqa: E402
+
+
+def onset_f1(pred: List[float], true: List[float], tol: float = F1_TOL) -> Dict[str, float]:
+    used = set()
+    tp = 0
+    for t in true:
+        best, bi = None, None
+        for i, p in enumerate(pred):
+            if i in used:
+                continue
+            d = abs(p - t)
+            if d <= tol and (best is None or d < best):
+                best, bi = d, i
+        if bi is not None:
+            used.add(bi)
+            tp += 1
+    prec = tp / len(pred) if pred else 0.0
+    rec = tp / len(true) if true else 0.0
+    f1 = 2 * prec * rec / (prec + rec) if prec + rec else 0.0
+    return {"precision": round(prec, 4), "recall": round(rec, 4), "f1": round(f1, 4)}
+
+
+def main() -> int:
+    goal = GoalModel.model_validate_json((LABELS / "goal_model.snapshot.json").read_text(encoding="utf-8"))
+    steady = goal.built_with.get("bands", {}).get("steady", [0.08, 0.15])
+    bands = dict(BANDS)
+    bands["CRIT-TABLA-STEADY"] = ("tabla.ioi_cv", "lower", steady[0], steady[1])
+    ctx = RunContext.create(ROOT / "tracks" / "cases" / "tabla", ROOT / "var", "recorded", registry=ModelRegistry({"audio": ""}))
+    names = json.loads((LABELS / "index.json").read_text(encoding="utf-8"))["cases"]
+    rows: List[Dict[str, Any]] = []
+    total_st, agree_st = 0, 0
+    for name in names:
+        lab = json.loads((LABELS / f"{name}.json").read_text(encoding="utf-8"))
+        wav = ROOT / lab["wav"]
+        att = AttemptMedia(kind="audio", path=wav, source_id=f"synthetic.tabla.{name}", sha256=sha256_file(wav), mime_type="audio/wav")
+        res = evaluate(goal, att, ctx)
+        pred = [o["t"] for o in res.artifacts["learner_onsets"]]
+        true = [o["t"] for o in lab["true_onsets"]]
+        f1 = onset_f1(pred, true)
+        material = [e for e in res.events if e.severity == "material"]
+        exp = lab["expected_first_divergence"]
+        if exp is None:
+            fd_ok = not material
+            fd_got = None if not material else f"{material[0].kind}@{material[0].position:.2f}"
+        else:
+            fd_got = None if not material else f"{material[0].kind}@{material[0].position:.2f}"
+            fd_ok = bool(material) and abs(material[0].position - exp["time"]) <= FD_TOL and material[0].kind in exp["kinds"]
+        statuses = {}
+        for cid, (metric, d, s, p) in bands.items():
+            v = res.metrics[metric].value
+            statuses[cid] = "uncertain" if v is None else status(v, d, s, p)
+        statuses["CRIT-TABLA-BOLS"] = "uncertain" if res.metrics["tabla.bol_accuracy"].value is None else "scored"
+        st_agree = {cid: statuses[cid] == lab["expected_statuses"][cid] for cid in statuses}
+        total_st += len(st_agree)
+        agree_st += sum(st_agree.values())
+        rows.append({
+            "name": name, "f1": f1, "fd_expected": None if exp is None else f"{'/'.join(exp['kinds'])}@{exp['time']:.2f}",
+            "fd_got": fd_got, "fd_ok": fd_ok, "statuses": statuses, "expected": lab["expected_statuses"], "agree": st_agree,
+            "metrics": {k: v.value for k, v in res.metrics.items()}, "expected_metrics": lab["expected_metrics"],
+            "n_events": len(material), "warnings": res.warnings,
+        })
+        print(name, f1, fd_ok, fd_got, {k: v for k, v in st_agree.items() if not v})
+
+    f1s = [r["f1"]["f1"] for r in rows]
+    fd = sum(r["fd_ok"] for r in rows)
+    out: List[str] = []
+    out.append("# Tabla evaluator — synthetic evaluation results\n")
+    out.append("Generated by `tracks/track-b/eval/tabla/run_eval.py` (do not edit by hand). All attempts are **SYNTHETIC** "
+               "re-syntheses of the goal window (see `make_synthetic.py`); ground truth is exact by construction. "
+               "Audio model disabled (bol criterion UNCERTAIN by design).\n")
+    out.append(f"- Goal: `{goal.package_id}` from `{goal.source_ids[0]}`, window {goal.payload['window_sec']} s, "
+               f"{len(goal.payload['onsets'])} strokes, pulse {goal.payload['stroke_pulse_sec']} s, "
+               f"cycle {goal.payload['cycle_length_pulses']} pulses.")
+    out.append(f"- Onset F1 (±{int(F1_TOL * 1000)} ms), mean over {len(rows)} attempts: **{np.mean(f1s):.3f}** (min {min(f1s):.3f}).")
+    out.append(f"- First-divergence agreement (±{FD_TOL:.2f} s and expected kind; none when none expected): **{fd}/{len(rows)}**.")
+    out.append(f"- Criterion status agreement: **{agree_st}/{total_st}** ({agree_st / total_st * 100:.1f}%).\n")
+    out.append("Caveat: the true onset times are the goal's own detected onsets moved by the known perturbation, so onset F1 "
+               "measures detector stability under perturbation, not absolute onset accuracy against hand labels.\n")
+    out.append("| attempt | onset P / R / F1 | expected first divergence | evaluator first divergence | ok | material events |")
+    out.append("|---|---|---|---|---|---|")
+    for r in rows:
+        f = r["f1"]
+        out.append(f"| {r['name']} | {f['precision']:.3f} / {f['recall']:.3f} / {f['f1']:.3f} | {r['fd_expected'] or 'none'} | "
+                   f"{r['fd_got'] or 'none'} | {'yes' if r['fd_ok'] else 'NO'} | {r['n_events']} |")
+    out.append("\n## Statuses (evaluator / expected)\n")
+    cids = list(rows[0]["statuses"].keys())
+    out.append("| attempt | " + " | ".join(c.replace("CRIT-TABLA-", "") for c in cids) + " |")
+    out.append("|---|" + "---|" * len(cids))
+    short = {"satisfied": "sat", "partially_satisfied": "partial", "not_satisfied": "not", "uncertain": "unc", "scored": "scored"}
+    for r in rows:
+        cells = []
+        for c in cids:
+            a, e = short[r["statuses"][c]], short[r["expected"][c]]
+            cells.append(a if a == e else f"**{a} / {e}**")
+        out.append(f"| {r['name']} | " + " | ".join(cells) + " |")
+    out.append("\n## Metrics (evaluator vs ground truth)\n")
+    mids = ["tabla.tempo_error_pct", "tabla.timing_median_ms", "tabla.bass_accuracy", "tabla.missing_extra", "tabla.ioi_cv"]
+    out.append("| attempt | " + " | ".join(m.replace("tabla.", "") for m in mids) + " |")
+    out.append("|---|" + "---|" * len(mids))
+    for r in rows:
+        out.append(f"| {r['name']} | " + " | ".join(
+            f"{r['metrics'][m]} vs {r['expected_metrics'][m]}" for m in mids) + " |")
+    (HERE / "RESULTS.md").write_text("\n".join(out) + "\n", encoding="utf-8")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

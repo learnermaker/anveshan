@@ -44,6 +44,7 @@ MIN_DURATION_SEC = 3.0
 MAX_CLIP_FRACTION = 0.01
 MIN_STROKES = 4
 SILENCE_PEAK = 1e-3
+MIN_PERCUSSIVE_CONTRAST = 1.5   # p95/p50 short-time RMS; real tabla recordings measured 2.9-5.6
 # Strokes with normalised onset strength below this are "soft" (ghost strokes near the detector
 # threshold): missing/extra soft strokes are still counted in tabla.missing_extra but are
 # "minor" events, so they never become the first (material) divergence.
@@ -82,6 +83,11 @@ def _load_learner(attempt: AttemptMedia) -> np.ndarray:
     if clip > MAX_CLIP_FRACTION:
         raise _invalid(f"The recording is distorted ({clip * 100:.1f}% of samples are clipped). Move the phone further "
                        "from the drums or lower the input level and record again.", clipping_fraction=round(clip, 4))
+    contrast = dsp.percussive_contrast(x, SR)
+    if contrast < MIN_PERCUSSIVE_CONTRAST:
+        raise _invalid("No distinct drum strokes can be heard in this recording (it sounds like a steady tone or "
+                       "background noise). Record the tabla closer to the microphone in a quiet room.",
+                       percussive_contrast=round(contrast, 3))
     return x
 
 
@@ -172,7 +178,7 @@ def evaluate(goal: GoalModel, attempt: AttemptMedia, ctx: RunContext) -> Traject
     thr = dsp.learner_bass_threshold(on.low_ratio, g.bass_threshold, (g.bass_centres[0], g.bass_centres[1]))
     if thr.adapted:
         warnings.append(f"Bass threshold adapted to this recording: {thr.rule}.")
-    lbass = [r > thr.value for r in on.low_ratio]
+    lbass = [bool(r > thr.value) for r in on.low_ratio]
     strokes_l = [dsp.Stroke(float(lt[i]), float(min(1.0, on.strength[i])), lbass[i]) for i in range(len(lt))]
 
     aln, a, b, pl = _align(g, lt, strokes_l)
@@ -187,10 +193,10 @@ def evaluate(goal: GoalModel, attempt: AttemptMedia, ctx: RunContext) -> Traject
     pairs = []
     for j, i in aln.pairs:
         dev_ms = (lt[i] - expected(j)) * 1000.0
-        bass_ok = g.onsets[j].bass == lbass[i]
+        bass_ok = bool(g.onsets[j].bass == lbass[i])
         pairs.append({"goal": j, "learner": i, "goal_t": float(gt[j]), "learner_t": float(lt[i]),
                       "dev_ms": round(float(dev_ms), 1), "bass_goal": g.onsets[j].bass, "bass_learner": lbass[i],
-                      "bass_ok": bass_ok, "on_time": abs(dev_ms) <= tol_ms})
+                      "bass_ok": bass_ok, "on_time": bool(abs(dev_ms) <= tol_ms)})
 
     metrics: Dict[str, MetricValue] = {}
     events: List[DivergenceEvent] = []

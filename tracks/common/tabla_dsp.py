@@ -439,6 +439,19 @@ def clipping_fraction(x: np.ndarray, level: float = 0.99) -> float:
     return float(np.mean(np.abs(x) >= level)) if x.size else 0.0
 
 
+def percussive_contrast(x: np.ndarray, sample_rate: int, frame_sec: float = 0.02) -> float:
+    """95th / 50th percentile of short-time RMS. Struck drums give bursts (>> 1); a steady tone or
+    hum gives ~1. Used to reject stroke-free input, because ``detect_onsets`` normalises flux by its
+    own peak and can report periodic "onsets" on a pure tone."""
+    x = np.asarray(x, dtype=np.float32)
+    n = max(1, int(frame_sec * sample_rate))
+    m = len(x) // n
+    if m < 4:
+        return 0.0
+    rms = np.sqrt(np.mean(x[: m * n].reshape(m, n) ** 2, axis=1))
+    return float(np.percentile(rms, 95) / (np.percentile(rms, 50) + 1e-9))
+
+
 def match_bols(
     onset_times: Sequence[float], labelled: Sequence[Tuple[float, str]], tol: float = 0.08
 ) -> Tuple[List[Optional[str]], int]:
