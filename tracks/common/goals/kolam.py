@@ -7,14 +7,17 @@ See docs/plans/evaluation-core.md §3.
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Tuple
 
 import numpy as np
 from pydantic import BaseModel, Field
 
 from tracks.common import kolam_geometry as kg
+from tracks.common.models import AnveshanFailure, FailureCategory
 
 SAMPLE_STEP_PX = 4.0
+MIN_STAGES = 3          # a single continuous line is split into >= 3 suggested drawing stages
 
 
 class Canvas(BaseModel):
@@ -143,3 +146,81 @@ def find_dot(goal: KolamGoal, dot_id: str) -> Optional[KolamDot]:
         if d.id == dot_id:
             return d
     return None
+
+
+# ---------------------------------------------------------------------------------------
+# Construction (deterministic; used by the Track A builder and by synthetic-data tools)
+# ---------------------------------------------------------------------------------------
+
+
+def payload_from_image(source_path: Path, min_stages: int = MIN_STAGES) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    """Deterministic geometry -> (KolamGoal payload dict, built_with dict)."""
+    an = kg.analyze_image(source_path)
+    dec = kg.decompose_curves(an)
+    if not dec.curves:
+        raise AnveshanFailure(FailureCategory.INVALID_INPUT, f"no line work found in {source_path.name}")
+    sym = kg.estimate_symmetry(an)
+    rels = kg.dot_relations(an.dots, dec.curves, dec.closed, an.stroke_width)
+    h, w = an.shape
+    dots = []
+    for i, (d, rel) in enumerate(zip(an.dots, rels)):
+        dots.append({"id": f"D{i + 1:02d}", "x": round(d.x, 2), "y": round(d.y, 2), "r": round(d.r, 2),
+                     "relation": rel["relation"], "line_distance": rel["line_distance"]})
+    k = len(dec.curves)
+    curves = []
+    for ci, (pts, closed) in enumerate(zip(dec.curves, dec.closed)):
+        cid = f"C{ci + 1}"
+        on = []
+        for d in dots:
+            if d["relation"] != "on_line":
+                continue
+            dist = np.hypot(pts[:, 0] - d["x"], pts[:, 1] - d["y"])
+            j = int(np.argmin(dist))
+            if dist[j] <= d["r"] + an.stroke_width:
+                on.append((j, d["id"]))
+        stages_idx = kg.split_stages(pts, closed, sym["rotation_order"], sym["centre"], min_stages) if k < min_stages else [(0, len(pts))]
+        curves.append({
+            "id": cid,
+            "closed": closed,
+            "points": [[round(float(x), 2), round(float(y), 2)] for x, y in pts],
+            "start_index": 0,
+            "length_px": round(kg.polyline_length(pts, closed), 1),
+            "dot_ids": [i for _, i in sorted(on)],
+            "stages": [{"id": f"{cid}.S{si + 1}", "start": a, "end": b} for si, (a, b) in enumerate(stages_idx)],
+        })
+    counts = {r: sum(1 for d in dots if d["relation"] == r) for r in ("on_line", "enclosed", "free")}
+    total_len = sum(c["length_px"] for c in curves)
+    payload = {
+        "canvas": {"width": w, "height": h},
+        "stroke_width": round(an.stroke_width, 3),
+        "tau": round(an.tau, 3),
+        "dots": dots,
+        "curves": curves,
+        "symmetry": sym,
+        "features": {
+            "n_dots": len(dots),
+            "n_curves": k,
+            "n_closed": int(sum(dec.closed)),
+            "n_crossings": int(sum(n for deg, n in dec.junction_degrees.items() if deg >= 3)),
+            "free_endpoints": dec.free_endpoints,
+            "total_length_px": round(total_len, 1),
+            "relation_counts": counts,
+            "sample_step_px": SAMPLE_STEP_PX,
+            "n_samples": 0,
+        },
+    }
+    payload["features"]["n_samples"] = int(len(goal_samples(KolamGoal.model_validate(payload))[0]))
+    KolamGoal.model_validate(payload)
+    built_with = {
+        "algorithm": kg.ALGO_VERSION,
+        "payload_builder": "tracks.common.goals.kolam.payload_from_image@v1",
+        "binarize": an.threshold,
+        "processing_scale": an.scale,
+        "params": {
+            "dot_peak_ratio": kg.DOT_PEAK_RATIO, "dot_ring_max": kg.DOT_RING_MAX,
+            "symmetry_min_score": kg.SYMMETRY_MIN_SCORE, "tau": f"max({kg.TAU_MIN_PX}, {kg.TAU_W_FACTOR} * w)",
+            "dir_arc_px": kg.DIR_ARC_PX, "min_stages": min_stages, "sample_step_px": SAMPLE_STEP_PX,
+        },
+        "junction_degrees": {str(a): b for a, b in dec.junction_degrees.items()},
+    }
+    return payload, built_with

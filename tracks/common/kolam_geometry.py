@@ -997,36 +997,47 @@ def register_similarity(src_pts: np.ndarray, src_dots: Sequence[Dot], dst_pts: n
     dst_mask[di[ok, 1], di[ok, 0]] = True
     dst_tol = dilate(dst_mask, tol)
     rng = np.random.default_rng(0)
-    sp = src_pts if len(src_pts) <= 4000 else src_pts[rng.choice(len(src_pts), 4000, replace=False)]
-    dp = dst_pts if len(dst_pts) <= 4000 else dst_pts[rng.choice(len(dst_pts), 4000, replace=False)]
-    dp_sorted = dp
+    sp = src_pts if len(src_pts) <= 800 else src_pts[np.sort(rng.choice(len(src_pts), 800, replace=False))]
+    dp = dst_pts if len(dst_pts) <= 400 else dst_pts[np.sort(rng.choice(len(dst_pts), 400, replace=False))]
 
-    def score(theta: float) -> float:
+    def score(theta: float, scale: float, dx: float = 0.0, dy: float = 0.0) -> float:
         th = math.radians(theta)
-        m = np.array([[math.cos(th), -math.sin(th)], [math.sin(th), math.cos(th)]]) * s
-        q = (sp - sc) @ m.T + dc
+        m = np.array([[math.cos(th), -math.sin(th)], [math.sin(th), math.cos(th)]]) * scale
+        q = (sp - sc) @ m.T + dc + np.array([dx, dy])
         qi = np.round(q).astype(int)
         okq = (qi[:, 0] >= 0) & (qi[:, 0] < w) & (qi[:, 1] >= 0) & (qi[:, 1] < h)
         prec = np.zeros(len(q), dtype=bool)
         prec[okq] = dst_tol[qi[okq, 1], qi[okq, 0]]
-        src_mask = np.zeros((h, w), dtype=bool)
-        src_mask[qi[okq, 1], qi[okq, 0]] = True
-        src_tol = dilate(src_mask, tol)
-        pi = np.round(dp_sorted).astype(int)
-        rec = src_tol[np.clip(pi[:, 1], 0, h - 1), np.clip(pi[:, 0], 0, w - 1)]
+        rec = min_dists(dp, q) <= tol
         return 0.5 * (float(prec.mean()) + float(rec.mean()))
 
-    coarse = [(score(float(t)), -float(t)) for t in np.arange(0.0, 360.0, 2.0)]
-    best_s, neg_t = max(coarse)
-    best_t = -neg_t
-    for t in np.arange(best_t - 2.0, best_t + 2.0001, 0.25):
-        sc_ = score(float(t))
-        if sc_ > best_s + 1e-12:
-            best_s, best_t = sc_, float(t)
+    best = max((score(float(t), s), -float(t)) for t in np.arange(0.0, 360.0, 2.0))
+    best_s, best_t, best_k, bx, by = best[0], -best[1], 1.0, 0.0, 0.0
+    # local refinement: rotation, scale (+-15 %), translation (+-6 px), coordinate ascent
+    for _ in range(3):
+        improved = False
+        for t in np.arange(best_t - 2.0, best_t + 2.0001, 0.25):
+            v = score(float(t), s * best_k, bx, by)
+            if v > best_s + 1e-9:
+                best_s, best_t, improved = v, float(t), True
+        for kf in np.arange(0.85, 1.1501, 0.01):
+            v = score(best_t, s * float(kf), bx, by)
+            if v > best_s + 1e-9:
+                best_s, best_k, improved = v, float(kf), True
+        for step in (2.0, 1.0):
+            cx, cy = bx, by
+            for dx in np.arange(-6.0, 6.01, step) if step == 2.0 else (-1.0, 0.0, 1.0):
+                for dy in np.arange(-6.0, 6.01, step) if step == 2.0 else (-1.0, 0.0, 1.0):
+                    v = score(best_t, s * best_k, cx + float(dx), cy + float(dy))
+                    if v > best_s + 1e-9:
+                        best_s, bx, by, improved = v, cx + float(dx), cy + float(dy), True
+        if not improved:
+            break
     best_t = best_t % 360.0
+    s = s * best_k
     th = math.radians(best_t)
     m = np.array([[math.cos(th), -math.sin(th)], [math.sin(th), math.cos(th)]]) * s
-    t = dc - m @ sc
+    t = dc + np.array([bx, by]) - m @ sc
     return Similarity(scale=float(s), theta_deg=float(best_t), tx=float(t[0]), ty=float(t[1]),
                       score=float(best_s), method=method)
 
