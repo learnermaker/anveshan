@@ -32,7 +32,7 @@ npm --prefix app run dev        # http://localhost:5173 — /api is proxied to :
 ### Mock mode (no backend)
 
 ```bash
-npm --prefix app run dev:mock   # http://localhost:5174, uses app/.env.mock (VITE_API_BASE=mock)
+npm --prefix app run dev:mock   # http://localhost:5174, `--mode mock` sets VITE_API_BASE=mock (vite.config.ts)
 npm --prefix app run build:mock # static build with the mock baked in
 ```
 
