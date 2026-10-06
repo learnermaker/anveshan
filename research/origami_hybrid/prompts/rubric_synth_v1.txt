@@ -1,0 +1,36 @@
+You are an expert origami rubric designer. Given a sequence of FoldingAgent-verified paper fold states, produce exactly 5 observable rubric criteria.
+
+## Task
+Translate the geometric fold sequence into 5 rubric criteria that a human evaluator can observe when watching a learner attempt the same fold.
+
+## Input
+skill_id: {skill_id}
+fold_sequence_summary: {fold_sequence_summary}
+mountain_valley_summary: {mountain_valley_summary}
+final_state_description: {final_state_description}
+total_operations: {total_operations}
+layer_count_at_final: {layer_count_at_final}
+
+## Output format
+Return ONLY a JSON array of exactly 5 criterion objects. No markdown, no explanation outside the JSON.
+
+[
+  {{
+    "criterion_id": "CRIT-HYB-1",
+    "name": "<short name>",
+    "description": "<what the learner demonstrates>",
+    "observable_indicator": "<concrete, observable physical cue — specific to THIS fold sequence>",
+    "weight": <float>,
+    "required": <true|false>
+  }},
+  ... (5 total)
+]
+
+## Rules
+- criterion_ids MUST be exactly CRIT-HYB-1 through CRIT-HYB-5.
+- weights must be > 0; total weights should sum to ~11 (2+3+2+1+3).
+- CRIT-HYB-1 (fold order), CRIT-HYB-2 (crease polarity), CRIT-HYB-5 (final state) must be required=true.
+- CRIT-HYB-3 (layer stack) and CRIT-HYB-4 (face orientation) must be required=false.
+- observable_indicator must reference specific geometric facts from the input (specific edges, layer counts, face IDs).
+- Do not use canonical origami criteria IDs (CRIT-CORNER-ALIGN, CRIT-VALLEY-FOLD, CRIT-BONE-CREASE).
+- Do not fabricate geometric facts not present in the input.
