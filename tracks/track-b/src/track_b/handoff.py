@@ -1,6 +1,6 @@
 """Read Track A's handoff artifacts from a case directory (track-b-spec §3.1).
 
-Track B never imports ``track_a``: it reads the versioned case files directly.
+Track B never imports the Track A package: it reads the versioned case files directly.
 
 Version selection: the highest ``knowledge_package.vN`` whose expert review is
 approved (or revised), else the highest non-rejected version. The other five artifacts

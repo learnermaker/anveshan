@@ -1,16 +1,22 @@
-# Track B Source Boundary: Evaluation & Transmission Engine
+# Track B source: `track_b` package
 
-This directory contains the production evaluation and transmission measurement engine for Track B.
+Public API: `track_b.api` (docs/plans/service-api.md §3). Pipeline per attempt:
 
-## Modules
+`intake` -> modality evaluator (`track_b.evaluators.<m>`, trajectory) -> `scoring` (bands -> status -> score_policy_v1)
+-> `evaluate` (Evaluation, validator pass semantics) -> `divergence` (first divergence) -> `feedback` + `drill`
+-> `session` state machine -> `compare` + `transmission` (TransmissionRecord + validated 9-key bundle).
 
-- `evaluator.py`: Deterministic criterion evaluation, score boundary enforcement ($0 \le \text{score} \le \text{weight}$), required criteria gating, and pass/fail state transitions.
-- `feedback.py`: Evidence-grounded coaching generator linking learner observations to expert demonstration references and prioritizing retry focus areas.
-- `transmission.py`: Deterministic gain calculation ($\Delta = \text{retry\_score} - \text{baseline\_score}$), criteria improvement detection, and cryptographic SHA-256 provenance hashing.
-- `pipeline.py`: Unified `TransmissionPipeline` executing the complete end-to-end replay lifecycle.
+| Module | Role |
+|---|---|
+| `api.py` | start / submit / complete / save / load session |
+| `handoff.py` | loads approved-else-latest case artifacts; cross-file validation |
+| `intake.py` | uploaded file -> `AttemptMedia` (sniffed MIME, limits, sha256) |
+| `scoring.py` | the only place scores are produced |
+| `evaluate.py` | Evaluation assembly; every required criterion must be SATISFIED to pass |
+| `divergence.py` | first divergence (evaluation-core §2) |
+| `feedback.py`, `drill.py` | grounded feedback (expert evidence from the criterion map), unscored drill |
+| `compare.py`, `transmission.py` | transitions, targeted change, provenance hash, bundle validation |
+| `session.py`, `clock.py` | serialisable session; injectable clock and ids |
+| `trajectory.py`, `evaluators/` | modality evaluator interface and registry |
 
-## Replay Invariants Enforced
-
-1. Rubric adherence: No unconstrained single-number scores; all judgments are mapped criterion-by-criterion.
-2. Required criteria gate: If any mandatory criterion is `NOT_SATISFIED`, the overall evaluation `passed` flag is strictly `False`.
-3. Deterministic gain: Gain arithmetic is strictly computed in Python, never hallucinated by model prose.
+Track B never imports the Track A package. No `uuid4()` / `now()` outside `clock.py`.

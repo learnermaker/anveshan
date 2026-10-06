@@ -1,5 +1,11 @@
 # Track B — Practice, Evaluation & Transmission
 
+**Current implementation (2026-10-06):** the `track_b` package under `src/` (see `src/README.md`).
+Public API `track_b.api` per `docs/plans/service-api.md` §3; design in `docs/plans/evaluation-core.md` and
+`docs/plans/track-b-spec.md`. Core tests: `tests/test_core_*.py` (fake evaluator, synthetic case packs).
+Modality evaluators live in `src/track_b/evaluators/<modality>.py`. `tools/camera_demo.py` is a dev-only,
+non-functional reference. Runtime dependencies: `requirements.txt`.
+
 **Owner boundary:** learner practice, attempt representation, rubric-based evaluation, evidence-linked feedback, retry, transmission measurement, and lineage output.
 
 ## Start here

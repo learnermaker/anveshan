@@ -7,7 +7,7 @@
 
 Pipeline per attempt: modality evaluator (trajectory) -> deterministic scoring -> Evaluation
 -> first divergence -> grounded feedback + drill (baseline and failed retries).
-Track B never imports ``track_a``.
+Track B never imports the Track A package.
 """
 
 from __future__ import annotations
