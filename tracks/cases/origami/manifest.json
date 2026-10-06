@@ -17,8 +17,8 @@
   "runtime_class": "REPLAY",
   "source_media": {
     "type": "url",
-    "url": "https://upload.wikimedia.org/wikipedia/commons/transcoded/5/5a/OrigamiCrane.ogv/OrigamiCrane.ogv.480p.webm",
-    "mime_type": "video/webm",
-    "attribution": "Tavin, CC BY 3.0, https://commons.wikimedia.org/wiki/File:OrigamiCrane.ogv"
+    "url": "https://upload.wikimedia.org/wikipedia/commons/b/bb/OrigamiCrane.ogv",
+    "mime_type": "video/ogg",
+    "attribution": "OrigamiCrane.ogv by Tavin, CC BY 3.0 (Wikimedia Commons)"
   }
 }

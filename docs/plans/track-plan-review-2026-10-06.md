@@ -155,7 +155,7 @@ Why padhant: a learner without a tabla can still practise. It is authentic (stud
 |---|---|---|
 | Track A — Expert Intelligence & Grounding | Amal | `tracks/track-a/`; hero-case `source/source.json`, `knowledge/*`, `practice/rubric*`, `practice/practice_task*` |
 | Track B — Practice, Evaluation & Transmission | Akarsh | `tracks/track-b/`; hero-case `practice/observers*`; assembly of the replay bundle |
-| Integration — Service, App, Deploy, Demo | Jim | New `service/` (FastAPI), `app/` capture and wiring, Cloud Run, shared helpers `tracks/common/locators.py` (fragment parse/format) and `tracks/common/signal.py` (one numpy onset detector used by Track A for reference onsets and Track B for learner onsets), sidecar JSON Schemas, CI, case-pack checker updates, consent records, demo video and deck |
+| Integration — Service, App, Deploy, Demo | Jim | New `service/` (FastAPI), `app/` capture and wiring, Cloud Run, shared helpers `tracks/common/locators.py` (fragment parse/format) and `tracks/common/onsets.py` (one numpy onset detector used by Track A for reference onsets and Track B for learner onsets), sidecar JSON Schemas, CI, case-pack checker updates, consent records, demo video and deck |
 
 ### 4.3 Hybrid observation per modality (summary; details in the Track B spec)
 
@@ -383,3 +383,18 @@ Severity key:
 6. **Merge order:** PR #40 (after P0 fixes) → Track B PR → Integration PRs.
 
 Each accepted item becomes a bounded GitHub issue, per `AGENTS.md`. NOW.md / project.yaml should then record the selected hero cases. That is a scope change: the trade is that four cases become replay-only showcase.
+
+---
+
+## 9. Decisions 2026-10-06 (Jim) — supersede conflicting text above
+
+1. **Hero cases confirmed.** Kolam uses the **final image only**; evaluation interpolates backward from it and checks whether the learner's actions reach the target. Origami uses video (full multimodal). Tabla uses audio; optional video is accepted and displayed but not scored.
+2. **No people are required for the hackathon build.** Sources and learner attempts come from **uploads** (Track A source upload and Track B attempt upload) and from licensed internet media. Live capture (mic, camera) is future work. The Kolam canvas stays, because it is an input method rather than capture.
+3. **Ownership:** Jim owns integration. Claude is the main developer across Track A, Track B, service and app, and uses parallel sub-agents.
+4. **Conventions:** the locator convention and the case-pack sidecars are adopted as proposed. The GoalModel replaces the separate reference files (see `evaluation-core.md`).
+5. **Theme:** **Sustainability & Social Impact**, framed as living-heritage and skill transmission (Kolam and Tabla are intangible cultural heritage; Origami is the control case). Recheck the official theme text before submission.
+6. **Merge order:** Amal's and Akarsh's branches are merged into `m1/hero-cases` to keep their history. Work continues there in bounded commits, with PRs into `main` once `gh` is available.
+7. **Data:** internet sources only, chosen by licence (see `tracks/cases/*/source/source.json`).
+8. **Evaluation is the core capability:** designed in `evaluation-core.md` (Goal-Trajectory Verification).
+9. **Models:** Gemma 4 26B (`gemma-4-26b-a4b-it`, free on AI Studio) for text, images and video frames. Gemma has no audio, so audio model calls are optional and off by default. Keys go in `.env` (template in `.env.example`).
+10. **NOW scope change:** the three hero cases are live; micrometer, bicycle repair, handloom and square knot become SYNTHETIC replay showcase only. NOW.md and project.yaml will be updated to match.

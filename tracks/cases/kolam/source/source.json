@@ -1,0 +1,45 @@
+{
+  "case_id": "kolam",
+  "sources": [
+    {
+      "access_level": "public",
+      "attribution": "Ithayakkamalam - 2.jpg, by Mayooranathan, public domain, via Wikimedia Commons (https://commons.wikimedia.org/wiki/File:Ithayakkamalam_-_2.jpg)",
+      "bytes": 57663,
+      "creator": "Mayooranathan (Tamil Wikipedia)",
+      "dimensions": [
+        492,
+        499
+      ],
+      "license": "Public domain",
+      "mime_type": "image/jpeg",
+      "notes": "Finished kolam: the ONLY input the system uses (goal-conditioned, final image only).",
+      "path": "source/ithayakkamalam_target.jpg",
+      "role": "target_image",
+      "runtime_label": "INTERNET_REFERENCE",
+      "sha256": "0a3b13977ee4337c0e52d8cf53d66c6002d9fdf498b984784df89cbcbe38cc0e",
+      "source_id": "src.kolam.target.v1",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/f/f4/Ithayakkamalam_-_2.jpg",
+      "used_by_system": true
+    },
+    {
+      "access_level": "public",
+      "attribution": "Ithayakkamalam - 1.jpg, by Mayooranathan, public domain, via Wikimedia Commons",
+      "bytes": 59283,
+      "creator": "Mayooranathan (Tamil Wikipedia)",
+      "dimensions": [
+        505,
+        502
+      ],
+      "license": "Public domain",
+      "mime_type": "image/jpeg",
+      "notes": "Author's stroke-direction diagram. HELD OUT: never given to the system; used only to validate the inferred drawing path.",
+      "path": "source/held_out/ithayakkamalam_direction_diagram.jpg",
+      "role": "held_out_reference",
+      "runtime_label": "INTERNET_REFERENCE",
+      "sha256": "f5cf8defaa9fa342d80552255e1e49fa814617bc66bbce6935240a45345e9279",
+      "source_id": "src.kolam.direction_diagram.v1",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/b/b2/Ithayakkamalam_-_1.jpg",
+      "used_by_system": false
+    }
+  ]
+}

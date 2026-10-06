@@ -55,7 +55,7 @@ tracks/track-b/
     observers/
       base.py                     # Observer protocol, ObservationResult
       kolam_trace.py              # deterministic geometry
-      tabla_audio.py              # deterministic timing (uses tracks/common/signal.py)
+      tabla_audio.py              # deterministic timing (uses tracks/common/onsets.py)
       origami_video.py            # sequence alignment over Gemini events
       gemini.py                   # GeminiCriterionObserver (image/audio/video), recorded-run aware
     scoring.py                    # status -> score policy; band evaluation
@@ -75,7 +75,7 @@ tracks/track-b/
   tools/camera_demo.py            # moved from src/; dev-only, Windows-specific code allowed here
 ```
 
-Shared helpers owned by Integration, which Track B uses: `tracks/common/locators.py` (fragment parse/format) and `tracks/common/signal.py` (onset detector, also used by Track A for the reference onsets).
+Shared helpers owned by Integration, which Track B uses: `tracks/common/locators.py` (fragment parse/format) and `tracks/common/onsets.py` (onset detector, also used by Track A for the reference onsets).
 
 ### 2.1 Public API (`track_b/api.py`)
 
@@ -221,7 +221,7 @@ Trace JSON from the app:
 
 ### 4.2 Tabla padhant: timing plus bols (`observers/tabla_audio.py`)
 
-**Onset detection** (in `tracks/common/signal.py`, numpy only, deterministic):
+**Onset detection** (in `tracks/common/onsets.py`, numpy only, deterministic):
 - STFT with Hann window 1024, hop 256 at 16 kHz;
 - spectral flux `Σ max(0, |X_t| − |X_{t−1}|)`, normalised to [0, 1];
 - adaptive threshold = moving median over 0.5 s + 0.08;

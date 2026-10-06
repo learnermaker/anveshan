@@ -10,7 +10,7 @@ description: Rules and code patterns for any Gemma/Gemini model call in Anveshan
 |---|---|---|
 | `text_image` | `gemma-4-26b-a4b-it` | Free on AI Studio. Text + images. System instructions OK. |
 | `video_frames` | `gemma-4-26b-a4b-it` | Gemma rejects MP4s that carry an audio track. **Never send video files to Gemma**: decode frames with PyAV (`tracks/common/media.py`) and send JPEG frames as images with their timestamps in the prompt. |
-| `audio` | unset (disabled) | Gemma 26B/31B have **no audio input**. If `ANVESHAN_AUDIO_MODEL` is set (e.g. a Gemini Flash-Lite id), audio criteria may use it; otherwise those criteria return `UNCERTAIN` with reason `audio_model_disabled`. Timing/onsets are always deterministic (`tracks/common/signal.py`). |
+| `audio` | unset (disabled) | Gemma 26B/31B have **no audio input**. If `ANVESHAN_AUDIO_MODEL` is set (e.g. a Gemini Flash-Lite id), audio criteria may use it; otherwise those criteria return `UNCERTAIN` with reason `audio_model_disabled`. Timing/onsets are always deterministic (`tracks/common/onsets.py`). |
 
 Model ids come from env (`ANVESHAN_TEXT_IMAGE_MODEL`, `ANVESHAN_VIDEO_FRAMES_MODEL`, `ANVESHAN_AUDIO_MODEL`) via the shared registry in `tracks/common/models.py`. Never hard-code a model id elsewhere. Never add silent fallback lists.
 

@@ -278,7 +278,7 @@ class AudioExtraction(BaseModel):
     unknowns: list[str]
 ```
 
-**Deterministic reference** (`references.build_reference_onsets()`): Track A computes onsets from the expert WAV with the **same numpy onset detector Track B uses**. That detector lives in `tracks/common/signal.py`, a helper owned by Integration so both tracks share one implementation. Track A then aligns the model's `events` to the detected onsets, matching each event to the nearest onset within ±80 ms. This produces `knowledge/reference/reference_onsets.json`:
+**Deterministic reference** (`references.build_reference_onsets()`): Track A computes onsets from the expert WAV with the **same numpy onset detector Track B uses**. That detector lives in `tracks/common/onsets.py`, a helper owned by Integration so both tracks share one implementation. Track A then aligns the model's `events` to the detected onsets, matching each event to the nearest onset within ±80 ms. This produces `knowledge/reference/reference_onsets.json`:
 
 ```json
 {"sample_rate": 16000, "tempo_bpm": 60.2, "onsets_sec": [...], "labels": ["Dha","Dhin",...],

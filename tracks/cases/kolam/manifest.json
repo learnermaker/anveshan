@@ -17,8 +17,8 @@
   "runtime_class": "REPLAY",
   "source_media": {
     "type": "local_file",
-    "path": "source/kolam.png",
-    "mime_type": "image/png",
-    "attribution": "Traditional 7x1 Sikku Kolam (with Crossover) goal pattern reference"
+    "path": "source/ithayakkamalam_target.jpg",
+    "mime_type": "image/jpeg",
+    "attribution": "Ithayakkamalam - 2.jpg, Mayooranathan, public domain (Wikimedia Commons)"
   }
 }

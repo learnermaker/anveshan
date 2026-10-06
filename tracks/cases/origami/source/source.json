@@ -1,0 +1,47 @@
+{
+  "case_id": "origami",
+  "sources": [
+    {
+      "access_level": "public",
+      "attribution": "OrigamiCrane.ogv by Tavin, CC BY 3.0, via Wikimedia Commons (https://commons.wikimedia.org/wiki/File:OrigamiCrane.ogv)",
+      "bytes": 25026185,
+      "creator": "Tavin",
+      "dimensions": [
+        400,
+        226
+      ],
+      "duration_sec": 335.0,
+      "license": "CC BY 3.0",
+      "mime_type": "video/ogg",
+      "notes": "Demonstration source. Skill window (crane up to bird base) set in window_sec once identified.",
+      "path": "media/cache/src.origami.demo.v1.ogv",
+      "role": "expert_video",
+      "runtime_label": "INTERNET_REFERENCE",
+      "sha256": "4489d37966da1be348742b9cb8f0e99abda7553078bfce2e7abe94062f32b485",
+      "source_id": "src.origami.demo.v1",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/b/bb/OrigamiCrane.ogv",
+      "used_by_system": true
+    },
+    {
+      "access_level": "public",
+      "attribution": "Crane.ogv by Tavin, CC BY 3.0, via Wikimedia Commons (https://commons.wikimedia.org/wiki/File:Crane.ogv)",
+      "bytes": 21193722,
+      "creator": "Tavin",
+      "dimensions": [
+        320,
+        240
+      ],
+      "duration_sec": 336.35,
+      "license": "CC BY 3.0",
+      "mime_type": "video/ogg",
+      "notes": "Separate recording used as a test learner attempt (Track B input), not as goal source.",
+      "path": "media/cache/src.origami.learner_crane.v1.ogv",
+      "role": "learner_attempt",
+      "runtime_label": "INTERNET_REFERENCE",
+      "sha256": "546bb1108199f510d719f1b5c0e79f23cb1b907af1fd803a33e364819c559939",
+      "source_id": "src.origami.learner_crane.v1",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a0/Crane.ogv",
+      "used_by_system": false
+    }
+  ]
+}
