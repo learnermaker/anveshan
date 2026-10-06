@@ -1,0 +1,30 @@
+{
+  "case_id": "tabla",
+  "sources": [
+    {
+      "access_level": "public",
+      "attribution": "A man playing tabla in village pranpur near Chanderi.webm by Manishontop02, CC BY-SA 4.0, via Wikimedia Commons (https://commons.wikimedia.org/wiki/File:A_man_playing_tabla_in_village_pranpur_near_Chanderi.webm)",
+      "bytes": 7219730,
+      "creator": "Manishontop02",
+      "dimensions": [
+        720,
+        1280
+      ],
+      "duration_sec": 34.603,
+      "license": "CC BY-SA 4.0",
+      "mime_type": "video/webm",
+      "notes": "Only the audio track is used (Vorbis); the video is not scored. Window 20-32 s chosen programmatically as the steadiest segment among Wikimedia Commons tabla recordings: stroke pulse ~0.189 s, median grid residual ~10 ms, pulse-normalised IOI CV ~0.11, bass pattern repeating every 12 pulses (autocorrelation 0.65). Compared against File:Tabla drums demo.oga (CC BY-SA 3.0; fast ~0.10 s pulse, residual 11-30 ms) and File:Excellent Tabla playing by a man.webm (CC BY-SA 4.0; lower grid fit). The taal and bols are not identified by the system and are not asserted. Not reviewed by a tabla expert.",
+      "path": "media/cache/src.tabla.demo.v1.webm",
+      "role": "expert_audio",
+      "runtime_label": "INTERNET_REFERENCE",
+      "sha256": "0e0b17b17cc0afec6ad043d1006fd41d72e974b1747cf8d65c997b21e665b17b",
+      "source_id": "src.tabla.demo.v1",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/48/A_man_playing_tabla_in_village_pranpur_near_Chanderi.webm",
+      "used_by_system": true,
+      "window_sec": [
+        20.0,
+        32.0
+      ]
+    }
+  ]
+}
