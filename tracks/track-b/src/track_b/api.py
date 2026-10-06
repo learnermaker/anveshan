@@ -70,6 +70,7 @@ ACCEPTED_KINDS: Dict[str, tuple] = {
     "kolam_image": ("trace", "image"),
     "origami_video": ("video",),
     "tabla_audio": ("audio",),
+    "universal": ("trace", "image", "audio", "video"),
 }
 
 EVIDENCE_MODALITY = {"trace": Modality.SENSOR, "image": Modality.IMAGE, "audio": Modality.AUDIO, "video": Modality.VIDEO}
