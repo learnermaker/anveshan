@@ -23,6 +23,13 @@ class OnsetParams:
     min_gap_sec: float = 0.09
     low_band_hz: float = 250.0
     feature_window_sec: float = 0.08
+    # Absolute floor on normalised spectral flux: prevents the relative moving-median
+    # threshold from firing on pure tones or near-silence, where the local background
+    # is equally tiny and med + delta alone would still pass low-level harmonic artefacts.
+    # Semantics: minimum ratio of raw spectral-flux peak to signal RMS. If the peak flux
+    # is below this fraction of the signal amplitude, the signal lacks percussive transients
+    # (e.g. pure tones, white noise) and we return empty rather than reporting spurious onsets.
+    flux_floor: float = 0.05
 
 
 @dataclass
@@ -54,6 +61,12 @@ def detect_onsets(x: np.ndarray, sample_rate: int, params: OnsetParams = OnsetPa
     flux = np.maximum(0.0, np.diff(S, axis=0)).sum(axis=1)
     peak = float(flux.max())
     if peak <= 0:
+        return out
+    # Guard: if the peak raw flux is below flux_floor × signal RMS, the signal lacks
+    # percussive transients (pure tones, near-silence). Return empty rather than letting
+    # peak-normalisation scale small windowing artefacts up into false detections.
+    rms = float(np.sqrt(np.mean(x**2))) + 1e-9
+    if peak < rms * params.flux_floor:
         return out
     flux = flux / peak
     k = max(1, int(params.median_window_sec * sample_rate / params.hop))
