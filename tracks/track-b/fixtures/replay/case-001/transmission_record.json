@@ -1,0 +1,23 @@
+{
+  "transmission_id": "trans-kolam-001",
+  "skill_id": "sikku-kolam-symmetry",
+  "package_id": "pkg-kolam-001",
+  "rubric_id": "rubric-kolam-001",
+  "expert_id": "expert-meenakshi",
+  "learner_id": "learner-akash",
+  "baseline_attempt_id": "att-kolam-baseline-001",
+  "retry_attempt_id": "att-kolam-retry-002",
+  "baseline_score": 45.0,
+  "retry_score": 95.0,
+  "transmission_gain": 50.0,
+  "criteria_improved": [
+    "C02",
+    "C03"
+  ],
+  "lineage": {
+    "parent_transmission_id": null,
+    "recorded_at": "2026-10-04T18:20:00Z",
+    "provenance_hash": "sha256-kolam-trans-001-replay-verified",
+    "adaptation_notes": "Learner successfully corrected loop clearance around Dot #4 and achieved bilateral quadrant balance on retry."
+  }
+}

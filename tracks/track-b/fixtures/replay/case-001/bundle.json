@@ -1,0 +1,393 @@
+{
+  "knowledge_package": {
+    "package_id": "pkg-kolam-001",
+    "skill_id": "sikku-kolam-symmetry",
+    "title": "Sikku Kolam 3x3 Continuous Loop Mastery",
+    "summary": "Master demonstration of drawing a traditional 3x3 dot Sikku Kolam with continuous curved loops and bilateral symmetry.",
+    "claims": [
+      {
+        "claim_id": "CLM-01",
+        "claim_type": "step",
+        "statement": "Place a 3x3 grid of dots with uniform 2-inch spacing on a dark flat surface.",
+        "is_observed": true,
+        "evidence_refs": [
+          {
+            "evidence_id": "EV-KOL-01",
+            "source_id": "expert_kolam_master.mp4",
+            "modality": "video",
+            "start_sec": 2.0,
+            "end_sec": 10.0,
+            "cue_excerpt": "Expert marks 9 equidistant dots with rice flour",
+            "verification_state": "observed",
+            "confidence": 1.0
+          }
+        ]
+      },
+      {
+        "claim_id": "CLM-02",
+        "claim_type": "step",
+        "statement": "Draw a continuous curved line that wraps outside the outer dots without touching dot centers.",
+        "is_observed": true,
+        "evidence_refs": [
+          {
+            "evidence_id": "EV-KOL-02",
+            "source_id": "expert_kolam_master.mp4",
+            "modality": "video",
+            "start_sec": 11.0,
+            "end_sec": 25.0,
+            "cue_excerpt": "Continuous line weaves around outer dots keeping 1cm clearance",
+            "verification_state": "observed",
+            "confidence": 0.98
+          }
+        ]
+      },
+      {
+        "claim_id": "CLM-03",
+        "claim_type": "cue",
+        "statement": "Maintain identical arc radius across both left and right quadrants for bilateral symmetry.",
+        "is_observed": true,
+        "evidence_refs": [
+          {
+            "evidence_id": "EV-KOL-03",
+            "source_id": "expert_kolam_master.mp4",
+            "modality": "video",
+            "start_sec": 26.0,
+            "end_sec": 42.0,
+            "cue_excerpt": "Symmetrical loop arcs mirrored across horizontal and vertical axes",
+            "verification_state": "observed",
+            "confidence": 0.95
+          }
+        ]
+      }
+    ],
+    "consent": {
+      "contributor_name": "Meenakshi Ammal",
+      "consent_scope": "hackathon_prototype",
+      "revocable": true,
+      "granted_at": "2026-10-04T10:00:00Z",
+      "notes": "Traditional Kolam practitioner consent for cultural transmission prototype"
+    },
+    "expert_review": {
+      "reviewer_name": "Meenakshi Ammal",
+      "status": "approved",
+      "reviewed_at": "2026-10-04T11:00:00Z",
+      "notes": "Verified extracted claims accurately reflect traditional Brahma Mudi technique"
+    }
+  },
+  "rubric": {
+    "rubric_id": "rubric-kolam-001",
+    "skill_id": "sikku-kolam-symmetry",
+    "title": "Sikku Kolam 3x3 Evaluation Rubric",
+    "description": "Criterion-level evaluation for 3x3 dot grid Kolam geometry, loop continuity, and bilateral symmetry.",
+    "passing_score": 75.0,
+    "criteria": [
+      {
+        "criterion_id": "C01",
+        "name": "Dot Grid Setup",
+        "description": "Learner positions 9 dots in a 3x3 rectangular grid with equidistant spacing.",
+        "observable_indicator": "3 rows of 3 visible dots with variance in dot-to-dot distance < 15%",
+        "weight": 20.0,
+        "required": true
+      },
+      {
+        "criterion_id": "C02",
+        "name": "Continuous Loop Enclosure",
+        "description": "Drawn curves loop around all outer dots without cutting through or intersecting dot centers.",
+        "observable_indicator": "All outer loops maintain clear clearance around dot centers without intersecting line segments",
+        "weight": 40.0,
+        "required": true
+      },
+      {
+        "criterion_id": "C03",
+        "name": "Bilateral Symmetry",
+        "description": "Curves exhibit reflective balance along both vertical and horizontal centerlines.",
+        "observable_indicator": "Quadrant arc curvature matches within 20% area tolerance",
+        "weight": 40.0,
+        "required": false
+      }
+    ]
+  },
+  "practice_task": {
+    "task_id": "task-kolam-3x3-01",
+    "package_id": "pkg-kolam-001",
+    "rubric_id": "rubric-kolam-001",
+    "title": "Practice 3x3 Continuous Sikku Kolam",
+    "instructions": "Place 9 equidistant dots in a 3x3 grid on the board. Then, in a single continuous flowing stroke, weave loops around the outer dots, ensuring no dot is intersected and maintaining quadrant symmetry.",
+    "constraints": [
+      {
+        "constraint_type": "time_limit",
+        "description": "Complete the full pattern within 60 seconds",
+        "value": "60s"
+      },
+      {
+        "constraint_type": "material_spec",
+        "description": "Chalk on slate or rice flour on dark mat",
+        "value": "chalk_or_flour"
+      }
+    ],
+    "target_criteria_ids": [
+      "C01",
+      "C02",
+      "C03"
+    ]
+  },
+  "baseline_attempt": {
+    "attempt_id": "att-kolam-baseline-001",
+    "task_id": "task-kolam-3x3-01",
+    "learner": {
+      "participant_id": "learner-akash",
+      "name": "Akash",
+      "role": "learner",
+      "notes": "First-time Kolam practitioner"
+    },
+    "attempt_type": "baseline",
+    "attempt_number": 1,
+    "submitted_at": "2026-10-04T18:00:00Z",
+    "evidence": {
+      "evidence_id": "ev-att-base-001",
+      "source_id": "learner_baseline_attempt.mp4",
+      "modality": "video",
+      "start_sec": 1.0,
+      "end_sec": 38.0,
+      "cue_excerpt": "Learner sets up dots and attempts continuous loop on slate",
+      "verification_state": "observed",
+      "confidence": 1.0
+    }
+  },
+  "baseline_evaluation": {
+    "evaluation_id": "eval-kolam-baseline-001",
+    "attempt_id": "att-kolam-baseline-001",
+    "rubric_id": "rubric-kolam-001",
+    "total_score": 45.0,
+    "passed": false,
+    "evaluator_type": "model_assisted",
+    "uncertainty_flags": [],
+    "evaluated_at": "2026-10-04T18:02:00Z",
+    "criterion_results": [
+      {
+        "criterion_id": "C01",
+        "status": "satisfied",
+        "score": 20.0,
+        "observed_finding": "Learner placed 9 clear dots in a 3x3 pattern with uniform spacing within 10% variance.",
+        "deviation_analysis": "Grid matches expert reference layout closely.",
+        "evidence_ref": {
+          "evidence_id": "ev-eval-base-c01",
+          "source_id": "learner_baseline_attempt.mp4",
+          "modality": "video",
+          "start_sec": 2.0,
+          "end_sec": 8.0,
+          "cue_excerpt": "Nine dots visible on slate in 3x3 arrangement",
+          "verification_state": "observed",
+          "confidence": 1.0
+        }
+      },
+      {
+        "criterion_id": "C02",
+        "status": "not_satisfied",
+        "score": 10.0,
+        "observed_finding": "At timestamp 00:18, learner line crosses directly through the center of Dot #4 instead of circling around its perimeter.",
+        "deviation_analysis": "Violates fundamental Sikku Kolam rule where lines must never intersect dot markers.",
+        "evidence_ref": {
+          "evidence_id": "ev-eval-base-c02",
+          "source_id": "learner_baseline_attempt.mp4",
+          "modality": "video",
+          "start_sec": 17.0,
+          "end_sec": 21.0,
+          "cue_excerpt": "Chalk cuts through Dot 4 center",
+          "verification_state": "observed",
+          "confidence": 0.98
+        }
+      },
+      {
+        "criterion_id": "C03",
+        "status": "partially_satisfied",
+        "score": 15.0,
+        "observed_finding": "Right loop quadrant is circular and smooth, but left loop has an abrupt angular bend causing 35% area asymmetry.",
+        "deviation_analysis": "Lacks the bilateral reflection shown in the master demonstration.",
+        "evidence_ref": {
+          "evidence_id": "ev-eval-base-c03",
+          "source_id": "learner_baseline_attempt.mp4",
+          "modality": "video",
+          "start_sec": 24.0,
+          "end_sec": 32.0,
+          "cue_excerpt": "Left quadrant arc noticeably flatter than right arc",
+          "verification_state": "observed",
+          "confidence": 0.95
+        }
+      }
+    ]
+  },
+  "feedback": {
+    "feedback_id": "fb-kolam-001",
+    "evaluation_id": "eval-kolam-baseline-001",
+    "attempt_id": "att-kolam-baseline-001",
+    "summary": "Solid grid layout (20/20 on C01)! To achieve full competency on retry, avoid crossing Dot #4 with your chalk line and balance the symmetry between your left and right loops.",
+    "recommended_retry_focus": [
+      "C02",
+      "C03"
+    ],
+    "items": [
+      {
+        "criterion_id": "C02",
+        "what_was_observed": "At 00:18, your chalk crossed directly through the center of Dot #4.",
+        "what_differed": "In Sikku Kolam, loops wrap around the outside of dots without touching them. The master demo maintains 1cm clearance.",
+        "corrective_advice": "Guide your hand 1-2 cm wider around Dot #4 to create a smooth outer envelope rather than cutting through it.",
+        "expert_evidence_ref": {
+          "evidence_id": "EV-KOL-02",
+          "source_id": "expert_kolam_master.mp4",
+          "modality": "video",
+          "start_sec": 14.0,
+          "end_sec": 22.0,
+          "cue_excerpt": "Continuous line weaves around outer dots keeping 1cm clearance",
+          "verification_state": "observed",
+          "confidence": 0.98
+        },
+        "learner_evidence_ref": {
+          "evidence_id": "ev-eval-base-c02",
+          "source_id": "learner_baseline_attempt.mp4",
+          "modality": "video",
+          "start_sec": 17.0,
+          "end_sec": 21.0,
+          "cue_excerpt": "Chalk cuts through Dot 4 center",
+          "verification_state": "observed",
+          "confidence": 0.98
+        }
+      },
+      {
+        "criterion_id": "C03",
+        "what_was_observed": "Your left quadrant loop was flatter and more angular than the round right loop.",
+        "what_differed": "The master pattern exhibits bilateral mirror symmetry across the central vertical axis.",
+        "corrective_advice": "When completing the left loop, mimic the gentle outward curve and wrist rotation used for the right loop.",
+        "expert_evidence_ref": {
+          "evidence_id": "EV-KOL-03",
+          "source_id": "expert_kolam_master.mp4",
+          "modality": "video",
+          "start_sec": 26.0,
+          "end_sec": 42.0,
+          "cue_excerpt": "Symmetrical loop arcs mirrored across horizontal and vertical axes",
+          "verification_state": "observed",
+          "confidence": 0.95
+        },
+        "learner_evidence_ref": {
+          "evidence_id": "ev-eval-base-c03",
+          "source_id": "learner_baseline_attempt.mp4",
+          "modality": "video",
+          "start_sec": 24.0,
+          "end_sec": 32.0,
+          "cue_excerpt": "Left quadrant arc noticeably flatter than right arc",
+          "verification_state": "observed",
+          "confidence": 0.95
+        }
+      }
+    ]
+  },
+  "retry_attempt": {
+    "attempt_id": "att-kolam-retry-002",
+    "task_id": "task-kolam-3x3-01",
+    "learner": {
+      "participant_id": "learner-akash",
+      "name": "Akash",
+      "role": "learner",
+      "notes": "First-time Kolam practitioner"
+    },
+    "attempt_type": "retry",
+    "attempt_number": 2,
+    "submitted_at": "2026-10-04T18:15:00Z",
+    "evidence": {
+      "evidence_id": "ev-att-retry-002",
+      "source_id": "learner_retry_attempt.mp4",
+      "modality": "video",
+      "start_sec": 1.0,
+      "end_sec": 32.0,
+      "cue_excerpt": "Learner performs post-coaching retry with widened outer loop clearance",
+      "verification_state": "observed",
+      "confidence": 1.0
+    }
+  },
+  "retry_evaluation": {
+    "evaluation_id": "eval-kolam-retry-002",
+    "attempt_id": "att-kolam-retry-002",
+    "rubric_id": "rubric-kolam-001",
+    "total_score": 95.0,
+    "passed": true,
+    "evaluator_type": "model_assisted",
+    "uncertainty_flags": [],
+    "evaluated_at": "2026-10-04T18:17:00Z",
+    "criterion_results": [
+      {
+        "criterion_id": "C01",
+        "status": "satisfied",
+        "score": 20.0,
+        "observed_finding": "Grid maintained clean 3x3 layout with equidistant dot spacing.",
+        "deviation_analysis": "Exact match to reference grid.",
+        "evidence_ref": {
+          "evidence_id": "ev-eval-retry-c01",
+          "source_id": "learner_retry_attempt.mp4",
+          "modality": "video",
+          "start_sec": 2.0,
+          "end_sec": 7.0,
+          "cue_excerpt": "Nine equidistant dots clearly visible",
+          "verification_state": "observed",
+          "confidence": 1.0
+        }
+      },
+      {
+        "criterion_id": "C02",
+        "status": "satisfied",
+        "score": 40.0,
+        "observed_finding": "Learner successfully widened loop curvature around Dot #4, maintaining continuous 1.2cm clearance without intersection.",
+        "deviation_analysis": "Corrected the center intersection observed in baseline; loop now smoothly envelopes all outer dots.",
+        "evidence_ref": {
+          "evidence_id": "ev-eval-retry-c02",
+          "source_id": "learner_retry_attempt.mp4",
+          "modality": "video",
+          "start_sec": 14.0,
+          "end_sec": 20.0,
+          "cue_excerpt": "Smooth outer arc wrapping Dot 4 with proper clearance",
+          "verification_state": "observed",
+          "confidence": 0.99
+        }
+      },
+      {
+        "criterion_id": "C03",
+        "status": "satisfied",
+        "score": 35.0,
+        "observed_finding": "Bilateral symmetry significantly improved: both left and right quadrant loops now match within 8% area variance.",
+        "deviation_analysis": "Reflective balance across central vertical axis is visually coherent and balanced.",
+        "evidence_ref": {
+          "evidence_id": "ev-eval-retry-c03",
+          "source_id": "learner_retry_attempt.mp4",
+          "modality": "video",
+          "start_sec": 22.0,
+          "end_sec": 30.0,
+          "cue_excerpt": "Harmonious symmetrical loops on both quadrants",
+          "verification_state": "observed",
+          "confidence": 0.96
+        }
+      }
+    ]
+  },
+  "transmission_record": {
+    "transmission_id": "trans-kolam-001",
+    "skill_id": "sikku-kolam-symmetry",
+    "package_id": "pkg-kolam-001",
+    "rubric_id": "rubric-kolam-001",
+    "expert_id": "expert-meenakshi",
+    "learner_id": "learner-akash",
+    "baseline_attempt_id": "att-kolam-baseline-001",
+    "retry_attempt_id": "att-kolam-retry-002",
+    "baseline_score": 45.0,
+    "retry_score": 95.0,
+    "transmission_gain": 50.0,
+    "criteria_improved": [
+      "C02",
+      "C03"
+    ],
+    "lineage": {
+      "parent_transmission_id": null,
+      "recorded_at": "2026-10-04T18:20:00Z",
+      "provenance_hash": "sha256-kolam-trans-001-replay-verified",
+      "adaptation_notes": "Learner successfully corrected loop clearance around Dot #4 and achieved bilateral quadrant balance on retry."
+    }
+  }
+}

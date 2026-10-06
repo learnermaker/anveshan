@@ -1,0 +1,64 @@
+{
+  "feedback_id": "fb-kolam-001",
+  "evaluation_id": "eval-kolam-baseline-001",
+  "attempt_id": "att-kolam-baseline-001",
+  "summary": "Solid grid layout (20/20 on C01)! To achieve full competency on retry, avoid crossing Dot #4 with your chalk line and balance the symmetry between your left and right loops.",
+  "recommended_retry_focus": [
+    "C02",
+    "C03"
+  ],
+  "items": [
+    {
+      "criterion_id": "C02",
+      "what_was_observed": "At 00:18, your chalk crossed directly through the center of Dot #4.",
+      "what_differed": "In Sikku Kolam, loops wrap around the outside of dots without touching them. The master demo maintains 1cm clearance.",
+      "corrective_advice": "Guide your hand 1-2 cm wider around Dot #4 to create a smooth outer envelope rather than cutting through it.",
+      "expert_evidence_ref": {
+        "evidence_id": "EV-KOL-02",
+        "source_id": "expert_kolam_master.mp4",
+        "modality": "video",
+        "start_sec": 14.0,
+        "end_sec": 22.0,
+        "cue_excerpt": "Continuous line weaves around outer dots keeping 1cm clearance",
+        "verification_state": "observed",
+        "confidence": 0.98
+      },
+      "learner_evidence_ref": {
+        "evidence_id": "ev-eval-base-c02",
+        "source_id": "learner_baseline_attempt.mp4",
+        "modality": "video",
+        "start_sec": 17.0,
+        "end_sec": 21.0,
+        "cue_excerpt": "Chalk cuts through Dot 4 center",
+        "verification_state": "observed",
+        "confidence": 0.98
+      }
+    },
+    {
+      "criterion_id": "C03",
+      "what_was_observed": "Your left quadrant loop was flatter and more angular than the round right loop.",
+      "what_differed": "The master pattern exhibits bilateral mirror symmetry across the central vertical axis.",
+      "corrective_advice": "When completing the left loop, mimic the gentle outward curve and wrist rotation used for the right loop.",
+      "expert_evidence_ref": {
+        "evidence_id": "EV-KOL-03",
+        "source_id": "expert_kolam_master.mp4",
+        "modality": "video",
+        "start_sec": 26.0,
+        "end_sec": 42.0,
+        "cue_excerpt": "Symmetrical loop arcs mirrored across horizontal and vertical axes",
+        "verification_state": "observed",
+        "confidence": 0.95
+      },
+      "learner_evidence_ref": {
+        "evidence_id": "ev-eval-base-c03",
+        "source_id": "learner_baseline_attempt.mp4",
+        "modality": "video",
+        "start_sec": 24.0,
+        "end_sec": 32.0,
+        "cue_excerpt": "Left quadrant arc noticeably flatter than right arc",
+        "verification_state": "observed",
+        "confidence": 0.95
+      }
+    }
+  ]
+}

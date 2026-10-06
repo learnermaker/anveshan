@@ -106,6 +106,29 @@
         "REPLAY",
         "AUTHENTIC"
       ]
+    },
+    "source_media": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["local_file", "url"]
+        },
+        "path": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "mime_type": {
+          "type": "string"
+        },
+        "attribution": {
+          "type": "string"
+        }
+      }
     }
   },
   "x-semantic-rules": [
