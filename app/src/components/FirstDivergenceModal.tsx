@@ -120,7 +120,7 @@ export function FirstDivergenceModal({
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-mono uppercase tracking-wider text-on-surface-variant font-semibold flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-cadmium-amber" /> 2. GEMINI MULTIMODAL INTERPRETATION
+                <Sparkles className="w-3.5 h-3.5 text-cadmium-amber" /> 2. MODEL-ASSISTED INTERPRETATION (REPLAY FIXTURE)
               </span>
               {renderBadge(div.interpretationCertainty)}
             </div>

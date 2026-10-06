@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Header } from './components/Header';
-import { DiscoveryView } from './components/DiscoveryView';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Header, type CaseOption } from './components/Header';
+import { DiscoveryView, type CaseKey } from './components/DiscoveryView';
 import { SourceAnalysisView } from './components/SourceAnalysisView';
 import { WorkspaceCompiler } from './workspaces/WorkspaceCompiler';
 import { TransmissionCompleteView } from './components/TransmissionCompleteView';
@@ -10,81 +10,110 @@ import { LineageDrawer } from './components/LineageDrawer';
 import { StitchModal } from './components/StitchModal';
 import { SettingsModal } from './components/SettingsModal';
 import { LifecycleInspectorModal } from './components/LifecycleInspectorModal';
+import { HeroSourceView } from './hero/HeroSourceView';
+import { HeroPracticeView } from './hero/HeroPracticeView';
+import { HeroTransmissionView } from './hero/HeroTransmissionView';
+import type { HeroSession } from './hero/session';
+import { ErrorNote, Spinner } from './hero/ui';
 
-import { getCapabilityCase, hasCapabilityCase, DEFAULT_CASE_ID } from './data/cases/registry';
-import { getStoredGeminiConfig, saveStoredGeminiConfig } from './model/geminiGateway';
+import { CAPABILITY_CASES, SHOWCASE_CASE_IDS, getCapabilityCase } from './data/cases/registry';
+import { api } from './api/client';
+import { IS_MOCK, getRequestedMode, subscribeMode, type RequestedMode } from './api/runtime';
+import type { CaseSummary, CaseView } from './api/types';
 import type { AppView } from './types/workspace';
-import type { GeminiConfig } from './types/gemini';
 import type { LifecycleStage } from './components/LifecycleInspectorModal';
 
-const getInitialView = (): AppView => {
-  if (typeof window !== 'undefined') {
-    const params = new URLSearchParams(window.location.search);
-    const v = params.get('view') as AppView;
-    if (v && ['discovery', 'source', 'practice', 'transmission'].includes(v)) {
-      return v;
-    }
-  }
-  return 'discovery';
-};
+const DEFAULT_KEY: CaseKey = { kind: 'hero', id: 'kolam' };
 
-const getInitialCaseId = (): string => {
-  if (typeof window !== 'undefined') {
-    const params = new URLSearchParams(window.location.search);
-    const c = params.get('case');
-    if (c && hasCapabilityCase(c)) {
-      return c;
-    }
-  }
-  return DEFAULT_CASE_ID;
-};
+function readUrl(): { view: AppView; key: CaseKey } {
+  if (typeof window === 'undefined') return { view: 'discovery', key: DEFAULT_KEY };
+  const p = new URLSearchParams(window.location.search);
+  const v = p.get('view') as AppView;
+  const view: AppView = v && ['discovery', 'source', 'practice', 'transmission'].includes(v) ? v : 'discovery';
+  const c = p.get('case');
+  const key: CaseKey = !c ? DEFAULT_KEY : SHOWCASE_CASE_IDS.includes(c) ? { kind: 'showcase', id: c } : { kind: 'hero', id: c };
+  return { view, key };
+}
+
+const keyStr = (k: CaseKey) => `${k.kind}:${k.id}`;
 
 export function App() {
-  const [currentView, setCurrentView] = useState<AppView>(getInitialView);
-  const [selectedCaseId, setSelectedCaseId] = useState<string>(getInitialCaseId);
-  const [geminiConfig, setGeminiConfig] = useState<GeminiConfig>(getStoredGeminiConfig());
+  const initial = readUrl();
+  const [currentView, setCurrentView] = useState<AppView>(initial.view);
+  const [selected, setSelected] = useState<CaseKey>(initial.key);
+  const [requestedMode, setMode] = useState<RequestedMode>(getRequestedMode());
+  useEffect(() => subscribeMode(setMode), []);
 
-  // Synchronize view & case to URL search params for deep linking and history
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('view') !== currentView || params.get('case') !== selectedCaseId) {
-        params.set('view', currentView);
-        params.set('case', selectedCaseId);
-        const newUrl = `${window.location.pathname}?${params.toString()}`;
-        window.history.replaceState({}, '', newUrl);
-      }
+    const params = new URLSearchParams(window.location.search);
+    params.set('view', currentView);
+    params.set('case', selected.id);
+    window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
+  }, [currentView, selected]);
+
+  // ---------------- hero cases (service) ----------------
+  const [heroCases, setHeroCases] = useState<CaseSummary[] | null>(null);
+  const [heroError, setHeroError] = useState<unknown>(null);
+  const [heroLoading, setHeroLoading] = useState(false);
+  const loadCases = useCallback(async () => {
+    setHeroLoading(true);
+    setHeroError(null);
+    try {
+      setHeroCases(await api.listCases());
+    } catch (e) {
+      setHeroError(e);
+    } finally {
+      setHeroLoading(false);
     }
-  }, [currentView, selectedCaseId]);
+  }, []);
+  useEffect(() => {
+    void loadCases();
+  }, [loadCases]);
 
-  // Dynamic Case state
-  const capCase = getCapabilityCase(selectedCaseId);
+  const [caseView, setCaseView] = useState<CaseView | null>(null);
+  const [caseError, setCaseError] = useState<unknown>(null);
+  const [caseLoading, setCaseLoading] = useState(false);
+  const loadCase = useCallback(async (id: string) => {
+    setCaseLoading(true);
+    setCaseError(null);
+    try {
+      setCaseView(await api.getCase(id));
+    } catch (e) {
+      setCaseError(e);
+      setCaseView(null);
+    } finally {
+      setCaseLoading(false);
+    }
+  }, []);
+  useEffect(() => {
+    if (selected.kind === 'hero') void loadCase(selected.id);
+  }, [selected, loadCase, requestedMode]);
 
-  // Playhead state for temporal cases (micrometer, etc.)
-  const [currentTime, setCurrentTime] = useState<number>(19.2); // Key first divergence locus
+  const [sessions, setSessions] = useState<Record<string, HeroSession | null>>({});
+  const heroSession = selected.kind === 'hero' ? sessions[selected.id] ?? null : null;
+  const setHeroSession = (s: HeroSession | null) => {
+    if (selected.kind === 'hero') setSessions((prev) => ({ ...prev, [selected.id]: s }));
+  };
+
+  // ---------------- showcase (SYNTHETIC replay) ----------------
+  const capCase = getCapabilityCase(selected.kind === 'showcase' ? selected.id : 'micrometer');
+  const [currentTime, setCurrentTime] = useState<number>(19.2);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-
-  // Modals
-  const [isDivergenceModalOpen, setIsDivergenceModalOpen] = useState<boolean>(false);
-  const [isMicroPracticeOpen, setIsMicroPracticeOpen] = useState<boolean>(false);
-  const [isLineageOpen, setIsLineageOpen] = useState<boolean>(false);
-  const [isStitchOpen, setIsStitchOpen] = useState<boolean>(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [isDivergenceModalOpen, setIsDivergenceModalOpen] = useState(false);
+  const [isMicroPracticeOpen, setIsMicroPracticeOpen] = useState(false);
+  const [isLineageOpen, setIsLineageOpen] = useState(false);
+  const [isStitchOpen, setIsStitchOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [modalStage, setModalStage] = useState<LifecycleStage | null>(null);
-
   const animationFrameRef = useRef<number | null>(null);
   const lastTimestampRef = useRef<number | null>(null);
 
-  // Playback loop for video/temporal workspaces
   useEffect(() => {
     if (!isPlaying) {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
       lastTimestampRef.current = null;
       return;
     }
-
     const step = (now: number) => {
       if (lastTimestampRef.current !== null) {
         const delta = (now - lastTimestampRef.current) / 1000;
@@ -100,67 +129,81 @@ export function App() {
       lastTimestampRef.current = now;
       animationFrameRef.current = requestAnimationFrame(step);
     };
-
     animationFrameRef.current = requestAnimationFrame(step);
     return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
     };
   }, [isPlaying]);
 
-  // Handle case selection
-  const handleSelectCase = (caseId: string) => {
-    setSelectedCaseId(caseId);
+  const select = (key: CaseKey, view: AppView = 'source') => {
+    setSelected(key);
+    setCurrentView(view);
     setCurrentTime(19.2);
     setIsPlaying(false);
+    if (key.kind === 'hero' && heroCases && !heroCases.some((c) => c.case_id === key.id)) void loadCases();
   };
 
-  // Handle successful retry completion: transitions to the replay transmission result view
-  const handleCompleteRetry = () => {
-    setIsMicroPracticeOpen(false);
-    setCurrentView('transmission');
-  };
+  const caseOptions: CaseOption[] = [
+    ...(heroCases ?? []).map((c) => ({ value: `hero:${c.case_id}`, label: c.title, group: c.hero ? 'Live hero cases' : 'Your uploads' })),
+    ...(selected.kind === 'hero' && !(heroCases ?? []).some((c) => c.case_id === selected.id) ? [{ value: keyStr(selected), label: selected.id, group: 'Live hero cases' }] : []),
+    ...SHOWCASE_CASE_IDS.map((id) => ({ value: `showcase:${id}`, label: `${CAPABILITY_CASES[id]?.title ?? id} (synthetic)`, group: 'Synthetic replay showcase' })),
+  ];
 
-  const handleSaveConfig = (newConfig: GeminiConfig) => {
-    setGeminiConfig(newConfig);
-    saveStoredGeminiConfig(newConfig);
+  const heroBody = (render: (v: CaseView) => React.ReactNode) => {
+    if (caseLoading && !caseView) return <Spinner label={`Loading ${selected.id}…`} />;
+    if (caseError) return <ErrorNote error={caseError} />;
+    if (!caseView || caseView.case_id !== selected.id) return <Spinner label={`Loading ${selected.id}…`} />;
+    return render(caseView);
   };
 
   return (
     <div className="min-h-screen bg-background text-on-surface flex flex-col noise-overlay selection:bg-cadmium-amber/30 selection:text-white">
-      {/* Precision Instrument Header */}
       <Header
         currentView={currentView}
         onSelectView={setCurrentView}
-        currentCase={capCase}
-        onSelectCase={handleSelectCase}
-        analysisMode={geminiConfig.mode}
+        caseOptions={caseOptions}
+        selectedCase={keyStr(selected)}
+        onSelectCase={(v) => {
+          const [kind, ...rest] = v.split(':');
+          select({ kind: kind as CaseKey['kind'], id: rest.join(':') }, currentView === 'discovery' ? 'source' : currentView);
+        }}
+        requestedMode={requestedMode}
+        caseKindLabel={selected.kind === 'hero' ? (IS_MOCK ? 'LIVE CASE · MOCK DATA' : 'LIVE CASE') : 'SYNTHETIC REPLAY'}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenStitchDesign={() => setIsStitchOpen(true)}
       />
 
-      {/* Main Dynamic Viewport */}
-      <main className="flex-1 max-w-workbench w-full mx-auto p-4 lg:p-6 flex flex-col gap-6">
+      <main className="flex-1 max-w-workbench w-full mx-auto p-3 sm:p-4 lg:p-6 flex flex-col gap-6">
         {currentView === 'discovery' && (
-          <DiscoveryView
-            selectedCaseId={selectedCaseId}
-            onSelectCase={(id) => {
-              handleSelectCase(id);
-              setCurrentView('source');
-            }}
-          />
+          <DiscoveryView heroCases={heroCases} heroError={heroError} heroLoading={heroLoading} onRefreshHero={loadCases} onSelect={(k) => select(k)} selected={selected} />
         )}
 
-        {currentView === 'source' && (
-          <SourceAnalysisView
-            capCase={capCase}
-            onEnterPractice={() => setCurrentView('practice')}
-            onBackToDiscovery={() => setCurrentView('discovery')}
-          />
-        )}
+        {selected.kind === 'hero' && currentView === 'source' &&
+          heroBody((v) => (
+            <HeroSourceView
+              view={v}
+              onViewChange={(nv) => {
+                setCaseView(nv);
+                void loadCases();
+              }}
+              onReload={() => loadCase(selected.id)}
+              onEnterPractice={() => setCurrentView('practice')}
+              onBack={() => setCurrentView('discovery')}
+            />
+          ))}
+        {selected.kind === 'hero' && currentView === 'practice' &&
+          heroBody((v) => (
+            <HeroPracticeView view={v} session={heroSession} onSessionChange={setHeroSession} onComplete={() => setCurrentView('transmission')} onBack={() => setCurrentView('source')} />
+          ))}
+        {selected.kind === 'hero' && currentView === 'transmission' &&
+          heroBody((v) => (
+            <HeroTransmissionView view={v} session={heroSession} onBackToPractice={() => setCurrentView('practice')} onExploreMore={() => setCurrentView('discovery')} />
+          ))}
 
-        {currentView === 'practice' && (
+        {selected.kind === 'showcase' && currentView === 'source' && (
+          <SourceAnalysisView capCase={capCase} onEnterPractice={() => setCurrentView('practice')} onBackToDiscovery={() => setCurrentView('discovery')} />
+        )}
+        {selected.kind === 'showcase' && currentView === 'practice' && (
           <WorkspaceCompiler
             capCase={capCase}
             currentTime={currentTime}
@@ -172,8 +215,7 @@ export function App() {
             onLaunchRetry={() => setIsMicroPracticeOpen(true)}
           />
         )}
-
-        {currentView === 'transmission' && (
+        {selected.kind === 'showcase' && currentView === 'transmission' && (
           <TransmissionCompleteView
             capCase={capCase}
             onOpenLineage={() => setIsLineageOpen(true)}
@@ -186,73 +228,45 @@ export function App() {
         )}
       </main>
 
-      {/* Global Precision Instrument Footer */}
-      <footer className="border-t border-outline bg-surface-dim px-6 py-3 text-[11px] font-mono text-on-surface-variant flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
+      <footer className="border-t border-outline bg-surface-dim px-4 sm:px-6 py-3 text-[11px] font-mono text-on-surface-variant flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <span className="flex items-center gap-1.5 text-on-surface font-semibold">
-            <span className="w-1.5 h-1.5 rounded-full bg-transmission-emerald" />
-            ANVESHAN CORE v1.0.0
+            <span className="w-1.5 h-1.5 rounded-full bg-cadmium-amber" />
+            ANVESHAN PROTOTYPE
           </span>
           <span className="text-outline">|</span>
-          <span>CAPABILITY: {capCase.id}</span>
+          <span>CASE: {selected.id}</span>
           <span className="text-outline">|</span>
           <span className="text-cadmium-amber">GOOGLE CLOUD AI BUILDER CUP 2026</span>
         </div>
-
         <div className="flex items-center gap-4">
-          <button
-            onClick={() => setIsLineageOpen(true)}
-            className="hover:text-caliper-cyan underline decoration-caliper-cyan/50 transition-colors"
-          >
-            VIEW PROVENANCE DAG
-          </button>
-          <span>FIXTURE: REPLAY // CONTRACTS VALID</span>
+          {selected.kind === 'showcase' && (
+            <button onClick={() => setIsLineageOpen(true)} className="hover:text-caliper-cyan underline decoration-caliper-cyan/50 transition-colors">
+              VIEW PROVENANCE DAG
+            </button>
+          )}
+          <span>{selected.kind === 'showcase' ? 'SYNTHETIC REPLAY FIXTURE' : IS_MOCK ? 'MOCK DATA (SYNTHETIC)' : 'SERVICE-BACKED'}</span>
         </div>
       </footer>
 
-      {/* Forensic First Divergence Modal */}
-      <FirstDivergenceModal
-        capCase={capCase}
-        isOpen={isDivergenceModalOpen}
-        onClose={() => setIsDivergenceModalOpen(false)}
-        onLaunchMicroPractice={() => setIsMicroPracticeOpen(true)}
-      />
-
-      {/* Bounded Adaptive Micro-Practice Modal */}
-      <MicroPracticeRetryModal
-        capCase={capCase}
-        isOpen={isMicroPracticeOpen}
-        onClose={() => setIsMicroPracticeOpen(false)}
-        onCompleteRetry={handleCompleteRetry}
-      />
-
-      {/* Cryptographic Lineage & Merkle Provenance DAG Drawer */}
-      <LineageDrawer
-        telemetry={capCase.telemetry}
-        isOpen={isLineageOpen}
-        onClose={() => setIsLineageOpen(false)}
-      />
-
-      {/* Google Stitch Reference Canvas Modal */}
-      <StitchModal
-        isOpen={isStitchOpen}
-        onClose={() => setIsStitchOpen(false)}
-      />
-
-      {/* Gemini Model Gateway Settings Modal */}
-      <SettingsModal
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        config={geminiConfig}
-        onSaveConfig={handleSaveConfig}
-      />
-
-      {/* Raw Stage Inspector Modal */}
-      <LifecycleInspectorModal
-        stage={modalStage}
-        onClose={() => setModalStage(null)}
-        telemetry={capCase.telemetry}
-      />
+      {selected.kind === 'showcase' && (
+        <>
+          <FirstDivergenceModal capCase={capCase} isOpen={isDivergenceModalOpen} onClose={() => setIsDivergenceModalOpen(false)} onLaunchMicroPractice={() => setIsMicroPracticeOpen(true)} />
+          <MicroPracticeRetryModal
+            capCase={capCase}
+            isOpen={isMicroPracticeOpen}
+            onClose={() => setIsMicroPracticeOpen(false)}
+            onCompleteRetry={() => {
+              setIsMicroPracticeOpen(false);
+              setCurrentView('transmission');
+            }}
+          />
+          <LineageDrawer telemetry={capCase.telemetry} isOpen={isLineageOpen} onClose={() => setIsLineageOpen(false)} />
+          <LifecycleInspectorModal stage={modalStage} onClose={() => setModalStage(null)} telemetry={capCase.telemetry} />
+        </>
+      )}
+      <StitchModal isOpen={isStitchOpen} onClose={() => setIsStitchOpen(false)} />
+      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </div>
   );
 }
