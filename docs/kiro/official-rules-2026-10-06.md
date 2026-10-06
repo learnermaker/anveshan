@@ -105,9 +105,40 @@ From the main page:
 
 ## Submission Portal
 
-No Devpost, Google Form or other submission portal URL was found on the pages fetched. The main page and themes page have "Register now" buttons but these required JavaScript to resolve their target URL and were not followed during this fetch.
+**Portal URL (confirmed via browser inspection, 2026-10-06):**  
+`https://hack2skill.com/event/aibuildercup2026/registration`  
 
-**[ACTION: Jim should click "Register now" on https://aibuildercup.com/ to identify the registration/submission platform and record its URL here.]**
+Clicking "Register now" on https://aibuildercup.com/ navigates to this URL, which redirects to a Hack2skill login page at `https://hack2skill.com/login?redirect=...`. You must be logged in to a Hack2skill account to register or submit.
+
+**Required fields confirmed in the Terms & Conditions (see below):**
+1. Working deployed live URL (on Cloud Run / GCP / Firebase)
+2. Video demonstration, strictly under 3 minutes
+3. Public GitHub repository containing the source code
+4. Comprehensive presentation deck (solution architecture and business case)
+
+Source: Terms & Conditions document linked from the official page footer:  
+`https://docs.google.com/document/d/e/2PACX-1vRm7ChZ6Ij9fG7uFDkxzUMpwgVeBmnQ6cMDnAIEEX84AiLBOOQ9cYbl3S5OzFBbcVb8TF55s-eVpiXb/pub`
+
+## Exact Deadline Time and Timezone
+
+**No specific time or timezone is published** on any official Hack2skill or aibuildercup.com page as of 2026-10-06. Pages searched/fetched:
+- https://aibuildercup.com/ — says only "Oct 18, 2026" and "submit it before October 18"
+- https://aibuildercup.com/Faqs.html — no time mentioned
+- https://docs.google.com/document/.../pub (Terms & Conditions) — no specific time for the Oct 18 deadline; mentions "closing October 11" only for team roster changes
+
+**Working assumption (unconfirmed):** Given Hack2skill is based in India, the deadline is likely 23:59 IST (UTC+5:30) on Oct 18. However, as a JAPAC competition with Singapore as the finale, 23:59 SGT (UTC+8) is also possible.
+
+**[ACTION REQUIRED: Jim should contact Hack2skill support or check the confirmation email/Slack channel for the precise deadline time before Oct 15.]**
+
+## Critical Finding: Fresh Code Requirement
+
+From the Terms & Conditions (verbatim):  
+> "Fresh Code Base (No Pre-existing Work): Submissions must consist exclusively of fresh code and original assets created during the official hackathon timeline. Pre-existing products, ongoing projects, or code developed prior to the official launch will be disqualified."
+
+And from the FAQ page (https://aibuildercup.com/Faqs.html):  
+> "Only fresh projects built during the hackathon timeline are eligible. Submissions based on pre-existing projects, or work started before the program launch, will not be considered."
+
+**The official hackathon timeline started 7 September 2026** (Prototype Building & Submission: 7 Sep – 18 Oct 2026). This requirement means Anveshan must have been started on or after 7 September 2026 to be eligible. **Verify this with the team before submission.**
 
 ---
 
@@ -126,3 +157,6 @@ The following items were observed to differ or to add new information:
 | 7 | Does not mention the Oct 18 deadline timezone | Timezone not stated on pages fetched | **Risk item**: confirm timezone before submission |
 | 8 | Does not mention Hack2skill as independent organiser | Explicitly: "independently operated by Hack2skill and is not directly administered by Google Cloud" | Relevant for support/questions: contact Hack2skill, not Google, for submission issues |
 | 9 | Does not mention the video hosting options | "public YouTube or Vimeo video or public Google Drive link (3 minutes)" | Our demo video plan (3-minute public video) is confirmed |
+| 10 | Does not mention the "fresh code" requirement | T&C and FAQ: "Submissions must consist exclusively of fresh code and original assets created during the official hackathon timeline." Pre-existing work disqualifies the team. Program launch = 7 Sep 2026 | **Risk item.** Anveshan must have been started on/after 7 Sep 2026. Verify with the team |
+| 11 | Does not mention the public GitHub repo requirement | T&C: "a public GitHub repository containing the source code" is a mandatory deliverable | Plan for a public repo at submission time. If the repo is currently private, it must be made public |
+| 12 | Does not mention the full T&C or portal URL | Portal: `https://hack2skill.com/event/aibuildercup2026/registration`; T&C: Google Doc URL (see Submission Portal section above) | Now recorded; Jim should log in and verify the submission form fields |

@@ -1,207 +1,226 @@
-# K6: Case Composer backend (new-skill onboarding: probe → analyse → draft → create)
+# K6: Universal pipeline, part 1 — Intake gates + Layer 1 Perception + Composer API
 
-Read `docs/kiro/specs/00-COMMON.md` first, then **`docs/plans/case-composer.md` in full** (it is the design you implement). Folder `...\anveshan-wt\k6-composer`, branch `kiro/k6-composer`; Jim or Claude Code creates it from `m1/hero-cases` **after K1–K4 are merged**. **Needs the API key** (copy `.env`, which already sets `ANVESHAN_AUDIO_MODEL=gemini-3.5-flash-lite`).
+Read `docs/kiro/specs/00-COMMON.md` first, then **`docs/plans/universal-pipeline.md` in full** (the architecture you implement). Folder `...\anveshan-wt\k6-composer`, branch `kiro/k6-composer`; created from `m1/hero-cases` after K1–K4 are merged. **Needs the API key** (copy `.env`).
 
-You implement the **backend only**. K7 (engines) and K8 (UI) run in parallel; do not edit their files.
+You build **Layer 1 (perception) + intake gates + the composer draft API**. K7 builds Layer 2 (SkillModel builder) and Layer 3 (universal evaluator) in parallel, **on top of your `perceive()`**. K8 builds the UI. Keep the function signatures in §2 exactly as written; K7 codes against them.
 
-## 0. Existing code you will use (read these first)
-- `tracks/common/profile.py`: `CaseProfile`, `ProbeFacts`, `CriterionSuggestion`, `FAMILY_MODALITY`, `FAMILY_LABEL`, `FAMILY_INPUT_KINDS`, `slugify`, `composed_case_id`. **Do not change field names.** If you truly need a field, add an optional one and say so in your report.
-- `tracks/common/media.py`: `probe(path) -> MediaInfo` (duration_sec, has_audio, has_video, width, height, fps), `sample_frames(path, fps, start_sec, end_sec, max_side, max_frames)`, `decode_audio(path, sample_rate, start_sec, end_sec)`, `sha256_file`, `image_to_jpeg_bytes`.
-- `tracks/common/kolam_geometry.py`: `load_gray(path)`, `binarize(gray) -> (mask, info)` (look inside `info` for the Otsu threshold/separation keys; if none expresses separation, compute it yourself as described in §2.2), `label_components(mask) -> (labels, n)`, `thin(mask)`.
-- `tracks/common/onsets.py`: `detect_onsets(x, sr) -> Onsets` (`times_sec`, `strength`, `low_ratio`).
-- `tracks/common/tabla_dsp.py`: `percussive_contrast(x, sample_rate) -> float`.
-- `tracks/common/models.py`: `ModelGateway.generate_json(model_key, prompt_id, prompt_version, prompt_text, schema, parts, system)`, `ImagePart`, `AudioPart`, `load_prompt(path, **values)`, `AnveshanFailure`, `FailureCategory`, `ModelError`.
-- `tracks/common/runtime.py`: `RunContext.create(case_dir, data_dir, mode)`.
-- `tracks/common/casedata.py`: `SourceRegistry`, `SourceRecord`, `write_json`, `versioned_path`, `latest_version`, `load_versioned`.
-- `tracks/track-a/src/track_a/config.py`: `HERO_CASES`, `modality_for`, `base_case_id`, `UPLOAD_LICENSE`, `UPLOAD_CREATOR`.
-- `tracks/track-a/src/track_a/api.py`: `build_case`, `load_case`, `list_cases`, `create_upload_case` (copy its manifest-writing approach; it already produces schema-valid manifests).
-- `service/anveshan_service/`: `main.py` (router registration), `routes/cases.py` (multipart upload handling via `store_upload`), `adapters.py` (lazy track imports, `translated()` error mapping), `paths.py` (id regex), `settings.py`.
+## 0. Shared code already written (use it; do not change field names)
+- `tracks/common/perception.py`: `PerceptionRecord`, `Segment`, `Observation`, `MediaInfoRecord` (validators: model-produced observations cannot be "observed").
+- `tracks/common/skill_model.py`: `SkillModel`, `TargetProperty`, `Step`, `Constraint`, `Check`, `Relevance`, `STRUCTURE_CHECKS`, `STRUCTURE_ATTEMPT_KINDS`.
+- `tracks/common/profile.py` (v2): `CaseProfile`, `ProbeFacts`, `IntakeResult`, `STRUCTURE_LABEL`, `SPECIALIST_LABEL`, `slugify`, `composed_case_id`, `COMPOSED_MODALITY="universal"`.
+- `tracks/common/policy.py`: `REFUSE_CATEGORIES`, `FLAG_CATEGORIES`, `safety_decision(categories)`, `REFUSE_TEACHABILITY_MESSAGE`.
+- `tracks/common/models.py`:
+  - `ModelGateway.generate_json(...)`;
+  - **`ModelGateway.embed(items, purpose, model_key="embedding", dims=768)` → `EmbeddingResult(vectors (n,768) unit float32, metadata)`**, recorded and replayable;
+  - registry keys `vision_fast` (gemini-3.5-flash-lite), `audio` (gemini-3.5-flash-lite via env), `embedding` (gemini-embedding-2), `text_image` (gemma).
+- `tracks/common/media.py` (probe, sample_frames, decode_audio, sha256_file, image_to_jpeg_bytes), `tracks/common/onsets.py` (detect_onsets), `tracks/common/tabla_dsp.py` (percussive_contrast, wav_bytes, estimate_pulse), `tracks/common/kolam_geometry.py` (load_gray, binarize, otsu_threshold, label_components, thin).
+- **Measured latencies (2026-10-06):**
+  - vision_fast: 1 image 2.5 s, 4 images 8.9 s;
+  - embedding: 5 images 1.3 s;
+  - audio: a 12 s clip in 2.7 s.
+
+  **Use at most 4 images per vision_fast call.**
 
 ## 1. Files you own
-- **New:** `tracks/track-a/src/track_a/composer.py`, `tracks/track-a/prompts/composer_analyze_v1.txt`, `tracks/track-a/tests/test_composer.py`, `service/anveshan_service/routes/compose.py`, `service/tests/test_service_compose.py`.
+- **New:**
+  - `tracks/common/perceivers/__init__.py`, `tracks/common/perceivers/image.py`, `video.py`, `audio.py`, `screen.py`, `specialist_probe.py`
+  - `tracks/common/prompts/perceive_image_v1.txt`, `perceive_frames_v1.txt`, `perceive_audio_v1.txt`
+  - `tracks/track-a/src/track_a/composer.py`
+  - `service/anveshan_service/routes/compose.py`
+  - tests: `tracks/common/tests/test_perceivers.py`, `tracks/track-a/tests/test_composer.py`, `service/tests/test_service_compose.py`
 - **Edit:**
-  - `tracks/track-a/src/track_a/config.py` (only `modality_for` + composer constants);
-  - `tracks/track-a/src/track_a/api.py` (only: `build_case` passes `profile=` when the builder accepts it; `list_cases` includes composed cases; `CaseHandoff.to_view()` adds a `profile` key);
-  - `service/anveshan_service/main.py` (register the router);
-  - `service/anveshan_service/adapters.py` (only if you need a helper);
-  - `docs/plans/service-api.md` (add the compose endpoints table from case-composer §8);
-  - `tracks/track-b/src/track_b/handoff.py` (only if Track B fails to load a composed case; see step 8).
+  - `tracks/track-a/src/track_a/config.py` (only `modality_for`; see §5)
+  - `tracks/track-a/src/track_a/api.py` (only `list_cases` + `to_view` additions; see §5)
+  - `service/anveshan_service/main.py` (router registration)
+  - `docs/plans/service-api.md` (compose endpoints)
+  - `.env.example` (document `ANVESHAN_VISION_FAST_MODEL`, `ANVESHAN_EMBEDDING_MODEL`)
 
-## 2. `track_a/composer.py`: implement exactly these functions
+## 2. Layer 1 API (`tracks/common/perceivers/__init__.py`): exact signatures
+```python
+def perceive(path: Path, mime: str, ctx: RunContext, *, source_id: str, asset_dir: Path,
+             purpose: Literal["source", "attempt"], skill_hint: str | None = None,
+             want_specialists: bool = True) -> PerceptionRecord
+def load_embeddings(record: PerceptionRecord, record_dir: Path) -> np.ndarray   # rows aligned to record.embedding_index
+def save_record(record: PerceptionRecord, path: Path) -> None                   # writes JSON (+ the .npy must already sit next to it)
+def load_record(path: Path) -> PerceptionRecord
+```
+- `perceive` dispatches on the mime prefix to `perceive_image` / `perceive_video` / `perceive_audio` in the modality modules (same keyword arguments).
+- `asset_dir` is where keyframe JPEGs and the embeddings `.npy` are written. Use file names `kf_<segment_id>.jpg` and `emb_<record sha[:12]>.npy`, and set `record.embeddings_file` to the .npy file name (relative to `asset_dir`).
+- `purpose="source"` also runs the intake screen (safety + teachability) and stores the result in `record.gates["intake"]`. `purpose="attempt"` skips the screen.
+- Every model call goes through `ctx.gateway`; collect `metadata.replay_key` values into `record.runs`.
+- **Deterministic ids:** segments `seg-000…` in time order (image: `seg-000` = whole, then `seg-001…` for regions). Observations `obs-000…` in creation order.
 
-### 2.1 Types
+### 2.1 `perceive_image`
+1. **Deterministic** (`det:image_basic`): width, height, mean brightness (0–1), RMS contrast, blur score (variance of a 3×3 Laplacian on gray, implemented with numpy), ink fraction and Otsu separation (via `binarize`/`otsu_threshold`). Add each as an `Observation(kind="measurement", certainty="observed", producer="det:image_basic", label=<name>, value=…)` on `seg-000` (kind "whole").
+2. **Embedding:** one call, `gateway.embed(items=[ImagePart(jpeg max 768 px)] + 4 tile crops (2×2 grid, each max 384 px), purpose=f"{purpose}_image")`.
+   - Segments: `seg-000` whole, `seg-001…seg-004` regions `[0,0,50,50]`, `[50,0,50,50]`, `[0,50,50,50]`, `[50,50,50,50]`.
+   - Save a float16 `.npy` with 5 rows; `embedding_index = {seg-000:0, seg-001:1, …}`.
+3. **Perception call** (`vision_fast`, prompt `perceive_image_v1.txt`, the whole image ≤ 768 px). Response DTO:
+   ```python
+   class ImagePerceptionDTO(BaseModel):
+       artefact_kind: str                     # e.g. "line drawing", "plated dish", "person in a pose"
+       objects: list[str] = []                # ≤ 10
+       properties: list[{"label": str, "detail": str, "region": [x,y,w,h] | None}] = []   # ≤ 12, visible facts only
+       visible_mistakes_to_avoid: list[str] = []   # ≤ 5, things a learner could get wrong that are checkable in a photo
+       plausible_build_order: list[{"step": str, "region": [x,y,w,h] | None}] = []  # ≤ 8 (backward interpolation; INFERRED)
+       safety_categories: list[str] = ["none"]   # from the allowed list given in the prompt
+       teachable: "yes" | "no" | "unclear"; teachable_reason: str; skill_kind: str
+   ```
+   Map to observations:
+   - `objects` → kind "object";
+   - `properties` → kind "property" (on the matching region segment if a region is given; otherwise on whole). Add a **new region segment** for each property region (`seg-005…`), clamped to [0,100];
+   - `visible_mistakes_to_avoid` → kind "quality" with label prefix "avoid: ";
+   - `plausible_build_order` → kind "action" with label prefix "build step i: ".
+
+   All of these use `certainty="inferred"`, `producer="model:vision_fast"`. Store `artefact_kind` / `skill_kind` / `teachable*` / `safety_categories` in `record.gates["intake"]` (source only), via `screen.py` (§2.4).
+
+   The prompt must list the allowed `safety_categories` (the keys of `REFUSE_CATEGORIES` + `FLAG_CATEGORIES` + "none") and say: describe only what is visible; no identity, history or meaning claims; regions are percentages.
+
+### 2.2 `perceive_video`
+1. **Deterministic segmentation** (`det:video_segment`): `sample_frames(path, fps=1.0, max_side=256, max_frames=120)`.
+   - Gray frames; `diff[i]` = mean |frame[i] − frame[i−1]| / 255.
+   - Smooth with a 3-tap moving average. A frame is **still** if `diff < 0.02`, else **active**.
+   - Segments = maximal runs of equal still/active label. Merge runs shorter than 2 s into the previous segment.
+   - Cap at 12 segments by merging the shortest neighbouring pair repeatedly.
+   - Each segment's keyframe = the frame with the minimum diff inside it; its stability = 1 − mean diff (clamped 0..1). Save keyframes (max side 384) as `kf_seg-NNN.jpg` in `asset_dir`.
+   - Measurement observations on whole-video segment `seg-000`: duration, segment count, active fraction. Each time segment is `seg-001…` (the time segments; also create `seg-000` kind "whole").
+2. **Embeddings:** keyframes (one per segment) **and** per-second frames (all sampled frames, max side 256) in one `embed` call (`purpose=f"{purpose}_frames"`).
+   - `embedding_index`: `seg-NNN` → its keyframe row.
+   - Frame rows: `frame-<index>` keys are **not** segments, so store the frame times and row indices in `record.specialists["frames"] = {"times": [...], "rows": [...]}`. The `.npy` holds keyframe rows first, then frame rows.
+3. **Perception calls** (`vision_fast`, prompt `perceive_frames_v1.txt`): send keyframes in batches of ≤ 4, each as `ImagePart(label=f"Segment {segment_id} keyframe at t={keyframe_sec:.1f}s")`. DTO per batch:
+   `{"segments":[{"segment_id":str, "state":str, "action":str|None, "objects":[str], "notes":str|None}], "safety_categories":[...], "teachable":..., "teachable_reason":..., "skill_kind":...}`.
+   - Map to `state` / `action` / `object` observations (inferred) on that segment. Ignore unknown segment ids, with a warning.
+   - Only the **first** batch needs the safety/teachability fields; merge categories across batches (union).
+   - **If the video has an audio track:** also run `perceive_audio` on the audio track (decode with PyAV to WAV in memory), store that record in `record.specialists["audio_track"]` (as a dict), and merge its intake categories.
+
+### 2.3 `perceive_audio`
+1. **Deterministic** (`det:audio_signal`): decode to 16 kHz mono (`decode_audio`; ≤ 60 s). Compute and record as measurement observations on `seg-000`:
+   - duration, RMS, clipping fraction;
+   - onsets (count, rate);
+   - `percussive_contrast`;
+   - **speech-likeness:** spectral flatness mean (numpy) and 4 Hz modulation energy ratio (envelope FFT power at 3–6 Hz over 0.5–20 Hz);
+   - pulse (via `tabla_dsp.estimate_pulse` when onsets ≥ 8; else None).
+
+   Time segments: split at silences ≥ 0.4 s (energy < 10% of the median); at most 20 segments.
+2. **No embeddings for audio** (audio embedding is expensive). Leave `embeddings_file=None`.
+3. **Perception call** (`audio` model key; skip with a warning if disabled; prompt `perceive_audio_v1.txt`; WAV ≤ 30 s). DTO:
+   `{"audio_kind": "speech"|"music"|"percussion"|"environment"|"mixed", "transcript": str|None, "language": str|None, "events":[{"label":str,"approx_sec":float|None}], "instrument": str|None, "safety_categories":[...], "teachable":..., "teachable_reason":..., "skill_kind":...}`.
+   - Transcript → a `speech` observation (inferred).
+   - Events → `event` observations attached to the time segment containing `approx_sec` (else whole).
+   - Instrument → an `object` observation.
+
+### 2.4 Intake screen (`screen.py`)
+`intake_from_perception(record) -> IntakeResult`. It combines the model's `safety_categories` (via `policy.safety_decision`), `teachable`, `teachable_reason` and `skill_kind`, plus deterministic overrides:
+- an image with contrast < 0.03 or ink_fraction < 0.002 → teachable "no" ("blank or near-blank image");
+- audio with RMS < 0.005 → teachable "no" ("silence");
+- video with active fraction < 0.05 **and** segment count ≤ 1 → teachable "unclear" ("nothing visibly changes").
+
+If the model call failed or was disabled → teachable "unclear" with reason "AI screen unavailable", and safety from deterministic only (`["none"]`), plus a warning.
+
+### 2.5 Specialist availability (`specialist_probe.py`)
+`available_specialists(record, path) -> dict[name, (bool, reason)]`, using the thresholds in universal-pipeline §3.3:
+- **line_art:** image; separation ≥ 0.25, ink 1–40%, skeleton length ratio ≥ 0.5, ≤ 6 big components.
+- **rhythm:** audio, or a video's audio track; onset rate ≥ 1.5/s over ≥ 6 s, and percussive contrast ≥ 1.5.
+- **procedure_states:** video; ≥ 2 still segments whose keyframe embedding cosine distance ≥ 0.08 (1 − cos).
+
+Also `available_structures(record, specialists) -> dict[structure, (bool, reason)]`:
+
+| Structure | Available when |
+|---|---|
+| final_state | image, or video (uses the last still segment) |
+| procedure | video with ≥ 2 segments |
+| temporal_pattern | rhythm available |
+| utterance | audio (or video audio track) whose `audio_kind` is "speech", or flatness/modulation heuristics indicate speech: flatness < 0.35 and modulation ratio > 0.2 |
+
+## 3. Composer (`track_a/composer.py`)
+
+### 3.1 Draft
 ```python
 @dataclass
 class Draft:
-    draft_id: str                 # sha256[:16]
-    dir: Path                     # <data_dir>/drafts/<draft_id>
-    source_path: Path             # <dir>/source<ext>
-    probe: ProbeFacts
-    proposal: CaseProfile         # unconfirmed (confirmed_by_user=False)
+    draft_id: str; dir: Path; source_path: Path
+    perception: PerceptionRecord; probe: ProbeFacts; intake: IntakeResult
+    proposal: CaseProfile | None        # None when refused
+    refused: bool; refusal_message: str | None
     warnings: list[str]
-    def to_view(self) -> dict     # {"draft_id","probe","proposal","warnings","family_labels": FAMILY_LABEL}
+    def to_view(self) -> dict  # {"draft_id","probe","intake","proposal","refused","refusal_message","warnings",
+                               #  "structure_labels": STRUCTURE_LABEL, "specialist_labels": SPECIALIST_LABEL,
+                               #  "perception": {"segments": [...], "observations": [...]} (no embeddings)}
 ```
 
-### 2.2 `probe_source(path: Path, mime: str) -> ProbeFacts`
-Deterministic, no model.
+### 3.2 `create_draft(data_dir, file_path, mime, ctx, *, title_hint=None, description=None, rights_confirmed: bool) -> Draft`
+1. Check `rights_confirmed`; enforce limits (≤ 30 MB; video 8–120 s; audio 3–60 s; images ≥ 64 px on the short side). Failures raise INVALID_INPUT with friendly messages.
+2. `draft_id = sha256[:16]`; dir `<data_dir>/drafts/<draft_id>/`. Copy the source to `source<ext>`. **Idempotent:** if `draft.json` exists, load and return it.
+3. `record = perceive(source, mime, ctx, source_id=f"upload.{sha[:12]}", asset_dir=<draft dir>/assets, purpose="source", skill_hint=title_hint or description)`, then `save_record(record, <dir>/perception_source.json)`.
+4. `intake = intake_from_perception(record)`.
+   - Safety "refuse" → `refused=True`, message "We can't use this file: " + reasons.
+   - Teachable "no" → `refused=True`, message `REFUSE_TEACHABILITY_MESSAGE.format(reason=…)`.
+   - Teachable "unclear" without `title_hint` **and** `description` → not refused, but `proposal=None` and the warning "Tell us what skill this is (title and what a learner should achieve) to continue". The UI then calls `refine_draft` (below).
+5. Otherwise build `probe = ProbeFacts(... structures_available=[available], specialists_available=[available], reasons=…)` and call **K7's** `track_a.universal.propose_skill_model(record, probe, intake, ctx, title_hint, description) -> (SkillModel, dict proposal_meta, list[str] warnings)`.
+   - **Until K7 merges, that module may not exist.** In that case use `_fallback_skill_model(record, probe, intake, title_hint)`, which you implement minimally and deterministically: structures = [first available structure in the order final_state > procedure > temporal_pattern > utterance]; one `final_property` check per inferred property (max 4); `relevance.expected_kinds` from `STRUCTURE_ATTEMPT_KINDS`. Mark `proposal_meta={"fallback": True}` and add a warning.
+6. `proposal = CaseProfile(case_id=composed_case_id(title, sha), title=<model skill title or hint or "Untitled skill">, skill_summary, domain, transmission_mode=<"goal-conditioned" if structures == ["final_state"] else "forward">, learner_input_kinds=<intersection of STRUCTURE_ATTEMPT_KINDS over structures, filtered by the specialists rule>, probe, intake, skill_model, perception_file="perception_source.json", confirmed_by_user=False, …)`.
+7. Write `draft.json` (the `to_view()` dict plus internal fields needed to reload) and return.
 
-**Modality from mime prefix:** image/ → image, video/ → video, audio/ → audio; otherwise raise `AnveshanFailure(INVALID_INPUT, "Unsupported file type …")`. Use `media.probe` for duration, size and has_audio (images: open with PIL for width and height).
+`refine_draft(data_dir, draft_id, ctx, *, title, description) -> Draft`: re-runs step 5 only; perception is reused (no new perception calls).
 
-**Limits** (raise INVALID_INPUT with a learner-readable message): size ≤ 30 MB; video duration ≤ 120 s; audio duration ≤ 60 s and ≥ 3 s; video ≥ 8 s.
+### 3.3 `create_case_from_draft(cases_root, data_dir, draft_id, edits: dict) -> Path`
+`edits` = `{title, skill_summary, domain, transmission_mode, learner_input_kinds, goal_hint, skill_model}`, where `skill_model` is the full edited SkillModel dict from the UI: it may toggle `keep` on properties/constraints, `enabled`/`weight`/`required` on checks, `critical` on steps, and rename steps or properties.
+- Validate by constructing `CaseProfile(..., confirmed_by_user=True, confirmed_at=<UTC ISO>)`. A ValidationError raises INVALID_INPUT with the message.
+- `case_id = composed_case_id(title, sha)`; `case_dir = <data_dir>/cases/<case_id>`. If it already exists and is confirmed, return it.
+- Write:
+  - `manifest.json`: copy the approach in `track_a.api.create_upload_case` so it is schema-valid. Use `archetype="universal:" + "+".join(structures)`; `workspace_type` = "spatial_canvas" if final_state is the only structure, "rhythm_envelope" if temporal_pattern, otherwise "spatial_sequence"; plus `transmission_mode`, `source_mode`, the same enum values as `create_upload_case`, and `source_media` local_file.
+  - `source/upload.<sha12><ext>` and `source/source.json` (one SourceRecord, `runtime_label="UPLOAD"`, licence and creator from config, access `approved_learners`, role target_image / expert_video / expert_audio by modality).
+  - `knowledge/perception_source.v1.json` plus its `.npy` and keyframe assets copied to `knowledge/goal_assets/` (update `embeddings_file` and `keyframe_asset` names accordingly).
+  - `knowledge/case_profile.v1.json`.
+- The caller (the service) then calls `track_a.api.build_case(case_dir, ctx)`. K7 makes `build_case` work for `universal`: it maps the confirmed SkillModel to contracts without new perception calls.
 
-**Metrics and allowed families**, rounded to 4 dp, written into `metrics` and `family_reasons`:
+## 4. Service routes (`routes/compose.py`, prefix `/api/compose`)
 
-- **image**
-  - `gray = load_gray(path)`; `mask, info = binarize(gray)`.
-  - `ink_fraction = mask.mean()`.
-  - `otsu_separation`: let t be the Otsu threshold (from `info` or `otsu_threshold(gray)`). Separation = |mean(gray > t) − mean(gray ≤ t)| / 255.
-  - `skeleton_len_ratio = thin(mask).sum() / max(w, h)`.
-  - `big_components`: number of components in `label_components(mask)` whose area > 0.5% of ink.
-  - Allow `image_target` iff `otsu_separation ≥ 0.25 and 0.01 ≤ ink_fraction ≤ 0.40 and skeleton_len_ratio ≥ 0.5 and big_components ≤ 6`.
-  - The reason text lists each check with its value and pass/fail, e.g. `"ink_fraction=0.08 ok; otsu_separation=0.61 ok; skeleton_len_ratio=3.2 ok; big_components=1 ok"`.
-  - Always allow `rubric_vlm`.
-- **video**
-  - `frames = sample_frames(path, fps=1.0, max_side=160, max_frames=120)`.
-  - Convert to grayscale arrays. For consecutive pairs, compute the changed-pixel fraction (|diff| > 25).
-  - `change_active_ratio` = fraction of pairs with changed fraction > 0.01.
-  - Allow `video_states` iff duration ≥ 8 and `change_active_ratio ≥ 0.30`.
-  - If `has_audio`, also run the audio checks below on the decoded audio track (first 60 s) and allow `audio_rhythm` if they pass.
-  - Always allow `rubric_vlm`.
-- **audio**
-  - `x = decode_audio(path, 16000, 0, 60)`; `on = detect_onsets(x, 16000)`.
-  - `onset_rate = len(on) / duration`; `percussive_contrast = percussive_contrast(x, 16000)`.
-  - Allow `audio_rhythm` iff `onset_rate ≥ 1.5 and duration ≥ 6 and percussive_contrast ≥ 1.5`.
-  - Allow `rubric_vlm` only if `ModelRegistry().enabled("audio")`; otherwise give the reason "audio model disabled".
-- If no family is allowed, raise INVALID_INPUT ("We can't evaluate this file yet: …reasons").
+| Method | Path | Body | Behaviour |
+|---|---|---|---|
+| POST | `/analyze` | multipart `file`, form `title`, `description`, `rights_confirmed` | `create_draft` → `Draft.to_view()` (refused drafts return **200** with `refused: true` and the message; they are not errors) |
+| GET | `/{draft_id}` | — | `load_draft` |
+| POST | `/{draft_id}/refine` | JSON `{title, description}` | `refine_draft` |
+| POST | `/{draft_id}/create` | JSON edits | `create_case_from_draft` → `build_case` → `load_case(...).to_view()` |
 
-### 2.3 `analyze(probe, source_path, ctx, *, title_hint: str | None, description: str | None) -> tuple[dict, list[str], list[str]]`
-Returns `(proposal_dict, run_keys, warnings)`. At most **one** model call:
+- Use the existing `store_upload`, `adapters.translated()` and `adapters.run_context(settings, <draft dir>, mode)`.
+- Validate `draft_id` with `^[0-9a-f]{16}$`.
+- Add the table to `docs/plans/service-api.md`.
 
-- **image:** `model_key="text_image"`, parts = `[ImagePart(jpeg of the image downscaled to max 512 px, label="Uploaded source image:")]`.
-- **video:** `model_key="video_frames"`, parts = 3 frames at 10%, 50% and 90% of the duration (max_side 384), labelled `"Frame t=<s>s"`.
-- **audio:** `model_key="audio"` if enabled, part = `AudioPart(wav of the first 30 s at 16 kHz)` (use `tabla_dsp.wav_bytes`). If the audio model is disabled, make no call and return a deterministic proposal (below) with a warning.
+## 5. Track A wiring (small edits)
+- `config.modality_for(case_id, case_dir=None)`:
+  1. hero cases;
+  2. hero-derived cases (`kolam~…` etc.);
+  3. a composed case with `knowledge/case_profile.v*.json` → `"universal"`;
+  4. else None.
 
-**Prompt** (`composer_analyze_v1.txt`), rendered with `load_prompt` and these placeholders:
-- `{modality}`
-- `{probe_facts_json}`: compact JSON of `metrics`, duration, size
-- `{allowed_families_json}`: list of `{id, label}` from `FAMILY_LABEL` for **allowed families only**
-- `{title_hint}`, `{description}` (or "none")
+  Add the optional `case_dir` parameter and pass it from `api.py` where available. All existing tests must still pass.
+- `api.list_cases`: include composed cases from `<data_dir>/cases/*~*` that have a profile: `{case_id, title, modality: "universal", hero: False, runtime_label: "UPLOAD", composed: True, structures, review_status, built}`.
+- `CaseHandoff.to_view()` adds `"profile": <profile dict or None>`.
 
-The prompt must say:
-1. Return JSON only, matching the schema below.
-2. `family` MUST be one of the allowed ids.
-3. Do not claim who made the source, its history, cultural meaning or original procedure. Describe only what is visible or audible.
-4. `observable_indicator` must name something a camera or microphone can check.
-5. If unsure, say so in `concerns`.
+## 6. Tests (fake gateway; no network)
+- **`test_perceivers.py`:**
+  - image: a synthetic line drawing gives the expected measurement observations; a fake embed gives 5 rows; a fake vision DTO gives inferred observations with region segments clamped.
+  - video: a generated mp4 with 3 visually distinct still phases separated by motion gives ≥ 3 segments, with keyframes written and frame rows stored (generate with PyAV as in `tests/test_foundation.py::test_sample_frames_deterministic`, using solid colours plus a moving square).
+  - audio: a click-track WAV gives onset and pulse observations; a speech-like synthetic signal (a noise burst amplitude-modulated at 4 Hz) passes the utterance heuristic; silence makes the intake teachable "no".
+  - specialist / structure availability thresholds;
+  - model failure → intake "unclear" plus a warning (never fabricated);
+  - determinism: same file plus recorded runs → identical record JSON;
+  - **at most 4 images per vision_fast call**, asserted on the fake client.
+- **`test_composer.py`:** create_draft for an image (proposal present), refused cases (fake safety "weapons"; blank image), the unclear-without-hint path, refine_draft (no new perception calls), the fallback skill model when `track_a.universal` is missing, create_case_from_draft (manifest validates against the case-pack schema checker; files written; idempotent; invalid edits raise INVALID_INPUT), and `modality_for` for composed cases.
+- **`test_service_compose.py`:** endpoints with monkeypatched composer functions; refused draft returns 200 with `refused: true`; unknown draft returns 404; invalid id returns 400.
 
-**Response DTO** (Pydantic, `extra="ignore"`):
-```python
-class AnalysisDTO(BaseModel):
-    title: str                        # ≤ 60 chars
-    skill_summary: str                # ≤ 300 chars
-    domain: str                       # ≤ 60 chars
-    family: str
-    transmission_mode: Literal["forward", "goal-conditioned", "corrective"]
-    vocabulary: dict[str, str] = {}   # keys allowed: state_noun, object_noun, unit_noun, action_verb
-    criteria: list[dict] = []         # each {name, observable_indicator}; ≤ 6 items
-    concerns: list[str] = []
-```
+## 7. Live check (with key; record in the report)
+Run `create_draft` on:
+1. `C:\Users\JIMSEELAN\Desktop\Projects\hackathons\anveshan\var\kiro\media\kolam\kolam_8_mayoo.png`
+2. the shortest file in `...\var\kiro\media\tabla\`
+3. a 30 s cut of `tracks/cases/origami/media/cache/*.ogv` (cut with PyAV into your `var/`)
+4. a landscape-like image: generate one with Pillow (sky gradient plus a green band), **or** a random-noise image. Expect a refusal or "unclear".
+5. a 5 s silent WAV (expect a refusal).
 
-**Validation after the call:**
-- If `family` is not in allowed → replace it with the deterministic default (below) and add a warning "model proposed <x>, not allowed; using <y>".
-- Truncate over-long strings.
-- Keep only allowed vocabulary keys.
-- Drop criteria whose `observable_indicator` is empty.
+For each, record: segments, observation counts by kind, intake result, specialists and structures available, number of model calls, total latency and estimated cost (tokens × price; use the usage metadata if you store it, otherwise estimate).
 
-**Deterministic default family** (also used when the model fails or is disabled):
-image_target > video_states > audio_rhythm > rubric_vlm, choosing the first one that is allowed.
-
-**Default transmission mode:** image_target → goal-conditioned; video_states → forward; audio_rhythm → forward; rubric_vlm → goal-conditioned for an image source, forward otherwise.
-
-On `ModelError`: catch it, use the deterministic proposal (title = title_hint or "Untitled skill", summary = description or "", domain = "unspecified", no criteria), and add the warning `"AI analysis unavailable: <category>"`. Never invent content.
-
-### 2.4 `create_draft(data_dir, file_path, mime, ctx, *, title_hint=None, description=None, rights_confirmed: bool) -> Draft`
-1. `rights_confirmed` must be True; otherwise INVALID_INPUT ("Please confirm you have the right to use this file.").
-2. Compute sha256; `draft_id = sha[:16]`; copy the file to `<data_dir>/drafts/<draft_id>/source<ext>`, keeping the original extension in lowercase.
-3. Run `probe_source`, then `analyze`.
-4. Build `proposal = CaseProfile(case_id=composed_case_id(title, sha), …, criteria=[CriterionSuggestion(criterion_id=f"CRIT-{slug.upper()[:12]}-{i:02d}", name, observable_indicator, weight=2.0, required=(i==1), method="engine_default" if family != "rubric_vlm" else "vlm_status")…], probe=probe, model_proposal=<validated dto dict>, model_run_keys=run_keys, confirmed_by_user=False, warnings=…)`.
-   - Strip non-alphanumerics from the slug used in criterion ids.
-   - `learner_input_kinds` = `FAMILY_INPUT_KINDS[family]` filtered by the source modality (for rubric_vlm, only the source's own modality).
-5. Write `draft.json` (`write_json`, the `Draft.to_view()` dict) and return the Draft.
-6. Calling it again with the same file returns the existing draft without a new model call: check `draft.json` first.
-
-### 2.5 `load_draft(data_dir, draft_id) -> Draft`
-Validate `draft_id` against `^[0-9a-f]{16}$` and that the path stays inside drafts/. Raise MISSING_EVIDENCE if absent.
-
-### 2.6 `create_case_from_draft(cases_root, data_dir, draft_id, edits: dict, ctx_factory) -> Path`
-- `edits` contains the user-confirmed fields: `title, skill_summary, domain, family, transmission_mode, learner_input_kinds, vocabulary, goal_hint, criteria` (list of `CriterionSuggestion` dicts).
-- Validate by constructing `CaseProfile(**proposal fields updated with edits, confirmed_by_user=True, confirmed_at=<UTC ISO>)`. Pydantic enforces family-in-allowed and kinds-per-family. On a pydantic error, raise INVALID_INPUT with the message.
-- `case_id = composed_case_id(edits["title"], probe.sha256)`; `case_dir = <data_dir>/cases/<case_id>`. If it already exists with a confirmed profile, return it (idempotent).
-- Write the manifest, copying the structure `create_upload_case` uses, and make it pass `.github/scripts/check_case_packs.py`'s schema validation. Use:
-  - `case_id`, `bundle_case_id=case_id`, `title=edits.title`, `domain=edits.domain`, `archetype=<family>`;
-  - `workspace_type` by family: image_target→`spatial_canvas`, video_states→`spatial_sequence`, audio_rhythm→`rhythm_envelope`, rubric_vlm→`rubric_review`;
-  - `transmission_mode`, `source_mode` (upper-case with `_`);
-  - the same values `create_upload_case` uses for `source_posture`, `epistemic_status`, `data_status`, `status`, `runtime_class`;
-  - `source_media={type: local_file, path: "source/upload.<sha12><ext>", mime_type, attribution: "user upload — rights asserted by uploader"}`.
-- Copy the source to `source/upload.<sha12><ext>`. Write `source/source.json`:
-  - one `SourceRecord`: `source_id=f"upload.{sha12}"`;
-  - role by family/modality: image → `target_image`; video → `expert_video`; audio → `expert_audio`;
-  - `runtime_label="UPLOAD"`, `license=config.UPLOAD_LICENSE`, `creator=config.UPLOAD_CREATOR`, `access_level="approved_learners"`;
-  - dimensions or duration from the probe.
-- Write `knowledge/case_profile.v1.json`.
-- Return `case_dir`. The **caller** then runs `build_case(case_dir, ctx)`.
-
-## 3. `config.modality_for(case_id)` (edit)
-Follow the order in case-composer §6. For composed cases (`<slug>~<sha12>` whose base is not a hero case), read the latest `knowledge/case_profile.v*.json` under `<data_dir>/cases/<case_id>/` (the function may need a `case_dir` parameter; add an optional `case_dir: Path | None = None` and update the call sites in `api.py`) and return `FAMILY_MODALITY[family]`. Hero and hero-derived behaviour must not change (the existing tests must pass).
-
-## 4. `api.build_case` (edit)
-After resolving the modality, load the profile if one exists. Call the builder with `profile=profile` **only if** `inspect.signature(builder).parameters` contains `profile` (K7 adds it). Otherwise call without it and add the warning `"builder does not yet support profiles; using default wording"`. For `rubric_vlm`, if `track_a.goals.rubric_vlm` is not importable yet, raise `AnveshanFailure(MODEL_FAILURE, "rubric_vlm engine not installed yet")`; it lands with K7.
-
-## 5. `api.list_cases` and `to_view` (edit)
-- Composed cases appear with `{case_id, title, modality, hero: False, runtime_label: "UPLOAD", review_status, built, composed: True, family}`.
-- `to_view()` includes `"profile": <profile dict or None>`.
-
-## 6. Service routes (`routes/compose.py`)
-Follow case-composer §8 exactly:
-- `POST /api/compose/analyze`: multipart `file` (stored with the existing `store_upload` helper and its size limit), form fields `title`, `description`, `rights_confirmed` ("true"/"false"). Builds a ctx with `adapters.run_context(settings, settings.data_dir / "drafts", mode)`; a composer-specific RunStore root is fine, since runs are recorded wherever ctx points. Returns `Draft.to_view()`.
-- `GET /api/compose/{draft_id}`
-- `POST /api/compose/{draft_id}/create`: JSON body = `edits`. Calls `create_case_from_draft`, then `build_case(case_dir, ctx)`, then returns `load_case(case_dir).to_view()`.
-
-All errors go through the existing `adapters.translated()` so they get the standard `{"error": …}` body. Register the router in `main.py` under `/api/compose`.
-
-## 7. Tests (no network; fake gateway clients as in `tracks/common/tests/test_foundation.py`)
-- **`tracks/track-a/tests/test_composer.py`:**
-  - **probe:**
-    - Image: a synthetic line drawing (Pillow: white background, a black circle and a cross, 400×400) allows `image_target` and `rubric_vlm`. A photo-like noise image allows `rubric_vlm` only.
-    - Video: a generated mp4 with moving content allows `video_states`; a static one does not (generate it with PyAV as in `test_foundation.py::test_sample_frames_deterministic`).
-    - Audio: a click-track WAV (reuse the `click_track` helper idea) allows `audio_rhythm`; silence raises INVALID_INPUT.
-    - The size and duration limits are enforced.
-  - **analyze:**
-    - A fake model returning a valid DTO produces the proposal.
-    - A model choosing a disallowed family is replaced, with a warning.
-    - A ModelError gives the deterministic proposal plus a warning.
-    - The audio model being disabled means no call and a warning.
-  - **create_draft:** rights not confirmed raises INVALID_INPUT; the second call is idempotent and makes no extra model call.
-  - **create_case_from_draft:**
-    - the manifest validates with the case-pack schema checker (import and call its validation function, or run the script against a temp copy);
-    - `source.json` and the profile are written;
-    - a disallowed family in the edits raises INVALID_INPUT;
-    - a second create is idempotent.
-  - **modality_for:** hero, hero-derived and composed cases all resolve correctly.
-  - **build_case on a composed image_target case** (fake builder via monkeypatch, as the existing Track A tests do) receives `profile`.
-- **`service/tests/test_service_compose.py`:** the three endpoints with monkeypatched composer functions, plus error mapping (400 for rights not confirmed, 404 for an unknown draft).
-
-## 8. Live check (manual, recorded in the report)
-With the key, run the full flow for:
-- (a) a Kolam diagram from `C:\Users\JIMSEELAN\Desktop\Projects\hackathons\anveshan\var\kiro\media\kolam\kolam_8_mayoo.png`;
-- (b) the tabla clip `...\var\kiro\media\tabla\` (the shortest file);
-- (c) a 20–40 s cut of any video. Cut it with PyAV into your worktree's `var/`; `tracks/cases/origami/media/cache/` after `tools/fetch_media.py` is a good source.
-
-For each, record the probe metrics, allowed families, the proposal, warnings, latency and whether `build_case` succeeded. If (a)'s build fails because the Kolam builder doesn't take `profile` yet, that's expected until K7. Record it.
-
-If Track B fails to load a composed case in a quick `track_b.api.start_session` test, fix only `track_b/handoff.py` (it must read `goal.modality` and not assume a hero case id). Add a test.
-
-## 9. Acceptance
-- All new tests pass, and the Definition of Done in 00-COMMON.md is met.
-- `docs/plans/service-api.md` has the compose endpoints.
-- The live check is recorded in `docs/kiro/reports/K6-REPORT.md` (no key or secrets).
+## 8. Acceptance
+- All tests pass; the live-check table is in `docs/kiro/reports/K6-REPORT.md`.
+- The Definition of Done in 00-COMMON.md is met.
+- No change to hero-case behaviour (the existing tests stay green).

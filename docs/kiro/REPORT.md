@@ -88,3 +88,32 @@ Full snapshot: [docs/kiro/official-rules-2026-10-06.md](official-rules-2026-10-0
 5. **Submission portal unknown:** The submission URL was not found. Jim should visit https://aibuildercup.com, click "Register now", and record the portal URL and required form fields here before Oct 15.
 
 6. **GitHub CLI:** gh v2.102.0 was installed on this machine during an earlier session attempt. It is installed but not authenticated. Jim should run `gh auth login` to authenticate (GitHub Desktop credentials do not carry over to the CLI).
+
+---
+
+## Follow-up (2026-10-06 ~16:30 IST)
+
+### Kolam downloads — not completed (persistent CDN block)
+
+All 5 remaining kolam images (3 McKay Savage floor photos + 2 small Mayooranathan diagrams) returned HTTP 429 from Wikimedia's Varnish CDN throughout the follow-up session. The rate limit is IP-level, not request-rate-level — the block persisted across a 2-hour gap, multiple download tools (curl.exe, PowerShell Invoke-WebRequest), and both full-size and thumbnail URL formats.
+
+**Resolution:** Download from a different IP. Quickest path:
+1. Open GCP Cloud Shell (already has gcloud, curl, and a Google-owned IP not rate-limited by Wikimedia).
+2. Run: `curl -A "AnveshanHackathon/0.1 (research prototype)" -L -o kolam_06.jpg "https://upload.wikimedia.org/wikipedia/commons/9/95/India_-_Kolam_-_06_%282486394060%29.jpg"` with 60 s delays between each file.
+3. Copy the downloaded files to `var/kiro/media/kolam/` in the repo.
+
+The exact URLs, expected sizes, and Wikimedia API-verified SHA-1 hashes for all 5 missing files are in `docs/kiro/media-candidates.md`.
+
+### Official rules — deadline time and portal URL found
+
+**Submission portal:** `https://hack2skill.com/event/aibuildercup2026/registration`  
+This was found by inspecting the live page with a browser — the "Register now" button leads here. It requires a Hack2skill login. Jim should log in and verify the form fields.
+
+**Deadline time and timezone:** After checking aibuildercup.com, Faqs.html, the Terms & Conditions Google Doc, and all third-party listings, **no specific time or timezone is stated on any official source**. The official text says only "submit it before October 18." Treat this as an end-of-day deadline in the most conservative timezone. **Contact Hack2skill or check the registration confirmation email for the exact cut-off time.**
+
+**Critical new finding — fresh code requirement:** The Terms & Conditions and FAQ both state that only code created after the official program launch (7 September 2026) is eligible. Pre-existing work disqualifies the entire team. Anveshan must have been started on or after that date. Verify before submission.
+
+**Terms & Conditions URL** (newly found, not in original rules snapshot):  
+`https://docs.google.com/document/d/e/2PACX-1vRm7ChZ6Ij9fG7uFDkxzUMpwgVeBmnQ6cMDnAIEEX84AiLBOOQ9cYbl3S5OzFBbcVb8TF55s-eVpiXb/pub`
+
+Full updates in `docs/kiro/official-rules-2026-10-06.md`.

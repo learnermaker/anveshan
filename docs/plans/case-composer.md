@@ -1,6 +1,6 @@
 # Case Composer: onboarding an entirely new skill from an upload
 
-**Date:** 2026-10-06 · **Status:** DECIDED for the hackathon build (Jim asked for "intelligence in processing new things": a user uploads an entirely new case interactively in the UI).
+**Date:** 2026-10-06 · **Status:** PARTLY SUPERSEDED by `docs/plans/universal-pipeline.md`. §1, §2 (principle), §8 (API) and §10 (honesty) still apply. The engine-family routing (§3–§7) and the v1 profile are replaced by Perception → SkillModel → universal evaluation with specialists. Originally DECIDED for the hackathon build (Jim asked for "intelligence in processing new things": a user uploads an entirely new case interactively in the UI).
 
 ## 1. Problem
 

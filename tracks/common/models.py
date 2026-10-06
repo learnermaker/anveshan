@@ -62,7 +62,9 @@ class ModelError(AnveshanFailure):
 _REGISTRY_ENV = {
     "text_image": ("ANVESHAN_TEXT_IMAGE_MODEL", "gemma-4-26b-a4b-it"),
     "video_frames": ("ANVESHAN_VIDEO_FRAMES_MODEL", "gemma-4-26b-a4b-it"),
-    "audio": ("ANVESHAN_AUDIO_MODEL", ""),  # disabled unless configured (paid)
+    "audio": ("ANVESHAN_AUDIO_MODEL", ""),  # disabled unless configured (paid, ~$0.0003/clip)
+    "vision_fast": ("ANVESHAN_VISION_FAST_MODEL", "gemini-3.5-flash-lite"),  # interactive perception (~2.5 s/image)
+    "embedding": ("ANVESHAN_EMBEDDING_MODEL", "gemini-embedding-2"),         # image/frame/text embeddings
 }
 
 
@@ -224,6 +226,12 @@ def extract_json(text: str) -> Any:
 
 
 @dataclass
+class EmbeddingResult:
+    vectors: Any            # numpy float32 array (n, dims), unit rows
+    metadata: "RunMetadata"
+
+
+@dataclass
 class GenerationResult:
     data: BaseModel
     raw_text: str
@@ -352,6 +360,91 @@ class ModelGateway:
         )
         self.store.save(meta, {"text": raw_text})
         return GenerationResult(self._validate(raw_text, schema, prompt_id), raw_text, meta)
+
+    def embed(
+        self,
+        *,
+        items: Sequence[Part],
+        purpose: str,
+        model_key: str = "embedding",
+        dims: int = 768,
+        batch_size: int = 16,
+    ) -> "EmbeddingResult":
+        """Embed each item (text / ImagePart / AudioPart) separately into unit vectors (n, dims).
+
+        Recorded like generate_json: vectors are stored as float16 ``vectors.npy`` next to the run
+        metadata; ``recorded`` mode replays them or raises REPLAY_MISMATCH. ``purpose`` is a short
+        stable label (e.g. "perception_frames") that becomes part of the replay key.
+        """
+        import numpy as np
+
+        if not items:
+            raise ModelError(FailureCategory.INVALID_INPUT, "embed() needs at least one item")
+        key = replay_key(model_key, f"embed:{purpose}", f"d{dims}", "", items)
+        if self.mode == "recorded":
+            hit = self.store.find(key)
+            arr_path = None
+            for root in self.store.roots:
+                if (root / key / "vectors.npy").exists():
+                    arr_path = root / key / "vectors.npy"
+                    break
+            if hit is None or arr_path is None:
+                raise ModelError(FailureCategory.REPLAY_MISMATCH, f"no recorded embeddings for {purpose} (key {key})", {"replay_key": key})
+            meta_d = dict(hit["metadata"])
+            meta_d["runtime_class"] = "RECORDED_LIVE"
+            vecs = np.load(arr_path).astype(np.float32)
+            return EmbeddingResult(vectors=vecs, metadata=RunMetadata(**meta_d))
+
+        model_id = self.registry.model_id(model_key)
+        if not model_id:
+            raise ModelError(FailureCategory.MODEL_FAILURE, f"model key {model_key!r} is disabled (no model id configured)")
+        client = self._get_client()
+        from google.genai import types
+
+        def to_content(p: Part) -> Any:
+            if isinstance(p, str):
+                return types.Content(parts=[types.Part(text=p)])
+            return types.Content(parts=[types.Part.from_bytes(data=p.data, mime_type=p.mime_type)])
+
+        started = datetime.now(timezone.utc).isoformat()
+        t0 = time.perf_counter()
+        rows: List[List[float]] = []
+        try:
+            for i in range(0, len(items), batch_size):
+                chunk = items[i : i + batch_size]
+                resp = client.models.embed_content(
+                    model=model_id,
+                    contents=[to_content(p) for p in chunk],
+                    config=types.EmbedContentConfig(output_dimensionality=dims),
+                )
+                if len(resp.embeddings) != len(chunk):
+                    raise ModelError(FailureCategory.MODEL_FAILURE, f"{model_id}: got {len(resp.embeddings)} embeddings for {len(chunk)} items")
+                rows.extend(e.values for e in resp.embeddings)
+        except ModelError:
+            raise
+        except Exception as exc:
+            cat = FailureCategory.MODEL_TIMEOUT if "timeout" in str(exc).lower() or "deadline" in str(exc).lower() else FailureCategory.MODEL_FAILURE
+            raise ModelError(cat, f"{model_id} embedding failed: {exc}", {"model_id": model_id}) from exc
+        vecs = np.asarray(rows, dtype=np.float32)
+        norms = np.linalg.norm(vecs, axis=1, keepdims=True)
+        vecs = vecs / np.where(norms == 0, 1.0, norms)
+        meta = RunMetadata(
+            run_id=f"run.embed.{purpose}.{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S')}.{uuid.uuid4().hex[:6]}",
+            provider="google-genai",
+            model_key=model_key,
+            model_id=model_id,
+            prompt_id=f"embed:{purpose}",
+            prompt_version=f"d{dims}",
+            prompt_sha256="",
+            input_digests=parts_digest(items),
+            runtime_class="LIVE",
+            started_at=started,
+            latency_ms=int((time.perf_counter() - t0) * 1000),
+            replay_key=key,
+        )
+        d = self.store.save(meta, {"text": "", "embedding_count": int(vecs.shape[0]), "dims": int(vecs.shape[1])})
+        np.save(d / "vectors.npy", vecs.astype(np.float16))
+        return EmbeddingResult(vectors=vecs, metadata=meta)
 
     @staticmethod
     def _validate(raw_text: str, schema: Type[T], prompt_id: str) -> T:

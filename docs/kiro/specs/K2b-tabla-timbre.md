@@ -59,14 +59,11 @@ Test it on synthetic strokes: a ringing 300 Hz decaying sine vs a short noise bu
 ### 5. Synthetic eval
 Add a `stroke_substitution` variant to `make_synthetic.py`: replace 6 strokes with copies of expert strokes from a **different** class (splice 80 ms segments with a 5 ms crossfade). Ground truth: the substituted indices and the expected STROKES status (partial or not). Re-run `run_eval.py` on all variants. Every other criterion must keep its previous status; report any change. Update `RESULTS.md`.
 
-### 6. Profile awareness (for composed `audio_rhythm` cases; see `docs/plans/case-composer.md` §7)
-- Add `profile: CaseProfile | None = None` to the builder (import from `tracks.common.profile`). With `profile=None` the hero output must be byte-identical to the committed v2. Add a test.
-- With a profile:
-  - use `source.window_sec` or the full clip (≤ 60 s);
-  - criterion ids `CRIT-RHY-TEMPO`, `CRIT-RHY-TIMING`, `CRIT-RHY-BASS`, `CRIT-RHY-STROKES`, `CRIT-RHY-COMPLETE`, `CRIT-RHY-STEADY`;
-  - names and claims say "{title}" and "stroke"/"beat", never "tabla"/"bayan". Use "low-frequency (bass) strokes" for bass;
-  - user criteria keyword matching as in K7 §3.4: tempo/speed → TEMPO; timing/on beat → TIMING; bass/low → BASS; stroke/sound/type → STROKES; missing/extra/complete → COMPLETE; steady/even → STEADY;
-  - Flash-Lite bol naming runs **only** if the profile's domain or title mentions tabla; otherwise class labels stay deterministic ("Class A…").
+### 6. Rhythm specialist reuse (for the universal pipeline; see `docs/plans/universal-pipeline.md` §3.3)
+The universal engine (K7) reuses the Tabla engine as the **rhythm specialist** for any percussive audio. Make this clean:
+- Add `payload_from_audio(path: Path, window: tuple[float, float] | None, ctx: RunContext | None = None) -> tuple[dict, dict]` to `tracks/common/goals/tabla.py`. It returns `(payload, built_with)` using the same deterministic code as the builder (timbre classes included). Bol labelling via the audio model happens **only** when `ctx` is given and the audio model is enabled. Refactor `track_a/goals/tabla.py:build` to call it, so there is one implementation. Hero output must stay byte-identical (test this against the committed v2 artifacts).
+- `track_b/evaluators/tabla.py:evaluate` must work on a GoalModel whose payload came from `payload_from_audio` on an arbitrary percussive clip: no assumptions about tabla-specific labels, and the timbre fields are optional. Add a test with a synthetic hand-clap track (noise bursts) as the goal and a jittered copy as the attempt.
+- Neutral wording in metric findings: use "bass (low-frequency) strokes" and "stroke class"; never say "bayan" or "bol" unless `class_display` labels came from the audio model.
 
 ## Tests
 - features and MFCC sanity;
@@ -75,8 +72,8 @@ Add a `stroke_substitution` variant to `make_synthetic.py`: replace 6 strokes wi
 - the evaluator metric on a perfect copy is ≥ 0.95, and on the substitution variant matches the ground truth;
 - bol alignment / majority labelling with a fake gateway;
 - the ModelError fallback;
-- hero byte-identity with `profile=None`;
-- a generic-profile build has no "tabla"/"bayan" text.
+- hero byte-identity after the `payload_from_audio` refactor;
+- the evaluator on a generic hand-clap goal works, with neutral wording.
 
 ## Acceptance
 - v2 tabla artifacts plus the golden Flash-Lite run are committed and reproduce in recorded mode.

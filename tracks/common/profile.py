@@ -1,50 +1,38 @@
-"""Case profile for composed (user-uploaded, entirely new) skills — case data, NOT a contract.
+"""Case profile (v2) for composed skills — case data, NOT a contract.
 
-Stored at <case_dir>/knowledge/case_profile.v{N}.json. See docs/plans/case-composer.md §5.
+A composed case is produced by the universal pipeline (docs/plans/universal-pipeline.md):
+intake gates -> perception -> proposed SkillModel -> user confirmation. The profile stores the
+probe facts, gate results, the (editable) SkillModel proposal and the confirmation.
+Stored at <case_dir>/knowledge/case_profile.v{N}.json. Composed cases use goal modality "universal".
 """
 
 from __future__ import annotations
 
 import re
 import unicodedata
-from typing import Dict, List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, Field, model_validator
 
-Family = Literal["image_target", "video_states", "audio_rhythm", "rubric_vlm"]
+from tracks.common.skill_model import STRUCTURE_ATTEMPT_KINDS, SkillModel, Structure
+
 LearnerKind = Literal["trace", "image", "audio", "video"]
+COMPOSED_MODALITY = "universal"
 
-FAMILY_MODALITY: Dict[str, str] = {
-    "image_target": "kolam_image",
-    "video_states": "origami_video",
-    "audio_rhythm": "tabla_audio",
-    "rubric_vlm": "rubric_vlm",
+STRUCTURE_LABEL: Dict[str, str] = {
+    "final_state": "Reproduce a finished result (final state)",
+    "procedure": "Follow a sequence of steps (procedure)",
+    "temporal_pattern": "Reproduce a rhythm or timing pattern",
+    "utterance": "Reproduce a spoken phrase",
 }
 
-FAMILY_LABEL: Dict[str, str] = {
-    "image_target": "Final-image line drawing (goal-trajectory)",
-    "video_states": "Sequential procedure from video (state trajectory)",
-    "audio_rhythm": "Percussive rhythm from audio (onset alignment)",
-    "rubric_vlm": "General rubric review (lower confidence)",
-}
-
-FAMILY_INPUT_KINDS: Dict[str, List[str]] = {
-    "image_target": ["trace", "image"],
-    "video_states": ["video"],
-    "audio_rhythm": ["audio"],
-    "rubric_vlm": ["image", "video", "audio"],
+SPECIALIST_LABEL: Dict[str, str] = {
+    "line_art": "Line-drawing geometry (precise coverage, stray lines, dots, continuity)",
+    "rhythm": "Rhythm analysis (tempo, timing, bass and stroke types)",
+    "procedure_states": "Procedure state tracking (ordered states with keyframes)",
 }
 
 _ID_RE = re.compile(r"^[a-z0-9-]+~[0-9a-f]{12}$")
-
-
-class CriterionSuggestion(BaseModel):
-    criterion_id: str
-    name: str
-    observable_indicator: str
-    weight: float = Field(default=2.0, ge=1.0, le=5.0)
-    required: bool = False
-    method: Literal["engine_default", "vlm_status"] = "engine_default"
 
 
 class ProbeFacts(BaseModel):
@@ -57,24 +45,33 @@ class ProbeFacts(BaseModel):
     duration_sec: Optional[float] = None
     has_audio: Optional[bool] = None
     metrics: Dict[str, float] = Field(default_factory=dict)
-    allowed_families: List[Family]
-    family_reasons: Dict[str, str] = Field(default_factory=dict)
+    structures_available: List[Structure]
+    specialists_available: List[str] = Field(default_factory=list)
+    reasons: Dict[str, str] = Field(default_factory=dict)   # per structure/specialist: why available or not
+
+
+class IntakeResult(BaseModel):
+    safety: Dict[str, Any]                 # tracks.common.policy.safety_decision(...) output
+    teachable: Literal["yes", "no", "unclear"]
+    teachable_reason: str = ""
+    skill_kind: Optional[str] = None       # model's description of what kind of skill (INFERRED)
 
 
 class CaseProfile(BaseModel):
-    schema_version: Literal["1.0"] = "1.0"
+    schema_version: Literal["2.0"] = "2.0"
     case_id: str
     title: str
     skill_summary: str
     domain: str
-    family: Family
     transmission_mode: Literal["forward", "goal-conditioned", "corrective"]
     learner_input_kinds: List[LearnerKind]
     vocabulary: Dict[str, str] = Field(default_factory=dict)
     goal_hint: Optional[str] = None
-    criteria: List[CriterionSuggestion] = Field(default_factory=list)
     probe: ProbeFacts
-    model_proposal: Dict = Field(default_factory=dict)
+    intake: IntakeResult
+    skill_model: SkillModel
+    perception_file: Optional[str] = None  # path (relative to case dir or draft dir) of the source PerceptionRecord
+    model_proposal: Dict[str, Any] = Field(default_factory=dict)
     model_run_keys: List[str] = Field(default_factory=list)
     confirmed_by_user: bool = False
     confirmed_at: Optional[str] = None
@@ -84,19 +81,28 @@ class CaseProfile(BaseModel):
     def _check(self) -> "CaseProfile":
         if not _ID_RE.match(self.case_id):
             raise ValueError(f"case_id {self.case_id!r} must look like '<slug>~<sha12>'")
-        if self.family not in self.probe.allowed_families:
-            raise ValueError(f"family {self.family} not in allowed_families {self.probe.allowed_families}")
-        bad = [k for k in self.learner_input_kinds if k not in FAMILY_INPUT_KINDS[self.family]]
+        if self.intake.safety.get("decision") == "refuse":
+            raise ValueError("source refused by the safety gate")
+        if self.intake.teachable == "no":
+            raise ValueError("source refused by the teachability gate")
+        bad_struct = [s for s in self.skill_model.structures if s not in self.probe.structures_available]
+        if bad_struct:
+            raise ValueError(f"structures {bad_struct} not available for this source")
+        allowed: set = set()
+        for s in self.skill_model.structures:
+            allowed.update(STRUCTURE_ATTEMPT_KINDS[s])
+        if "line_art" not in self.skill_model.specialists:
+            allowed.discard("trace")
+        bad = [k for k in self.learner_input_kinds if k not in allowed]
         if bad:
-            raise ValueError(f"learner_input_kinds {bad} not accepted by family {self.family}")
-        ids = [c.criterion_id for c in self.criteria]
-        if len(ids) != len(set(ids)):
-            raise ValueError("duplicate criterion ids in profile")
+            raise ValueError(f"learner_input_kinds {bad} not accepted for structures {self.skill_model.structures}")
+        if not self.learner_input_kinds:
+            raise ValueError("at least one learner input kind is required")
         return self
 
     @property
     def modality(self) -> str:
-        return FAMILY_MODALITY[self.family]
+        return COMPOSED_MODALITY
 
 
 def slugify(title: str, max_len: int = 32) -> str:

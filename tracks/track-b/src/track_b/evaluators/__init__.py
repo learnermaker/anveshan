@@ -16,7 +16,7 @@ EVALUATORS: Dict[str, str] = {
     "kolam_image": "track_b.evaluators.kolam:evaluate",
     "origami_video": "track_b.evaluators.origami:evaluate",
     "tabla_audio": "track_b.evaluators.tabla:evaluate",
-    "rubric_vlm": "track_b.evaluators.rubric_vlm:evaluate",  # K7
+    "universal": "track_b.evaluators.universal:evaluate",  # K7 (universal pipeline)
 }
 
 

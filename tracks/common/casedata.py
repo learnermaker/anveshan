@@ -24,7 +24,7 @@ from pydantic import BaseModel, Field, model_validator
 
 M = TypeVar("M", bound=BaseModel)
 
-GoalModality = Literal["kolam_image", "origami_video", "tabla_audio", "rubric_vlm"]
+GoalModality = Literal["kolam_image", "origami_video", "tabla_audio", "universal"]
 RuntimeLabel = Literal["INTERNET_REFERENCE", "OWNED_CONSENTED", "SYNTHETIC", "UPLOAD"]
 Status = Literal["satisfied", "partially_satisfied", "not_satisfied", "uncertain"]
 

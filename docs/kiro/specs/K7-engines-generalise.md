@@ -1,126 +1,178 @@
-# K7: Generalise the Kolam/Origami engines for new skills, and build the `rubric_vlm` engine
+# K7: Universal pipeline, part 2 — Layer 2 SkillModel builder + Layer 3 universal evaluator
 
-Read `docs/kiro/specs/00-COMMON.md` first, then **`docs/plans/case-composer.md` §3, §5, §7 and §10**. Folder `...\anveshan-wt\k7-engines`, branch `kiro/k7-engines`; created from `m1/hero-cases` **after K1–K4 are merged**. **Needs the API key** (copy `.env`) for the final live check only. Runs in parallel with K6 (composer backend) and K2b (tabla). **Do not edit tabla files** (K2b makes the tabla engine profile-aware) or `track_a/composer.py`, `track_a/config.py`, `track_a/api.py` (K6).
+Read `docs/kiro/specs/00-COMMON.md` first, then **`docs/plans/universal-pipeline.md` in full** (§5 and §6 are yours), then `docs/kiro/specs/K6-composer-backend.md` §2 (the perception API you consume). Folder `...\anveshan-wt\k7-engines`, branch `kiro/k7-engines`; created from `m1/hero-cases` after K1–K4 are merged. **Needs the API key** for the final live check only.
 
-## 0. The rule that matters most
-**Hero cases must not change at all.** With `profile=None`, the Kolam and Origami builders and evaluators must produce **byte-identical** output to before. Prove it with a test that builds the hero goal model before and after (in recorded mode, using the committed golden runs) and compares the JSON.
+**Parallelism:** K6 implements `tracks.common.perceivers.perceive()` at the same time as you. Until it is merged, **do not implement perceivers yourself**: test with hand-built `PerceptionRecord` fixtures, and monkeypatch `tracks.common.perceivers.perceive` in tests. Code strictly against the signatures in K6 §2. When Jim tells you K6 is merged, rebase is not allowed: ask Jim to create a fresh branch for a short "K7-integration" follow-up instead.
+
+**Hero cases are not touched.** You do not edit `track_a/goals/kolam.py`, `origami.py`, `tabla.py` or the hero evaluators. You *call* specialist code (§4).
+
+## 0. Shared code (already written; do not change field names)
+- `tracks/common/skill_model.py`: `SkillModel` and parts, `STRUCTURE_CHECKS`, `STRUCTURE_ATTEMPT_KINDS`.
+- `tracks/common/perception.py`: the PerceptionRecord schema.
+- `tracks/common/profile.py` (v2).
+- `tracks/common/models.py`: `generate_json`, `embed`, `ImagePart`.
+- `tracks/common/goals/kolam.py`: `payload_from_image(path) -> (payload, built_with)`.
+- `track_b/evaluators/kolam.py` and `tabla.py`: `evaluate(goal, attempt, ctx)`.
+- `track_a/goals/tabla.py`: `build(...)`.
+- Registry entries already point at `track_a.goals.universal:build` and `track_b.evaluators.universal:evaluate`; `casedata.GoalModality` includes `"universal"`.
 
 ## 1. Files you own
-- **Edit:**
-  - `tracks/track-a/src/track_a/goals/kolam.py`
-  - `tracks/track-a/src/track_a/goals/origami.py` (+ `origami_*.py` helpers)
-  - `tracks/track-b/src/track_b/evaluators/origami.py` (+ `origami_trajectory.py` only if needed)
-  - `tracks/track-b/src/track_b/evaluators/kolam.py` (only if it uses kolam-specific wording in findings)
-  - `tracks/common/goals/kolam.py` (only if needed for dot-less payloads)
-- **New prompts:** `tracks/track-a/prompts/origami_states_v2.txt` (generic), `tracks/track-b/prompts/origami_match_v2.txt` (generic), `tracks/track-a/prompts/rubric_vlm_goal_v1.txt`, `tracks/track-b/prompts/rubric_vlm_judge_v1.txt`. Keep every v1 file unchanged; hero cases keep using v1.
-- **New modules:** `tracks/common/goals/rubric_vlm.py`, `tracks/track-a/src/track_a/goals/rubric_vlm.py`, `tracks/track-b/src/track_b/evaluators/rubric_vlm.py`. The registry entries for these already exist in `track_a/goals/__init__.py` and `track_b/evaluators/__init__.py`.
-- **Tests:** `tracks/track-a/tests/test_engines_profile.py`, `tracks/track-b/tests/test_rubric_vlm_eval.py`, `tracks/track-a/tests/test_rubric_vlm_goal.py`.
+- **New:**
+  - `tracks/track-a/src/track_a/universal.py` (Layer 2 proposal)
+  - `tracks/track-a/src/track_a/goals/universal.py` (builder: confirmed SkillModel → contracts)
+  - `tracks/track-b/src/track_b/evaluators/universal.py` (Layer 3)
+  - `tracks/track-b/src/track_b/evaluators/universal_align.py` (alignment helpers)
+  - `tracks/common/goals/universal.py` (`PAYLOAD_MODEL = SkillModel`, `ui_view`)
+  - prompts: `tracks/common/prompts/structure_skill_v1.txt`, `tracks/common/prompts/judge_final_v1.txt`, `tracks/common/prompts/judge_step_v1.txt`, `tracks/common/prompts/relevance_v1.txt`
+  - tests: `tracks/track-a/tests/test_universal_build.py`, `tracks/track-b/tests/test_universal_eval.py`, `tracks/track-b/tests/test_universal_session_e2e.py`
+- **Edit:** `tracks/track-a/src/track_a/api.py`, **only** `build_case`: for modality `universal`, load the latest `knowledge/case_profile.v*.json` and call the builder with `profile=…`. Use `inspect.signature` so other builders are unaffected. K6 edits other functions in the same file; keep your edit small and contained.
 
-## 2. Builder signature (all three engines you touch)
+## 2. Layer 2 proposal: `track_a/universal.py`
 ```python
-def build(source_path, source, ctx, *, case_id, version, profile: "CaseProfile | None" = None) -> GoalBuildResult
+def propose_skill_model(record: PerceptionRecord, probe: ProbeFacts, intake: IntakeResult, ctx: RunContext,
+                        title_hint: str | None, description: str | None,
+                        source_path: Path | None = None) -> tuple[SkillModel, dict, list[str]]
 ```
-Import `CaseProfile` from `tracks.common.profile`. When `profile is None`, the code path is the current one, unchanged.
+Deterministic composition, plus **one optional text-only model call** for wording.
 
-## 3. Kolam engine with a profile (family `image_target`)
-Inputs: `profile.title`, `profile.vocabulary` (`object_noun` default "line drawing", `unit_noun` default "stroke"), `profile.goal_hint`, `profile.criteria`.
+1. **Structures** (from `probe.structures_available`, in this order):
+   - image → `["final_state"]`;
+   - video → `["procedure"]` if available, else `["final_state"]`; add `"temporal_pattern"` if the rhythm specialist is available on the audio track;
+   - audio → `["temporal_pattern"]` if available, else `["utterance"]` if available.
 
-1. Geometry is the same (`payload_from_image`). **Dot-less drawings:** if `payload["dots"]` is empty:
-   - omit the dot-count and dot-relation claims;
-   - omit the `CRIT-KOLAM-DOTS` criterion;
-   - make the evaluator handle zero dots (the `kolam.dot_relation_match` metric is not produced, or `value=None` with reason "no dots in target"; since that criterion isn't in the rubric, either is fine; pick one and test it).
-   - Verify the scoring core tolerates a metric that has no criterion. It should: observers only reference rubric criteria.
-2. **Wording:** replace kolam-specific text in claims, task title and instructions, criterion names and `why_it_matters`:
-   - "kolam" → `profile.title`; "pulli"/"pulli dots" → "dots"; "line" stays.
-   - Put the wording in a small dict-based template inside `kolam.py`: `_TEXT_HERO` (current strings) and `_TEXT_GENERIC` (with `{title}`, `{object_noun}`, `{unit_noun}` placeholders), chosen by `profile is None`. No regex rewriting of strings.
-   - Generic-mode claim statements must still describe only computed facts (counts, symmetry, continuity). The inferred drawing stages say "one suggested way (inferred)".
-3. **Criterion ids** in generic mode: `CRIT-IMG-COVERAGE`, `CRIT-IMG-PRECISION`, `CRIT-IMG-DOTS` (if dots), `CRIT-IMG-CURVES`, `CRIT-IMG-CONTINUITY`. Same metrics, same bindings as the hero templates. Hero ids stay `CRIT-KOLAM-*`.
-4. **User criteria:** for each `profile.criteria` item with `method == "engine_default"`, try to match it to a generic criterion by keyword (coverage / complete / all lines → COVERAGE; stray / extra / clean → PRECISION; dots → DOTS; continuous / lift → CONTINUITY; loop / curve → CURVES).
-   - If it matches, apply the user's `weight` and `required` to that criterion and keep the engine's name.
-   - If it doesn't match, add a warning ("criterion '<name>' has no measurable engine metric; consider rubric review") and drop it.
-   - Ignore `method == "vlm_status"` items in this engine and add a warning. The composer only creates those for `rubric_vlm`.
-5. **Optional Gemma description:** in generic mode, call it with the generic text from `_TEXT_GENERIC` and keep the existing ModelError → warning behaviour.
+   At most 2 structures.
+2. **Specialists:**
+   - `line_art` available → `payload, _ = payload_from_image(source_path)`, stored in `specialists["line_art"]` (payload dict);
+   - `rhythm` available → prefer `tracks.common.goals.tabla.payload_from_audio(path, window)` if it exists (K2b may add it). Otherwise call `track_a.goals.tabla.build(source_path, <SourceRecord built from probe>, ctx, case_id="tmp", version=1)` and take `.goal_payload`. Store it in `specialists["rhythm"]`. Keep the builder's criterion templates; you need their bindings in §3.
+3. **goal_state** (final_state):
+   - each `property` observation → `TargetProperty(prop_id="prop-NN", statement=label + (": " + detail if detail), region=segment.region, evidence=[obs_id], certainty="inferred")`, max 8;
+   - plus line_art facts as **observed** properties: "N dots", "K continuous lines", "R-fold rotational symmetry" (evidence: the `det:` measurement observation ids if present, otherwise empty with a note).
 
-## 4. Origami engine with a profile (family `video_states`)
-1. **Prompts:** create the v2 prompts with placeholders `{skill_title}`, `{state_noun}` (default "state"), `{object_noun}` (default "object") and `{goal_hint}` (default "none"). Remove every origami/paper/crane/fold-specific instruction from v2: describe "visibly distinct {state_noun}s of the {object_noun}". In generic mode, the builder and evaluator load v2 (`load_prompt(..., skill_title=…)`); hero mode keeps v1.
-2. **Window:** for composed cases `source.window_sec` is None, so use the full video. If it is longer than 120 s, raise INVALID_INPUT (the composer already limits this).
-3. **Frames:** keep the batching and timeout policy chosen in K4 (read the K4 report and code). Do not change it.
-4. **Criteria:** same five metric templates with generic ids `CRIT-SEQ-FINAL`, `CRIT-SEQ-ORDER`, `CRIT-SEQ-COMPLETE`, `CRIT-SEQ-CLEAN`, `CRIT-SEQ-KEYSTEP`, and generic names ("reaches the final {state_noun}", …). Apply the user criteria the same way as §3.4, using these keywords: final / end / result → FINAL; order / sequence → ORDER; all / complete / every → COMPLETE; mistake / wrong / off → CLEAN; key / critical → KEYSTEP.
-5. **Evaluator:** with a profile, use `origami_match_v2.txt`. Findings text must say "{state_noun}", not "fold". The evaluator gets the profile through the goal model: store `profile_vocabulary` and `skill_title` in the goal payload's `built_with` (or in a new optional payload field `vocabulary`, added to `tracks/common/goals/origami.py` as an optional field with a default, so existing goal files still validate). Track B must not import track_a or composer code.
+   For video final_state, use the observations of the **last still segment**.
+4. **steps:**
+   - procedure → one Step per time segment that has a `state` observation, in time order: `name = state label (≤ 60 chars)`, `state_after = state label`, `action` = that segment's action observation, `start/end` from the segment, `keyframe_asset` from the segment, `segment_id`, `certainty="inferred"` (names come from the model), `source_established=True`. Merge consecutive segments with identical state labels. `critical=True` for the step after the longest active segment.
+   - final_state image → steps from the `build step i:` action observations (inferred, `source_established=False`); or, if line_art, one step per line_art stage (inferred).
+5. **order:** "strict" for procedure; "none" otherwise.
+6. **constraints:** each `avoid: …` quality observation → `Constraint(certainty="inferred", keep=False)`. Off by default; the user can enable them.
+7. **temporal / utterance:** temporal = a summary of the rhythm payload (pulse_sec, tempo_bpm, cycle_length). Utterance = `{transcript, language, duration_sec}` from the `speech` observation (inferred) and the measured duration.
+8. **Default checks** (all with weight and required as shown; the user edits them later):
 
-## 5. New engine `rubric_vlm` (general rubric review)
-Use it when nothing deterministic fits. It is honest and lower confidence.
+| Structure | check_id | kind | metric_id | method | weight | required | process |
+|---|---|---|---|---|---|---|---|
+| final_state | CHK-FS-SIM | final_similarity | `u.final_similarity` | deterministic | 1 | no | no |
+| final_state | CHK-FS-P01..P04 | final_property (one per first ≤ 4 properties) | `u.final_property.<prop_id>` | model_status | 2 | first one yes | no |
+| final_state + line_art | CHK-LA-* | line_art | `line_art:<metric>` for each line_art criterion template's metric | specialist | template weight | template required | template process |
+| procedure | CHK-PR-COV | step_coverage | `u.step_coverage` | deterministic | 3 | yes | yes |
+| procedure | CHK-PR-ORD | step_order | `u.step_order` | deterministic | 2 | yes | yes |
+| procedure | CHK-PR-OFF | off_path | `u.off_path` | deterministic | 1 | no | yes |
+| procedure | CHK-PR-FIN | final_property (target = last step) | `u.final_state_match` | model_status | 3 | yes | no |
+| procedure | CHK-PR-Q01 | step_quality (critical step) | `u.step_quality.<step_id>` | model_status | 2 | no | yes |
+| temporal_pattern | CHK-RH-* | rhythm | `rhythm:<metric>` for each rhythm template | specialist | template | template | template |
+| utterance | CHK-UT-TXT | utterance_match | `u.utterance_match` | deterministic | 3 | yes | no |
+| utterance | CHK-UT-PACE | pace_match | `u.pace_match` | deterministic | 1 | no | no |
 
-### 5.1 Payload: `tracks/common/goals/rubric_vlm.py`
-```python
-class RubricVlmCriterion(BaseModel):
-    criterion_id: str; name: str; observable_indicator: str
-class RubricVlmGoal(BaseModel):
-    source_modality: Literal["image", "video", "audio"]
-    reference_assets: list[str]          # goal_assets file names: reference image(s) / keyframes (max 3); [] for audio
-    reference_description: str           # model description of the reference (INFERRED)
-    criteria: list[RubricVlmCriterion]   # from the confirmed profile
-    vocabulary: dict[str, str] = {}
-    skill_title: str
-PAYLOAD_MODEL = RubricVlmGoal
-def ui_view(payload) -> dict: {"source_modality", "reference_assets", "criteria", "skill_title"}
-```
+   For line_art, get the templates by running the Kolam builder's criterion-template logic. The simplest way is to call `track_a.goals.kolam.build(source_path, source, ctx, case_id="tmp", version=1)` and read `result.criteria`; the Gemma enrichment inside it is optional and degrades to a warning. Store each template's `observer` (binding) in `check.params["binding"]` (`model_dump()`), so the builder can reuse the exact bands. Do the same for rhythm.
+9. **Optional wording call** (`vision_fast`, text-only, prompt `structure_skill_v1.txt`). Input: a compact JSON of structures, observation labels (≤ 60), steps and properties, plus the user's title_hint and description. Output DTO: `{skill_title ≤ 60, summary ≤ 300, domain ≤ 60, vocabulary {state_noun, object_noun, unit_noun, action_verb}, check_texts: {check_id: {name ≤ 60, observable_indicator ≤ 160}}}`. Apply only to existing check ids; never add checks. On ModelError, use deterministic texts (`name` = the kind in title case + target name; `observable_indicator` = the target statement) and add a warning.
+10. **relevance:** `expected_kinds` = the union of `STRUCTURE_ATTEMPT_KINDS` over structures (drop "trace" unless line_art). `min_similarity` = 0.72 for an image source, 0.70 for video. `reference_segment_ids` = `["seg-000"]` for an image; for video, all keyframe segments.
+11. Return `(SkillModel(...), {"structures": ..., "specialists": list(specialists), "wording_model": bool}, warnings)`.
 
-### 5.2 Builder: `track_a/goals/rubric_vlm.py`
-`build(..., profile)` requires a profile; raise INVALID_INPUT without one.
-- **Reference assets:**
-  - image: save a JPEG copy (max side 768) as `knowledge/goal_assets/rubric_ref_0.jpg`;
-  - video: 3 frames at 20%, 60% and 95%, saved as `rubric_ref_0..2.jpg`;
-  - audio: none.
+## 3. Builder: `track_a/goals/universal.py`
+`build(source_path, source, ctx, *, case_id, version, profile) -> GoalBuildResult`. A confirmed profile is required (else INVALID_INPUT). **No new perception calls.**
+- Load the source perception from `ctx.case_dir / "knowledge" / "perception_source.v1.json"` (the K6 composer copies it there).
+- **Claims** (KnowledgeClaim), ids `CLM-01…` in this order:
+  1. **Observed measurement claims** (deterministic `det:` observations), max 4: image "Image is W×H px; contrast …" with an `#xywh=percent:0,0,100,100` locator and no times; video "The demonstration has N segments over D s" with interval [0, D]; audio "Duration D s; N onsets" with an interval.
+  2. `goal_state` properties with `keep=True` → CONDITION claims (certainty from the property; region locator or the whole image; video uses the last segment's interval).
+  3. steps → STEP claims (inferred, confidence 0.5; interval or region; `source_established` mentioned in the statement: "Demonstrated step 2: …" vs "Suggested step 2 (inferred): …").
+  4. constraints with `keep=True` → FAILURE_MODE claims (inferred).
+  5. temporal → CUE claim (observed, from the rhythm payload). Utterance transcript → CUE claim (inferred).
 
-  Write the files under `ctx.case_dir / "knowledge" / "goal_assets"`, the same convention the Origami builder uses.
-- **One model call** (`rubric_vlm_goal_v1.txt`; model_key `text_image` for image/video with the reference images; `audio` for audio with the WAV, ≤ 30 s). DTO: `{reference_description: str (≤ 600 chars), visible_properties: [str] (≤ 8)}`. On ModelError, raise it; this engine needs the model.
-- **Claims:**
-  - Probe facts are OBSERVED. Image: an `#xywh=percent:0,0,100,100` locator stating the dimensions. Video/audio: an interval [0, duration] stating the duration.
-  - Each model-visible property is INFERRED, confidence 0.5, with the same whole-source locator, `verification_state="inferred"`, `is_observed=False`.
-  - **One inferred STEP claim** "Reproduce the reference as described (inferred)", needed because the grounding check requires a goal-conditioned case to have at least one inferred STEP.
-- **Criteria:** exactly the profile's criteria (method `vlm_status`; skip others with a warning; if there are none, create one default criterion "Matches the reference overall").
-  - Each binding: `metric=f"vlm.{criterion_id}"`, `direction="higher_is_better"`, `bands=[{status:"satisfied", min:1.0}, {status:"partially_satisfied", min:0.5}]`, `otherwise="not_satisfied"`, `process=False`.
-  - `why_it_matters` cites the STEP claim id, e.g. "Judged against the reference description (CLM-0n)".
-  - Weights and required flags come from the profile.
-- **Task:** numbered instructions listing the criteria and citing [CLM-xx]. Constraints say the learner uploads the same kind of media.
-- **Warnings** always include `"General rubric review: judgements are model-assisted and lower confidence."`
+  The grounding rules from Track A apply (`track_a/grounding.py`): OBSERVED needs a locator matching the modality; inferred confidence ≤ 0.5; and a goal-conditioned case needs ≥ 1 inferred STEP. For an image without build steps, add the step "Reproduce the target as shown (suggested, inferred)".
+- **Criteria** from **enabled** checks: `criterion_id = f"CRIT-U-{check_id}"`; `name` / `observable_indicator` from the check; weight and required from the check. **Bindings:**
+  - specialist checks → `ObserverBinding(**check.params["binding"])`, but with `metric = check.metric_id` (the prefixed id).
+  - other kinds:
 
-### 5.3 Evaluator: `track_b/evaluators/rubric_vlm.py`
-`evaluate(goal, attempt, ctx)`:
-- **Accepted kinds:** the source modality's kind ("image", "video" or "audio"). Otherwise raise INVALID_INPUT.
-- **Inputs to the model:**
-  - image: the reference image(s) plus the learner image (max side 512);
-  - video: reference frames plus 4 learner frames at 20/45/70/95% (max side 384);
-  - audio: learner WAV ≤ 30 s, with the reference description as text. The audio model must be enabled, otherwise every metric is `value=None` with reason "audio_model_disabled".
+| kind | direction | bands (satisfied, partial) |
+|---|---|---|
+| final_similarity | higher | ≥ 0.90, ≥ 0.80 |
+| final_property / step_quality | higher | ≥ 1.0, ≥ 0.5 |
+| step_coverage | higher | ≥ 0.90, ≥ 0.60 |
+| step_order | lower | ≤ 0, ≤ 1 |
+| off_path | lower | ≤ 0, ≤ 1 |
+| utterance_match | higher | ≥ 0.90, ≥ 0.70 |
+| pace_match | lower | ≤ 0.15, ≤ 0.30 |
 
-  Respect the K4 latency findings: at most 5 images per call.
-- **Prompt** `rubric_vlm_judge_v1.txt`. For each criterion it asks for `{criterion_id, status: "met"|"partly"|"not_met"|"cannot_tell", finding (≤ 200 chars, what is visible/audible), region (optional {x,y,w,h} percent of the learner image), time_sec (optional)}`. The prompt forbids scores and numbers other than positions.
-- **Deterministic mapping:** met → 1.0, partly → 0.5, not_met → 0.0, cannot_tell → `None` (uncertain_reason "model could not tell from the evidence"). An unknown criterion id is ignored with a warning; a missing criterion gets None with reason "not reported by model".
-- **MetricValue:** `vlm.<criterion_id>` with the finding. Evidence: image → `with_region(attempt.source_id, …)` when a region is given, else the whole-image region; video → `with_frame(attempt.source_id, time_sec)` with `start_sec/end_sec`; audio → an interval.
-- **TrajectoryResult:**
-  - `events`: one event per not_met criterion, with `severity="material"`, `kind="criterion_not_met"`, `position` = the criterion's index in the goal's criteria list (0-based), `position_kind="stroke"`. Partly-met criteria get `severity="minor"`. cannot_tell criteria get no event.
-  - `curve`: `[(0, 0), (1, fraction met)]`, `curve_kind="stroke"`.
-  - `process_observable=False`, `run_keys` set, `warnings` include the lower-confidence notice.
+  `process = check.process`. Every criterion cites the claims of its targets (or the measurement claim for similarity/coverage) in `why_it_matters`, e.g. "Matches the demonstrated sequence (CLM-05, CLM-06)". `drill_hint` comes from a small template per kind.
+- **Task:** title "Practice: {skill_title}"; numbered instructions from steps (procedure) or properties (final_state), citing [CLM-xx]; one sentence on what to upload (from `learner_input_kinds`).
+- `goal_payload` = `profile.skill_model.model_dump(mode="json")`, with `perception_file` set to "knowledge/perception_source.v1.json".
+- **Warnings:** pass through the SkillModel warnings, plus "Composed case: claims named by AI are inferred until reviewed."
 
-## 6. Tests (fake gateway, no network)
-- **`test_engines_profile.py`:**
-  - (a) hero kolam and origami builds with `profile=None` are byte-identical to the committed v1 artifacts (recorded mode);
-  - (b) a generic Kolam build on a synthetic dot-less drawing (circle plus spiral) has no dot claims, no DOTS criterion and generic ids and wording (assert that no claim, task or criterion text contains "kolam" or "pulli");
-  - (c) a generic Origami build loads the v2 prompts (spy on `load_prompt` or check the replay key/prompt id) and has no "fold/crane/origami" in claims or criteria;
-  - (d) user criteria keyword matching applies weight and required, and unmatched criteria give a warning.
-- **`test_rubric_vlm_goal.py`:** a build from an image profile writes the reference asset, has the OBSERVED probe claim plus INFERRED property claims plus an inferred STEP, the bindings and the warning. A missing profile raises INVALID_INPUT. ModelError propagates.
-- **`test_rubric_vlm_eval.py`:**
-  - the status → value mapping, including cannot_tell → None;
-  - an unknown criterion is ignored;
-  - a missing criterion → None;
-  - audio with the model disabled → all None;
-  - the image-count limit per call;
-  - an end-to-end Track B session on a synthetic rubric_vlm case pack (write files in tmp, as `tracks/track-b/tests/core_fixtures.py` does) produces a validator-clean bundle with evaluator_type MODEL_ASSISTED.
+## 4. Layer 3: `track_b/evaluators/universal.py`
+`evaluate(goal, attempt, ctx) -> TrajectoryResult`. `goal.payload` → `SkillModel.model_validate`. Load the source PerceptionRecord and embeddings from `ctx.case_dir / skill.perception_file` (track_b may import `tracks.common.perceivers`; it must never import track_a).
 
-## 7. Live check (with key; record in report)
-Build and evaluate a `rubric_vlm` case from `C:\Users\JIMSEELAN\Desktop\Projects\hackathons\anveshan\var\kiro\media\kolam\` (any PNG) with 2 hand-written criteria: one learner image = the same PNG (expect met), one = the PNG with half of it painted white using Pillow (expect partly or not_met). Record latency, statuses and findings.
+1. **Kind gate:** `attempt.kind in skill.relevance.expected_kinds`, else `AnveshanFailure(INVALID_INPUT, f"This skill accepts {…} attempts.")`.
+2. **Perceive the attempt:** call `perceive(attempt.path, attempt.mime_type, ctx, source_id=attempt.source_id, asset_dir=ctx.data_dir / "attempts" / attempt.sha256[:12], purpose="attempt")`. Skip this for `trace` attempts; trace goes straight to the line_art specialist.
+3. **Quality gate** (deterministic, from attempt measurements): image/video blur variance < 15 or brightness < 0.08 → INVALID_INPUT ("too blurry/dark; please re-record"); audio RMS < 0.005 → INVALID_INPUT ("silent").
+4. **Relevance gate** (image/video): cosine between the attempt's embedding (image: whole; video: the mean of its keyframe rows) and the source reference (mean of `reference_segment_ids` rows).
+   - `< min_similarity` → INVALID_INPUT: "This doesn't look like an attempt at {skill_title} (similarity {s:.2f}). Please upload {kinds}."
+   - in `[min, min + ambiguous_band)` → one `vision_fast` call (`relevance_v1.txt`) with a source keyframe and the attempt image, returning `{relevant: bool, reason}`. Not relevant → the same INVALID_INPUT.
+   - Audio: relevance via `audio_kind` match (source percussion vs attempt percussion, speech vs speech); a mismatch → INVALID_INPUT.
+5. **Per structure:**
+   - **final_state:**
+     - final image = the attempt image (image), or the keyframe of the last still segment (video).
+     - `u.final_similarity` = cosine(final attempt embedding, source whole/last keyframe embedding).
+     - **One** `vision_fast` call (`judge_final_v1.txt`): the source image (or last source keyframe) plus the attempt final image (≤ 2 images, max side 512) plus the list of enabled final_property checks with their target statements. DTO `{"results": [{"check_id", "status": "met"|"partly"|"not_met"|"cannot_tell", "finding" ≤ 200, "region": [x,y,w,h] | null}]}`. Map met 1.0 / partly 0.5 / not_met 0.0 / cannot_tell None (reason "model could not tell from the evidence"); a missing check gives None ("not reported by model").
+     - Evidence: image → a region locator on `attempt.source_id`; video → a frame locator.
+   - **procedure** (video attempts; image attempts get only final checks, and the process checks become UNCERTAIN through `process_observable=False`):
+     - attempt frame rows come from `record.specialists["frames"]`, source step keyframe rows from `embedding_index[step.segment_id]`;
+     - `universal_align.label_frames(frame_vecs, step_vecs, margin=0.03, floor=0.60)` → for each frame, the step index, or "transition" (best − second < margin), or "off" (best < floor);
+     - mode filter (window 3);
+     - `universal_align.needleman_wunsch(observed_step_sequence, expected=list(range(n)))` → matched, missing and order violations (reuse the scoring from `track_b/evaluators/origami_trajectory.py`; import its helpers if suitable, or reimplement equivalently);
+     - `u.step_coverage` = matched / n; `u.step_order` = violations; `u.off_path` = number of runs of "off" lasting ≥ 2 s;
+     - `u.final_state_match`: judge_final with the last source step keyframe vs the attempt's last still keyframe;
+     - `u.step_quality.<step>` (critical step only): one `judge_step_v1.txt` call with the source step keyframe vs the attempt frame best matching that step → status → value;
+     - events: missing steps (position = the expected time, interpolated), order violations, off-path runs; positions in seconds; frame locators;
+     - curve = (time, max matched step index + 1) / n, monotone.
+   - **temporal_pattern:**
+     - build `GoalModel(case_id=goal.case_id, version=goal.version, modality="tabla_audio", source_ids=goal.source_ids, package_id=goal.package_id, payload=skill.specialists["rhythm"])`;
+     - for a video attempt, extract its audio track to a temporary WAV with PyAV first and pass an `AttemptMedia(kind="audio", …)`;
+     - call `track_b.evaluators.tabla.evaluate(goal_tabla, attempt_audio, ctx)`;
+     - prefix every metric id with `"rhythm:"` and keep its events and curve.
+   - **line_art:** same pattern with `modality="kolam_image"`, `payload=skill.specialists["line_art"]`, and `track_b.evaluators.kolam.evaluate`. The attempt is the trace or image as-is. Prefix metrics with `"line_art:"`.
+   - **utterance:**
+     - normalise both transcripts (lowercase, strip punctuation, split into words);
+     - `u.utterance_match` = 1 − levenshtein(words) / max(len(src), 1), clamped to 0..1 (implement levenshtein or reuse `tabla_dsp.levenshtein`);
+     - `u.pace_match` = |attempt duration − source duration| / source duration;
+     - if either transcript is missing (audio model disabled), value=None with reason "transcript unavailable (audio model disabled)".
+6. **Compose the TrajectoryResult:**
+   - `metrics` = the union (metric ids exactly equal to the checks' `metric_id`; a metric whose check isn't enabled may be included, since scoring ignores it);
+   - `events` sorted by position;
+   - `curve` / `curve_kind` from the first structure in the order procedure > temporal_pattern > final_state > utterance (final_state curve: `[(0, 0.0), (1, fraction of final_property checks met)]`, kind "stroke");
+   - `process_observable` = False for image attempts, True otherwise;
+   - `artifacts` = `{"frame_labels": [...], "relevance": s, "attempt_perception": <record path>}`;
+   - `run_keys`, `warnings` (always include "Universal pipeline: AI-perceived checks are lower confidence than specialist measurements").
 
-## 8. Acceptance
-- Hero byte-identity is proven, and all new tests pass.
-- The Definition of Done in 00-COMMON.md is met. Report: `docs/kiro/reports/K7-REPORT.md`, including the live-check table.
+## 5. Tests (no network; fake gateway clients; fixture PerceptionRecords)
+- **`test_universal_build.py`:**
+  - `propose_skill_model` for: (a) an image record with property observations → final_state checks; (b) an image that passes line_art on a synthetic line drawing (Pillow) → line_art checks with prefixed metric ids and bindings copied; (c) a video record with 4 still segments and state labels → procedure steps, strict order, default checks; (d) a speech audio record → utterance checks; (e) the wording model failing → deterministic texts plus a warning.
+  - `build` on a composed case dir in tmp: grounding passes, inferred steps ≤ 0.5, observed claims carry locators, criterion ids `CRIT-U-*`, specialist bindings preserved, task cites claims, output deterministic.
+- **`test_universal_eval.py`:**
+  - kind gate;
+  - quality gate;
+  - the relevance gate below min (→ INVALID_INPUT) and in the ambiguous band (fake yes/no);
+  - final_state judge mapping, including cannot_tell → None;
+  - procedure alignment with synthetic embeddings: perfect order → coverage 1, violations 0; a swapped pair → 1 violation; a missing step → coverage < 1 with an event at the interpolated time; noise frames → off_path;
+  - the image attempt for a procedure → process criteria UNCERTAIN through scoring;
+  - the rhythm/line_art specialist delegation with prefixed metric ids (monkeypatch the specialist evaluators);
+  - utterance math.
+- **`test_universal_session_e2e.py`:** a synthetic composed case (fixture SkillModel plus perception with embeddings written to tmp) → `track_b.api.start_session` → a baseline attempt with a missing step → a retry that is perfect → `complete_session` → the bundle validates (`validate_transmission_bundle`), the gain is positive and `targeted_change` improved. Use fake gateway responses everywhere.
+
+## 6. Live check (with key; after K6 is merged, or with K6's branch checked out read-only for reference)
+If K6 is not merged yet, skip this and say so. Otherwise run through the composer API:
+- (a) a Kolam PNG from `C:\Users\JIMSEELAN\Desktop\Projects\hackathons\anveshan\var\kiro\media\kolam\` — build, then attempts: the same image (expect high similarity, properties met), the image half painted white (expect lower or partial), and a random photo (expect the relevance refusal);
+- (b) a 30–40 s cut of the origami demo video as source — attempts: a different 30–40 s cut of the same video (expect partial coverage) and the same cut (expect high coverage).
+
+Record statuses, metrics, latency and costs.
+
+## 7. Acceptance
+- All tests pass; the hero tests are unchanged and green.
+- The Definition of Done in 00-COMMON.md is met. Report: `docs/kiro/reports/K7-REPORT.md` (include the live-check table, or state why it was skipped).

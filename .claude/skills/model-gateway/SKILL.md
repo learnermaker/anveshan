@@ -10,7 +10,9 @@ description: Rules and code patterns for any Gemma/Gemini model call in Anveshan
 |---|---|---|
 | `text_image` | `gemma-4-26b-a4b-it` | Free on AI Studio. Text + images. System instructions OK. |
 | `video_frames` | `gemma-4-26b-a4b-it` | Gemma rejects MP4s that carry an audio track. **Never send video files to Gemma**: decode frames with PyAV (`tracks/common/media.py`) and send JPEG frames as images with their timestamps in the prompt. |
-| `audio` | unset (disabled) | Gemma 26B/31B have **no audio input**. If `ANVESHAN_AUDIO_MODEL` is set (e.g. a Gemini Flash-Lite id), audio criteria may use it; otherwise those criteria return `UNCERTAIN` with reason `audio_model_disabled`. Timing/onsets are always deterministic (`tracks/common/onsets.py`). |
+| `vision_fast` | `gemini-3.5-flash-lite` | Interactive image/frame perception and checklist judgements (~2.5 s/image, 4 images ~9 s, ~$0.0003/image). Max 4 images per call. |
+| `embedding` | `gemini-embedding-2` | `ModelGateway.embed()` — image/frame/text vectors (768-d, unit), recorded as float16 .npy. 5 images ~1.3 s. Video/audio embeddings are expensive: embed frames, not files. |
+| `audio` | `gemini-3.5-flash-lite` (via env) | Gemma 26B/31B have **no audio input**. Enabled by default via `.env` (~$0.0003 per 12 s clip); if unset, audio criteria return `UNCERTAIN` with reason `audio_model_disabled`. Gemma 4 26B is slow on images (~43 s) — use it only for offline/batch work. Timing/onsets are always deterministic (`tracks/common/onsets.py`). |
 
 Model ids come from env (`ANVESHAN_TEXT_IMAGE_MODEL`, `ANVESHAN_VIDEO_FRAMES_MODEL`, `ANVESHAN_AUDIO_MODEL`) via the shared registry in `tracks/common/models.py`. Never hard-code a model id elsewhere. Never add silent fallback lists.
 

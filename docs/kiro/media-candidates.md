@@ -9,16 +9,16 @@
 
 ## Download Status
 
-Wikimedia CDN returned HTTP 429 (Too Many Requests) after approximately 7 download requests.
-Files that could not be downloaded have their Wikimedia direct URLs and API-verified SHA-1 recorded so Claude Code can retry with longer delays (60 s+) or by using thumbnail variants.
+Wikimedia CDN returned HTTP 429 (Too Many Requests) after approximately 7 download requests in the first session, and the rate limit persisted for the full follow-up session (~2 hours later). The CDN block is IP-level (Varnish XID tracked). All three download strategies failed for the blocked URLs: full-size direct, 1000px thumbnail, `Special:FilePath` redirect, and PowerShell `Invoke-WebRequest`.
 
-**Successfully downloaded to `var/kiro/media/`:**
-- 4 tabla video files (all ✓)
-- 3 kolam diagram PNGs (all ✓)
+The floor kolam photos were subsequently downloaded manually by Jim directly from the Wikimedia URLs and copied into `var/kiro/media/kolam/`. An additional image (`Colorful_Kolam.jpg`, CC BY-SA) was sourced from Wikimedia independently.
 
-**Not downloaded (CDN rate-limited; URLs verified via Wikimedia API):**
-- 5 kolam images (floor photos + smaller diagrams)
-- 1 origami video (Hong Kong crane-folding, PD)
+**All files present in `var/kiro/media/kolam/` are verified valid JPEGs or PNGs (checked via header bytes and WIA dimensions).**
+
+**Not downloaded (still missing):**
+- `kolam_5_vasudevan.jpg` (CC BY-SA 4.0, R vasudevan, 3.1 MB)
+- `nerkodui_mayoo.jpg` (PD, Mayooranathan, 23 KB, 200×201 px)
+- `valikodu2_mayoo.jpg` (PD, Mayooranathan, 31 KB, 200×200 px)
 
 ---
 
@@ -53,9 +53,9 @@ Files that could not be downloaded have their Wikimedia direct URLs and API-veri
 | kolam ⭐ | Kolam-8 (sikku/pulli diagram) | https://commons.wikimedia.org/wiki/File:Kolam-8.png | https://upload.wikimedia.org/wikipedia/commons/9/9c/Kolam-8.png | Public domain (author's own work, transferred from ta.wikipedia) | Mayooranathan at Tamil Wikipedia | 90,108 | 600×599 px | 74BBD4C4EA8E6394445894A4D5E99884D4038C912ED58FD7C7E1B89E60E68AC6 | var/kiro/media/kolam/kolam_8_mayoo.png | High-contrast black/white diagram; dot-based pulli design; ideal for geometry analysis; same author as Ithayakkamalam; different pattern | Diagram-style (drawn, not photographed); no perspective challenge |
 | kolam | Thirukulam (tank/pond kolam diagram) | https://commons.wikimedia.org/wiki/File:Thirukulam.png | https://upload.wikimedia.org/wikipedia/commons/f/f0/Thirukulam.png | Public domain (author's own work) | Mayooranathan at Tamil Wikipedia | 38,152 | 600×588 px | 3CF6E1DEC0A7F0DF332C675FBEF5CDB57148A406E9076ABD21F5C254843998AC | var/kiro/media/kolam/thirukulam_mayoo.png | High-contrast; different geometric pattern (rectangular symmetry); tests detector on non-diamond layouts | Diagram-style; smaller line count |
 | kolam | Thoddil (swing/cradle motif kolam) | https://commons.wikimedia.org/wiki/File:Thoddil.png | https://upload.wikimedia.org/wikipedia/commons/a/a3/Thoddil.png | Public domain (author's own work) | Mayooranathan at Tamil Wikipedia | 46,293 | 600×545 px | 3C8ECD02BAC23E7B413500078E7FD991378457EB9E32C8AEC6333D73893B046F | var/kiro/media/kolam/thoddil_mayoo.png | Different motif with curved loops; 5-fold symmetry; tests curve-detection on more organic shapes | Diagram-style |
-| kolam | India - Kolam - 06 (floor photograph) | https://commons.wikimedia.org/wiki/File:India_-_Kolam_-_06_(2486394060).jpg | https://upload.wikimedia.org/wikipedia/commons/9/95/India_-_Kolam_-_06_%282486394060%29.jpg | CC BY 2.0 (Flickr) | McKay Savage from London, UK | 4,297,225 | 3264×2448 px | *not downloaded — CDN 429* | var/kiro/media/kolam/ *(retry needed)* | Real floor kolam (rice flour on floor); perspective, lighting variation, texture — a "harder case" exactly as required; from a well-known Flickr photographer CC set | Has lighting/angle distortion; coloured chalk design (not pure pulli), may challenge the monochrome assumption in the geometry pipeline |
-| kolam | India - Kolam - 09 (floor photograph) | https://commons.wikimedia.org/wiki/File:India_-_Kolam_-_09_(2486349844).jpg | https://upload.wikimedia.org/wikipedia/commons/8/81/India_-_Kolam_-_09_%282486349844%29.jpg | CC BY 2.0 (Flickr) | McKay Savage from London, UK | 4,534,432 | 3264×2448 px | *not downloaded — CDN 429* | var/kiro/media/kolam/ *(retry needed)* | Second floor photo from same CC series; different design; provides variation in pattern complexity and perspective | Same concerns as kolam-06 re: colour and perspective |
-| kolam | Kolam 5 (floor photograph) | https://commons.wikimedia.org/wiki/File:Kolam_5.jpg | https://upload.wikimedia.org/wikipedia/commons/b/bc/Kolam_5.jpg | CC BY-SA 4.0 | R vasudevan (Wikimedia Commons) | 3,123,605 | 3120×4160 px | *not downloaded — CDN 429* | var/kiro/media/kolam/ *(retry needed)* | Modern photograph of a floor kolam; portrait orientation; CC BY-SA; gives a third real-floor case | Portrait orientation may require rotation handling |
+| kolam | India - Kolam - 06 (floor photograph) | https://commons.wikimedia.org/wiki/File:India_-_Kolam_-_06_(2486394060).jpg | https://upload.wikimedia.org/wikipedia/commons/9/95/India_-_Kolam_-_06_%282486394060%29.jpg | CC BY 2.0 (Flickr) | McKay Savage from London, UK | 4,297,225 | 3264×2448 px | 74DAE85367D5C437B8910A8FD95F1C9C4C1DCB56464456F3AB8D8099D6182E5B | var/kiro/media/kolam/india_kolam_06_savage.jpg | Real floor kolam (rice flour on floor); perspective, lighting variation, texture — a "harder case" exactly as required; from a well-known Flickr photographer CC set | Has lighting/angle distortion; coloured chalk design (not pure pulli), may challenge the monochrome assumption in the geometry pipeline |
+| kolam | India - Kolam - 09 (floor photograph) | https://commons.wikimedia.org/wiki/File:India_-_Kolam_-_09_(2486349844).jpg | https://upload.wikimedia.org/wikipedia/commons/8/81/India_-_Kolam_-_09_%282486349844%29.jpg | CC BY 2.0 (Flickr) | McKay Savage from London, UK | 281,150 (thumb) | 960×720 px (thumbnail — original 3264×2448, 4.5 MB) | 400E44B833C930C379F12108823AEB08004BDCD30D07BEF6337A0E66C2F6712B | var/kiro/media/kolam/india_kolam_09_savage.jpg | Second floor photo from same CC series; different design; provides variation in pattern complexity and perspective. Note: downloaded copy is a browser-resized thumbnail (960×720), not the full-resolution original | Same concerns as kolam-06 re: colour and perspective; lower resolution than kolam-06 — for a full-resolution copy use the direct URL above |
+| kolam | Colorful Kolam (floor photograph) | https://commons.wikimedia.org/wiki/File:Colorful_Kolam.jpg | https://upload.wikimedia.org/wikipedia/commons/a/a5/Colorful_Kolam.jpg | CC BY-SA (Wikimedia; uploaded 2012) | Sivasankaran | 329,744 (thumb) | 960×720 px (thumbnail — original 3072×2304, 878 KB) | FCFBCF0D46B7726246AA963ED991E32DBD678627961C591129C34E7551D2D9E2 | var/kiro/media/kolam/colorful_kolam.jpg | Colourful floor kolam (chalk/powder); used in English Wikipedia (Vrata article) and French Wiktionary; third independent floor photograph; good for colour-polarity tests | Downloaded as a 960×720 thumbnail; colourful design may fail the monochrome geometry pipeline — good test of how the pipeline handles unexpected colour input |
 | kolam | Nerkodui-1 (straight-thread kolam diagram) | https://commons.wikimedia.org/wiki/File:Nerkodui-1.jpg | https://upload.wikimedia.org/wikipedia/commons/8/84/Nerkodui-1.jpg | Public domain | Mayooranathan at Tamil Wikipedia | 23,345 | 200×201 px | *not downloaded — CDN 429* | var/kiro/media/kolam/ *(retry needed)* | Simple straight-thread pattern (easy geometry case); from the same Mayooranathan set | Very small (200 px); may be too low-res for reliable dot detection |
 | kolam | Valikodu-2 (intertwined kolam diagram) | https://commons.wikimedia.org/wiki/File:Valikodu-2.jpg | https://upload.wikimedia.org/wikipedia/commons/3/36/Valikodu-2.jpg | Public domain | Mayooranathan at Tamil Wikipedia | 31,246 | 200×200 px | *not downloaded — CDN 429* | var/kiro/media/kolam/ *(retry needed)* | Intertwined (valaikoodu) pattern — more complex topology; tests interleaving curve detection | Same resolution concern as Nerkodui |
 
@@ -84,13 +84,16 @@ Wikimedia CDN enforces rate limits when many file downloads occur in a short win
 
 ## Files Present in `var/kiro/media/`
 
-| File | Bytes | SHA-256 |
-|---|---|---|
-| origami/hk_protesters_crane_fold.webm | 25,873,856 | 65E8E2896D13B5EA063A38A7F1B68DDF1509131DE10AAD07CE67C1663C34D86B |
-| tabla/tabla_chanderi_1.webm | 7,219,730 | 0E0B17B17CC0AFEC6AD043D1006FD41D72E974B1747CF8D65C997B21E665B17B |
-| tabla/tabla_chanderi_2.webm | 9,152,801 | 289DF988C2CC1547C9A68B2E3650C23C59C982882CF18177B7A1F8875FBE5BBC |
-| tabla/tabla_yavagal_sample.webm | 2,160,563 | 8B1BACC129B3B750917AB29CE0B21D277606BE792FBBC2A9A0F436CA0CF0A285 |
-| tabla/tabla_kangutkar.webm | 26,301,519 | 9B7AAEDF0907B202A014EE9C95898324A459C84A76A56D32CEC9B2A66633DF81 |
-| kolam/kolam_8_mayoo.png | 90,108 | 74BBD4C4EA8E6394445894A4D5E99884D4038C912ED58FD7C7E1B89E60E68AC6 |
-| kolam/thirukulam_mayoo.png | 38,152 | 3CF6E1DEC0A7F0DF332C675FBEF5CDB57148A406E9076ABD21F5C254843998AC |
-| kolam/thoddil_mayoo.png | 46,293 | 3C8ECD02BAC23E7B413500078E7FD991378457EB9E32C8AEC6333D73893B046F |
+| File | Bytes | Dimensions | SHA-256 |
+|---|---|---|---|
+| origami/hk_protesters_crane_fold.webm | 25,873,856 | 1920×1080, 79.9 s | 65E8E2896D13B5EA063A38A7F1B68DDF1509131DE10AAD07CE67C1663C34D86B |
+| tabla/tabla_chanderi_1.webm | 7,219,730 | 720×1280, 35 s | 0E0B17B17CC0AFEC6AD043D1006FD41D72E974B1747CF8D65C997B21E665B17B |
+| tabla/tabla_chanderi_2.webm | 9,152,801 | 720×1280, 47 s | 289DF988C2CC1547C9A68B2E3650C23C59C982882CF18177B7A1F8875FBE5BBC |
+| tabla/tabla_yavagal_sample.webm | 2,160,563 | 1920×1080, 8 s | 8B1BACC129B3B750917AB29CE0B21D277606BE792FBBC2A9A0F436CA0CF0A285 |
+| tabla/tabla_kangutkar.webm | 26,301,519 | 1280×720, 4 m 12 s | 9B7AAEDF0907B202A014EE9C95898324A459C84A76A56D32CEC9B2A66633DF81 |
+| kolam/india_kolam_06_savage.jpg | 4,297,225 | 3264×2448 px | 74DAE85367D5C437B8910A8FD95F1C9C4C1DCB56464456F3AB8D8099D6182E5B |
+| kolam/india_kolam_09_savage.jpg | 281,150 | 960×720 px (thumbnail) | 400E44B833C930C379F12108823AEB08004BDCD30D07BEF6337A0E66C2F6712B |
+| kolam/colorful_kolam.jpg | 329,744 | 960×720 px (thumbnail) | FCFBCF0D46B7726246AA963ED991E32DBD678627961C591129C34E7551D2D9E2 |
+| kolam/kolam_8_mayoo.png | 90,108 | 600×599 px | 74BBD4C4EA8E6394445894A4D5E99884D4038C912ED58FD7C7E1B89E60E68AC6 |
+| kolam/thirukulam_mayoo.png | 38,152 | 600×588 px | 3CF6E1DEC0A7F0DF332C675FBEF5CDB57148A406E9076ABD21F5C254843998AC |
+| kolam/thoddil_mayoo.png | 46,293 | 600×545 px | 3C8ECD02BAC23E7B413500078E7FD991378457EB9E32C8AEC6333D73893B046F |
