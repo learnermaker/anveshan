@@ -1,0 +1,6 @@
+# Track A runtime dependencies (UTF-8, minimal). Dev/CI superset: requirements-dev.txt at repo root.
+google-genai>=1.60
+pydantic>=2,<3
+numpy>=2,<3
+pillow>=11
+av>=14

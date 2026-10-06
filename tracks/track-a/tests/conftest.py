@@ -1,41 +1,101 @@
+"""Pytest fixtures for Track A core tests (helpers live in ta_helpers.py). No network."""
+
+from __future__ import annotations
+
 import json
-import sys
+import shutil
 from pathlib import Path
+from typing import Callable, Optional
+
 import pytest
 
-SRC_DIR = Path(__file__).resolve().parent.parent / "src"
-if str(SRC_DIR) not in sys.path:
-    sys.path.insert(0, str(SRC_DIR))
+from tracks.common.casedata import SourceRecord, SourceRegistry, write_json
+from tracks.common.media import sha256_file
+from tracks.common.models import ModelRegistry
+from tracks.common.runtime import RunContext
 
-# Also add repo root so `from tracks.common.schemas import ...` works
-REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
+import track_a.goals as goals
+from track_a.goals import GoalBuildResult
 
-CASES_ROOT = REPO_ROOT / "tracks" / "cases"
-
-
-@pytest.fixture
-def repo_root() -> Path:
-    """Path to repository root."""
-    return REPO_ROOT
+from ta_helpers import REAL_CASES, SRC_ID, FakeClient, FakeModels, kolam_claims, kolam_result, write_png
 
 
 @pytest.fixture
-def cases_root() -> Path:
-    """Path to canonical case-pack directory."""
-    return CASES_ROOT
+def cases_root(tmp_path: Path) -> Path:
+    """A temp cases root with a kolam hero case (image + held-out source), and the showcase cases copied."""
+    root = tmp_path / "cases"
+    kolam = root / "kolam"
+    kolam.mkdir(parents=True)
+    shutil.copyfile(REAL_CASES / "kolam" / "manifest.json", kolam / "manifest.json")
+    write_png(kolam / "source" / "target.png")
+    write_png(kolam / "source" / "held_out" / "diagram.png", size=(32, 32))
+    reg = SourceRegistry(
+        case_id="kolam",
+        sources=[
+            SourceRecord(
+                source_id=SRC_ID,
+                role="target_image",
+                mime_type="image/png",
+                sha256=sha256_file(kolam / "source" / "target.png"),
+                bytes=(kolam / "source" / "target.png").stat().st_size,
+                path="source/target.png",
+                dimensions=[64, 48],
+                creator="Test Creator",
+                license="Public domain",
+                attribution="test image, public domain",
+                runtime_label="INTERNET_REFERENCE",
+            ),
+            SourceRecord(
+                source_id="src.kolam.held_out.v1",
+                role="held_out_reference",
+                mime_type="image/png",
+                sha256=sha256_file(kolam / "source" / "held_out" / "diagram.png"),
+                bytes=(kolam / "source" / "held_out" / "diagram.png").stat().st_size,
+                path="source/held_out/diagram.png",
+                creator="Test Creator",
+                license="Public domain",
+                attribution="held out",
+                runtime_label="INTERNET_REFERENCE",
+                used_by_system=False,
+            ),
+        ],
+    )
+    write_json(kolam / "source" / "source.json", reg)
+    for cid in ("micrometer", "bicycle-repair", "handloom-weaving", "square-knot", "origami", "tabla"):
+        shutil.copytree(REAL_CASES / cid, root / cid, ignore=shutil.ignore_patterns("cache"))
+    shutil.copyfile(REAL_CASES / "index.json", root / "index.json")
+    return root
 
 
 @pytest.fixture
-def case_index(cases_root: Path) -> list[str]:
-    """All registered case slugs from index.json."""
-    index_file = cases_root / "index.json"
-    return json.loads(index_file.read_text(encoding="utf-8"))["cases"]
+def data_dir(tmp_path: Path) -> Path:
+    d = tmp_path / "var"
+    d.mkdir()
+    return d
 
 
 @pytest.fixture
-def micrometer_bundle(cases_root: Path) -> dict:
-    """Canonical micrometer replay bundle."""
-    bundle_file = cases_root / "micrometer" / "replay" / "bundle.json"
-    return json.loads(bundle_file.read_text(encoding="utf-8"))
+def fake_builder(monkeypatch):
+    """Register a fake builder for every modality. Returns a list of recorded calls; set
+    ``state['result']`` to change what the builder returns."""
+    state = {"calls": [], "result": None}
+
+    def build(source_path: Path, source: SourceRecord, ctx, *, case_id: str, version: int) -> GoalBuildResult:
+        state["calls"].append({"path": source_path, "source_id": source.source_id, "case_id": case_id, "version": version})
+        res = state["result"] or kolam_result(kolam_claims(source.source_id))
+        return res
+
+    monkeypatch.setattr(goals, "get_builder", lambda modality: build)
+    return state
+
+
+@pytest.fixture
+def make_ctx(data_dir: Path) -> Callable[..., RunContext]:
+    def _make(case_dir: Path, response: Optional[dict] = None, models: Optional[FakeModels] = None) -> RunContext:
+        fm = models or FakeModels(json.dumps(response or {"answer": "ok", "cited_claim_ids": [], "sufficient": False}))
+        return RunContext.create(
+            case_dir, data_dir, "live", registry=ModelRegistry({"text_image": "gemma-test"}), client=FakeClient(fm)
+        )
+
+    return _make
+

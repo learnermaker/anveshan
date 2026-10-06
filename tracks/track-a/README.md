@@ -1,5 +1,18 @@
 # Track A — Expert Intelligence & Grounding
 
+## Current build (2026-10-06)
+
+Specs: `docs/plans/service-api.md` §2 (public API), `docs/plans/track-a-spec.md`, `docs/plans/evaluation-core.md`.
+
+- Code: `src/track_a/` (`api.py` is the public entry point). Modality goal builders live in `src/track_a/goals/`.
+- Hero cases `kolam` (image), `origami` (video), `tabla` (audio) and derived upload cases `<base>~<sha12>` are built
+  by `build_case` into versioned `knowledge/*.vN.json` / `practice/*.vN.json` files. The four other cases are
+  SYNTHETIC replay showcase (loaded from `replay/bundle.json`).
+- Install: `pip install -r tracks/track-a/requirements.txt` (dev/CI: root `requirements-dev.txt`).
+- Tests (no network): `.venv/Scripts/python -m pytest -q tracks/track-a/tests`
+- CLI: `python tracks/track-a/tools/run_pipeline.py build|show|query|review tracks/cases/<id> ...`
+  (`--mode live` needs `GEMINI_API_KEY` in `.env`; `recorded` replays committed golden runs).
+
 **Owner boundary:** source understanding, structured knowledge, evidence grounding, and generation of bounded teaching/practice inputs.
 
 ## Start here

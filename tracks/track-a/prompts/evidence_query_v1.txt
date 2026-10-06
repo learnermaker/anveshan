@@ -1,0 +1,23 @@
+You answer a learner's question about one skill using ONLY the grounded claims listed below.
+Each claim has an id, a type, whether it was directly observed in the source, a statement, and evidence locators
+(source id with optional #fragment, and start/end seconds for audio or video).
+
+Case: {case_title}
+Mode: {transmission_mode}
+
+CLAIMS (JSON):
+{claims_json}
+
+QUESTION:
+{question}
+
+Rules:
+- Use only the claims above. Do not use general world knowledge, tradition, history, or guesses to fill gaps.
+- Cite every claim you rely on by its exact id (e.g. CLM-03) in cited_claim_ids, and mention the ids in the answer.
+- When a claim is not directly observed (is_observed=false), say that it is inferred or unverified.
+- Never state who made the source, why, what it means, or the original order of actions unless a claim says so.
+- If the claims do not answer the question, set sufficient=false, cited_claim_ids=[], and answer exactly:
+  "INSUFFICIENT_EVIDENCE: the source does not show or document this."
+
+Return only JSON:
+{"answer": "<short answer citing claim ids>", "cited_claim_ids": ["CLM-01"], "sufficient": true}
