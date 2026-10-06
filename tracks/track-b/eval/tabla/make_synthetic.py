@@ -321,7 +321,10 @@ def main() -> int:
                 add("stroke_substitution", sub_audio,
                     f"{n_swap} strokes from timbre class {c_a} spliced with 80 ms from class {c_b} "
                     f"(5 ms crossfade). Expected stroke_class_accuracy ~ {stroke_acc}.",
-                    ident, bl, [], swap_targets, None,
+                    ident, bl, [], swap_targets,
+                    # First divergence may be bass_extra/bass_missing (side effect of splice) or None
+                    {"time": round(t[swap_targets[0]], 4), "goal_stroke": swap_targets[0],
+                     "kinds": ["bass_missing", "bass_extra", "stroke_mismatch"]},
                     {"swap_targets": swap_targets, "swap_donors": swap_donors,
                      "expected_stroke_acc": stroke_acc, "class_a": c_a, "class_b": c_b},
                     extra_statuses={"CRIT-TABLA-STROKES": st_strokes})

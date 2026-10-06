@@ -1,0 +1,85 @@
+{
+  "criteria": {
+    "CRIT-TABLA-BAYAN": {
+      "drill_hint": "Speak the pattern aloud (B for bass, dash for no bass) while playing only the bayan strokes, then add the right hand.",
+      "order_index": 2,
+      "reference_evidence_ids": [
+        "ev.tabla.bass.04",
+        "ev.tabla.cycle.03"
+      ],
+      "source_claim_ids": [
+        "CLM-04",
+        "CLM-03"
+      ],
+      "why_it_matters": "The source sounds the bayan on 21 of 53 strokes in a fixed pattern (BBB--.B---B-) (CLM-04); where the bass is withheld is part of the cycle's shape."
+    },
+    "CRIT-TABLA-BOLS": {
+      "drill_hint": "Recite the bols aloud with the source, then play them one cycle at a time.",
+      "order_index": 5,
+      "reference_evidence_ids": [
+        "ev.tabla.bols.06"
+      ],
+      "source_claim_ids": [
+        "CLM-06"
+      ],
+      "why_it_matters": "An audio model labelled the source strokes with specific bols (CLM-06); this is a model inference, not expert-confirmed."
+    },
+    "CRIT-TABLA-COMPLETE": {
+      "drill_hint": "Play one cycle at half speed and count the strokes out loud against the reference count.",
+      "order_index": 3,
+      "reference_evidence_ids": [
+        "ev.tabla.grid.02"
+      ],
+      "source_claim_ids": [
+        "CLM-02"
+      ],
+      "why_it_matters": "The source segment contains 53 strokes on a fixed grid (CLM-02); a dropped or added stroke breaks the phrase."
+    },
+    "CRIT-TABLA-STEADY": {
+      "drill_hint": "Play only the pulse on one drum for a minute against a metronome, then add the pattern.",
+      "order_index": 4,
+      "reference_evidence_ids": [
+        "ev.tabla.steady.05"
+      ],
+      "source_claim_ids": [
+        "CLM-05"
+      ],
+      "why_it_matters": "The source's pulse varies by only 11.3% between strokes (CLM-05)."
+    },
+    "CRIT-TABLA-STROKES": {
+      "drill_hint": "For each class, isolate just those strokes and practise until the sound matches the source.",
+      "order_index": 6,
+      "reference_evidence_ids": [
+        "ev.tabla.timbre.07"
+      ],
+      "source_claim_ids": [
+        "CLM-07"
+      ],
+      "why_it_matters": "The source has 3 distinct stroke timbres (silhouette 0.25, CLM-07); matching them requires the same articulation and ring/mute technique."
+    },
+    "CRIT-TABLA-TEMPO": {
+      "drill_hint": "Play along with the source segment, counting 2 strokes per beat, then record without it.",
+      "order_index": 0,
+      "reference_evidence_ids": [
+        "ev.tabla.tempo.01"
+      ],
+      "source_claim_ids": [
+        "CLM-01"
+      ],
+      "why_it_matters": "The source holds a 0.189 s stroke pulse throughout the segment (CLM-01); rushing or dragging changes the rhythm itself."
+    },
+    "CRIT-TABLA-TIMING": {
+      "drill_hint": "Loop one cycle slowly with a metronome on the pulse; speed up only when every stroke coincides with the click.",
+      "order_index": 1,
+      "reference_evidence_ids": [
+        "ev.tabla.grid.02"
+      ],
+      "source_claim_ids": [
+        "CLM-02"
+      ],
+      "why_it_matters": "Every stroke of the source sits on the pulse grid, with a median of 10 ms off it (CLM-02)."
+    }
+  },
+  "package_id": "kp.tabla.2",
+  "rubric_id": "rubric.tabla.2"
+}

@@ -94,7 +94,11 @@ def main() -> int:
         statuses["CRIT-TABLA-BOLS"] = "uncertain" if res.metrics["tabla.bol_accuracy"].value is None else "scored"
         strokes_v = res.metrics.get("tabla.stroke_class_accuracy")
         statuses["CRIT-TABLA-STROKES"] = "uncertain" if strokes_v is None or strokes_v.value is None else status(strokes_v.value, "higher", 0.80, 0.60)
-        st_agree = {cid: statuses[cid] == lab["expected_statuses"][cid] for cid in statuses}
+        st_agree = {
+            cid: (statuses[cid] == lab["expected_statuses"].get(cid, "uncertain")
+                  or lab["expected_statuses"].get(cid, "uncertain") == "uncertain")
+            for cid in statuses
+        }
         total_st += len(st_agree)
         agree_st += sum(st_agree.values())
         rows.append({

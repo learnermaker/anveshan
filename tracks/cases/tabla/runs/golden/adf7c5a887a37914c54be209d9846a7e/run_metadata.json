@@ -1,0 +1,19 @@
+{
+  "expected_behavior": "one bol label per listed onset in order; no taal named",
+  "input_digests": [
+    "AudioPart:e352e7c7dae3e845fc0c5640aa1553ede5e395c586ce3fa8a94c28773f280378",
+    "text:1089f365d794144f21e2761f8e9a93456597879633be7f6d0e1282c6b9b37de3"
+  ],
+  "latency_ms": 2261,
+  "model_id": "gemini-3.5-flash-lite",
+  "model_key": "audio",
+  "notes": [],
+  "prompt_id": "tabla_bols_v2",
+  "prompt_sha256": "1089f365d794144f21e2761f8e9a93456597879633be7f6d0e1282c6b9b37de3",
+  "prompt_version": "v2",
+  "provider": "google-genai",
+  "replay_key": "adf7c5a887a37914c54be209d9846a7e",
+  "run_id": "run.tabla_bols_v2.20261006T184204.a09b5b",
+  "runtime_class": "LIVE",
+  "started_at": "2026-10-06T18:42:02.694134+00:00"
+}

@@ -20,10 +20,11 @@
     "CRIT-TABLA-BOLS": "uncertain",
     "CRIT-TABLA-COMPLETE": "satisfied",
     "CRIT-TABLA-STEADY": "not_satisfied",
+    "CRIT-TABLA-STROKES": "uncertain",
     "CRIT-TABLA-TEMPO": "satisfied",
     "CRIT-TABLA-TIMING": "satisfied"
   },
-  "goal_package_id": "kp.tabla.1",
+  "goal_package_id": "kp.tabla.2",
   "goal_source_id": "src.tabla.demo.v1",
   "goal_window_sec": [
     20.0,
