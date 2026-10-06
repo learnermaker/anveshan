@@ -10,7 +10,8 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
-from typing import Dict, Optional
+import importlib.util as _ilu
+from typing import Optional
 
 import pytest
 
@@ -26,29 +27,17 @@ TARGET = REPO_ROOT / "tracks" / "cases" / "kolam" / "source" / "ithayakkamalam_t
 SYNTHETIC = Path(__file__).resolve().parent.parent / "eval" / "kolam" / "synthetic"
 
 # ---------------------------------------------------------------------------
-# Band definitions mirrored from run_eval.py
-# (Track B does not import Track A; run_eval.py is authoritative once observers.vN exist)
+# Band functions imported directly from run_eval.py (single authoritative source).
+# Resolved K1-tests-review finding "band-duplication-drift": no longer a copy.
+# If run_eval.py thresholds change, the test automatically uses the updated values.
 # ---------------------------------------------------------------------------
 
-def _default_bands(k: int) -> Dict[str, dict]:
-    curves_partial = [("partially_satisfied", (k - 1) / k - 1e-6)] if k >= 2 else []
-    return {
-        "CRIT-KOLAM-COVERAGE":    {"metric": "kolam.coverage",              "hi": True,  "bands": [("satisfied", 0.90), ("partially_satisfied", 0.70)]},
-        "CRIT-KOLAM-PRECISION":   {"metric": "kolam.precision",             "hi": True,  "bands": [("satisfied", 0.92), ("partially_satisfied", 0.80)]},
-        "CRIT-KOLAM-DOTS":        {"metric": "kolam.dot_relation_match",    "hi": True,  "bands": [("satisfied", 0.95), ("partially_satisfied", 0.80)]},
-        "CRIT-KOLAM-CURVES":      {"metric": "kolam.curves_completed_ratio","hi": True,  "bands": [("satisfied", 0.999)] + curves_partial},
-        "CRIT-KOLAM-CONTINUITY":  {"metric": "kolam.pen_lifts_excess",      "hi": False, "process": True,
-                                   "bands": [("satisfied", 1), ("partially_satisfied", max(k, 3))]},
-    }
-
-
-def _status(spec: dict, value: Optional[float], process_observable: bool) -> str:
-    if value is None or (spec.get("process") and not process_observable):
-        return "uncertain"
-    for st, thr in spec["bands"]:
-        if (value >= thr) if spec["hi"] else (value <= thr):
-            return st
-    return "not_satisfied"
+_run_eval_path = Path(__file__).resolve().parents[1] / "eval" / "kolam" / "run_eval.py"
+_run_eval_spec = _ilu.spec_from_file_location("run_eval_kolam", _run_eval_path)
+_run_eval_mod = _ilu.module_from_spec(_run_eval_spec)
+_run_eval_spec.loader.exec_module(_run_eval_mod)  # type: ignore[union-attr]
+_default_bands = _run_eval_mod.default_bands   # tracks/track-b/eval/kolam/run_eval.py
+_status = _run_eval_mod.status                 # tracks/track-b/eval/kolam/run_eval.py
 
 
 def _first_div_ok(expected: Optional[dict], events) -> bool:
