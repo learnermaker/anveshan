@@ -426,6 +426,28 @@ def test_render_segments_no_audio(tmp_path):
     assert labels[0] == 0 and labels[2] == 2 and labels[4] == 1     # swapped segment order is rendered
 
 
+def test_agreement_scoring():
+    p = ROOT / "tracks" / "track-b" / "eval" / "origami" / "run_eval.py"
+    spec = importlib.util.spec_from_file_location("origami_run_eval", p)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    gt = {"state_intervals": {"0": [[0, 2]], "1": [[5, 6]]},
+          "expected": {"missing_states": [2], "order_violations": 0, "final_reached": False,
+                       "first_divergence": {"kind": "missing_state", "state": 2, "position_sec": 9.0}}}
+    result = {"metrics": {"origami.order_violations": {"value": 0.0}},
+              "trajectory": {"events": [{"kind": "missing_state", "position": 10.0}],
+                             "final_state": {"reached_by_trajectory": False},
+                             "artifacts": {"missing_states": [2], "uncertain_states": [],
+                                           "frame_labels": [{"t": 0, "filtered": 0}, {"t": 1, "filtered": 0},
+                                                            {"t": 5, "filtered": "transition"}, {"t": 6, "filtered": 1}]}}}
+    s = mod.score(result, gt)
+    assert s["frame_state_accuracy"] == 0.75 and s["missing_exact"] and s["order_violations_exact"]
+    assert s["first_divergence_kind_agrees"] and s["first_divergence_abs_error_sec"] == 1.0
+    ga = mod.goal_agreement([{"start_sec": 0, "end_sec": 3}, {"start_sec": 9, "end_sec": 15}],
+                            [{"index": 0, "intervals": [[0, 3]]}, {"index": 1, "intervals": [[8, 16]]}])
+    assert ga["order_preserved"] and ga["median_boundary_error_sec"] == 0.5
+
+
 @pytest.mark.live
 def test_live_evaluate_real_learner():
     """Real Gemma run on the real learner window against the built goal (needs key, built goal, generated videos)."""
