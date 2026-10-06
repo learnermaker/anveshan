@@ -1,6 +1,6 @@
 # K5: End-to-end smoke suite, validation write-up, and Cloud Run deploy
 
-Read `docs/kiro/specs/00-COMMON.md` first. **Start only after Jim says K1, K2, K3 and K4 are merged into `m1/hero-cases`.** Folder `...\anveshan-wt\k5-integration`, branch `kiro/k5-integration`; create it from the latest `m1/hero-cases` at that point. **Needs the API key** (copy `.env`).
+Read `docs/kiro/specs/00-COMMON.md` first. **Wave 3: start only after Jim says K1–K4, K2b, K6, K7 and K8 are merged into `m1/hero-cases`.** Include the composer in the smoke test: analyse + create one image skill and run one practice attempt. Folder `...\anveshan-wt\k5-integration`, branch `kiro/k5-integration`; create it from the latest `m1/hero-cases` at that point. **Needs the API key** (copy `.env`).
 
 ## Files you own
 - `tools/e2e_smoke.py`

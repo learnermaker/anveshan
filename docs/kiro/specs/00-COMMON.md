@@ -11,7 +11,18 @@ Each spec runs in its **own git worktree folder on its own branch**, so parallel
 | K2 Tabla | `...\anveshan-wt\k2-tabla` | `kiro/k2-tabla` |
 | K3 App UI | `...\anveshan-wt\k3-app` | `kiro/k3-app` |
 | K4 Origami live | `...\anveshan-wt\k4-origami` | `kiro/k4-origami` |
-| K5 Integration | `...\anveshan-wt\k5-integration` | `kiro/k5-integration` (start only after K1+K2 are merged) |
+| K5 Integration + deploy | `...\anveshan-wt\k5-integration` | `kiro/k5-integration` |
+| K2b Tabla timbre | `...\anveshan-wt\k2b-tabla` | `kiro/k2b-tabla` |
+| K6 Composer backend | `...\anveshan-wt\k6-composer` | `kiro/k6-composer` |
+| K7 Engines generalise | `...\anveshan-wt\k7-engines` | `kiro/k7-engines` |
+| K8 Composer UI | `...\anveshan-wt\k8-composer-ui` | `kiro/k8-composer-ui` |
+
+### Waves (start order)
+- **Wave 1 (running):** K1, K2, K3, K4.
+- **Wave 2 (after K1–K4 are merged):** K6, K7 and K2b (K2b needs K2 merged; K6 and K7 need K1 and K4 merged); K8 (needs K3 merged).
+- **Wave 3:** K5 (after wave 2 is merged; deploys the final state).
+
+Worktree folders for later waves are created by Claude Code from the latest `m1/hero-cases` when their wave starts. Don't create them yourself.
 
 - Open **only your folder** in Kiro. Never edit the main folder `...\hackathons\anveshan` (Claude Code and Jim merge there).
 - Commit often on your branch. **Never** merge, rebase, push, or switch branches. Jim/Claude Code merge finished branches into `m1/hero-cases`.
