@@ -139,6 +139,91 @@ class _FakeClient:
         self.models = models
 
 
+def test_gateway_timeout_reads_env(tmp_path, monkeypatch):
+    """ANVESHAN_MODEL_TIMEOUT_MS is picked up when no explicit timeout_ms is given."""
+    monkeypatch.setenv("ANVESHAN_MODEL_TIMEOUT_MS", "60000")
+    gw = ModelGateway("live", RunStore([tmp_path]))
+    assert gw._timeout_ms == 60000
+
+
+def test_gateway_timeout_default(tmp_path, monkeypatch):
+    """Default timeout is 300 000 ms when env var is absent."""
+    monkeypatch.delenv("ANVESHAN_MODEL_TIMEOUT_MS", raising=False)
+    gw = ModelGateway("live", RunStore([tmp_path]))
+    assert gw._timeout_ms == 300_000
+
+
+def test_gateway_timeout_explicit_overrides_env(tmp_path, monkeypatch):
+    """An explicit timeout_ms arg takes precedence over the env var."""
+    monkeypatch.setenv("ANVESHAN_MODEL_TIMEOUT_MS", "60000")
+    gw = ModelGateway("live", RunStore([tmp_path]), timeout_ms=9_000)
+    assert gw._timeout_ms == 9_000
+
+
+def test_gateway_504_retry_succeeds(tmp_path):
+    """A 504 error on the first attempt triggers one retry and records the note."""
+
+    class _FailOnceThenOk:
+        def __init__(self):
+            self.calls = 0
+
+        def generate_content(self, model, contents, config):
+            self.calls += 1
+            if self.calls == 1:
+                raise RuntimeError("HTTP 504 gateway timeout deadline_exceeded")
+            return type("R", (), {"text": '{"answer": "ok"}'})()
+
+    fake = _FailOnceThenOk()
+    gw = ModelGateway("live", RunStore([tmp_path]), ModelRegistry({"text_image": "gemma-test"}),
+                      client=_FakeClient(fake))
+    r = gw.generate_json(model_key="text_image", prompt_id="p", prompt_version="v1", prompt_text="hi", schema=_DTO)
+    assert r.data.answer == "ok"
+    assert fake.calls == 2  # first attempt failed (504), second succeeded
+    assert any("retried_once_after" in n for n in r.metadata.notes)
+
+
+def test_gateway_504_does_not_retry_twice(tmp_path):
+    """Two consecutive 504s raise ModelError without a third attempt."""
+
+    class _AlwaysFail504:
+        def __init__(self):
+            self.calls = 0
+
+        def generate_content(self, model, contents, config):
+            self.calls += 1
+            raise RuntimeError("HTTP 504 gateway timeout unavailable")
+
+    fake = _AlwaysFail504()
+    gw = ModelGateway("live", RunStore([tmp_path]), ModelRegistry({"text_image": "gemma-test"}),
+                      client=_FakeClient(fake))
+    with pytest.raises(ModelError) as e:
+        gw.generate_json(model_key="text_image", prompt_id="p", prompt_version="v1", prompt_text="hi", schema=_DTO)
+    assert e.value.category in (FailureCategory.MODEL_FAILURE, FailureCategory.MODEL_TIMEOUT)
+    # 2 api_attempts × up to 2 json_mode attempts = at most 4, but json_mode=False
+    # won't be attempted if the exception doesn't look like a mime error, so exactly 2
+    assert fake.calls == 2
+
+
+def test_gateway_non_retryable_error_not_retried(tmp_path):
+    """Non-retryable errors (e.g. quota exceeded) are NOT retried by the 504 path."""
+
+    class _QuotaFail:
+        def __init__(self):
+            self.calls = 0
+
+        def generate_content(self, model, contents, config):
+            self.calls += 1
+            raise RuntimeError("quota exceeded 429 resource_exhausted")
+
+    fake = _QuotaFail()
+    gw = ModelGateway("live", RunStore([tmp_path]), ModelRegistry({"text_image": "gemma-test"}),
+                      client=_FakeClient(fake))
+    with pytest.raises(ModelError):
+        gw.generate_json(model_key="text_image", prompt_id="p", prompt_version="v1", prompt_text="hi", schema=_DTO)
+    # json_mode retry may kick in, but 504 retry must NOT → calls stay at ≤ 2
+    assert fake.calls <= 2
+
+
 def test_gateway_live_records_then_replays(tmp_path):
     fake = _FakeModels('{"answer": "ok"}', fail_json_mode=True)
     store = RunStore([tmp_path])
