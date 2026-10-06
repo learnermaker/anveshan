@@ -141,9 +141,12 @@ def build(source_path: Path, source: SourceRecord, ctx: RunContext, *, case_id: 
     pulse = payload["stroke_pulse_sec"]
 
     def ev(kind: str, idx: int, start: float, end: float, excerpt: str, state=VerificationState.OBSERVED, conf=1.0) -> EvidenceRef:
-        # Source is video/webm container (audio-only track used); grounding checks MIME major type.
+        # Derive evidence modality from the source MIME type so grounding.py's modality
+        # check passes regardless of container format (e.g. audio/wav vs video/webm).
+        mime_major = source.mime_type.split("/", 1)[0].lower()
+        ev_modality = Modality.VIDEO if mime_major == "video" else Modality.AUDIO
         return EvidenceRef(
-            evidence_id=f"ev.{case_id}.{kind}.{idx:02d}", source_id=sid, modality=Modality.VIDEO,
+            evidence_id=f"ev.{case_id}.{kind}.{idx:02d}", source_id=sid, modality=ev_modality,
             start_sec=round(start, 3), end_sec=round(end, 3), cue_excerpt=excerpt,
             verification_state=state, confidence=conf,
         )

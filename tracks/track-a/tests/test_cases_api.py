@@ -49,7 +49,7 @@ def test_list_cases_orders_hero_upload_showcase(cases_root, data_dir, tmp_path, 
     assert by[up.name]["hero"] is False and by[up.name]["modality"] == "kolam_image" and by[up.name]["built"] is False
     for cid in SHOWCASE:
         assert by[cid]["runtime_label"] == "SYNTHETIC" and by[cid]["hero"] is False and by[cid]["modality"] is None
-    assert by["tabla"]["built"] is False
+    assert by["tabla"]["built"] is True   # v1 artifacts committed in K2
 
 
 def test_list_cases_on_real_case_root(data_dir):
@@ -69,7 +69,8 @@ def test_load_showcase_is_synthetic_without_goal(cid):
 
 
 def test_unbuilt_hero_falls_back_to_bundle_with_warning(cases_root):
-    h = api.load_case(cases_root / "tabla")
+    # origami has no committed v1 artifacts yet (K4 will build them); tabla is now built (K2).
+    h = api.load_case(cases_root / "origami")
     assert h.goal is None and h.runtime_label == "SYNTHETIC"
     assert any("not built" in w for w in h.warnings)
 
