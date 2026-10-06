@@ -53,6 +53,10 @@ BOL_PROMPT = Path(__file__).resolve().parents[4] / "common" / "prompts" / "tabla
 
 M_TEMPO = "tabla.tempo_error_pct"
 M_TIMING = "tabla.timing_median_ms"
+# Median is the scored criterion: robust to sparse large outliers that are already captured
+# by individual divergence events and by CRIT-TABLA-STEADY for sustained jitter.
+# M_TIMING_P90 is reported for visibility without changing the pass/fail outcome.
+M_TIMING_P90 = "tabla.timing_p90_ms"   # reported only; no observer band
 M_BASS = "tabla.bass_accuracy"
 M_COMPLETE = "tabla.missing_extra"
 M_STEADY = "tabla.ioi_cv"
@@ -233,6 +237,14 @@ def evaluate(goal: GoalModel, attempt: AttemptMedia, ctx: RunContext) -> Traject
                          f"deviation {worst['dev_ms']:+.0f} ms", onset=worst["learner"]),
             position=worst["learner_t"],
         )
+        p90_val = round(float(np.percentile(devs, 90)), 1)
+        metrics[M_TIMING_P90] = MetricValue(
+            p90_val,
+            f"P90 stroke deviation {p90_val:.0f} ms after offset/tempo fit "
+            f"(reported only; criterion uses the median).",
+            evidence=None,
+            position=None,
+        )
         for p in pairs:
             if not p["on_time"]:
                 kind = "late_stroke" if p["dev_ms"] > 0 else "early_stroke"
@@ -246,6 +258,8 @@ def evaluate(goal: GoalModel, attempt: AttemptMedia, ctx: RunContext) -> Traject
     else:
         metrics[M_TIMING] = MetricValue(None, "Too few strokes could be aligned to measure timing.",
                                         uncertain_reason="alignment_failed")
+        metrics[M_TIMING_P90] = MetricValue(None, "Too few strokes could be aligned to measure timing.",
+                                            uncertain_reason="alignment_failed")
 
     # --- steadiness
     cv = dsp.pulse_cv(lt, pl)
