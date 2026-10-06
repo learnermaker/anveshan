@@ -6,13 +6,24 @@
  * the backend; it is never evidence of a real evaluation.
  */
 
-import type { Api, AttemptUpload, CallOptions, ProgressFn } from './client';
+import type { Api, AttemptUpload, CallOptions, ComposerUploadOptions, ProgressFn } from './client';
 import { ApiError } from './errors';
-import type { AttemptResult, CaseSummary, CaseView, HealthResponse, QueryAnswer, ReviewAction, SessionCreated, SessionResult, SessionView } from './types';
+import type { AttemptResult, CaseSummary, CaseView, CreateFromDraftEdits, DraftView, HealthResponse, QueryAnswer, ReviewAction, SessionCreated, SessionResult, SessionView } from './types';
 import { buildSessionResult } from './mock/builders';
 import { evaluateKolamImage, evaluateKolamTrace, KOLAM_TARGET_SOURCE, KOLAM_TARGET_URL, kolamCaseView } from './mock/kolam';
 import { evaluateOrigami, origamiCaseView, origamiGoalAsset } from './mock/origami';
 import { evaluateTabla, TABLA_SOURCE, tablaAudioUrl, tablaCaseView } from './mock/tabla';
+import {
+  composedCaseView,
+  composedMediaUrl,
+  delay as composerDelay,
+  evaluateUniversal,
+  keyframeAssetUrl,
+  loadDraft,
+  refineDraft as composerRefineDraft,
+  selectDraft,
+  storeDraft,
+} from './mock/composer';
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const clone = <T,>(v: T): T => JSON.parse(JSON.stringify(v)) as T;
@@ -80,6 +91,8 @@ export const mockApi: Api = {
       runtime_label: v.runtime_label,
       review_status: v.review_status,
       derived_from: v.derived_from ?? null,
+      composed: v.modality === 'universal',
+      structures: v.modality === 'universal' ? ((v.goal.ui_view as { structures?: string[] }).structures ?? []) : undefined,
     }));
   },
 
@@ -182,6 +195,18 @@ export const mockApi: Api = {
     const v = getView(s.caseId);
     const base = baseOf(s.caseId);
     const allowed: Record<string, string[]> = { kolam: ['trace', 'image'], origami: ['video'], tabla: ['audio'] };
+    if (v.modality === 'universal') {
+      const profile = v.profile;
+      const allowedKinds = profile?.learner_input_kinds ?? ['image', 'audio', 'video', 'trace'];
+      if (!allowedKinds.includes(a.kind)) throw new ApiError('INVALID_INPUT', `kind ${a.kind} not accepted for this universal skill`, 400);
+      await simulateUpload(onProgress, 800);
+      const n = s.attempts.length + 1;
+      await delay(1500);
+      const result = evaluateUniversal(v, sid, s.learner, n, a.kind);
+      s.attempts.push(result);
+      s.state = n === 1 ? 'awaiting_retry' : 'awaiting_complete';
+      return clone(result);
+    }
     if (!allowed[base]?.includes(a.kind)) throw new ApiError('INVALID_INPUT', `kind ${a.kind} not accepted for ${base}`, 400);
     await simulateUpload(onProgress, Math.min(1500, 300 + a.file.size / 20000));
     const n = s.attempts.length + 1;
@@ -219,10 +244,69 @@ export const mockApi: Api = {
     if (up) return up;
     if (sid === KOLAM_TARGET_SOURCE) return KOLAM_TARGET_URL;
     if (sid === TABLA_SOURCE) return tablaAudioUrl();
+    const composed = composedMediaUrl(caseId, sid);
+    if (composed) return composed;
     return ''; // origami expert video is not bundled in mock mode
   },
 
   goalAssetUrl(caseId: string, asset: string): string {
-    return baseOf(caseId) === 'origami' ? origamiGoalAsset(asset) : '';
+    if (baseOf(caseId) === 'origami') return origamiGoalAsset(asset);
+    // Universal composed cases use synthetic keyframe SVGs
+    const v = cases.get(caseId);
+    if (v?.modality === 'universal') return keyframeAssetUrl(caseId, asset);
+    return '';
+  },
+
+  // ---- Composer (K8) ----
+
+  async analyzeSource(file: File, opts: ComposerUploadOptions, onProgress?: ProgressFn): Promise<DraftView> {
+    // Simulate upload progress + processing
+    await simulateUpload(onProgress, 1000);
+    await composerDelay(3000); // 4 s total (spec: "usually 10-40 s")
+    const draft = selectDraft(file, opts.title ?? '');
+    const objectUrl = URL.createObjectURL(file);
+    storeDraft(draft, objectUrl);
+    return clone(draft);
+  },
+
+  async getDraft(draftId: string): Promise<DraftView> {
+    await delay(100);
+    const d = loadDraft(draftId);
+    if (!d) throw new ApiError('MISSING_EVIDENCE', `draft ${draftId} not found`, 404);
+    return clone(d);
+  },
+
+  async refineDraft(draftId: string, body: { title: string; description: string }): Promise<DraftView> {
+    await composerDelay(2000);
+    const existing = loadDraft(draftId);
+    if (!existing) throw new ApiError('MISSING_EVIDENCE', `draft ${draftId} not found`, 404);
+    const refined = composerRefineDraft(existing, body.title, body.description);
+    storeDraft(refined, null);
+    return clone(refined);
+  },
+
+  async createFromDraft(draftId: string, edits: CreateFromDraftEdits): Promise<CaseView> {
+    await composerDelay(3000);
+    const draft = loadDraft(draftId);
+    if (!draft) throw new ApiError('MISSING_EVIDENCE', `draft ${draftId} not found`, 404);
+    if (draft.refused || !draft.proposal) throw new ApiError('INVALID_INPUT', 'draft is refused or has no proposal', 400);
+    if (!edits.learner_input_kinds.length) throw new ApiError('INVALID_INPUT', 'at least one learner input kind is required', 400);
+    if (!edits.skill_model.checks.some((c) => c.enabled !== false)) throw new ApiError('INVALID_INPUT', 'at least one check must be enabled', 400);
+    // Build updated profile from edits
+    const profile: import('./types').CaseProfile = {
+      ...draft.proposal,
+      title: edits.title,
+      skill_summary: edits.skill_summary,
+      domain: edits.domain,
+      transmission_mode: edits.transmission_mode as 'forward' | 'goal-conditioned' | 'corrective',
+      learner_input_kinds: edits.learner_input_kinds,
+      goal_hint: edits.goal_hint ?? null,
+      skill_model: edits.skill_model,
+      confirmed_by_user: true,
+      confirmed_at: new Date().toISOString(),
+    };
+    const view = composedCaseView(profile, null);
+    cases.set(view.case_id, view);
+    return clone(view);
   },
 };

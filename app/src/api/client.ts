@@ -17,6 +17,8 @@ import type {
   AttemptResult,
   CaseSummary,
   CaseView,
+  CreateFromDraftEdits,
+  DraftView,
   HealthResponse,
   QueryAnswer,
   ReviewAction,
@@ -114,6 +116,12 @@ export interface AttemptUpload {
   video?: File;
 }
 
+export interface ComposerUploadOptions {
+  title?: string;
+  description?: string;
+  rightsConfirmed: boolean;
+}
+
 const httpApi = {
   health: (o?: CallOptions) => request<HealthResponse>('GET', '/api/health', undefined, o),
   listCases: (o?: CallOptions) => request<CaseSummary[]>('GET', '/api/cases', undefined, o),
@@ -146,6 +154,24 @@ const httpApi = {
   mediaUrl: (caseId: string, sourceId: string) => `${API_BASE}/api/media/${enc(caseId)}/${enc(baseSourceId(sourceId))}`,
   /** URL for a goal asset (e.g. an origami keyframe JPEG). */
   goalAssetUrl: (caseId: string, asset: string) => `${API_BASE}/api/media/${enc(caseId)}/goal/${enc(asset)}`,
+  /** POST /api/compose/analyze — multipart upload to start a draft. */
+  analyzeSource: (file: File, opts: ComposerUploadOptions, onProgress?: ProgressFn, o?: CallOptions) => {
+    const form = new FormData();
+    form.append('file', file, file.name);
+    if (opts.title) form.append('title', opts.title);
+    if (opts.description) form.append('description', opts.description);
+    form.append('rights_confirmed', opts.rightsConfirmed ? 'true' : 'false');
+    return upload<DraftView>('/api/compose/analyze', form, onProgress, o);
+  },
+  /** GET /api/compose/{draft_id} */
+  getDraft: (draftId: string, o?: CallOptions) =>
+    request<DraftView>('GET', `/api/compose/${enc(draftId)}`, undefined, o),
+  /** POST /api/compose/{draft_id}/refine */
+  refineDraft: (draftId: string, body: { title: string; description: string }, o?: CallOptions) =>
+    request<DraftView>('POST', `/api/compose/${enc(draftId)}/refine`, body, o),
+  /** POST /api/compose/{draft_id}/create */
+  createFromDraft: (draftId: string, edits: CreateFromDraftEdits, o?: CallOptions) =>
+    request<CaseView>('POST', `/api/compose/${enc(draftId)}/create`, edits, o),
 };
 
 export type Api = typeof httpApi;
