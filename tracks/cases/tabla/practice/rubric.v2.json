@@ -1,0 +1,65 @@
+{
+  "criteria": [
+    {
+      "criterion_id": "CRIT-TABLA-TEMPO",
+      "description": "The learner's stroke pulse matches the source pulse.",
+      "name": "Holds the source tempo",
+      "observable_indicator": "tempo error % of the learner's fitted stroke pulse vs the source pulse",
+      "required": true,
+      "weight": 2.0
+    },
+    {
+      "criterion_id": "CRIT-TABLA-TIMING",
+      "description": "Each stroke lands where the source stroke lands, after allowing for overall offset and tempo.",
+      "name": "Strokes land on the pulse grid",
+      "observable_indicator": "median absolute stroke timing deviation (ms) after offset/tempo fit",
+      "required": true,
+      "weight": 3.0
+    },
+    {
+      "criterion_id": "CRIT-TABLA-BAYAN",
+      "description": "Bass (bayan) strokes occur on the same strokes as in the source.",
+      "name": "Bass used and withheld where the source does",
+      "observable_indicator": "balanced accuracy of the per-stroke bass flag on aligned strokes",
+      "required": true,
+      "weight": 3.0
+    },
+    {
+      "criterion_id": "CRIT-TABLA-COMPLETE",
+      "description": "Every source stroke is played once and nothing is added.",
+      "name": "No missing or extra strokes",
+      "observable_indicator": "count of missing + extra strokes after alignment",
+      "required": false,
+      "weight": 1.0
+    },
+    {
+      "criterion_id": "CRIT-TABLA-STEADY",
+      "description": "The pulse does not waver from stroke to stroke.",
+      "name": "Steady pulse",
+      "observable_indicator": "coefficient of variation of pulse-normalised inter-onset intervals",
+      "required": false,
+      "weight": 1.0
+    },
+    {
+      "criterion_id": "CRIT-TABLA-BOLS",
+      "description": "The learner's bols match the bols the audio model heard in the source.",
+      "name": "Bol identity",
+      "observable_indicator": "1 - edit distance / length between learner and source bol sequences (audio model)",
+      "required": false,
+      "weight": 2.0
+    },
+    {
+      "criterion_id": "CRIT-TABLA-STROKES",
+      "description": "Each learner stroke belongs to the same timbre class as the aligned source stroke.",
+      "name": "Stroke timbre matches the source",
+      "observable_indicator": "fraction of aligned stroke pairs where learner and source timbre classes match",
+      "required": false,
+      "weight": 2.0
+    }
+  ],
+  "description": "Criteria authored from goal model v2 (tabla_audio). Metric bands live in practice/observers.v2.json; scores come only from the deterministic band policy.",
+  "passing_score": 9.8,
+  "rubric_id": "rubric.tabla.2",
+  "skill_id": "skill.tabla",
+  "title": "Tabla stroke pattern: tempo, grid and bayan — rubric"
+}

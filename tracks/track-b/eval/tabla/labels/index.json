@@ -5,7 +5,8 @@
     "jitter_heavy",
     "tempo_plus8",
     "dropped3",
-    "bass_removed_mid"
+    "bass_removed_mid",
+    "stroke_substitution"
   ],
   "seed": 20261006
 }

@@ -182,7 +182,19 @@ Bands are calibrated on the synthetic + hand-drawn set (§7) and versioned in th
 | `CRIT-TABLA-BAYAN`: bass (bayan) used and withheld where the source does | ✓ | 3 | ≥ 0.9 sat · ≥ 0.7 partial |
 | `CRIT-TABLA-COMPLETE`: no missing/extra strokes | | 1 | ≤ 1 sat · ≤ 3 partial |
 | `CRIT-TABLA-STEADY`: steady pulse | | 1 | CV ≤ 0.08 sat · ≤ 0.15 partial |
-| `CRIT-TABLA-BOLS` (only if the audio model is enabled): bol identity | | 2 | edit-distance accuracy ≥ 0.85 sat · ≥ 0.6 partial |
+| `CRIT-TABLA-BOLS` (only if audio model enabled): bol identity | | 2 | edit-distance accuracy ≥ 0.85 sat · ≥ 0.6 partial |
+| `CRIT-TABLA-STROKES` (v2 goals only): stroke timbre matches the source | | 2 | ≥ 0.80 sat · ≥ 0.60 partial |
+
+### 5.3 Stroke timbre classification (v2, WP4)
+
+v2 adds MFCC-based timbre classes learned from the expert's own strokes:
+
+1. **Features per stroke** (16-D): 13 MFCCs (DCT-II on 40 mel bands, 50–7600 Hz, from an 80 ms Hann-windowed FFT-1024 power spectrum, keeping coefficients 1–13); spectral centroid (Hz/1000); low-band ratio (< 250 Hz); decay ratio (RMS 40–80 ms / RMS 0–40 ms after onset). Implemented in `tracks/common/tabla_dsp.stroke_features`.
+2. **k-means on z-scored features**: k chosen in 3–6 by maximum silhouette; deterministic farthest-point initialisation starting from the stroke closest to the global mean. If best silhouette < 0.15, falls back to k = 2 (bass vs no-bass) with a warning. Implemented in `tracks/common/tabla_dsp.fit_timbre_classes`.
+3. **Class display names**: ordered A–F by descending low-band ratio of the centroid (A = most bass-heavy). If the audio model is enabled, the majority bol per class is appended as an inferred label.
+4. **Metric `tabla.stroke_class_accuracy`**: fraction of aligned pairs where learner's assigned class equals the expert's class. Learner features are z-scored with the expert's own mean/std. Distance > 1.5 × radius_p95 → label −1 (outlier), counts as wrong. At least 8 aligned pairs required; otherwise the metric is None.
+5. **Claim CLM-07** (OBSERVED): "The source uses k distinct stroke timbres (silhouette s)."
+6. **`payload_from_audio`** in `tracks/common/goals/tabla.py` is the canonical implementation for both the Track A builder and the universal pipeline.
 
 > **Reported-only metric:** `tabla.timing_p90_ms` (90th-percentile stroke deviation, ms) is computed
 > alongside the median and included in the metrics dict, but has no observer band and does not affect

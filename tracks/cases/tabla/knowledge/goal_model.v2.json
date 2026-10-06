@@ -1,0 +1,1332 @@
+{
+  "built_with": {
+    "audio_model_enabled": true,
+    "bands": {
+      "bass": [
+        0.9,
+        0.7
+      ],
+      "bols": [
+        0.85,
+        0.6
+      ],
+      "complete": [
+        1.0,
+        3.0
+      ],
+      "steady": [
+        0.141,
+        0.226
+      ],
+      "strokes": [
+        0.8,
+        0.6
+      ],
+      "tempo": [
+        5.0,
+        10.0
+      ],
+      "timing": [
+        50.0,
+        100.0
+      ]
+    },
+    "builder": "tabla_goal_v2",
+    "dsp": "tabla_dsp_v1",
+    "onset_params": {
+      "delta": 0.08,
+      "feature_window_sec": 0.08,
+      "flux_floor": 0.05,
+      "hop": 256,
+      "low_band_hz": 250.0,
+      "median_window_sec": 0.5,
+      "min_gap_sec": 0.09,
+      "n_fft": 1024
+    },
+    "run_keys": [
+      "adf7c5a887a37914c54be209d9846a7e"
+    ],
+    "sample_rate": 16000
+  },
+  "case_id": "tabla",
+  "modality": "tabla_audio",
+  "package_id": "kp.tabla.2",
+  "payload": {
+    "bass_centres": [
+      0.1468,
+      0.3539
+    ],
+    "bass_fraction": 0.3962,
+    "bass_threshold": 0.2504,
+    "beat_period_sec": 0.3785,
+    "beat_pulses": 2,
+    "beat_rule": "beat = smallest k in (1,2,4) pulses with k*pulse >= 0.3 s (counting convention, not an observed matra)",
+    "beats": [
+      {
+        "bass": true,
+        "index": 0,
+        "t": 1.5323
+      },
+      {
+        "bass": true,
+        "index": 1,
+        "t": 1.9108
+      },
+      {
+        "bass": false,
+        "index": 2,
+        "t": 2.2893
+      },
+      {
+        "bass": true,
+        "index": 3,
+        "t": 2.6678
+      },
+      {
+        "bass": false,
+        "index": 4,
+        "t": 3.0463
+      },
+      {
+        "bass": true,
+        "index": 5,
+        "t": 3.4248
+      },
+      {
+        "bass": true,
+        "index": 6,
+        "t": 3.8033
+      },
+      {
+        "bass": false,
+        "index": 7,
+        "t": 4.1818
+      },
+      {
+        "bass": true,
+        "index": 8,
+        "t": 4.5603
+      },
+      {
+        "bass": true,
+        "index": 9,
+        "t": 4.9388
+      },
+      {
+        "bass": false,
+        "index": 10,
+        "t": 5.3173
+      },
+      {
+        "bass": true,
+        "index": 11,
+        "t": 5.6958
+      },
+      {
+        "bass": true,
+        "index": 12,
+        "t": 6.0743
+      },
+      {
+        "bass": false,
+        "index": 13,
+        "t": 6.4528
+      },
+      {
+        "bass": true,
+        "index": 14,
+        "t": 6.8313
+      },
+      {
+        "bass": true,
+        "index": 15,
+        "t": 7.2098
+      },
+      {
+        "bass": false,
+        "index": 16,
+        "t": 7.5883
+      },
+      {
+        "bass": false,
+        "index": 17,
+        "t": 7.9668
+      },
+      {
+        "bass": true,
+        "index": 18,
+        "t": 8.3453
+      },
+      {
+        "bass": true,
+        "index": 19,
+        "t": 8.7238
+      },
+      {
+        "bass": true,
+        "index": 20,
+        "t": 9.1023
+      },
+      {
+        "bass": true,
+        "index": 21,
+        "t": 9.4808
+      },
+      {
+        "bass": false,
+        "index": 22,
+        "t": 9.8593
+      },
+      {
+        "bass": false,
+        "index": 23,
+        "t": 10.2378
+      },
+      {
+        "bass": true,
+        "index": 24,
+        "t": 10.6163
+      },
+      {
+        "bass": true,
+        "index": 25,
+        "t": 10.9948
+      },
+      {
+        "bass": true,
+        "index": 26,
+        "t": 11.3733
+      },
+      {
+        "bass": true,
+        "index": 27,
+        "t": 11.7518
+      }
+    ],
+    "bols": [
+      {
+        "bol": "Ge",
+        "t": 1.552
+      },
+      {
+        "bol": "Ge",
+        "t": 1.728
+      },
+      {
+        "bol": "Ge",
+        "t": 1.856
+      },
+      {
+        "bol": "Ge",
+        "t": 2.048
+      },
+      {
+        "bol": "Ge",
+        "t": 2.288
+      },
+      {
+        "bol": "Ge",
+        "t": 2.672
+      },
+      {
+        "bol": "Ge",
+        "t": 2.864
+      },
+      {
+        "bol": "Ge",
+        "t": 3.072
+      },
+      {
+        "bol": "Ge",
+        "t": 3.248
+      },
+      {
+        "bol": "Ge",
+        "t": 3.44
+      },
+      {
+        "bol": "Ge",
+        "t": 3.632
+      },
+      {
+        "bol": "Ge",
+        "t": 3.808
+      },
+      {
+        "bol": "Ge",
+        "t": 4.0
+      },
+      {
+        "bol": "Ge",
+        "t": 4.192
+      },
+      {
+        "bol": "Ge",
+        "t": 4.352
+      },
+      {
+        "bol": "Ge",
+        "t": 4.56
+      },
+      {
+        "bol": "Ge",
+        "t": 4.752
+      },
+      {
+        "bol": "Ge",
+        "t": 4.928
+      },
+      {
+        "bol": "Ge",
+        "t": 5.12
+      },
+      {
+        "bol": "Ge",
+        "t": 5.312
+      },
+      {
+        "bol": "Ge",
+        "t": 5.472
+      },
+      {
+        "bol": "Ge",
+        "t": 5.68
+      },
+      {
+        "bol": "Ge",
+        "t": 5.888
+      },
+      {
+        "bol": "Ge",
+        "t": 6.064
+      },
+      {
+        "bol": "Ge",
+        "t": 6.272
+      },
+      {
+        "bol": "Ge",
+        "t": 6.448
+      },
+      {
+        "bol": "Ge",
+        "t": 6.624
+      },
+      {
+        "bol": "Ge",
+        "t": 6.816
+      },
+      {
+        "bol": "Ge",
+        "t": 7.056
+      },
+      {
+        "bol": "Ge",
+        "t": 7.216
+      },
+      {
+        "bol": "Ge",
+        "t": 7.424
+      },
+      {
+        "bol": "Ge",
+        "t": 7.616
+      },
+      {
+        "bol": "Ge",
+        "t": 7.776
+      },
+      {
+        "bol": "Ge",
+        "t": 7.968
+      },
+      {
+        "bol": "Ge",
+        "t": 8.192
+      },
+      {
+        "bol": "Ge",
+        "t": 8.352
+      },
+      {
+        "bol": "Ge",
+        "t": 8.56
+      },
+      {
+        "bol": "Ge",
+        "t": 8.752
+      },
+      {
+        "bol": "Ge",
+        "t": 8.928
+      },
+      {
+        "bol": "Ge",
+        "t": 9.104
+      },
+      {
+        "bol": "Ge",
+        "t": 9.312
+      },
+      {
+        "bol": "Ge",
+        "t": 9.472
+      },
+      {
+        "bol": "Ge",
+        "t": 9.664
+      },
+      {
+        "bol": "Ge",
+        "t": 9.856
+      },
+      {
+        "bol": "Ge",
+        "t": 10.016
+      },
+      {
+        "bol": "Ge",
+        "t": 10.224
+      },
+      {
+        "bol": "Ge",
+        "t": 10.432
+      },
+      {
+        "bol": "Ge",
+        "t": 10.592
+      },
+      {
+        "bol": "Ge",
+        "t": 10.8
+      },
+      {
+        "bol": "Ge",
+        "t": 10.992
+      },
+      {
+        "bol": "Ge",
+        "t": 11.376
+      },
+      {
+        "bol": "Ge",
+        "t": 11.536
+      },
+      {
+        "bol": "Ge",
+        "t": 11.744
+      }
+    ],
+    "bols_status": "inferred",
+    "class_display": [
+      {
+        "class": 2,
+        "label": "Class A (mostly 'Ge', inferred)",
+        "source": "inferred"
+      },
+      {
+        "class": 1,
+        "label": "Class B (mostly 'Ge', inferred)",
+        "source": "inferred"
+      },
+      {
+        "class": 0,
+        "label": "Class C (mostly 'Ge', inferred)",
+        "source": "inferred"
+      }
+    ],
+    "cycle_confidence": 0.6536,
+    "cycle_length_beats": 6.0,
+    "cycle_length_pulses": 12,
+    "cycle_note": null,
+    "duration_sec": 12.0,
+    "grid": [
+      {
+        "bass": true,
+        "index": 0,
+        "stroke": 0,
+        "t": 1.5323
+      },
+      {
+        "bass": true,
+        "index": 1,
+        "stroke": 1,
+        "t": 1.7215
+      },
+      {
+        "bass": true,
+        "index": 2,
+        "stroke": 2,
+        "t": 1.9108
+      },
+      {
+        "bass": false,
+        "index": 3,
+        "stroke": 3,
+        "t": 2.1
+      },
+      {
+        "bass": false,
+        "index": 4,
+        "stroke": 4,
+        "t": 2.2893
+      },
+      {
+        "bass": null,
+        "index": 5,
+        "stroke": null,
+        "t": 2.4785
+      },
+      {
+        "bass": true,
+        "index": 6,
+        "stroke": 5,
+        "t": 2.6678
+      },
+      {
+        "bass": false,
+        "index": 7,
+        "stroke": 6,
+        "t": 2.857
+      },
+      {
+        "bass": false,
+        "index": 8,
+        "stroke": 7,
+        "t": 3.0463
+      },
+      {
+        "bass": false,
+        "index": 9,
+        "stroke": 8,
+        "t": 3.2355
+      },
+      {
+        "bass": true,
+        "index": 10,
+        "stroke": 9,
+        "t": 3.4248
+      },
+      {
+        "bass": false,
+        "index": 11,
+        "stroke": 10,
+        "t": 3.614
+      },
+      {
+        "bass": true,
+        "index": 12,
+        "stroke": 11,
+        "t": 3.8033
+      },
+      {
+        "bass": false,
+        "index": 13,
+        "stroke": 12,
+        "t": 3.9925
+      },
+      {
+        "bass": false,
+        "index": 14,
+        "stroke": 13,
+        "t": 4.1818
+      },
+      {
+        "bass": false,
+        "index": 15,
+        "stroke": 14,
+        "t": 4.371
+      },
+      {
+        "bass": true,
+        "index": 16,
+        "stroke": 15,
+        "t": 4.5603
+      },
+      {
+        "bass": false,
+        "index": 17,
+        "stroke": 16,
+        "t": 4.7495
+      },
+      {
+        "bass": true,
+        "index": 18,
+        "stroke": 17,
+        "t": 4.9388
+      },
+      {
+        "bass": false,
+        "index": 19,
+        "stroke": 18,
+        "t": 5.128
+      },
+      {
+        "bass": false,
+        "index": 20,
+        "stroke": 19,
+        "t": 5.3173
+      },
+      {
+        "bass": false,
+        "index": 21,
+        "stroke": 20,
+        "t": 5.5065
+      },
+      {
+        "bass": true,
+        "index": 22,
+        "stroke": 21,
+        "t": 5.6958
+      },
+      {
+        "bass": false,
+        "index": 23,
+        "stroke": 22,
+        "t": 5.885
+      },
+      {
+        "bass": true,
+        "index": 24,
+        "stroke": 23,
+        "t": 6.0743
+      },
+      {
+        "bass": false,
+        "index": 25,
+        "stroke": 24,
+        "t": 6.2635
+      },
+      {
+        "bass": false,
+        "index": 26,
+        "stroke": 25,
+        "t": 6.4528
+      },
+      {
+        "bass": false,
+        "index": 27,
+        "stroke": 26,
+        "t": 6.642
+      },
+      {
+        "bass": true,
+        "index": 28,
+        "stroke": 27,
+        "t": 6.8313
+      },
+      {
+        "bass": false,
+        "index": 29,
+        "stroke": 28,
+        "t": 7.0205
+      },
+      {
+        "bass": true,
+        "index": 30,
+        "stroke": 29,
+        "t": 7.2098
+      },
+      {
+        "bass": false,
+        "index": 31,
+        "stroke": 30,
+        "t": 7.399
+      },
+      {
+        "bass": false,
+        "index": 32,
+        "stroke": 31,
+        "t": 7.5883
+      },
+      {
+        "bass": false,
+        "index": 33,
+        "stroke": 32,
+        "t": 7.7775
+      },
+      {
+        "bass": false,
+        "index": 34,
+        "stroke": 33,
+        "t": 7.9668
+      },
+      {
+        "bass": false,
+        "index": 35,
+        "stroke": 34,
+        "t": 8.156
+      },
+      {
+        "bass": true,
+        "index": 36,
+        "stroke": 35,
+        "t": 8.3453
+      },
+      {
+        "bass": false,
+        "index": 37,
+        "stroke": 36,
+        "t": 8.5345
+      },
+      {
+        "bass": true,
+        "index": 38,
+        "stroke": 37,
+        "t": 8.7238
+      },
+      {
+        "bass": false,
+        "index": 39,
+        "stroke": 38,
+        "t": 8.913
+      },
+      {
+        "bass": true,
+        "index": 40,
+        "stroke": 39,
+        "t": 9.1023
+      },
+      {
+        "bass": false,
+        "index": 41,
+        "stroke": 40,
+        "t": 9.2915
+      },
+      {
+        "bass": true,
+        "index": 42,
+        "stroke": 41,
+        "t": 9.4808
+      },
+      {
+        "bass": false,
+        "index": 43,
+        "stroke": 42,
+        "t": 9.67
+      },
+      {
+        "bass": false,
+        "index": 44,
+        "stroke": 43,
+        "t": 9.8593
+      },
+      {
+        "bass": false,
+        "index": 45,
+        "stroke": 44,
+        "t": 10.0485
+      },
+      {
+        "bass": false,
+        "index": 46,
+        "stroke": 45,
+        "t": 10.2378
+      },
+      {
+        "bass": false,
+        "index": 47,
+        "stroke": 46,
+        "t": 10.427
+      },
+      {
+        "bass": true,
+        "index": 48,
+        "stroke": 47,
+        "t": 10.6163
+      },
+      {
+        "bass": true,
+        "index": 49,
+        "stroke": 48,
+        "t": 10.8055
+      },
+      {
+        "bass": true,
+        "index": 50,
+        "stroke": 49,
+        "t": 10.9948
+      },
+      {
+        "bass": null,
+        "index": 51,
+        "stroke": null,
+        "t": 11.184
+      },
+      {
+        "bass": true,
+        "index": 52,
+        "stroke": 50,
+        "t": 11.3733
+      },
+      {
+        "bass": false,
+        "index": 53,
+        "stroke": 51,
+        "t": 11.5625
+      },
+      {
+        "bass": true,
+        "index": 54,
+        "stroke": 52,
+        "t": 11.7518
+      }
+    ],
+    "grid_residual_median_ms": 10.2,
+    "ioi_cv": 0.1132,
+    "onset_params": {
+      "delta": 0.08,
+      "feature_window_sec": 0.08,
+      "flux_floor": 0.05,
+      "hop": 256,
+      "low_band_hz": 250.0,
+      "median_window_sec": 0.5,
+      "min_gap_sec": 0.09,
+      "n_fft": 1024
+    },
+    "onsets": [
+      {
+        "bass": true,
+        "grid_index": 0,
+        "low_ratio": 0.4548,
+        "strength": 0.6517,
+        "t": 1.552,
+        "timbre_class": 2
+      },
+      {
+        "bass": true,
+        "grid_index": 1,
+        "low_ratio": 0.2956,
+        "strength": 0.4348,
+        "t": 1.728,
+        "timbre_class": 0
+      },
+      {
+        "bass": true,
+        "grid_index": 2,
+        "low_ratio": 0.2654,
+        "strength": 0.5519,
+        "t": 1.856,
+        "timbre_class": 2
+      },
+      {
+        "bass": false,
+        "grid_index": 3,
+        "low_ratio": 0.2315,
+        "strength": 0.821,
+        "t": 2.048,
+        "timbre_class": 0
+      },
+      {
+        "bass": false,
+        "grid_index": 4,
+        "low_ratio": 0.1641,
+        "strength": 0.7027,
+        "t": 2.288,
+        "timbre_class": 0
+      },
+      {
+        "bass": true,
+        "grid_index": 6,
+        "low_ratio": 0.4598,
+        "strength": 0.4412,
+        "t": 2.672,
+        "timbre_class": 2
+      },
+      {
+        "bass": false,
+        "grid_index": 7,
+        "low_ratio": 0.0734,
+        "strength": 0.6478,
+        "t": 2.864,
+        "timbre_class": 0
+      },
+      {
+        "bass": false,
+        "grid_index": 8,
+        "low_ratio": 0.1692,
+        "strength": 0.909,
+        "t": 3.072,
+        "timbre_class": 0
+      },
+      {
+        "bass": false,
+        "grid_index": 9,
+        "low_ratio": 0.0887,
+        "strength": 0.3475,
+        "t": 3.248,
+        "timbre_class": 0
+      },
+      {
+        "bass": true,
+        "grid_index": 10,
+        "low_ratio": 0.2914,
+        "strength": 0.8219,
+        "t": 3.44,
+        "timbre_class": 0
+      },
+      {
+        "bass": false,
+        "grid_index": 11,
+        "low_ratio": 0.151,
+        "strength": 0.8242,
+        "t": 3.632,
+        "timbre_class": 0
+      },
+      {
+        "bass": true,
+        "grid_index": 12,
+        "low_ratio": 0.282,
+        "strength": 0.5349,
+        "t": 3.808,
+        "timbre_class": 2
+      },
+      {
+        "bass": false,
+        "grid_index": 13,
+        "low_ratio": 0.1265,
+        "strength": 0.8263,
+        "t": 4.0,
+        "timbre_class": 1
+      },
+      {
+        "bass": false,
+        "grid_index": 14,
+        "low_ratio": 0.1003,
+        "strength": 0.8809,
+        "t": 4.192,
+        "timbre_class": 0
+      },
+      {
+        "bass": false,
+        "grid_index": 15,
+        "low_ratio": 0.1408,
+        "strength": 0.1618,
+        "t": 4.352,
+        "timbre_class": 0
+      },
+      {
+        "bass": true,
+        "grid_index": 16,
+        "low_ratio": 0.3115,
+        "strength": 0.9236,
+        "t": 4.56,
+        "timbre_class": 2
+      },
+      {
+        "bass": false,
+        "grid_index": 17,
+        "low_ratio": 0.1267,
+        "strength": 0.723,
+        "t": 4.752,
+        "timbre_class": 0
+      },
+      {
+        "bass": true,
+        "grid_index": 18,
+        "low_ratio": 0.3625,
+        "strength": 0.1843,
+        "t": 4.928,
+        "timbre_class": 2
+      },
+      {
+        "bass": false,
+        "grid_index": 19,
+        "low_ratio": 0.0748,
+        "strength": 0.7379,
+        "t": 5.12,
+        "timbre_class": 0
+      },
+      {
+        "bass": false,
+        "grid_index": 20,
+        "low_ratio": 0.1813,
+        "strength": 0.9098,
+        "t": 5.312,
+        "timbre_class": 0
+      },
+      {
+        "bass": false,
+        "grid_index": 21,
+        "low_ratio": 0.1134,
+        "strength": 0.2688,
+        "t": 5.472,
+        "timbre_class": 0
+      },
+      {
+        "bass": true,
+        "grid_index": 22,
+        "low_ratio": 0.3128,
+        "strength": 0.9153,
+        "t": 5.68,
+        "timbre_class": 2
+      },
+      {
+        "bass": false,
+        "grid_index": 23,
+        "low_ratio": 0.1874,
+        "strength": 0.7252,
+        "t": 5.888,
+        "timbre_class": 0
+      },
+      {
+        "bass": true,
+        "grid_index": 24,
+        "low_ratio": 0.3343,
+        "strength": 0.5713,
+        "t": 6.064,
+        "timbre_class": 2
+      },
+      {
+        "bass": false,
+        "grid_index": 25,
+        "low_ratio": 0.1904,
+        "strength": 0.6214,
+        "t": 6.272,
+        "timbre_class": 2
+      },
+      {
+        "bass": false,
+        "grid_index": 26,
+        "low_ratio": 0.248,
+        "strength": 0.7585,
+        "t": 6.448,
+        "timbre_class": 0
+      },
+      {
+        "bass": false,
+        "grid_index": 27,
+        "low_ratio": 0.1757,
+        "strength": 0.3192,
+        "t": 6.624,
+        "timbre_class": 0
+      },
+      {
+        "bass": true,
+        "grid_index": 28,
+        "low_ratio": 0.3511,
+        "strength": 0.962,
+        "t": 6.816,
+        "timbre_class": 2
+      },
+      {
+        "bass": false,
+        "grid_index": 29,
+        "low_ratio": 0.1436,
+        "strength": 0.6998,
+        "t": 7.056,
+        "timbre_class": 0
+      },
+      {
+        "bass": true,
+        "grid_index": 30,
+        "low_ratio": 0.4077,
+        "strength": 0.7129,
+        "t": 7.216,
+        "timbre_class": 2
+      },
+      {
+        "bass": false,
+        "grid_index": 31,
+        "low_ratio": 0.2206,
+        "strength": 0.6969,
+        "t": 7.424,
+        "timbre_class": 2
+      },
+      {
+        "bass": false,
+        "grid_index": 32,
+        "low_ratio": 0.1608,
+        "strength": 0.859,
+        "t": 7.616,
+        "timbre_class": 0
+      },
+      {
+        "bass": false,
+        "grid_index": 33,
+        "low_ratio": 0.1026,
+        "strength": 0.249,
+        "t": 7.776,
+        "timbre_class": 0
+      },
+      {
+        "bass": false,
+        "grid_index": 34,
+        "low_ratio": 0.0596,
+        "strength": 0.7289,
+        "t": 7.968,
+        "timbre_class": 0
+      },
+      {
+        "bass": false,
+        "grid_index": 35,
+        "low_ratio": 0.1811,
+        "strength": 0.8273,
+        "t": 8.192,
+        "timbre_class": 0
+      },
+      {
+        "bass": true,
+        "grid_index": 36,
+        "low_ratio": 0.3848,
+        "strength": 0.4828,
+        "t": 8.352,
+        "timbre_class": 2
+      },
+      {
+        "bass": false,
+        "grid_index": 37,
+        "low_ratio": 0.2008,
+        "strength": 0.44,
+        "t": 8.56,
+        "timbre_class": 2
+      },
+      {
+        "bass": true,
+        "grid_index": 38,
+        "low_ratio": 0.2832,
+        "strength": 0.7064,
+        "t": 8.752,
+        "timbre_class": 0
+      },
+      {
+        "bass": false,
+        "grid_index": 39,
+        "low_ratio": 0.1304,
+        "strength": 0.2294,
+        "t": 8.928,
+        "timbre_class": 0
+      },
+      {
+        "bass": true,
+        "grid_index": 40,
+        "low_ratio": 0.3341,
+        "strength": 0.827,
+        "t": 9.104,
+        "timbre_class": 2
+      },
+      {
+        "bass": false,
+        "grid_index": 41,
+        "low_ratio": 0.1575,
+        "strength": 0.9379,
+        "t": 9.312,
+        "timbre_class": 0
+      },
+      {
+        "bass": true,
+        "grid_index": 42,
+        "low_ratio": 0.3527,
+        "strength": 0.3472,
+        "t": 9.472,
+        "timbre_class": 2
+      },
+      {
+        "bass": false,
+        "grid_index": 43,
+        "low_ratio": 0.2162,
+        "strength": 0.5309,
+        "t": 9.664,
+        "timbre_class": 2
+      },
+      {
+        "bass": false,
+        "grid_index": 44,
+        "low_ratio": 0.138,
+        "strength": 1.0,
+        "t": 9.856,
+        "timbre_class": 0
+      },
+      {
+        "bass": false,
+        "grid_index": 45,
+        "low_ratio": 0.0616,
+        "strength": 0.2039,
+        "t": 10.016,
+        "timbre_class": 0
+      },
+      {
+        "bass": false,
+        "grid_index": 46,
+        "low_ratio": 0.0598,
+        "strength": 0.7828,
+        "t": 10.224,
+        "timbre_class": 0
+      },
+      {
+        "bass": false,
+        "grid_index": 47,
+        "low_ratio": 0.2318,
+        "strength": 0.728,
+        "t": 10.432,
+        "timbre_class": 0
+      },
+      {
+        "bass": true,
+        "grid_index": 48,
+        "low_ratio": 0.4953,
+        "strength": 0.5144,
+        "t": 10.592,
+        "timbre_class": 2
+      },
+      {
+        "bass": true,
+        "grid_index": 49,
+        "low_ratio": 0.3432,
+        "strength": 0.2331,
+        "t": 10.8,
+        "timbre_class": 2
+      },
+      {
+        "bass": true,
+        "grid_index": 50,
+        "low_ratio": 0.3574,
+        "strength": 0.8532,
+        "t": 10.992,
+        "timbre_class": 2
+      },
+      {
+        "bass": true,
+        "grid_index": 52,
+        "low_ratio": 0.4368,
+        "strength": 0.5994,
+        "t": 11.376,
+        "timbre_class": 2
+      },
+      {
+        "bass": false,
+        "grid_index": 53,
+        "low_ratio": 0.0911,
+        "strength": 0.625,
+        "t": 11.536,
+        "timbre_class": 1
+      },
+      {
+        "bass": true,
+        "grid_index": 54,
+        "low_ratio": 0.3156,
+        "strength": 0.8632,
+        "t": 11.744,
+        "timbre_class": 2
+      }
+    ],
+    "pulse_fit_score": 0.6245,
+    "sample_rate": 16000,
+    "stroke_pulse_sec": 0.1893,
+    "strokes_per_min": 317.0,
+    "tempo_bpm": 158.5,
+    "timbre": {
+      "centroids": [
+        [
+          -0.2327,
+          -0.385932,
+          -0.494325,
+          -0.565038,
+          -0.447408,
+          -0.31894,
+          -0.507731,
+          -0.584992,
+          -0.602902,
+          -0.6005,
+          -0.50637,
+          -0.441429,
+          -0.516355,
+          0.170533,
+          -0.779373,
+          -0.100595
+        ],
+        [
+          -2.193871,
+          -1.309295,
+          -0.51142,
+          0.385064,
+          -0.142408,
+          0.099318,
+          1.08959,
+          1.844319,
+          0.587161,
+          1.509873,
+          0.859645,
+          -0.114316,
+          1.255766,
+          3.742847,
+          -0.259936,
+          -1.18072
+        ],
+        [
+          0.506185,
+          0.627756,
+          0.698103,
+          0.709818,
+          0.602712,
+          0.411393,
+          0.570227,
+          0.60346,
+          0.741356,
+          0.654307,
+          0.589338,
+          0.592275,
+          0.56649,
+          -0.565053,
+          1.050986,
+          0.239941
+        ]
+      ],
+      "k": 3,
+      "mean": [
+        13.010472,
+        2.596356,
+        0.37633,
+        3.12263,
+        -0.562387,
+        -0.438002,
+        -2.361627,
+        0.367725,
+        -1.812054,
+        -0.076542,
+        -0.48412,
+        -0.176847,
+        -0.075531,
+        0.391626,
+        0.341027,
+        0.686143
+      ],
+      "radius_p95": 4.3003,
+      "silhouette": 0.2529,
+      "std": [
+        2.720875,
+        2.817333,
+        1.834236,
+        1.419053,
+        1.066157,
+        1.150307,
+        1.028747,
+        1.334701,
+        1.129814,
+        1.048831,
+        0.859921,
+        0.692435,
+        0.80955,
+        0.199103,
+        0.250411,
+        0.183497
+      ]
+    },
+    "tolerances": {
+      "tempo_pct": 5.0,
+      "timing_ms": 50.0
+    },
+    "window_sec": [
+      20.0,
+      32.0
+    ]
+  },
+  "schema_version": "1.0",
+  "source_ids": [
+    "src.tabla.demo.v1"
+  ],
+  "version": 2,
+  "warnings": [
+    "source pulse-normalised IOI CV is 0.113; CRIT-TABLA-STEADY bands widened to <= 0.141 sat / <= 0.226 partial (default 0.08 / 0.15)"
+  ]
+}

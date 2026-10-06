@@ -11,12 +11,15 @@ evaluation-core §5.2, all deterministic:
    robust linear fit ``learner_t = a + b * goal_t`` (two passes).
 4. Metrics (ids match practice/observers): tabla.tempo_error_pct, tabla.timing_median_ms
    (also worst), tabla.ioi_cv, tabla.bass_accuracy (balanced accuracy on aligned strokes),
-   tabla.missing_extra, tabla.bol_accuracy (None unless the optional audio model is enabled).
+   tabla.missing_extra, tabla.bol_accuracy (None unless the optional audio model is enabled),
+   tabla.stroke_class_accuracy (None unless goal has timbre, v2 goals only).
 5. Divergence events: early/late stroke beyond the goal timing tolerance, bass mismatch,
-   missing stroke, extra stroke, tempo beyond tolerance. Progress curve = cumulative fraction
-   of goal strokes matched correctly (on time and with the right bass) vs learner time.
+   missing stroke, extra stroke, tempo beyond tolerance, stroke class mismatch (v2 only).
+   Progress curve = cumulative fraction of goal strokes matched correctly (on time and with
+   the right bass) vs learner time.
 
 An optional ``attempt.extra["video"]`` is accepted but never scored.
+Neutral wording used for stroke class findings; "bayan" and "bol" only in goal-specific text.
 """
 
 from __future__ import annotations
@@ -39,7 +42,7 @@ from tracks.common.schemas import EvidenceRef, Modality
 from track_b.trajectory import AttemptMedia, DivergenceEvent, MetricValue, TrajectoryResult
 
 SR = 16000
-EVALUATOR_VERSION = "tabla_eval_v1"
+EVALUATOR_VERSION = "tabla_eval_v2"
 MIN_DURATION_SEC = 3.0
 MAX_CLIP_FRACTION = 0.01
 MIN_STROKES = 4
@@ -61,6 +64,7 @@ M_BASS = "tabla.bass_accuracy"
 M_COMPLETE = "tabla.missing_extra"
 M_STEADY = "tabla.ioi_cv"
 M_BOLS = "tabla.bol_accuracy"
+M_STROKES = "tabla.stroke_class_accuracy"
 
 
 def _invalid(msg: str, **details: Any) -> AnveshanFailure:
@@ -161,6 +165,63 @@ def _bol_accuracy(goal: TablaGoal, x: np.ndarray, lt: np.ndarray, ctx: RunContex
     dist = dsp.levenshtein(goal_seq, learner_seq)
     acc = max(0.0, 1.0 - dist / max(1, len(goal_seq)))
     return MetricValue(round(acc, 4), f"Bol sequence accuracy {acc:.2f} (edit distance {dist} over {len(goal_seq)} source bols; audio-model labels).")
+
+
+def _stroke_class_accuracy(
+    goal: TablaGoal,
+    l_class_map: Dict[int, int],
+    pairs: List[dict],
+    attempt: AttemptMedia,
+    events: List[DivergenceEvent],
+) -> MetricValue:
+    """Compute stroke_class_accuracy; adds first-mismatch DivergenceEvent.
+
+    Neutral wording: "bass (low-frequency) strokes" and "stroke class" (never bayan/bol).
+    Returns MetricValue(None) if goal has no timbre (v1 goal) or fewer than 8 aligned pairs.
+    ``l_class_map`` maps learner onset index -> assigned timbre class (-1 = outlier).
+    """
+    if goal.timbre is None:
+        return MetricValue(None, "Stroke class accuracy not evaluated: goal has no timbre model (v1 goal).",
+                           uncertain_reason="no_timbre_model")
+    if len(pairs) < 8:
+        return MetricValue(None, "Too few aligned strokes to measure stroke class accuracy (need >= 8).",
+                           uncertain_reason="too_few_aligned_strokes")
+
+    goal_classes = [o.timbre_class for o in goal.onsets]
+    class_display = goal.class_display or []
+    display_map = {int(e["class"]): e["label"] for e in class_display} if class_display else {}
+    timbre_k = goal.timbre.get("k", 1) if goal.timbre else 1
+
+    correct = 0
+    first_mismatch_added = False
+    for pair in pairs:
+        gi = pair["goal"]
+        li = pair["learner"]
+        g_class = goal_classes[gi] if gi < len(goal_classes) else None
+        l_class = l_class_map.get(li)
+        if g_class is None or l_class is None:
+            continue
+        if g_class == l_class:
+            correct += 1
+        elif not first_mismatch_added:
+            first_mismatch_added = True
+            g_label = display_map.get(g_class, f"Class {g_class}")
+            l_label = display_map.get(l_class, f"Class {l_class}") if l_class >= 0 else "outlier"
+            t_ev = pair["learner_t"]
+            events.append(DivergenceEvent(
+                M_STROKES, "stroke_mismatch", t_ev, "time",
+                _ev(attempt, f"onset.{li}", t_ev - 0.05, t_ev + 0.15,
+                    "stroke class mismatch", onset=li),
+                f"Expected {g_label}, but learner stroke sounds like {l_label}.",
+                severity="minor",
+            ))
+
+    acc = correct / len(pairs)
+    return MetricValue(
+        round(acc, 4),
+        f"Stroke class accuracy {acc:.2f}: {correct}/{len(pairs)} aligned strokes match the source timbre class "
+        f"({timbre_k} classes; -1 = unlike any source stroke).",
+    )
 
 
 def evaluate(goal: GoalModel, attempt: AttemptMedia, ctx: RunContext) -> TrajectoryResult:
@@ -335,6 +396,17 @@ def evaluate(goal: GoalModel, attempt: AttemptMedia, ctx: RunContext) -> Traject
 
     metrics[M_BOLS] = _bol_accuracy(g, x, lt, ctx, run_keys)
 
+    # --- stroke class accuracy (v2 goals only) ---
+    learner_feats = dsp.stroke_features(x, SR, list(lt))
+    # Compute learner class labels once (used for metric and artifacts)
+    l_class_map: Dict[int, int] = {}
+    if g.timbre is not None and learner_feats.shape[0] > 0:
+        tm = dsp.TimbreModel.from_dict(g.timbre)
+        l_labels_arr, _ = dsp.assign(tm, learner_feats)
+        for i, lbl in enumerate(l_labels_arr):
+            l_class_map[i] = int(lbl)
+    metrics[M_STROKES] = _stroke_class_accuracy(g, l_class_map, pairs, attempt, events)
+
     events.sort(key=lambda e: (e.position, e.metric, e.kind))
 
     # --- progress curve: cumulative fraction of goal strokes matched correctly
@@ -346,6 +418,17 @@ def evaluate(goal: GoalModel, attempt: AttemptMedia, ctx: RunContext) -> Traject
             c += 1
         curve.append((round(float(t), 3), round(c / G, 4)))
     curve.append((round(duration, 3), round(len(correct_times) / G, 4)))
+
+    # --- build pairs with class info for artifacts ---
+    goal_classes = [o.timbre_class for o in g.onsets]
+    pairs_with_classes = []
+    for p in pairs:
+        li = p["learner"]
+        gi = p["goal"]
+        entry = dict(p)
+        entry["expert_class"] = goal_classes[gi] if gi < len(goal_classes) else None
+        entry["learner_class"] = l_class_map.get(li)
+        pairs_with_classes.append(entry)
 
     return TrajectoryResult(
         metrics=metrics,
@@ -367,12 +450,13 @@ def evaluate(goal: GoalModel, attempt: AttemptMedia, ctx: RunContext) -> Traject
                 {"i": i, "t": float(lt[i]), "strength": float(on.strength[i]), "low_ratio": float(on.low_ratio[i]), "bass": lbass[i]}
                 for i in range(len(lt))
             ],
-            "alignment": pairs,
+            "alignment": pairs_with_classes,
             "missing": [{"goal": j, "goal_t": float(gt[j]), "expected_t": round(float(expected(j)), 3)} for j in aln.missing],
             "extra": [{"learner": i, "t": float(lt[i])} for i in aln.extra],
             "outside": [{"learner": i, "t": float(lt[i])} for i in aln.outside],
             "fit": {"offset_sec": round(a, 4), "time_scale": round(b, 5), "learner_pulse_sec": round(pl, 4)},
             "bass_threshold": {"value": round(thr.value, 4), "adapted": thr.adapted, "rule": thr.rule},
+            "class_display": g.class_display,
             "video_ignored": "video" in attempt.extra,
         },
         run_keys=run_keys,

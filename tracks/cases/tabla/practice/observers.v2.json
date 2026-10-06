@@ -1,0 +1,134 @@
+{
+  "criteria": {
+    "CRIT-TABLA-BAYAN": {
+      "bands": [
+        {
+          "max": null,
+          "min": 0.9,
+          "status": "satisfied"
+        },
+        {
+          "max": null,
+          "min": 0.7,
+          "status": "partially_satisfied"
+        }
+      ],
+      "direction": "higher_is_better",
+      "metric": "tabla.bass_accuracy",
+      "otherwise": "not_satisfied",
+      "process": true
+    },
+    "CRIT-TABLA-BOLS": {
+      "bands": [
+        {
+          "max": null,
+          "min": 0.85,
+          "status": "satisfied"
+        },
+        {
+          "max": null,
+          "min": 0.6,
+          "status": "partially_satisfied"
+        }
+      ],
+      "direction": "higher_is_better",
+      "metric": "tabla.bol_accuracy",
+      "otherwise": "not_satisfied",
+      "process": true
+    },
+    "CRIT-TABLA-COMPLETE": {
+      "bands": [
+        {
+          "max": 1.0,
+          "min": null,
+          "status": "satisfied"
+        },
+        {
+          "max": 3.0,
+          "min": null,
+          "status": "partially_satisfied"
+        }
+      ],
+      "direction": "lower_is_better",
+      "metric": "tabla.missing_extra",
+      "otherwise": "not_satisfied",
+      "process": true
+    },
+    "CRIT-TABLA-STEADY": {
+      "bands": [
+        {
+          "max": 0.141,
+          "min": null,
+          "status": "satisfied"
+        },
+        {
+          "max": 0.226,
+          "min": null,
+          "status": "partially_satisfied"
+        }
+      ],
+      "direction": "lower_is_better",
+      "metric": "tabla.ioi_cv",
+      "otherwise": "not_satisfied",
+      "process": true
+    },
+    "CRIT-TABLA-STROKES": {
+      "bands": [
+        {
+          "max": null,
+          "min": 0.8,
+          "status": "satisfied"
+        },
+        {
+          "max": null,
+          "min": 0.6,
+          "status": "partially_satisfied"
+        }
+      ],
+      "direction": "higher_is_better",
+      "metric": "tabla.stroke_class_accuracy",
+      "otherwise": "not_satisfied",
+      "process": true
+    },
+    "CRIT-TABLA-TEMPO": {
+      "bands": [
+        {
+          "max": 5.0,
+          "min": null,
+          "status": "satisfied"
+        },
+        {
+          "max": 10.0,
+          "min": null,
+          "status": "partially_satisfied"
+        }
+      ],
+      "direction": "lower_is_better",
+      "metric": "tabla.tempo_error_pct",
+      "otherwise": "not_satisfied",
+      "process": true
+    },
+    "CRIT-TABLA-TIMING": {
+      "bands": [
+        {
+          "max": 50.0,
+          "min": null,
+          "status": "satisfied"
+        },
+        {
+          "max": 100.0,
+          "min": null,
+          "status": "partially_satisfied"
+        }
+      ],
+      "direction": "lower_is_better",
+      "metric": "tabla.timing_median_ms",
+      "otherwise": "not_satisfied",
+      "process": true
+    }
+  },
+  "modality": "tabla_audio",
+  "rubric_id": "rubric.tabla.2",
+  "score_policy": "score_policy_v1",
+  "version": 2
+}

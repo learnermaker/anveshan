@@ -145,3 +145,121 @@ def test_levenshtein_and_match_bols():
     assert dsp.levenshtein(["Dha", "Dhin", "Na"], ["Dha", "Na"]) == 1
     labels, unmatched = dsp.match_bols([0.5, 1.0], [(0.51, "Dha"), (1.3, "Na")])
     assert labels == ["Dha", None] and unmatched == 1
+
+
+# ---------------------------------------------------------------------------
+# v2: mel filterbank, stroke features, timbre classes, assign, align_sequences
+# ---------------------------------------------------------------------------
+
+
+def test_mel_filterbank_shape_and_energy():
+    fb = dsp.mel_filterbank(16000, 1024, 40, 50.0, 7600.0)
+    assert fb.shape == (40, 513)
+    # Each filter sums to ≤ 1 (triangular)
+    row_sums = fb.sum(axis=1)
+    assert np.all(row_sums >= 0.0)
+    # Not all zero
+    assert fb.max() > 0.1
+
+
+def test_stroke_features_shape_and_ringing_vs_muted():
+    """Ringing 300 Hz sine vs short noise burst: decay ratio and centroid must differ clearly."""
+    sr = 16000
+    n = int(0.12 * sr)
+    t = np.arange(n) / sr
+    env_slow = np.exp(-t / 0.1).astype(np.float32)   # slow decay ~ 100 ms
+    env_fast = np.exp(-t / 0.005).astype(np.float32) # fast decay ~ 5 ms
+    rng = np.random.default_rng(42)
+    # ringing: low-frequency decaying sine
+    ringing = (np.sin(2 * np.pi * 300 * t).astype(np.float32) * env_slow * 0.5)
+    # muted: broadband noise burst, fast decay
+    muted = (rng.standard_normal(n).astype(np.float32) * env_fast * 0.5)
+    x = np.concatenate([np.zeros(100), ringing, np.zeros(200), muted, np.zeros(200)]).astype(np.float32)
+    onset_times = [100 / sr, (100 + n + 200) / sr]
+    feats = dsp.stroke_features(x, sr, onset_times)
+    assert feats.shape == (2, 16)
+    # Ringing: high decay ratio (40-80ms still audible / 0-40ms)
+    # Muted: low decay ratio (decays within 5 ms)
+    decay_ring = feats[0, 15]
+    decay_mute = feats[1, 15]
+    assert decay_ring > decay_mute * 3, f"Ringing decay {decay_ring:.3f} should be >> muted {decay_mute:.3f}"
+    # Ringing stroke has lower spectral centroid (300 Hz vs broadband)
+    centroid_ring = feats[0, 13]
+    centroid_mute = feats[1, 13]
+    assert centroid_ring < centroid_mute, f"Ringing centroid {centroid_ring:.3f} should be < muted {centroid_mute:.3f}"
+
+
+def test_stroke_features_empty_input():
+    feats = dsp.stroke_features(np.zeros(100, np.float32), 16000, [])
+    assert feats.shape == (0, 16)
+
+
+def test_fit_timbre_classes_determinism_and_k_range():
+    """Same input → same labels; k chosen in 3..6 by best silhouette."""
+    x, _, _ = synth_tabla()
+    times = [o["t"] for o in dsp.analyze_goal_audio(x, SR)["onsets"]]
+    feats = dsp.stroke_features(x, SR, times)
+    m1 = dsp.fit_timbre_classes(feats)
+    m2 = dsp.fit_timbre_classes(feats)
+    # Deterministic
+    np.testing.assert_array_equal(m1.centroids, m2.centroids)
+    assert m1.k == m2.k and m1.silhouette == m2.silhouette
+    assert 2 <= m1.k <= 6
+    assert 0.0 <= m1.silhouette <= 1.0
+    assert m1.radius_p95 > 0
+
+
+def test_fit_timbre_classes_k2_fallback_on_weak_data():
+    """Weakly separated data (uniform noise) → k=2 fallback with warning."""
+    rng = np.random.default_rng(0)
+    feats = rng.random((20, 16)).astype(np.float32)
+    m = dsp.fit_timbre_classes(feats, k_range=(3, 6))
+    assert m.k == 2
+    assert m.warning == "timbre classes weakly separated"
+
+
+def test_assign_outlier_gets_minus_one():
+    """A point far outside the cluster radius gets label -1."""
+    rng = np.random.default_rng(1)
+    # tight cluster at origin
+    feats = rng.standard_normal((20, 16)).astype(np.float32) * 0.1
+    m = dsp.fit_timbre_classes(feats, k_range=(2, 3))
+    # outlier far away
+    outlier = np.ones((1, 16), dtype=np.float32) * 100.0
+    labels, dists = dsp.assign(m, outlier)
+    assert labels[0] == -1
+
+
+def test_assign_perfect_copy_has_high_accuracy():
+    """Expert strokes re-assigned get high match rate."""
+    x, _, _ = synth_tabla()
+    times = [o["t"] for o in dsp.analyze_goal_audio(x, SR)["onsets"]]
+    feats = dsp.stroke_features(x, SR, times)
+    m = dsp.fit_timbre_classes(feats)
+    labels, _ = dsp.assign(m, feats)
+    # Most points should not be -1 (the expert is within its own cluster)
+    valid = np.sum(labels >= 0)
+    assert valid >= len(times) * 0.9
+
+
+def test_align_sequences_equal_length():
+    a = ["Dha", "Dhin", "Na", "Ge"]
+    b = ["Dha", "Dhin", "Na", "Ge"]
+    pairs = dsp.align_sequences(a, b)
+    assert pairs == [(0, 0), (1, 1), (2, 2), (3, 3)]
+
+
+def test_align_sequences_different_length():
+    a = ["s0", "s1", "s2", "s3"]  # 4 onsets
+    b = ["Dha", "Na", "Ge"]        # 3 bols returned
+    pairs = dsp.align_sequences(a, b)
+    assert len(pairs) == 3  # one onset unaligned
+
+
+def test_timbre_model_to_from_dict():
+    rng = np.random.default_rng(7)
+    feats = rng.standard_normal((20, 16)).astype(np.float32)
+    m = dsp.fit_timbre_classes(feats)
+    d = m.to_dict()
+    m2 = dsp.TimbreModel.from_dict(d)
+    np.testing.assert_allclose(m.centroids, m2.centroids, atol=1e-4)
