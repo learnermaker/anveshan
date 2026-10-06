@@ -121,3 +121,24 @@ Launched workflow with Phase 0 parallel (K1 verify + K4 finish), followed by Pha
 **Log entry by:** Kiro orchestrator
 ```
 
+
+---
+
+## 2026-10-06 — Phase B (WP5 Integration) completion
+
+**Done:**
+- Step 2: Add universal to ACCEPTED_KINDS in track_b/api.py. 34 universal tests pass.
+- Step 3: Live checks — kolam same/half-erased/refused, rangoli, tabla_chanderi. Fix build_case modality_for bug. Calibrate quality gate (blur 15->0.002, brightness 0.08->0.02).
+- Step 4: Add tools/e2e_smoke.py, service/tests/test_e2e_real.py (10 tests). All pass.
+- Step 5: Write universal-pipeline.md section 11 calibration log.
+- Step 6: Update docs/validation/experiments.md (E1-E5) and findings.md (honest scope).
+- Step 7: Update README.md with current status, how-to-run, implementation table.
+- Step 8: Create docs/deploy/DEPLOY-CHECKLIST.md. Add ANVESHAN_STATIC_DIR to .env.example.
+- Step 9: Write docs/plans/PR-BODY.md. PR contract passes.
+
+**Test counts:** 423 non-live tests pass (193 common+track-a, 230 track-b+service).
+**All 3 governance checks pass. App build green.**
+
+**Pushed:** m1/hero-cases to origin (HEAD: e6bbd13).
+
+**Next:** Jim to create GitHub issue #99 (or actual issue), open PR m1/hero-cases -> main using docs/plans/PR-BODY.md, and deploy via GCP console using docs/deploy/DEPLOY-CHECKLIST.md.
