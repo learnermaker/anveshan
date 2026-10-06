@@ -32,12 +32,14 @@
     "onset_params": {
       "delta": 0.08,
       "feature_window_sec": 0.08,
+      "flux_floor": 0.05,
       "hop": 256,
       "low_band_hz": 250.0,
       "median_window_sec": 0.5,
       "min_gap_sec": 0.09,
       "n_fft": 1024
     },
+    "run_keys": [],
     "sample_rate": 16000
   },
   "case_id": "tabla",
@@ -539,6 +541,7 @@
     "onset_params": {
       "delta": 0.08,
       "feature_window_sec": 0.08,
+      "flux_floor": 0.05,
       "hop": 256,
       "low_band_hz": 250.0,
       "median_window_sec": 0.5,

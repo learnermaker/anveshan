@@ -59,17 +59,12 @@ def status(value: float, direction: str, sat: float, partial: float) -> str:
 
 def load_goal() -> GoalModel:
     kdir = CASE_DIR / "knowledge"
-    if latest_version(kdir, "goal_model") is not None:
-        return load_versioned(kdir, "goal_model", GoalModel)
-    from tracks.common.models import ModelRegistry
-    from tracks.common.runtime import RunContext
-    from track_a.goals.tabla import build
-
-    src = load_sources(CASE_DIR).primary()
-    ctx = RunContext.create(CASE_DIR, ROOT / "var", "recorded", registry=ModelRegistry({"audio": ""}))
-    r = build(resolve_media(CASE_DIR, src), src, ctx, case_id="tabla", version=1)
-    return GoalModel(case_id="tabla", version=1, modality="tabla_audio", source_ids=[src.source_id],
-                     package_id="kp.tabla.1", built_with=r.built_with, payload=r.goal_payload, warnings=r.warnings)
+    v = latest_version(kdir, "goal_model")
+    assert v is not None, (
+        "No committed goal_model.vN.json found in tracks/cases/tabla/knowledge/. "
+        "Run build_case first (Task 5 / tools/build_tabla.py)."
+    )
+    return load_versioned(kdir, "goal_model", GoalModel)
 
 
 def segments(x: np.ndarray, times: List[float]) -> List[np.ndarray]:
