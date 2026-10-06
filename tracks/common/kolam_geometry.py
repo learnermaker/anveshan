@@ -997,7 +997,7 @@ def register_similarity(src_pts: np.ndarray, src_dots: Sequence[Dot], dst_pts: n
     dst_mask[di[ok, 1], di[ok, 0]] = True
     dst_tol = dilate(dst_mask, tol)
     rng = np.random.default_rng(0)
-    sp = src_pts if len(src_pts) <= 800 else src_pts[np.sort(rng.choice(len(src_pts), 800, replace=False))]
+    sp = src_pts if len(src_pts) <= 400 else src_pts[np.sort(rng.choice(len(src_pts), 400, replace=False))]
     dp = dst_pts if len(dst_pts) <= 400 else dst_pts[np.sort(rng.choice(len(dst_pts), 400, replace=False))]
 
     def score(theta: float, scale: float, dx: float = 0.0, dy: float = 0.0) -> float:
@@ -1011,7 +1011,7 @@ def register_similarity(src_pts: np.ndarray, src_dots: Sequence[Dot], dst_pts: n
         rec = min_dists(dp, q) <= tol
         return 0.5 * (float(prec.mean()) + float(rec.mean()))
 
-    best = max((score(float(t), s), -float(t)) for t in np.arange(0.0, 360.0, 2.0))
+    best = max((score(float(t), s), -float(t)) for t in np.arange(0.0, 360.0, 4.0))
     best_s, best_t, best_k, bx, by = best[0], -best[1], 1.0, 0.0, 0.0
     # local refinement: rotation, scale (+-15 %), translation (+-6 px), coordinate ascent
     for _ in range(3):
