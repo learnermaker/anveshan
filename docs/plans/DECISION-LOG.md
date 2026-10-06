@@ -45,7 +45,23 @@
 
 ---
 
-## Phase 0 — (in progress)
+## Phase 0 — COMPLETE (2026-10-06)
+
+### Phase 0 Merge Results
+
+| Step | Result | Details |
+|---|---|---|
+| `git merge --no-ff kiro/k1-kolam` | SUCCESS | Auto-merged `docs/plans/evaluation-core.md`; 22 files changed, 13 219 insertions |
+| Verify after K1 | PASS | 321 passed, 2 deselected; governance PASS; case packs PASS (7); contract parity PASS (8 contracts, 17 interfaces, 7 enums); frontend build ✔ in 23.6 s |
+| `git merge --no-ff kiro/k4-origami` | SUCCESS | Large merge (many new case files, tools, prompts); clean auto-merge |
+| Verify after K4 | PASS | 327 passed, 2 deselected (6 new tests from K4); all static checks PASS; frontend build ✔ in 22.3 s |
+| WP worktree update | AUTO | All 4 WP branches (wp1-perception, wp2-universal, wp3-composer-ui, wp4-tabla) already at HEAD 3283214 — shared object store fast-forwarded automatically |
+| `git push origin m1/hero-cases` | SUCCESS | 7f8fb56..3283214 pushed |
+
+**Post-merge HEAD:** `3283214` — "Merge branch 'kiro/k4-origami' into m1/hero-cases"  
+**Test count delta:** 291 → 327 (+36 tests from K1 + K4 work)  
+**Contracts:** All 8 frozen contracts unchanged — PASS  
+**Hero cases:** byte-identical — PASS
 
 Launched workflow with Phase 0 parallel (K1 verify + K4 finish), followed by Phase 0 merge, then Phase A parallel (WP1-WP4), Phase A merge, and Phase B integration.
 
