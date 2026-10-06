@@ -117,7 +117,7 @@ def test_to_view_uses_modality_ui_view(cases_root, fake_builder, make_ctx, monke
     mod = types.SimpleNamespace(ui_view=lambda payload: {"n_dots": len(payload["dots"])})
     monkeypatch.setattr(api.importlib, "import_module", lambda name, *a, **k: mod)
     h = api.build_case(cases_root / "kolam", make_ctx(cases_root / "kolam"))
-    assert h.to_view()["goal"]["ui_view"] == {"n_dots": 1}
+    assert h.to_view()["goal"]["ui_view"] == {"n_dots": len(h.goal.payload["dots"])}
 
 
 # ---------------------------------------------------------------------------

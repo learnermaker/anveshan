@@ -102,11 +102,25 @@ def binding(metric: str) -> ObserverBinding:
     )
 
 
+_KOLAM_PAYLOAD_CACHE: dict = {}
+
+
+def real_kolam_payload() -> dict:
+    """A schema-valid KolamGoal payload computed from the committed public-domain target (cached)."""
+    if "p" not in _KOLAM_PAYLOAD_CACHE:
+        from tracks.common.goals.kolam import payload_from_image
+
+        root = Path(__file__).resolve().parents[3]
+        payload, _ = payload_from_image(root / "tracks" / "cases" / "kolam" / "source" / "ithayakkamalam_target.jpg")
+        _KOLAM_PAYLOAD_CACHE["p"] = payload.model_dump(mode="json") if hasattr(payload, "model_dump") else payload
+    return dict(_KOLAM_PAYLOAD_CACHE["p"])
+
+
 def kolam_result(claims: Optional[List[KnowledgeClaim]] = None, **overrides) -> GoalBuildResult:
     r = GoalBuildResult(
         title="Ithayakkamalam kolam",
         summary="A 13-dot sikku kolam made of two continuous curves.",
-        goal_payload={"dots": [[10, 10]], "curves": [[[0, 0], [1, 1]]]},
+        goal_payload=real_kolam_payload(),
         claims=claims if claims is not None else kolam_claims(),
         criteria=[
             CriterionTemplate(
