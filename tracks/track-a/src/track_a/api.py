@@ -509,7 +509,7 @@ def build_case(case_dir: Path, ctx: RunContext, source_id: Optional[str] = None)
     case_dir = Path(case_dir)
     manifest = _read_manifest(case_dir)
     case_id = manifest.get("case_id", case_dir.name)
-    modality = config.modality_for(case_id)
+    modality = config.modality_for(case_id, case_dir)
     if modality is None:
         raise AnveshanFailure(FailureCategory.INVALID_INPUT, f"{case_id} is a SYNTHETIC showcase case; it has no goal builder")
     try:

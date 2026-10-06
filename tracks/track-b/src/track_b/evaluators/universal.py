@@ -77,15 +77,15 @@ def _quality_gate(attempt: AttemptMedia, record: Any) -> None:
         if val is None:
             continue
         if attempt.kind == "image":
-            if "blur" in lbl and val < 15:
+            if "blur" in lbl and val < 0.002:
                 raise AnveshanFailure(
                     FailureCategory.INVALID_INPUT,
-                    f"Image is too blurry (blur score {val:.1f} < 15); please re-record.",
+                    f"Image is too blurry (blur score {val:.4f} < 0.002); please re-record.",
                 )
-            if "brightness" in lbl and val < 0.08:
+            if "brightness" in lbl and val < 0.02:
                 raise AnveshanFailure(
                     FailureCategory.INVALID_INPUT,
-                    f"Image is too dark (brightness {val:.2f} < 0.08); please re-record.",
+                    f"Image is too dark (brightness {val:.3f} < 0.02); please re-record.",
                 )
         elif attempt.kind == "audio":
             if "rms" in lbl and val < 0.005:
