@@ -44,7 +44,8 @@ export const origamiUiView: OrigamiUiView = {
     keyframe_sec: Math.round((st.s + st.e) / 2),
     keyframe_asset: `keyframe_${i}.jpg`,
   })),
-  window_sec: [0, 240],
+  window: [0, 240],      // real service field name
+  window_sec: [0, 240],  // legacy mock alias
   source_id: ORIGAMI_SOURCE,
 };
 
@@ -168,7 +169,7 @@ export function evaluateOrigami(view: CaseView, sessionId: string, learner: stri
   for (let t = 0; t <= end; t++) {
     let s: OrigamiFrameLabel['state'] = 0;
     for (const [pt, ps] of plan) if (t >= pt) s = ps;
-    labels.push({ t, state: s });
+    labels.push({ t, raw: s, filtered: s, state: s, note: '' });
   }
   const k = STATES.length - 1;
   let best = 0;

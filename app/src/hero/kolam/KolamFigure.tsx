@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import type { KolamUiView } from '../../api/types';
+import type { KolamCurveObj, KolamUiView } from '../../api/types';
 
 export interface KolamFigureProps {
   ui: KolamUiView;
@@ -44,7 +44,8 @@ export function KolamFigure({
   const { width: W, height: H } = ui.canvas;
   const sym = ui.symmetry;
   const center = sym?.center ?? [W / 2, H / 2];
-  const order = sym?.rotational_order ?? 0;
+  // Real service: rotation_order at top level; legacy mock: symmetry.rotational_order
+  const order = ui.rotation_order ?? sym?.rotational_order ?? 0;
   const regionColor = regionTone === 'crimson' ? '#f87171' : regionTone === 'cyan' ? '#00e5ff' : '#e67e22';
 
   return (
@@ -67,20 +68,24 @@ export function KolamFigure({
           return <line key={`m${i}`} x1={center[0] - r * Math.cos(a)} y1={center[1] - r * Math.sin(a)} x2={center[0] + r * Math.cos(a)} y2={center[1] + r * Math.sin(a)} stroke="#10b981" strokeWidth={1} opacity={0.7} />;
         })}
         {showCurves &&
-          ui.curves.map((c, k) => (
-            <path
-              key={k}
-              d={pathOf(c)}
-              fill="none"
-              stroke={CURVE_COLORS[k % CURVE_COLORS.length]}
-              strokeWidth={2.5}
-              strokeLinejoin="round"
-              pathLength={1}
-              strokeDasharray={animateCurves ? 1 : undefined}
-              style={animateCurves ? { animation: `kolamDraw 2.4s ease-in-out ${k * 0.9}s both` } : undefined}
-              opacity={0.9}
-            />
-          ))}
+          ui.curves.map((c, k) => {
+            // Support both real-service KolamCurveObj (with .points) and legacy number[][] arrays
+            const pts = (c as KolamCurveObj).points ?? (c as unknown as number[][]);
+            return (
+              <path
+                key={k}
+                d={pathOf(pts)}
+                fill="none"
+                stroke={CURVE_COLORS[k % CURVE_COLORS.length]}
+                strokeWidth={2.5}
+                strokeLinejoin="round"
+                pathLength={1}
+                strokeDasharray={animateCurves ? 1 : undefined}
+                style={animateCurves ? { animation: `kolamDraw 2.4s ease-in-out ${k * 0.9}s both` } : undefined}
+                opacity={0.9}
+              />
+            );
+          })}
         {strokes?.map((s, k) => (
           <path
             key={`s${k}`}

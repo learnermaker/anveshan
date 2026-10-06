@@ -1,0 +1,18 @@
+{
+  "run_timestamp": "2026-10-06T16-36-41Z",
+  "execution_time_iso": "2026-10-06T16:40:00.000Z",
+  "url": "http://localhost:4173 (mock mode preview)",
+  "mode": "mock (VITE_API_BASE=mock, no service)",
+  "console_errors_count": 0,
+  "uncaught_exceptions_count": 0,
+  "failed_requests_count": 0,
+  "audit_passed": true,
+  "note": "K3 manual Playwright capture — 5 hero-case screens. Full audit:devtools requires live service (not available in this agent). Mock build served from vite preview on port 4173.",
+  "screenshots": [
+    {"name": "01_landing_discovery", "timestamped_file": "01_landing_discovery_2026-10-06T16-36-41Z.png", "relative_path": "runs/2026-10-06T16-36-41Z/01_landing_discovery_2026-10-06T16-36-41Z.png"},
+    {"name": "02_source_grounding_kolam", "timestamped_file": "02_source_grounding_kolam_2026-10-06T16-36-41Z.png", "relative_path": "runs/2026-10-06T16-36-41Z/02_source_grounding_kolam_2026-10-06T16-36-41Z.png"},
+    {"name": "03_adaptive_workspace_kolam", "timestamped_file": "03_adaptive_workspace_kolam_2026-10-06T16-36-41Z.png", "relative_path": "runs/2026-10-06T16-36-41Z/03_adaptive_workspace_kolam_2026-10-06T16-36-41Z.png"},
+    {"name": "10_rhythm_workspace_tabla", "timestamped_file": "10_rhythm_workspace_tabla_2026-10-06T16-36-41Z.png", "relative_path": "runs/2026-10-06T16-36-41Z/10_rhythm_workspace_tabla_2026-10-06T16-36-41Z.png"},
+    {"name": "12_spatial_sequence_origami", "timestamped_file": "12_spatial_sequence_origami_2026-10-06T16-36-41Z.png", "relative_path": "runs/2026-10-06T16-36-41Z/12_spatial_sequence_origami_2026-10-06T16-36-41Z.png"}
+  ]
+}
