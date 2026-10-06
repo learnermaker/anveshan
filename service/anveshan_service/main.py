@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse, Response
 
 from anveshan_service.errors import ServiceError, error_response, install_error_handlers
 from anveshan_service.paths import within
-from anveshan_service.routes import cases, health, media, sessions
+from anveshan_service.routes import cases, compose, health, media, sessions
 from anveshan_service.settings import Settings
 
 MAX_UPLOAD_FILES = 3  # attempts: file + raster + video
@@ -65,7 +65,7 @@ def create_app(settings: Optional[Settings] = None) -> FastAPI:
             CORSMiddleware, allow_origins=settings.cors_origins, allow_methods=["GET", "POST"], allow_headers=["*"]
         )
     app.add_middleware(BodyLimitMiddleware, limit_bytes=settings.max_upload_bytes * MAX_UPLOAD_FILES + (1 << 20))
-    for module in (health, cases, sessions, media):
+    for module in (health, cases, sessions, media, compose):
         app.include_router(module.router)
     if settings.static_dir is not None and (settings.static_dir / "index.html").is_file():
         _mount_static(app, settings.static_dir)
