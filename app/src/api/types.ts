@@ -1,0 +1,348 @@
+/**
+ * Anveshan service API view types (docs/plans/service-api.md §3–§5).
+ *
+ * These are VIEW / transport types for the HTTP API. The eight shared contracts are
+ * imported from ../types/contracts (downstream mirror of tracks/common/schemas/) and are
+ * never re-declared here. Case-pack sidecars (GoalModel, CriterionMap, SourceRecord) mirror
+ * tracks/common/casedata.py and are case data, not contracts.
+ */
+
+import type {
+  EvidenceRef,
+  Evaluation,
+  Feedback,
+  KnowledgePackage,
+  LearnerAttempt,
+  PracticeTask,
+  ReviewStatus,
+  RubricDefinition,
+  TransmissionRecord,
+  CriterionStatus,
+} from '../types/contracts';
+
+// ---------------------------------------------------------------------------
+// Runtime / health
+// ---------------------------------------------------------------------------
+
+export type ServiceMode = 'live' | 'recorded';
+
+export interface HealthResponse {
+  ok: boolean;
+  mode: ServiceMode | string;
+  models: {
+    text_image: string;
+    video_frames: string;
+    audio_enabled: boolean;
+  };
+}
+
+export type RuntimeClass = 'LIVE' | 'RECORDED_LIVE' | 'DETERMINISTIC';
+
+// ---------------------------------------------------------------------------
+// Case data (sidecars, casedata.py)
+// ---------------------------------------------------------------------------
+
+export type GoalModality = 'kolam_image' | 'origami_video' | 'tabla_audio';
+export type RuntimeLabel = 'INTERNET_REFERENCE' | 'OWNED_CONSENTED' | 'SYNTHETIC' | 'UPLOAD';
+
+export interface CaseSummary {
+  case_id: string;
+  title: string;
+  modality: GoalModality | string;
+  hero: boolean;
+  runtime_label: RuntimeLabel | string;
+  review_status: ReviewStatus | string;
+  derived_from?: string | null;
+}
+
+export interface SourceRecord {
+  source_id: string;
+  role: string;
+  mime_type: string;
+  sha256: string;
+  bytes: number;
+  path?: string | null;
+  url?: string | null;
+  duration_sec?: number | null;
+  dimensions?: number[] | null;
+  window_sec?: number[] | null;
+  creator: string;
+  license: string;
+  attribution: string;
+  access_level?: string;
+  runtime_label: RuntimeLabel | string;
+  used_by_system?: boolean;
+  notes?: string | null;
+}
+
+export interface CriterionMapEntry {
+  order_index: number;
+  source_claim_ids: string[];
+  reference_evidence_ids: string[];
+  why_it_matters: string;
+  drill_hint: string;
+}
+
+export interface CriterionMap {
+  rubric_id: string;
+  package_id: string;
+  criteria: Record<string, CriterionMapEntry>;
+}
+
+// --- goal ui_view per modality (small JSON produced by tracks/common/goals/<m>.py ui_view) ---
+
+export interface KolamDot {
+  x: number;
+  y: number;
+  r?: number;
+  relation?: 'on_line' | 'enclosed' | string;
+}
+
+export interface KolamUiView {
+  canvas: { width: number; height: number };
+  dots: KolamDot[];
+  /** continuous curves, each an ordered polyline of [x, y] in goal-image pixels (INFERRED) */
+  curves: number[][][];
+  stroke_width?: number;
+  tau?: number;
+  symmetry?: { rotational_order?: number | null; mirror_axes?: number[]; center?: number[] };
+  target_source_id?: string;
+}
+
+export interface OrigamiState {
+  index: number;
+  name: string;
+  properties?: string[];
+  start_sec: number;
+  end_sec: number;
+  keyframe_sec?: number;
+  /** asset name under GET /api/media/{case_id}/goal/{asset} */
+  keyframe_asset?: string;
+}
+
+export interface OrigamiUiView {
+  states: OrigamiState[];
+  window_sec?: number[];
+  source_id?: string;
+}
+
+export interface TablaBeat {
+  index: number;
+  time_sec: number;
+  bass: boolean;
+  strength?: number;
+}
+
+export interface TablaUiView {
+  beats: TablaBeat[];
+  period_sec?: number;
+  tempo_bpm?: number;
+  cycle_length?: number;
+  duration_sec?: number;
+  source_id?: string;
+}
+
+export type GoalUiView = KolamUiView | OrigamiUiView | TablaUiView;
+
+export interface GoalView {
+  case_id: string;
+  version: number;
+  modality: GoalModality;
+  source_ids: string[];
+  package_id: string;
+  built_with?: Record<string, unknown>;
+  warnings?: string[];
+  ui_view: GoalUiView;
+}
+
+/** GET /api/cases/{case_id} → CaseHandoff.to_view() */
+export interface CaseView {
+  case_id: string;
+  title: string;
+  modality: GoalModality;
+  hero: boolean;
+  runtime_label: RuntimeLabel | string;
+  review_status: ReviewStatus | string;
+  derived_from?: string | null;
+  warnings: string[];
+  sources: SourceRecord[];
+  goal: GoalView;
+  package: KnowledgePackage;
+  rubric: RubricDefinition;
+  task: PracticeTask;
+  criterion_map?: CriterionMap | null;
+}
+
+// ---------------------------------------------------------------------------
+// Query / review
+// ---------------------------------------------------------------------------
+
+export interface QueryAnswer {
+  answer: string;
+  cited_claim_ids: string[];
+  evidence: EvidenceRef[];
+  sufficient: boolean;
+  run?: Record<string, unknown>;
+}
+
+export type ReviewActionKind = 'approve' | 'revise_claim' | 'reject_claim' | 'reject_package';
+
+export interface ReviewAction {
+  action: ReviewActionKind;
+  reviewer: string;
+  note: string;
+  claim_id?: string;
+  new_statement?: string;
+}
+
+// ---------------------------------------------------------------------------
+// Sessions / attempts (Track B)
+// ---------------------------------------------------------------------------
+
+export type AttemptKind = 'trace' | 'image' | 'audio' | 'video';
+export type PositionKind = 'time' | 'stroke' | 'beat' | 'frame';
+
+export interface DivergenceEvent {
+  metric: string;
+  kind: string;
+  position: number;
+  position_kind: PositionKind;
+  evidence: EvidenceRef;
+  detail: string;
+  severity: 'material' | 'minor';
+}
+
+export interface TablaAlignmentRow {
+  goal_index: number | null;
+  goal_time_sec: number | null;
+  learner_time_sec: number | null;
+  deviation_ms?: number | null;
+  status: 'ok' | 'late' | 'early' | 'missing' | 'extra' | string;
+  bass_expected?: boolean | null;
+  bass_played?: boolean | null;
+}
+
+export interface OrigamiFrameLabel {
+  t: number;
+  state: number | 'transition' | 'off_path' | 'unclear' | string;
+  note?: string;
+}
+
+/** Derived per-modality data for the UI. All keys optional; the UI degrades gracefully. */
+export interface TrajectoryArtifacts {
+  /** tabla: DTW alignment rows */
+  alignment?: TablaAlignmentRow[];
+  /** origami: filtered per-frame state labels */
+  frame_labels?: OrigamiFrameLabel[];
+  /** kolam: stroke indices flagged off-path */
+  off_path_strokes?: number[];
+  /** kolam image upload: registration result */
+  registration?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
+export interface Trajectory {
+  curve: number[][]; // [[position, progress 0..1]]
+  curve_kind: PositionKind | string;
+  events: DivergenceEvent[];
+  process_observable: boolean;
+  artifacts: TrajectoryArtifacts;
+  final_state: Record<string, unknown>;
+}
+
+export interface MetricView {
+  value: number | null;
+  finding: string;
+  uncertain_reason?: string | null;
+}
+
+export interface FirstDivergence {
+  criterion_id: string;
+  criterion_name: string;
+  status: CriterionStatus;
+  position: number | null;
+  position_kind: PositionKind | string;
+  learner_evidence: EvidenceRef | null;
+  expert_evidence: EvidenceRef | null;
+  observed_finding: string;
+  why_it_matters: string;
+  source_claim_ids: string[];
+  drill_hint: string;
+}
+
+/** Unscored drill. Never carries a score. */
+export interface DrillView {
+  criterion_id?: string;
+  title?: string;
+  instructions?: string;
+  drill_hint?: string;
+  source_claim_ids?: string[];
+  reference_evidence?: EvidenceRef | null;
+  [key: string]: unknown;
+}
+
+export interface AttemptResult {
+  attempt: LearnerAttempt;
+  evaluation: Evaluation;
+  trajectory: Trajectory;
+  metrics: Record<string, MetricView>;
+  first_divergence: FirstDivergence | null;
+  feedback: Feedback | null;
+  drill: DrillView | null;
+  runtime_class: RuntimeClass;
+  warnings: string[];
+  run_keys: string[];
+}
+
+export interface SessionCreated {
+  session_id: string;
+  state: string;
+}
+
+export interface SessionView {
+  session_id: string;
+  case_id?: string;
+  learner_name?: string;
+  state: string;
+  attempts: AttemptResult[];
+}
+
+export interface TargetedChange {
+  criterion_id?: string | null;
+  baseline_status?: CriterionStatus | null;
+  retry_status?: CriterionStatus | null;
+  changed?: boolean;
+  kind?: string;
+  [key: string]: unknown;
+}
+
+export interface SessionResult {
+  /** the 9 canonical bundle keys (case_id, knowledge_package, rubric, practice_task, attempts, evaluations, feedback, transmission_record ...) */
+  bundle: Record<string, unknown>;
+  transmission_record: TransmissionRecord;
+  comparison: {
+    transitions: Record<string, string>;
+    targeted_change: TargetedChange;
+    skill_gain_excluding_observability: number;
+    curves: { baseline: number[][]; retry: number[][] };
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Errors
+// ---------------------------------------------------------------------------
+
+export type ErrorCategory =
+  | 'INVALID_INPUT'
+  | 'MISSING_EVIDENCE'
+  | 'REPLAY_MISMATCH'
+  | 'HUMAN_REVIEW_REQUIRED'
+  | 'MODEL_FAILURE'
+  | 'MODEL_TIMEOUT'
+  | 'CONTRACT_VIOLATION'
+  | 'NETWORK'
+  | 'UNKNOWN';
+
+export interface ApiErrorBody {
+  error: { category: ErrorCategory | string; message: string; details?: unknown };
+}
