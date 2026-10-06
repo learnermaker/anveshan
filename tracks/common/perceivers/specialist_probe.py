@@ -164,7 +164,7 @@ def available_specialists(
                             if found_pair:
                                 break
                         if found_pair:
-                            results["procedure_states"] = (True, "≥2 visually distinct still segments found")
+                            results["procedure_states"] = (True, ">=2 visually distinct still segments found")
                         else:
                             results["procedure_states"] = (False, f"still segments too similar (cosine dist < {_PROC_EMBED_DIST})")
                     else:

@@ -88,10 +88,16 @@ def _fallback_skill_model(
     )
 
     # Pick first available structure in preferred order
-    structure_order = ["final_state", "procedure", "temporal_pattern", "utterance"]
+    # Skip temporal_pattern: it requires rhythm specialist payload in SkillModel.specialists (K7's job)
+    structure_order = ["final_state", "procedure", "utterance", "temporal_pattern"]
     structures = [s for s in structure_order if s in probe.structures_available]
+    structures = [s for s in structures if s != "temporal_pattern"]
     if not structures:
-        structures = [probe.structures_available[0]] if probe.structures_available else ["final_state"]
+        # Only temporal_pattern was available (e.g. rhythm-only audio), use final_state as fallback
+        structures = ["final_state"]
+        model_warnings = ["temporal_pattern dropped in fallback — needs K7 rhythm specialist; defaulting to final_state"]
+    else:
+        model_warnings = []
 
     # Collect inferred property observations for goal_state
     prop_obs = [
@@ -151,16 +157,10 @@ def _fallback_skill_model(
         chk_idx += 1
 
     if "temporal_pattern" in structures:
-        checks.append(Check(
-            check_id=f"CHK-{chk_idx:02d}",
-            kind="rhythm",
-            name="Rhythm match",
-            observable_indicator="rhythm matches the source",
-            metric_id="u.rhythm",
-            method="specialist",
-            weight=3.0,
-        ))
-        chk_idx += 1
+        # Only add rhythm check if the rhythm specialist data is available
+        # Note: fallback drops temporal_pattern above, so this should never run
+        # Left for clarity
+        pass
 
     if "utterance" in structures:
         checks.append(Check(
@@ -213,9 +213,9 @@ def _fallback_skill_model(
         goal_state=goal_state,
         relevance=Relevance(expected_kinds=expected_kinds),
         checks=checks,
-        warnings=["fallback_skill_model: K7 propose_skill_model not available"],
+        warnings=["fallback_skill_model: K7 propose_skill_model not available"] + model_warnings,
     )
-    return model, {"fallback": True}, ["fallback skill model used (K7 not merged)"]
+    return model, {"fallback": True}, ["fallback skill model used (K7 not merged)"] + model_warnings
 
 
 # ---- Draft -----------------------------------------------------------------------
