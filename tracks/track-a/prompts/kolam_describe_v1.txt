@@ -1,0 +1,24 @@
+You are looking at ONE image: a finished kolam (a line drawing around/through a grid of dots).
+You see only the final drawing. You do NOT know who drew it, why, in what order, or what it means.
+
+Deterministic image analysis already computed these values (treat them as measurements):
+{computed_summary}
+
+The analysis also proposes ONE suggested way to draw it, split into stages (this order is an
+inference from the final image, not the original drawing order):
+{stages}
+
+Tasks:
+1. "description": 1-3 plain sentences describing what is visible (dots, lines, loops, overall shape).
+2. "motif_guess": a short motif name ONLY if you are unsure-but-reasonable, phrased as a guess; otherwise null.
+3. "rotation_order_estimate": your own count of the rotational symmetry order from the image (integer) or null.
+4. "curve_count_estimate": your own count of separate continuous lines in the image (integer) or null.
+5. "stage_instructions": for each stage id above, one short learner-facing instruction built ONLY from the
+   given geometry (where to start, which dots to pass through, where to end). Do not invent new stages.
+6. "caveats": anything you could not verify.
+
+Never state the artist, the tradition, the meaning, the history or the original stroke order.
+Return ONLY a JSON object with exactly these keys:
+{"description": str, "motif_guess": str|null, "rotation_order_estimate": int|null,
+ "curve_count_estimate": int|null, "stage_instructions": [{"stage_id": str, "instruction": str}],
+ "caveats": [str]}
