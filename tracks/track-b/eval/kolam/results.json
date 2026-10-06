@@ -1,0 +1,435 @@
+{
+  "goal": {
+    "curves": 1,
+    "dots": 41,
+    "tau": 6.0
+  },
+  "rows": [
+    {
+      "events_ok": true,
+      "expected": {
+        "CRIT-KOLAM-CONTINUITY": "not_satisfied",
+        "CRIT-KOLAM-COVERAGE": "satisfied",
+        "CRIT-KOLAM-CURVES": "satisfied",
+        "CRIT-KOLAM-DOTS": "satisfied",
+        "CRIT-KOLAM-PRECISION": "satisfied"
+      },
+      "first_divergence": null,
+      "first_divergence_ok": true,
+      "kind": "trace",
+      "metrics": {
+        "kolam.coverage": 1.0,
+        "kolam.curves_completed_ratio": 1.0,
+        "kolam.dot_relation_match": 1.0,
+        "kolam.pen_lifts_excess": 7.0,
+        "kolam.precision": 1.0,
+        "kolam.stages_completed_ratio": 1.0
+      },
+      "process_observable": true,
+      "registration": null,
+      "status_agreement": {
+        "CRIT-KOLAM-CONTINUITY": true,
+        "CRIT-KOLAM-COVERAGE": true,
+        "CRIT-KOLAM-CURVES": true,
+        "CRIT-KOLAM-DOTS": true,
+        "CRIT-KOLAM-PRECISION": true
+      },
+      "statuses": {
+        "CRIT-KOLAM-CONTINUITY": "not_satisfied",
+        "CRIT-KOLAM-COVERAGE": "satisfied",
+        "CRIT-KOLAM-CURVES": "satisfied",
+        "CRIT-KOLAM-DOTS": "satisfied",
+        "CRIT-KOLAM-PRECISION": "satisfied"
+      },
+      "variant": "extra_pen_lifts"
+    },
+    {
+      "events_ok": true,
+      "expected": {
+        "CRIT-KOLAM-CONTINUITY": "satisfied",
+        "CRIT-KOLAM-COVERAGE": "satisfied",
+        "CRIT-KOLAM-CURVES": "satisfied",
+        "CRIT-KOLAM-DOTS": "satisfied",
+        "CRIT-KOLAM-PRECISION": "satisfied"
+      },
+      "first_divergence": null,
+      "first_divergence_ok": true,
+      "kind": "trace",
+      "metrics": {
+        "kolam.coverage": 1.0,
+        "kolam.curves_completed_ratio": 1.0,
+        "kolam.dot_relation_match": 1.0,
+        "kolam.pen_lifts_excess": 0.0,
+        "kolam.precision": 1.0,
+        "kolam.stages_completed_ratio": 1.0
+      },
+      "process_observable": true,
+      "registration": null,
+      "status_agreement": {
+        "CRIT-KOLAM-CONTINUITY": true,
+        "CRIT-KOLAM-COVERAGE": true,
+        "CRIT-KOLAM-CURVES": true,
+        "CRIT-KOLAM-DOTS": true,
+        "CRIT-KOLAM-PRECISION": true
+      },
+      "statuses": {
+        "CRIT-KOLAM-CONTINUITY": "satisfied",
+        "CRIT-KOLAM-COVERAGE": "satisfied",
+        "CRIT-KOLAM-CURVES": "satisfied",
+        "CRIT-KOLAM-DOTS": "satisfied",
+        "CRIT-KOLAM-PRECISION": "satisfied"
+      },
+      "variant": "jittered"
+    },
+    {
+      "events_ok": true,
+      "expected": {
+        "CRIT-KOLAM-CONTINUITY": "satisfied",
+        "CRIT-KOLAM-COVERAGE": "partially_satisfied",
+        "CRIT-KOLAM-CURVES": "not_satisfied",
+        "CRIT-KOLAM-DOTS": "satisfied",
+        "CRIT-KOLAM-PRECISION": "satisfied"
+      },
+      "first_divergence": {
+        "kind": "incomplete_stage",
+        "locator": "src.attempt.kolam.synthetic.missing_stage.trace",
+        "position": 18.61
+      },
+      "first_divergence_ok": true,
+      "kind": "trace",
+      "metrics": {
+        "kolam.coverage": 0.8987,
+        "kolam.curves_completed_ratio": 0.0,
+        "kolam.dot_relation_match": 1.0,
+        "kolam.pen_lifts_excess": 1.0,
+        "kolam.precision": 1.0,
+        "kolam.stages_completed_ratio": 0.875
+      },
+      "process_observable": true,
+      "registration": null,
+      "status_agreement": {
+        "CRIT-KOLAM-CONTINUITY": true,
+        "CRIT-KOLAM-COVERAGE": true,
+        "CRIT-KOLAM-CURVES": true,
+        "CRIT-KOLAM-DOTS": true,
+        "CRIT-KOLAM-PRECISION": true
+      },
+      "statuses": {
+        "CRIT-KOLAM-CONTINUITY": "satisfied",
+        "CRIT-KOLAM-COVERAGE": "partially_satisfied",
+        "CRIT-KOLAM-CURVES": "not_satisfied",
+        "CRIT-KOLAM-DOTS": "satisfied",
+        "CRIT-KOLAM-PRECISION": "satisfied"
+      },
+      "variant": "missing_stage"
+    },
+    {
+      "events_ok": true,
+      "expected": {
+        "CRIT-KOLAM-CONTINUITY": "satisfied",
+        "CRIT-KOLAM-COVERAGE": "not_satisfied",
+        "CRIT-KOLAM-CURVES": "not_satisfied",
+        "CRIT-KOLAM-DOTS": "satisfied",
+        "CRIT-KOLAM-PRECISION": "satisfied"
+      },
+      "first_divergence": {
+        "kind": "incomplete_stage",
+        "locator": "src.attempt.kolam.synthetic.partial.trace",
+        "position": 10.292
+      },
+      "first_divergence_ok": true,
+      "kind": "trace",
+      "metrics": {
+        "kolam.coverage": 0.5557,
+        "kolam.curves_completed_ratio": 0.0,
+        "kolam.dot_relation_match": 1.0,
+        "kolam.pen_lifts_excess": 0.0,
+        "kolam.precision": 1.0,
+        "kolam.stages_completed_ratio": 0.5
+      },
+      "process_observable": true,
+      "registration": null,
+      "status_agreement": {
+        "CRIT-KOLAM-CONTINUITY": true,
+        "CRIT-KOLAM-COVERAGE": true,
+        "CRIT-KOLAM-CURVES": true,
+        "CRIT-KOLAM-DOTS": true,
+        "CRIT-KOLAM-PRECISION": true
+      },
+      "statuses": {
+        "CRIT-KOLAM-CONTINUITY": "satisfied",
+        "CRIT-KOLAM-COVERAGE": "not_satisfied",
+        "CRIT-KOLAM-CURVES": "not_satisfied",
+        "CRIT-KOLAM-DOTS": "satisfied",
+        "CRIT-KOLAM-PRECISION": "satisfied"
+      },
+      "variant": "partial"
+    },
+    {
+      "events_ok": true,
+      "expected": {
+        "CRIT-KOLAM-CONTINUITY": "satisfied",
+        "CRIT-KOLAM-COVERAGE": "satisfied",
+        "CRIT-KOLAM-CURVES": "satisfied",
+        "CRIT-KOLAM-DOTS": "satisfied",
+        "CRIT-KOLAM-PRECISION": "satisfied"
+      },
+      "first_divergence": null,
+      "first_divergence_ok": true,
+      "kind": "trace",
+      "metrics": {
+        "kolam.coverage": 1.0,
+        "kolam.curves_completed_ratio": 1.0,
+        "kolam.dot_relation_match": 1.0,
+        "kolam.pen_lifts_excess": 0.0,
+        "kolam.precision": 1.0,
+        "kolam.stages_completed_ratio": 1.0
+      },
+      "process_observable": true,
+      "registration": null,
+      "status_agreement": {
+        "CRIT-KOLAM-CONTINUITY": true,
+        "CRIT-KOLAM-COVERAGE": true,
+        "CRIT-KOLAM-CURVES": true,
+        "CRIT-KOLAM-DOTS": true,
+        "CRIT-KOLAM-PRECISION": true
+      },
+      "statuses": {
+        "CRIT-KOLAM-CONTINUITY": "satisfied",
+        "CRIT-KOLAM-COVERAGE": "satisfied",
+        "CRIT-KOLAM-CURVES": "satisfied",
+        "CRIT-KOLAM-DOTS": "satisfied",
+        "CRIT-KOLAM-PRECISION": "satisfied"
+      },
+      "variant": "perfect"
+    },
+    {
+      "events_ok": true,
+      "expected": {
+        "CRIT-KOLAM-CONTINUITY": "uncertain",
+        "CRIT-KOLAM-COVERAGE": "partially_satisfied",
+        "CRIT-KOLAM-CURVES": "not_satisfied",
+        "CRIT-KOLAM-DOTS": "satisfied",
+        "CRIT-KOLAM-PRECISION": "satisfied"
+      },
+      "first_divergence": null,
+      "first_divergence_ok": true,
+      "kind": "image",
+      "metrics": {
+        "kolam.coverage": 0.8995,
+        "kolam.curves_completed_ratio": 0.0,
+        "kolam.dot_relation_match": 1.0,
+        "kolam.first_divergence": null,
+        "kolam.pen_lifts_excess": null,
+        "kolam.precision": 1.0,
+        "kolam.stages_completed_ratio": 0.875
+      },
+      "process_observable": false,
+      "registration": {
+        "method": "dots",
+        "scale": 0.7694,
+        "score": 0.905,
+        "theta_deg": 22.5,
+        "tx": 99.74,
+        "ty": -105.54
+      },
+      "status_agreement": {
+        "CRIT-KOLAM-CONTINUITY": true,
+        "CRIT-KOLAM-COVERAGE": true,
+        "CRIT-KOLAM-CURVES": true,
+        "CRIT-KOLAM-DOTS": true,
+        "CRIT-KOLAM-PRECISION": true
+      },
+      "statuses": {
+        "CRIT-KOLAM-CONTINUITY": "uncertain",
+        "CRIT-KOLAM-COVERAGE": "partially_satisfied",
+        "CRIT-KOLAM-CURVES": "not_satisfied",
+        "CRIT-KOLAM-DOTS": "satisfied",
+        "CRIT-KOLAM-PRECISION": "satisfied"
+      },
+      "variant": "raster_missing_stage_rotated"
+    },
+    {
+      "events_ok": true,
+      "expected": {
+        "CRIT-KOLAM-CONTINUITY": "uncertain",
+        "CRIT-KOLAM-COVERAGE": "satisfied",
+        "CRIT-KOLAM-CURVES": "satisfied",
+        "CRIT-KOLAM-DOTS": "satisfied",
+        "CRIT-KOLAM-PRECISION": "satisfied"
+      },
+      "first_divergence": null,
+      "first_divergence_ok": true,
+      "kind": "image",
+      "metrics": {
+        "kolam.coverage": 1.0,
+        "kolam.curves_completed_ratio": 1.0,
+        "kolam.dot_relation_match": 1.0,
+        "kolam.first_divergence": null,
+        "kolam.pen_lifts_excess": null,
+        "kolam.precision": 1.0,
+        "kolam.stages_completed_ratio": 1.0
+      },
+      "process_observable": false,
+      "registration": {
+        "method": "dots",
+        "scale": 1.0001,
+        "score": 0.9275,
+        "theta_deg": 315.25,
+        "tx": -108.26,
+        "ty": 244.11
+      },
+      "status_agreement": {
+        "CRIT-KOLAM-CONTINUITY": true,
+        "CRIT-KOLAM-COVERAGE": true,
+        "CRIT-KOLAM-CURVES": true,
+        "CRIT-KOLAM-DOTS": true,
+        "CRIT-KOLAM-PRECISION": true
+      },
+      "statuses": {
+        "CRIT-KOLAM-CONTINUITY": "uncertain",
+        "CRIT-KOLAM-COVERAGE": "satisfied",
+        "CRIT-KOLAM-CURVES": "satisfied",
+        "CRIT-KOLAM-DOTS": "satisfied",
+        "CRIT-KOLAM-PRECISION": "satisfied"
+      },
+      "variant": "raster_perfect"
+    },
+    {
+      "events_ok": true,
+      "expected": {
+        "CRIT-KOLAM-CONTINUITY": "uncertain",
+        "CRIT-KOLAM-COVERAGE": "satisfied",
+        "CRIT-KOLAM-CURVES": "satisfied",
+        "CRIT-KOLAM-DOTS": "satisfied",
+        "CRIT-KOLAM-PRECISION": "satisfied"
+      },
+      "first_divergence": null,
+      "first_divergence_ok": true,
+      "kind": "image",
+      "metrics": {
+        "kolam.coverage": 1.0,
+        "kolam.curves_completed_ratio": 1.0,
+        "kolam.dot_relation_match": 1.0,
+        "kolam.first_divergence": null,
+        "kolam.pen_lifts_excess": null,
+        "kolam.precision": 1.0,
+        "kolam.stages_completed_ratio": 1.0
+      },
+      "process_observable": false,
+      "registration": {
+        "method": "dots",
+        "scale": 0.7694,
+        "score": 0.9325,
+        "theta_deg": 156.0,
+        "tx": 600.87,
+        "ty": 399.01
+      },
+      "status_agreement": {
+        "CRIT-KOLAM-CONTINUITY": true,
+        "CRIT-KOLAM-COVERAGE": true,
+        "CRIT-KOLAM-CURVES": true,
+        "CRIT-KOLAM-DOTS": true,
+        "CRIT-KOLAM-PRECISION": true
+      },
+      "statuses": {
+        "CRIT-KOLAM-CONTINUITY": "uncertain",
+        "CRIT-KOLAM-COVERAGE": "satisfied",
+        "CRIT-KOLAM-CURVES": "satisfied",
+        "CRIT-KOLAM-DOTS": "satisfied",
+        "CRIT-KOLAM-PRECISION": "satisfied"
+      },
+      "variant": "raster_rotated_scaled"
+    },
+    {
+      "events_ok": true,
+      "expected": {
+        "CRIT-KOLAM-CONTINUITY": "partially_satisfied",
+        "CRIT-KOLAM-COVERAGE": "satisfied",
+        "CRIT-KOLAM-CURVES": "satisfied",
+        "CRIT-KOLAM-DOTS": "satisfied",
+        "CRIT-KOLAM-PRECISION": "satisfied"
+      },
+      "first_divergence": {
+        "kind": "off_path_ink",
+        "locator": "src.attempt.kolam.synthetic.stray_stroke.trace#stroke=1",
+        "position": 10.887
+      },
+      "first_divergence_ok": true,
+      "kind": "trace",
+      "metrics": {
+        "kolam.coverage": 1.0,
+        "kolam.curves_completed_ratio": 1.0,
+        "kolam.dot_relation_match": 1.0,
+        "kolam.pen_lifts_excess": 2.0,
+        "kolam.precision": 0.9715,
+        "kolam.stages_completed_ratio": 1.0
+      },
+      "process_observable": true,
+      "registration": null,
+      "status_agreement": {
+        "CRIT-KOLAM-CONTINUITY": true,
+        "CRIT-KOLAM-COVERAGE": true,
+        "CRIT-KOLAM-CURVES": true,
+        "CRIT-KOLAM-DOTS": true,
+        "CRIT-KOLAM-PRECISION": true
+      },
+      "statuses": {
+        "CRIT-KOLAM-CONTINUITY": "partially_satisfied",
+        "CRIT-KOLAM-COVERAGE": "satisfied",
+        "CRIT-KOLAM-CURVES": "satisfied",
+        "CRIT-KOLAM-DOTS": "satisfied",
+        "CRIT-KOLAM-PRECISION": "satisfied"
+      },
+      "variant": "stray_stroke"
+    },
+    {
+      "events_ok": true,
+      "expected": {
+        "CRIT-KOLAM-CONTINUITY": "satisfied",
+        "CRIT-KOLAM-COVERAGE": "satisfied",
+        "CRIT-KOLAM-CURVES": "satisfied",
+        "CRIT-KOLAM-DOTS": "partially_satisfied",
+        "CRIT-KOLAM-PRECISION": "satisfied"
+      },
+      "first_divergence": {
+        "kind": "dot_relation",
+        "locator": "src.attempt.kolam.synthetic.wrong_dot_relation.trace#stroke=0",
+        "position": 3.22
+      },
+      "first_divergence_ok": true,
+      "kind": "trace",
+      "metrics": {
+        "kolam.coverage": 0.9922,
+        "kolam.curves_completed_ratio": 1.0,
+        "kolam.dot_relation_match": 0.9268,
+        "kolam.pen_lifts_excess": 0.0,
+        "kolam.precision": 0.9859,
+        "kolam.stages_completed_ratio": 1.0
+      },
+      "process_observable": true,
+      "registration": null,
+      "status_agreement": {
+        "CRIT-KOLAM-CONTINUITY": true,
+        "CRIT-KOLAM-COVERAGE": true,
+        "CRIT-KOLAM-CURVES": true,
+        "CRIT-KOLAM-DOTS": true,
+        "CRIT-KOLAM-PRECISION": true
+      },
+      "statuses": {
+        "CRIT-KOLAM-CONTINUITY": "satisfied",
+        "CRIT-KOLAM-COVERAGE": "satisfied",
+        "CRIT-KOLAM-CURVES": "satisfied",
+        "CRIT-KOLAM-DOTS": "partially_satisfied",
+        "CRIT-KOLAM-PRECISION": "satisfied"
+      },
+      "variant": "wrong_dot_relation"
+    }
+  ],
+  "summary": {
+    "criterion_status_agreement": "50/50",
+    "expected_events_found": "10/10",
+    "first_divergence_agreement": "10/10",
+    "variants": 10
+  }
+}

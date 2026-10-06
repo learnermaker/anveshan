@@ -1,0 +1,23 @@
+{
+  "attempt_kind": "trace",
+  "expected_events": [
+    {
+      "kind": "off_path_ink",
+      "stroke": 1
+    }
+  ],
+  "expected_first_divergence": {
+    "kind": "off_path_ink",
+    "stroke": 1
+  },
+  "expected_statuses": {
+    "CRIT-KOLAM-CONTINUITY": "partially_satisfied",
+    "CRIT-KOLAM-COVERAGE": "satisfied",
+    "CRIT-KOLAM-CURVES": "satisfied",
+    "CRIT-KOLAM-DOTS": "satisfied",
+    "CRIT-KOLAM-PRECISION": "satisfied"
+  },
+  "label": "SYNTHETIC",
+  "perturbation": "a 150 px straight stray line (stroke 1) below the pattern, between the two halves",
+  "variant": "stray_stroke"
+}

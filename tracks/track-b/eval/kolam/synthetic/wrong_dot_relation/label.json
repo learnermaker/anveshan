@@ -1,0 +1,39 @@
+{
+  "attempt_kind": "trace",
+  "expected_events": [
+    {
+      "dot_id": "D26",
+      "kind": "dot_relation"
+    },
+    {
+      "dot_id": "D41",
+      "kind": "dot_relation"
+    },
+    {
+      "dot_id": "D12",
+      "kind": "dot_relation"
+    }
+  ],
+  "expected_first_divergence": {
+    "kinds": [
+      "dot_relation",
+      "off_path_ink"
+    ],
+    "stroke": 0
+  },
+  "expected_statuses": {
+    "CRIT-KOLAM-CONTINUITY": "satisfied",
+    "CRIT-KOLAM-COVERAGE": "satisfied",
+    "CRIT-KOLAM-CURVES": "satisfied",
+    "CRIT-KOLAM-DOTS": "partially_satisfied",
+    "CRIT-KOLAM-PRECISION": "satisfied"
+  },
+  "label": "SYNTHETIC",
+  "perturbation": "the line detours around on-line dots ['D26', 'D41', 'D12'] (9 px beyond the dot edge) instead of passing through them",
+  "variant": "wrong_dot_relation",
+  "wrong_dots": [
+    "D26",
+    "D41",
+    "D12"
+  ]
+}
