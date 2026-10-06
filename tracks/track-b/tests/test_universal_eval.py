@@ -328,14 +328,14 @@ class TestQualityGate:
         goal = _make_goal(skill)
         attempt = _make_attempt(tmp_path, kind="image")
 
-        # Create a record with low blur score
+        # Create a record with very low blur score (below calibrated threshold 0.002)
         record = PerceptionRecord(
             media=MediaInfoRecord(source_id="src.attempt.v1", modality="image",
                                   sha256="d" * 64, mime_type="image/png"),
             segments=[Segment(segment_id="seg-000", kind="whole")],
             observations=[
                 Observation(obs_id="obs-000", segment_id="seg-000", kind="measurement",
-                            label="blur", value=5.0, certainty="observed",
+                            label="blur", value=0.0001, certainty="observed",
                             producer="det:image_basic"),
             ],
         )
