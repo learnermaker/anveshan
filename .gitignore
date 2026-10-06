@@ -111,3 +111,11 @@ secrets/
 #local Logs for antigravity
 generated/
 tasks/
+
+# Local code graph (graphify)
+graphify-out/
+
+# Anveshan runtime data (uploads, sessions, ad-hoc runs) and fetched case media
+var/
+tracks/cases/*/media/cache/
+tracks/track-b/data/runs/

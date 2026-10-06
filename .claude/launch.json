@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "app",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "app", "run", "dev"],
+      "port": 5173
+    },
+    {
+      "name": "service",
+      "runtimeExecutable": ".venv/Scripts/python",
+      "runtimeArgs": ["-m", "uvicorn", "anveshan_service.main:app", "--app-dir", "service", "--port", "8080"],
+      "port": 8080
+    }
+  ]
+}

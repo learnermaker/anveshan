@@ -1,0 +1,11 @@
+# Local development / CI for tracks + service. Runtime pins for the container live in service/requirements.txt.
+pydantic>=2,<3
+numpy>=2,<3
+pillow>=11
+av>=14
+google-genai>=1.60
+fastapi>=0.115
+uvicorn[standard]>=0.30
+python-multipart>=0.0.9
+httpx>=0.27
+pytest>=8
