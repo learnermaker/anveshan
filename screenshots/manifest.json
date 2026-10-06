@@ -1,76 +1,84 @@
 [
-  {
-    "run_timestamp": "2026-10-04T15-46-42Z",
-    "report_file": "runs/2026-10-04T15-46-42Z/audit_report.json",
-    "audit_passed": true,
-    "state_assertions_passed": 33,
-    "screenshots_count": 15
-  },
-  {
-    "run_timestamp": "2026-10-04T15-40-51Z",
-    "report_file": "runs/2026-10-04T15-40-51Z/audit_report.json",
-    "audit_passed": true,
-    "state_assertions_passed": 33,
-    "screenshots_count": 15
-  },
-  {
-    "run_timestamp": "2026-10-04T14-08-34Z",
-    "report_file": "runs/2026-10-04T14-08-34Z/audit_report.json",
-    "audit_passed": true,
-    "screenshots_count": 15
-  },
-  {
-    "run_timestamp": "2026-10-04T12-11-50Z",
-    "report_file": "runs/2026-10-04T12-11-50Z/audit_report.json",
-    "audit_passed": true,
-    "screenshots_count": 15
-  },
-  {
-    "run_timestamp": "2026-10-04T12-08-33Z",
-    "report_file": "runs/2026-10-04T12-08-33Z/audit_report.json",
-    "audit_passed": true,
-    "screenshots_count": 15
-  },
-  {
-    "run_timestamp": "2026-10-04T11-56-19Z",
-    "report_file": "runs/2026-10-04T11-56-19Z/audit_report.json",
-    "audit_passed": true,
-    "screenshots_count": 15
-  },
-  {
-    "run_timestamp": "2026-10-04T11-54-20Z",
-    "report_file": "runs/2026-10-04T11-54-20Z/audit_report.json",
-    "audit_passed": true,
-    "screenshots_count": 15
-  },
-  {
-    "run_timestamp": "2026-10-04T11-36-53Z",
-    "report_file": "runs/2026-10-04T11-36-53Z/audit_report.json",
-    "audit_passed": true,
-    "screenshots_count": 5
-  },
-  {
-    "run_timestamp": "2026-10-04T11-21-37Z",
-    "report_file": "runs/2026-10-04T11-21-37Z/audit_report.json",
-    "audit_passed": true,
-    "screenshots_count": 5
-  },
-  {
-    "run_timestamp": "2026-10-04T11-18-36Z",
-    "report_file": "runs/2026-10-04T11-18-36Z/audit_report.json",
-    "audit_passed": true,
-    "screenshots_count": 5
-  },
-  {
-    "run_timestamp": "2026-10-04T11-11-15Z",
-    "report_file": "runs/2026-10-04T11-11-15Z/audit_report.json",
-    "audit_passed": true,
-    "screenshots_count": 5
-  },
-  {
-    "run_timestamp": "2026-10-04T11-09-29Z",
-    "report_file": "runs/2026-10-04T11-09-29Z/audit_report.json",
-    "audit_passed": false,
-    "screenshots_count": 5
-  }
+    {
+        "run_timestamp":  "2026-10-06T16-36-41Z",
+        "report_file":  "runs/2026-10-06T16-36-41Z/audit_report.json",
+        "audit_passed":  true,
+        "state_assertions_passed":  5,
+        "screenshots_count":  5,
+        "note":  "K3 integration: 5 manual captures via Playwright (mock mode, no service required)"
+    },
+    {
+        "run_timestamp":  "2026-10-04T15-46-42Z",
+        "report_file":  "runs/2026-10-04T15-46-42Z/audit_report.json",
+        "audit_passed":  true,
+        "state_assertions_passed":  33,
+        "screenshots_count":  15
+    },
+    {
+        "run_timestamp":  "2026-10-04T15-40-51Z",
+        "report_file":  "runs/2026-10-04T15-40-51Z/audit_report.json",
+        "audit_passed":  true,
+        "state_assertions_passed":  33,
+        "screenshots_count":  15
+    },
+    {
+        "run_timestamp":  "2026-10-04T14-08-34Z",
+        "report_file":  "runs/2026-10-04T14-08-34Z/audit_report.json",
+        "audit_passed":  true,
+        "screenshots_count":  15
+    },
+    {
+        "run_timestamp":  "2026-10-04T12-11-50Z",
+        "report_file":  "runs/2026-10-04T12-11-50Z/audit_report.json",
+        "audit_passed":  true,
+        "screenshots_count":  15
+    },
+    {
+        "run_timestamp":  "2026-10-04T12-08-33Z",
+        "report_file":  "runs/2026-10-04T12-08-33Z/audit_report.json",
+        "audit_passed":  true,
+        "screenshots_count":  15
+    },
+    {
+        "run_timestamp":  "2026-10-04T11-56-19Z",
+        "report_file":  "runs/2026-10-04T11-56-19Z/audit_report.json",
+        "audit_passed":  true,
+        "screenshots_count":  15
+    },
+    {
+        "run_timestamp":  "2026-10-04T11-54-20Z",
+        "report_file":  "runs/2026-10-04T11-54-20Z/audit_report.json",
+        "audit_passed":  true,
+        "screenshots_count":  15
+    },
+    {
+        "run_timestamp":  "2026-10-04T11-36-53Z",
+        "report_file":  "runs/2026-10-04T11-36-53Z/audit_report.json",
+        "audit_passed":  true,
+        "screenshots_count":  5
+    },
+    {
+        "run_timestamp":  "2026-10-04T11-21-37Z",
+        "report_file":  "runs/2026-10-04T11-21-37Z/audit_report.json",
+        "audit_passed":  true,
+        "screenshots_count":  5
+    },
+    {
+        "run_timestamp":  "2026-10-04T11-18-36Z",
+        "report_file":  "runs/2026-10-04T11-18-36Z/audit_report.json",
+        "audit_passed":  true,
+        "screenshots_count":  5
+    },
+    {
+        "run_timestamp":  "2026-10-04T11-11-15Z",
+        "report_file":  "runs/2026-10-04T11-11-15Z/audit_report.json",
+        "audit_passed":  true,
+        "screenshots_count":  5
+    },
+    {
+        "run_timestamp":  "2026-10-04T11-09-29Z",
+        "report_file":  "runs/2026-10-04T11-09-29Z/audit_report.json",
+        "audit_passed":  false,
+        "screenshots_count":  5
+    }
 ]
