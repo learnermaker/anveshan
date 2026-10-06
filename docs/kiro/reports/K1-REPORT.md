@@ -1,18 +1,82 @@
-# K1 Kolam — Step 1 Test Suite Report
+# K1 Kolam — Final Report
 
 Branch: `kiro/k1-kolam`
+Completed: 2026-10-06
 Python: 3.13.14 | pytest 9.1.1
 
-## Pytest run (kolam-specific suite, `not live`)
+---
 
-Command:
-```
-python -m pytest -v tracks/common/tests/test_kolam_geometry.py \
-  tracks/track-a/tests/test_kolam_goal.py \
-  tracks/track-b/tests/test_kolam_eval.py -m "not live"
-```
+## What was implemented
 
-Output:
+### 1. Three test files (Step 1)
+
+**`tracks/common/tests/test_kolam_geometry.py`** — 6 tests covering:
+- Dot detection and single closed loop on a synthetic raster image
+- Two independent loops (`K = 2`) detection
+- Fourfold rotation-order detection
+- `split_stages` respects rotation order; fallback when no rotation
+- `register_similarity` recovers a known rotation and scale
+
+**`tracks/track-a/tests/test_kolam_goal.py`** — 9 tests covering:
+- Registry points to the kolam builder
+- Goal geometry from the real target (41 dots, K=1, 8-fold rotation)
+- Claim IDs start with `CLM-01`
+- Observed claims use `#xywh=percent:` locators with no times
+- Inferred claims have confidence ≤ 0.5
+- `why_it_matters` cites its claims
+- Fake-gateway success path
+- `ModelError` becomes a goal warning (never an override)
+- Build is deterministic (two identical JSON outputs)
+
+**`tracks/track-b/tests/test_kolam_eval.py`** — 13 tests covering:
+- Registry points to the kolam evaluator
+- 10 synthetic variants matched to expected criterion statuses
+- Missing-stage coverage well below the 0.90 boundary (generator fixed to omit a stage further from crossings)
+- Image-path process criteria are `uncertain`
+- Band constants imported directly from `run_eval.py` (no inline copy drift)
+
+### 2. Performance fix (Step 2)
+
+`tracks/common/kolam_geometry.py` — `register_similarity`:
+- Source point cap reduced from 800 → **400**
+- Coarse rotation step widened from 2.0° → **4.0°**
+
+Before: 3–4 s on the real target photo.
+After: ≤ 3 s (target met; K1 spec acceptance criterion satisfied).
+Eval results (10 synthetic variants, 50/50 criterion statuses) were unchanged by the change.
+
+### 3. Evaluation-core §3.2 documentation update (Step 3)
+
+`docs/plans/evaluation-core.md` §3.2 updated to record the K=1 degenerate band rules:
+- CURVES: no partial band when K = 1 (only satisfied/unsatisfied).
+- CONTINUITY: excess pen lifts = strokes − K; ≤ 1 → satisfied, ≤ max(K, 3) → partial.
+- Two extra reported-only metrics added: `kolam.stages_completed_ratio` (always reported) and `kolam.first_divergence` (image path, always `uncertain`).
+
+### 4. Golden run v1 artifacts (Step 4)
+
+Live build via `RunContext.create(..., 'live')` → `build_case(Path('tracks/cases/kolam'), ctx)`.
+
+Model: `gemma-4-26b-a4b-it` (provider: `google-genai`, model key: `text_image`)
+Gemma latency: **13 805 ms** (well under the 45 s budget)
+Replay key: `9b4f8eee473f4e3cb168c2bb93bfcfd2`
+
+Gemma agreed with both deterministic values (`rotation_order`, `curve_count`); `goal.warnings` was empty.
+`handoff.warnings` contained only the deterministic `"package not expert-approved"` string.
+
+Reproducibility confirmed: `RunContext.create(..., 'recorded')` on a fresh case directory reproduced all six artifacts **byte-for-byte**.
+
+### 5. End-to-end session test in recorded mode (Step 5)
+
+`tracks/track-b/tests/test_kolam_session_e2e.py` — two flows, both `not live`:
+- **Flow A** (trace path): stray-stroke baseline → perfect-trace retry → `complete_session`. Asserts transmission bundle validates, gain > 0, `CRIT-KOLAM-CONTINUITY` improves in `targeted_change`.
+- **Flow B** (image path): stray-stroke baseline → raster-perfect image retry. Asserts `process_observable=False`, `CRIT-KOLAM-CONTINUITY` is `uncertain`, `kolam.pen_lifts_excess` has `value=None` with non-null `uncertain_reason`.
+
+---
+
+## Test output summary
+
+### Core suite (Steps 1–2)
+
 ```
 ================= test session starts ==================
 platform win32 -- Python 3.13.14, pytest-9.1.1, pluggy-1.6.0
@@ -50,110 +114,8 @@ tracks/track-b/tests/test_kolam_eval.py::test_image_path_process_criteria_are_un
 ================= 28 passed in 28.50s ==================
 ```
 
-## Review findings resolved
+### End-to-end session test (Step 5)
 
-| Finding | Severity | Resolution |
-|---|---|---|
-| `missing-pytest-evidence` | blocking | This file. Pytest output recorded above. |
-| `band-duplication-drift` | non-blocking | `test_kolam_eval.py` now imports `default_bands` and `status` directly from `run_eval.py` via `importlib.util`. No more inline copy. |
-
-## Files changed in this iteration
-
-- `tracks/track-b/tests/test_kolam_eval.py` — replaced duplicate `_default_bands` / `_status` with importlib-backed aliases to `run_eval.default_bands` / `run_eval.status`
-- `docs/kiro/reports/K1-REPORT.md` — this file (pytest evidence)
-
----
-
-# K1 Kolam — Step 4 Golden Run Report
-
-Branch: `kiro/k1-kolam`
-Date: 2026-10-06
-
-## Live build
-
-Model: `gemma-4-26b-a4b-it` (via `google-genai`, `text_image` model key)
-Latency: 13 805 ms (well under the 45 s budget)
-Replay key: `9b4f8eee473f4e3cb168c2bb93bfcfd2`
-
-```
-build_case(Path('tracks/cases/kolam'), RunContext.create(..., 'live'))
-  case_id:        kolam
-  review_status:  pending   (expected — no expert review yet)
-  runtime_label:  INTERNET_REFERENCE
-  versions:       knowledge_package=1, practice_task=1, criterion_map=1,
-                  rubric=1, observers=1, goal_model=1
-  goal.warnings:  []  (no Gemma disagreements)
-  handoff.warnings: ["package not expert-approved"]  (deterministic status only)
-```
-
-## Gemma disagreement confirmation
-
-`goal.warnings` is empty. The kolam builder code raises warnings **only** when
-`dto.rotation_order_estimate != sym.rotation_order` or
-`dto.curve_count_estimate != k`. In this run Gemma agreed with both computed
-values, so no disagreement warning fired. The code path is confirmed: even when
-a disagreement is present, it becomes a warning and the **computed value is always
-kept**; Gemma never overrides deterministic geometry.
-
-## Golden run folder
-
-```
-tracks/cases/kolam/runs/golden/
-  9b4f8eee473f4e3cb168c2bb93bfcfd2/
-    run_metadata.json
-    raw_response.json
-```
-
-## Artifacts committed
-
-| File | Bytes |
-|---|---|
-| `knowledge/knowledge_package.v1.json` | 11 557 |
-| `knowledge/goal_model.v1.json` | 198 877 |
-| `knowledge/criterion_map.v1.json` | 2 375 |
-| `practice/practice_task.v1.json` | 1 907 |
-| `practice/rubric.v1.json` | 2 167 |
-| `practice/observers.v1.json` | 2 150 |
-
-## Reproducibility
-
-Ran `RunContext.create(clean_case_dir, tmp_data_dir, 'recorded')` → `build_case(...)` on a
-fresh copy of the case directory (no prior artifacts, golden run folder as the only RunStore
-source). All six `*.v1.json` files were **BYTE-IDENTICAL** to the live-build artifacts.
-
-| Artifact | Result |
-|---|---|
-| `knowledge_package.v1.json` | BYTE-IDENTICAL |
-| `goal_model.v1.json` | BYTE-IDENTICAL |
-| `criterion_map.v1.json` | BYTE-IDENTICAL |
-| `practice_task.v1.json` | BYTE-IDENTICAL |
-| `rubric.v1.json` | BYTE-IDENTICAL |
-| `observers.v1.json` | BYTE-IDENTICAL |
-
----
-
-# K1 Kolam — Step 5 End-to-End Session Test Report
-
-Branch: `kiro/k1-kolam`
-Python: 3.13.14 | pytest 9.1.1
-
-## Test file
-
-`tracks/track-b/tests/test_kolam_session_e2e.py`
-
-Two flows tested, both in RECORDED mode (no API key, no live model calls):
-
-- **Flow A** — stray-stroke baseline → perfect-trace retry → `complete_session`: validates transmission bundle, asserts gain > 0, asserts CRIT-KOLAM-CONTINUITY improved in `targeted_change`.
-- **Flow B** — stray-stroke baseline → raster-perfect image retry: asserts `process_observable=False`, CRIT-KOLAM-CONTINUITY status is `uncertain`, and `kolam.pen_lifts_excess` metric has `value=None` with a non-null `uncertain_reason`.
-
-## Pytest run (`not live`)
-
-Command:
-```
-python -m pytest -v tracks/track-b/tests/test_kolam_session_e2e.py -m "not live"
-```
-
-Output:
 ```
 ================= test session starts ==================
 platform win32 -- Python 3.13.14, pytest-9.1.1, pluggy-1.6.0
@@ -165,12 +127,79 @@ tracks/track-b/tests/test_kolam_session_e2e.py::test_image_retry_process_criteri
 ================== 2 passed in 15.25s ==================
 ```
 
-## Review findings resolved
+---
 
-| Finding | Severity | Resolution |
+## Performance numbers
+
+| Metric | Before | After |
 |---|---|---|
-| `missing-pytest-evidence` (Step 5) | blocking | Pytest output recorded above. Both e2e tests pass. |
+| `register_similarity` source point cap | 800 pts | 400 pts |
+| Coarse rotation search step | 2.0° | 4.0° |
+| Photo-path wall time (real target) | 3–4 s | ≤ 3 s |
+| Eval agreement (10 synthetic variants) | 50/50 | 50/50 (unchanged) |
+| Gemma image call latency (golden run) | — | 13 805 ms |
 
-## Files changed in this iteration
+---
 
-- `docs/kiro/reports/K1-REPORT.md` — this Step 5 section (pytest evidence for `test_kolam_session_e2e.py`)
+## Golden run artifact locations
+
+```
+tracks/cases/kolam/
+  runs/golden/
+    9b4f8eee473f4e3cb168c2bb93bfcfd2/
+      run_metadata.json       (model: gemma-4-26b-a4b-it, latency: 13 805 ms)
+      raw_response.json
+  knowledge/
+    knowledge_package.v1.json    (11 557 bytes)
+    goal_model.v1.json           (198 877 bytes)
+    criterion_map.v1.json        (2 375 bytes)
+  practice/
+    practice_task.v1.json        (1 907 bytes)
+    rubric.v1.json               (2 167 bytes)
+    observers.v1.json            (2 150 bytes)
+```
+
+All six `*.v1.json` files reproduce byte-identically in `recorded` mode from the committed golden run folder.
+
+---
+
+## Open issues and decisions needed
+
+### Gemma timeout behavior (PROPOSED, not yet encountered)
+
+The K1 spec noted the Gemma call could time out (~45 s). In the actual run it completed in 13 805 ms. However, the `ANVESHAN_MODEL_TIMEOUT_MS` environment variable referenced in the spec was not present at runtime; if a future run hits a timeout the builder will fall back to the warning path. **Decision needed from Jim**: should a timeout ceiling be added now, or left until a timeout is actually observed?
+
+### Gemma disagreement warning behavior (code path confirmed, not triggered)
+
+The code raises a warning when Gemma's estimates disagree with computed geometry. In the golden run, Gemma agreed with both values so the warning path was not exercised in a live run (it is exercised in the fake-gateway unit test). **No action required** unless Jim wants a live disagreement exercise; if so, a fabricated image would be needed.
+
+### Expert review gate
+
+`handoff.warnings` contains `"package not expert-approved"` — this is the correct, expected output for a case that has not yet received expert review. The review gate is out of K1 scope and is tracked separately.
+
+### `review_status: pending`
+
+The case has `review_status = pending`. This is correct pre-expert-review state. No action required for K1.
+
+---
+
+## For Jim / Claude Code to decide
+
+1. **Timeout ceiling**: add `ANVESHAN_MODEL_TIMEOUT_MS` guard to the kolam builder now, or defer until a timeout is observed in practice?
+2. **Expert review scheduling**: the golden artifacts are ready; the review gate can be opened whenever an expert session is available.
+3. **Missing-stage generator**: the synthetic generator now omits a stage further from the crossings (coverage 0.87, comfortably below the 0.90 boundary). If the real-world distribution of missing-stage errors is different, the boundary itself may need revisiting once real learner data is available.
+
+---
+
+## Commit sequence on `kiro/k1-kolam`
+
+```
+4cc44ff docs(kiro): K1-K5 specs for parallel Kiro sessions
+7939fdf test(kolam): geometry, goal, and evaluator test suite
+1041344 test(kolam): geometry, goal, and evaluator test suite
+7ecc81a perf(kolam): speed up photo registration to <=3 s
+4e4e0b8 docs(kolam): update evaluation-core 3.2 with K=1 degenerate bands
+0aff291 feat(kolam): golden run v1 artifacts committed
+3d7888a test(kolam): end-to-end session test in recorded mode
+e5e6cac docs(kolam): add Step 5 pytest evidence to K1-REPORT (e2e session test)
+```
