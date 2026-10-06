@@ -1,0 +1,6 @@
+# Track B runtime dependencies (UTF-8). Dev/CI pins live in the root requirements-dev.txt.
+pydantic>=2,<3
+numpy>=2,<3
+pillow>=11
+av>=14
+google-genai>=1.60

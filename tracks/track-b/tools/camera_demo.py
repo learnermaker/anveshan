@@ -1,3 +1,8 @@
+# NOTE: dev-only, Windows-specific (winsound, win32com, cv2, sounddevice), not deployed;
+# superseded by the web upload flow (track_b.api + service). It still imports the removed
+# flat `src.*` modules and is NOT functional against the new track_b API. It is kept only as
+# a reference for the spoken-mentor UX concept (track-b-spec §10.2). Never import it from the
+# track_b package.
 """Live Natural Voice & Camera Mentor Demo for Track B.
 
 Connects your live computer camera to Google Gemini (gemini-flash-lite-latest)
