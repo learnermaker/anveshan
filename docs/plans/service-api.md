@@ -46,8 +46,9 @@ Accepted `AttemptMedia.kind`:
 @dataclass
 class CaseHandoff:
     case_id: str; case_dir: Path; manifest: dict; sources: SourceRegistry
-    goal: GoalModel; package: KnowledgePackage; rubric: RubricDefinition; task: PracticeTask
-    criterion_map: CriterionMap; observers: Observers
+    goal: GoalModel | None; package: KnowledgePackage; rubric: RubricDefinition; task: PracticeTask
+    criterion_map: CriterionMap | None; observers: Observers | None   # None for showcase/unbuilt cases (SYNTHETIC replay)
+    versions: dict                        # artifact versions loaded
     review_status: str                    # pending|approved|revised|rejected
     runtime_label: str                    # INTERNET_REFERENCE|UPLOAD|SYNTHETIC|OWNED_CONSENTED
     warnings: list[str]
@@ -70,6 +71,7 @@ def apply_review(case_dir: Path, action: dict) -> CaseHandoff
 
 ```python
 def start_session(case_dir: Path, learner_name: str, data_dir: Path, *, clock=None, ids=None) -> Session
+def intake_attempt(session: Session, path: Path, kind: str, extra: dict | None = None) -> AttemptMedia  # validates upload, canonical source_id
 def submit_attempt(session: Session, media: AttemptMedia, ctx: RunContext) -> AttemptResult
 def complete_session(session: Session) -> SessionResult
 def save_session(session: Session, data_dir: Path) -> None; def load_session(session_id: str, data_dir: Path) -> Session

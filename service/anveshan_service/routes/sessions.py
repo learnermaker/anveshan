@@ -75,9 +75,9 @@ def submit_attempt(
         for name, upload in (("raster", raster), ("video", video)):
             if upload is not None and (upload.filename or upload.size):
                 extras[name] = store_upload(upload, settings, name)
-        media = adapters.make_attempt_media(kind, primary, extras)
         ctx = adapters.run_context(settings, cdir, mode)
         with adapters.translated():
+            media = adapters.make_attempt_media(kind, primary, extras, session=session, api=api)
             result = api.submit_attempt(session, media, ctx)
             api.save_session(session, settings.data_dir)
     return adapters.to_json(result)

@@ -76,15 +76,23 @@ def run_context(settings: Settings, cdir: Path, mode: str) -> RunContext:
 # ---------------------------------------------------------------------------
 
 
-def make_attempt_media(kind: str, primary: StoredUpload, extras: Dict[str, StoredUpload]) -> Any:
+def make_attempt_media(
+    kind: str,
+    primary: StoredUpload,
+    extras: Dict[str, StoredUpload],
+    session: Any = None,
+    api: Any = None,
+) -> Any:
     """Single adapter from uploaded files to ``AttemptMedia``.
 
-    Prefers ``track_b.intake.from_upload`` (Track B validation) when it exists; otherwise builds
-    ``track_b.trajectory.AttemptMedia`` directly. Fix only this function if Track B's intake
-    signature differs.
+    Uses ``track_b.api.intake_attempt(session, path, kind, extra)`` (Track B validation + canonical
+    source id) when available; otherwise ``track_b.intake.from_upload``; otherwise builds
+    ``track_b.trajectory.AttemptMedia`` directly (test fakes).
     """
     source_id = f"upload.{primary.sha256[:12]}"
     extra_paths = {k: v.path for k, v in extras.items()}
+    if session is not None and api is not None and hasattr(api, "intake_attempt"):
+        return api.intake_attempt(session, primary.path, kind, extra_paths or None)
     intake = sys.modules.get("track_b.intake")
     if intake is None and "track_b.intake" not in sys.modules:
         try:
