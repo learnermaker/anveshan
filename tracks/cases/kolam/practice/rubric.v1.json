@@ -1,0 +1,49 @@
+{
+  "criteria": [
+    {
+      "criterion_id": "CRIT-KOLAM-COVERAGE",
+      "description": "The learner's ink covers the target's continuous line(s) within the tolerance band.",
+      "name": "Every line of the target is drawn",
+      "observable_indicator": "fraction of goal line samples (every 4 px) with learner ink within 6.0 px",
+      "required": true,
+      "weight": 3.0
+    },
+    {
+      "criterion_id": "CRIT-KOLAM-PRECISION",
+      "description": "The learner's ink stays on the target line(s).",
+      "name": "No stray lines off the pattern",
+      "observable_indicator": "fraction of learner ink samples within 6.0 px of the goal line",
+      "required": true,
+      "weight": 2.0
+    },
+    {
+      "criterion_id": "CRIT-KOLAM-DOTS",
+      "description": "Dots the target line passes through are passed through; dots it leaves free stay untouched.",
+      "name": "Each pulli keeps the same relation to the line",
+      "observable_indicator": "fraction of assessed dots whose on-line / off-line relation matches the target",
+      "required": true,
+      "weight": 2.0
+    },
+    {
+      "criterion_id": "CRIT-KOLAM-CURVES",
+      "description": "Every continuous line of the target reaches at least 90% coverage.",
+      "name": "Each continuous line completed",
+      "observable_indicator": "fraction of goal curves with coverage >= 0.9",
+      "required": false,
+      "weight": 2.0
+    },
+    {
+      "criterion_id": "CRIT-KOLAM-CONTINUITY",
+      "description": "The pattern is drawn with few pen lifts beyond the number of continuous lines.",
+      "name": "Drawn as continuous strokes",
+      "observable_indicator": "number of strokes minus the 1 continuous line(s) (pen lifts in excess)",
+      "required": false,
+      "weight": 1.0
+    }
+  ],
+  "description": "Criteria authored from goal model v1 (kolam_image). Metric bands live in practice/observers.v1.json; scores come only from the deterministic band policy.",
+  "passing_score": 7.0,
+  "rubric_id": "rubric.kolam.1",
+  "skill_id": "skill.kolam",
+  "title": "Kolam (final image): reconstruct the line through the dots — rubric"
+}
