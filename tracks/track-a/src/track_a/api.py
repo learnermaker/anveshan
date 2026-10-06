@@ -433,7 +433,12 @@ def _select_source(sources: SourceRegistry, source_id: Optional[str]) -> SourceR
 
 
 def build_case(case_dir: Path, ctx: RunContext, source_id: Optional[str] = None) -> CaseHandoff:
-    """Run the modality goal builder and write the NEXT version of all six artifacts (PENDING)."""
+    """Run the modality goal builder and write the NEXT version of all six artifacts (PENDING).
+
+    For modality 'universal': loads the latest knowledge/case_profile.v*.json and passes it
+    as ``profile=`` to the builder (using inspect.signature so other builders are unaffected).
+    """
+    import inspect
     from tracks.common.media import sha256_file
 
     case_dir = Path(case_dir)
@@ -464,7 +469,33 @@ def build_case(case_dir: Path, ctx: RunContext, source_id: Optional[str] = None)
         raise AnveshanFailure(FailureCategory.CONTRACT_VIOLATION, f"goal builder for {modality} unavailable: {exc}") from exc
 
     version = authoring.next_version(case_dir)
-    result = builder(path, source, ctx, case_id=case_id, version=version)
+
+    # For universal modality: load the latest case profile and pass it to the builder
+    extra_kwargs: dict = {}
+    if modality == "universal":
+        from tracks.common.casedata import latest_version, versioned_path
+        from tracks.common.profile import CaseProfile
+        kn_dir = case_dir / "knowledge"
+        profile_version = latest_version(kn_dir, "case_profile")
+        if profile_version is None:
+            raise AnveshanFailure(
+                FailureCategory.MISSING_EVIDENCE,
+                f"{case_id}: no knowledge/case_profile.v*.json found; run the composer first",
+            )
+        profile_path = versioned_path(kn_dir, "case_profile", profile_version)
+        try:
+            profile = CaseProfile.model_validate_json(profile_path.read_text(encoding="utf-8"))
+        except Exception as exc:
+            raise AnveshanFailure(
+                FailureCategory.CONTRACT_VIOLATION,
+                f"{case_id}: invalid case_profile.v{profile_version}.json: {exc}",
+            ) from exc
+        # Only pass profile= if the builder accepts it (use inspect.signature for safety)
+        sig = inspect.signature(builder)
+        if "profile" in sig.parameters:
+            extra_kwargs["profile"] = profile
+
+    result = builder(path, source, ctx, case_id=case_id, version=version, **extra_kwargs)
     authored = authoring.author_case(
         case_dir,
         case_id=case_id,
