@@ -14,10 +14,10 @@ Goal: 1 continuous line(s), 41 dots, tau = 6.0 px.
 |---|---|---|---|---|---|---|---|---|---|
 | extra_pen_lifts | trace | 1 | 1 | 1 | 1 | 7 | coverage sat, precision sat, dots sat, curves sat, continuity not | none | yes |
 | jittered | trace | 1 | 1 | 1 | 1 | 0 | coverage sat, precision sat, dots sat, curves sat, continuity sat | none | yes |
-| missing_stage | trace | 0.899 | 1 | 1 | 0 | 1 | coverage part, precision sat, dots sat, curves not, continuity sat | incomplete_stage `trace` | yes |
+| missing_stage | trace | 0.790 | 1 | 1 | 0 | 1 | coverage part, precision sat, dots sat, curves not, continuity sat | incomplete_stage `trace` | yes |
 | partial | trace | 0.556 | 1 | 1 | 0 | 0 | coverage not, precision sat, dots sat, curves not, continuity sat | incomplete_stage `trace` | yes |
 | perfect | trace | 1 | 1 | 1 | 1 | 0 | coverage sat, precision sat, dots sat, curves sat, continuity sat | none | yes |
-| raster_missing_stage_rotated | image | 0.899 | 1 | 1 | 0 | — | coverage part, precision sat, dots sat, curves not, continuity unc | none | yes |
+| raster_missing_stage_rotated | image | 0.790 | 1 | 1 | 0 | — | coverage part, precision sat, dots sat, curves not, continuity unc | none | yes |
 | raster_perfect | image | 1 | 1 | 1 | 1 | — | coverage sat, precision sat, dots sat, curves sat, continuity unc | none | yes |
 | raster_rotated_scaled | image | 1 | 1 | 1 | 1 | — | coverage sat, precision sat, dots sat, curves sat, continuity unc | none | yes |
 | stray_stroke | trace | 1 | 0.972 | 1 | 1 | 2 | coverage sat, precision sat, dots sat, curves sat, continuity part | off_path_ink `trace#stroke=1` | yes |
@@ -25,7 +25,7 @@ Goal: 1 continuous line(s), 41 dots, tau = 6.0 px.
 
 Photo-path registration (learner -> goal similarity):
 
-- raster_missing_stage_rotated: scale 0.7694, rotation 22.5 deg, score 0.905 (dots)
+- raster_missing_stage_rotated: scale 0.7694, rotation 22.0 deg, score 0.8675 (dots)
 - raster_perfect: scale 1.0001, rotation 315.25 deg, score 0.9275 (dots)
 - raster_rotated_scaled: scale 0.7694, rotation 156.0 deg, score 0.9325 (dots)
   (rotated variant was rendered with scale 1.3 and +23 deg, so the inverse is scale ~0.769 and rotation ~337 deg, equivalent modulo the target's 360/n symmetry step.)

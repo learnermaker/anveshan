@@ -1,0 +1,19 @@
+{
+  "expected_behavior": "plain description, symmetry/curve sanity check, per-stage wording; no provenance claims",
+  "input_digests": [
+    "ImagePart:0a3b13977ee4337c0e52d8cf53d66c6002d9fdf498b984784df89cbcbe38cc0e",
+    "text:dd252612e87c948641c50aa6cf0a6e14fba7f688bf337b842078084d8b776b2b"
+  ],
+  "latency_ms": 13805,
+  "model_id": "gemma-4-26b-a4b-it",
+  "model_key": "text_image",
+  "notes": [],
+  "prompt_id": "kolam_describe",
+  "prompt_sha256": "dd252612e87c948641c50aa6cf0a6e14fba7f688bf337b842078084d8b776b2b",
+  "prompt_version": "v1",
+  "provider": "google-genai",
+  "replay_key": "9b4f8eee473f4e3cb168c2bb93bfcfd2",
+  "run_id": "run.kolam_describe.20261006T165737.066814",
+  "runtime_class": "LIVE",
+  "started_at": "2026-10-06T16:57:23.470440+00:00"
+}

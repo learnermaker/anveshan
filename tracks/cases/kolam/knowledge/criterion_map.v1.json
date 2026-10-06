@@ -1,0 +1,69 @@
+{
+  "criteria": {
+    "CRIT-KOLAM-CONTINUITY": {
+      "drill_hint": "Practise one stage in a single motion, keeping the pen down through the crossings.",
+      "order_index": 4,
+      "reference_evidence_ids": [
+        "ev.kolam.clm-05",
+        "ev.kolam.clm-02"
+      ],
+      "source_claim_ids": [
+        "CLM-05",
+        "CLM-02"
+      ],
+      "why_it_matters": "The figure is 1 unbroken line with no loose ends (CLM-05), so it can be drawn without lifting the hand."
+    },
+    "CRIT-KOLAM-COVERAGE": {
+      "drill_hint": "Trace the faint goal line once, stage by stage, then redraw from memory.",
+      "order_index": 0,
+      "reference_evidence_ids": [
+        "ev.kolam.clm-02",
+        "ev.kolam.clm-06"
+      ],
+      "source_claim_ids": [
+        "CLM-02",
+        "CLM-06"
+      ],
+      "why_it_matters": "The finished pattern is made of 1 continuous line through the dots (CLM-02); a missing section leaves the figure open."
+    },
+    "CRIT-KOLAM-CURVES": {
+      "drill_hint": "Repeat the stage where the line stopped until it joins the next stage.",
+      "order_index": 3,
+      "reference_evidence_ids": [
+        "ev.kolam.clm-02",
+        "ev.kolam.clm-06"
+      ],
+      "source_claim_ids": [
+        "CLM-02",
+        "CLM-06"
+      ],
+      "why_it_matters": "Each of the 1 line closes on itself (CLM-02); an unfinished line breaks the loop."
+    },
+    "CRIT-KOLAM-DOTS": {
+      "drill_hint": "Draw only the segment between two neighbouring dots, aiming straight through each dot.",
+      "order_index": 2,
+      "reference_evidence_ids": [
+        "ev.kolam.clm-04",
+        "ev.kolam.clm-01"
+      ],
+      "source_claim_ids": [
+        "CLM-04",
+        "CLM-01"
+      ],
+      "why_it_matters": "The dots fix the geometry: 40 of 41 lie on the line (CLM-04) out of the dot grid (CLM-01)."
+    },
+    "CRIT-KOLAM-PRECISION": {
+      "drill_hint": "Slow down at crossings and dots; keep the line inside the faint band.",
+      "order_index": 1,
+      "reference_evidence_ids": [
+        "ev.kolam.clm-05"
+      ],
+      "source_claim_ids": [
+        "CLM-05"
+      ],
+      "why_it_matters": "The target has no loose ends or stray marks (CLM-05); in a powder kolam a stray line cannot be erased."
+    }
+  },
+  "package_id": "kp.kolam.1",
+  "rubric_id": "rubric.kolam.1"
+}

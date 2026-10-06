@@ -94,13 +94,25 @@ The only input is the finished kolam image.
 
 **Default rubric** (the template Track A generates from the GoalModel; approved by Jim):
 
-| Criterion | Required | Weight | Bands |
-|---|---|---|---|
-| `CRIT-KOLAM-COVERAGE`: every curve of the target is drawn | ✓ | 3 | ≥ 0.90 sat · ≥ 0.70 partial |
-| `CRIT-KOLAM-PRECISION`: no stray lines off the pattern | ✓ | 2 | ≥ 0.92 sat · ≥ 0.80 partial |
-| `CRIT-KOLAM-DOTS`: each pulli kept in the same relation to the line | ✓ | 2 | ≥ 0.95 sat · ≥ 0.80 partial |
-| `CRIT-KOLAM-CURVES`: each continuous curve completed | | 2 | all sat · K−1 partial |
-| `CRIT-KOLAM-CONTINUITY`: drawn as continuous strokes | | 1 | lifts ≤ K+1 sat · ≤ 2K partial |
+| Criterion | Required | Weight | Metric | Bands |
+|---|---|---|---|---|
+| `CRIT-KOLAM-COVERAGE`: every curve of the target is drawn | ✓ | 3 | `kolam.coverage` | ≥ 0.90 sat · ≥ 0.70 partial |
+| `CRIT-KOLAM-PRECISION`: no stray lines off the pattern | ✓ | 2 | `kolam.precision` | ≥ 0.92 sat · ≥ 0.80 partial |
+| `CRIT-KOLAM-DOTS`: each pulli kept in the same relation to the line | ✓ | 2 | `kolam.dot_relation_match` | ≥ 0.95 sat · ≥ 0.80 partial |
+| `CRIT-KOLAM-CURVES`: each continuous curve completed | | 2 | `kolam.curves_completed_ratio` | ≥ 0.999 sat · (K−1)/K partial — **no partial band when K = 1** |
+| `CRIT-KOLAM-CONTINUITY`: drawn as continuous strokes | | 1 | `kolam.pen_lifts_excess` | ≤ 1 sat · ≤ max(K, 3) partial |
+
+Band notes:
+
+- **CRIT-KOLAM-CURVES** — `curves_completed_ratio` is the fraction of curves with ≥ 0.9 coverage. Satisfied requires all curves. The partial threshold is `(K−1)/K` (exactly one curve short). When K = 1 there is no value strictly between 0 and 1, so the partial band is omitted; the only outcomes are `satisfied` or `not_satisfied`.
+- **CRIT-KOLAM-CONTINUITY** — `pen_lifts_excess = total_strokes − K` (strokes beyond the minimum one stroke per curve). Satisfied when excess ≤ 1; partially_satisfied when excess ≤ max(K, 3). This is a process criterion: it is `uncertain` for the photo-upload path because pen lifts cannot be counted from a final image.
+
+**Additional reported metrics** (not scored; included in every evaluation result):
+
+| Metric | Definition | Observability |
+|---|---|---|
+| `kolam.stages_completed_ratio` | fraction of curves completed at submission time; tracks per-curve progress | always reported |
+| `kolam.first_divergence` | image path for the frame/moment of first material off-path event | always `UNCERTAIN` on the photo path — process not observable from a final image |
 
 Bands are calibrated on the synthetic + hand-drawn set (§7) and versioned in the observers file.
 

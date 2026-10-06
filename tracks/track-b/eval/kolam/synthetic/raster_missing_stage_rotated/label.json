@@ -11,7 +11,7 @@
   },
   "label": "SYNTHETIC",
   "missing_stage": "C1.S3",
-  "perturbation": "photo stand-in with suggested stage C1.S3 missing",
+  "perturbation": "photo stand-in with stages C1.S3+C1.S4 missing",
   "process_observable": false,
   "variant": "raster_missing_stage_rotated"
 }

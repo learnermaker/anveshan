@@ -1,0 +1,93 @@
+{
+  "criteria": {
+    "CRIT-KOLAM-CONTINUITY": {
+      "bands": [
+        {
+          "max": 1.0,
+          "min": null,
+          "status": "satisfied"
+        },
+        {
+          "max": 3.0,
+          "min": null,
+          "status": "partially_satisfied"
+        }
+      ],
+      "direction": "lower_is_better",
+      "metric": "kolam.pen_lifts_excess",
+      "otherwise": "not_satisfied",
+      "process": true
+    },
+    "CRIT-KOLAM-COVERAGE": {
+      "bands": [
+        {
+          "max": null,
+          "min": 0.9,
+          "status": "satisfied"
+        },
+        {
+          "max": null,
+          "min": 0.7,
+          "status": "partially_satisfied"
+        }
+      ],
+      "direction": "higher_is_better",
+      "metric": "kolam.coverage",
+      "otherwise": "not_satisfied",
+      "process": false
+    },
+    "CRIT-KOLAM-CURVES": {
+      "bands": [
+        {
+          "max": null,
+          "min": 0.999,
+          "status": "satisfied"
+        }
+      ],
+      "direction": "higher_is_better",
+      "metric": "kolam.curves_completed_ratio",
+      "otherwise": "not_satisfied",
+      "process": false
+    },
+    "CRIT-KOLAM-DOTS": {
+      "bands": [
+        {
+          "max": null,
+          "min": 0.95,
+          "status": "satisfied"
+        },
+        {
+          "max": null,
+          "min": 0.8,
+          "status": "partially_satisfied"
+        }
+      ],
+      "direction": "higher_is_better",
+      "metric": "kolam.dot_relation_match",
+      "otherwise": "not_satisfied",
+      "process": false
+    },
+    "CRIT-KOLAM-PRECISION": {
+      "bands": [
+        {
+          "max": null,
+          "min": 0.92,
+          "status": "satisfied"
+        },
+        {
+          "max": null,
+          "min": 0.8,
+          "status": "partially_satisfied"
+        }
+      ],
+      "direction": "higher_is_better",
+      "metric": "kolam.precision",
+      "otherwise": "not_satisfied",
+      "process": false
+    }
+  },
+  "modality": "kolam_image",
+  "rubric_id": "rubric.kolam.1",
+  "score_policy": "score_policy_v1",
+  "version": 1
+}
