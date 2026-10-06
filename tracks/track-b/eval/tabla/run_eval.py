@@ -92,6 +92,8 @@ def main() -> int:
             v = res.metrics[metric].value
             statuses[cid] = "uncertain" if v is None else status(v, d, s, p)
         statuses["CRIT-TABLA-BOLS"] = "uncertain" if res.metrics["tabla.bol_accuracy"].value is None else "scored"
+        strokes_v = res.metrics.get("tabla.stroke_class_accuracy")
+        statuses["CRIT-TABLA-STROKES"] = "uncertain" if strokes_v is None or strokes_v.value is None else status(strokes_v.value, "higher", 0.80, 0.60)
         st_agree = {cid: statuses[cid] == lab["expected_statuses"][cid] for cid in statuses}
         total_st += len(st_agree)
         agree_st += sum(st_agree.values())
@@ -128,12 +130,14 @@ def main() -> int:
     cids = list(rows[0]["statuses"].keys())
     out.append("| attempt | " + " | ".join(c.replace("CRIT-TABLA-", "") for c in cids) + " |")
     out.append("|---|" + "---|" * len(cids))
-    short = {"satisfied": "sat", "partially_satisfied": "partial", "not_satisfied": "not", "uncertain": "unc", "scored": "scored"}
+    short = {"satisfied": "sat", "partially_satisfied": "partial", "not_satisfied": "not",
+             "uncertain": "unc", "scored": "scored"}
     for r in rows:
         cells = []
         for c in cids:
-            a, e = short[r["statuses"][c]], short[r["expected"][c]]
-            cells.append(a if a == e else f"**{a} / {e}**")
+            a_st = short.get(r["statuses"].get(c, "unc"), r["statuses"].get(c, "unc"))
+            e_st = short.get(r["expected"].get(c, "unc"), r["expected"].get(c, "unc"))
+            cells.append(a_st if a_st == e_st else f"**{a_st} / {e_st}**")
         out.append(f"| {r['name']} | " + " | ".join(cells) + " |")
     out.append("\n## Metrics (evaluator vs ground truth)\n")
     mids = ["tabla.tempo_error_pct", "tabla.timing_median_ms", "tabla.bass_accuracy", "tabla.missing_extra", "tabla.ioi_cv"]

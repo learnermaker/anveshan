@@ -152,11 +152,15 @@ def main() -> int:
     cases: List[Dict[str, Any]] = []
 
     def add(name: str, audio: np.ndarray, desc: str, true_t: Dict[int, float], bass_l: Dict[int, bool],
-            missing: List[int], perturbed: List[int], first: Dict[str, Any] | None, params: Dict[str, Any]) -> None:
+            missing: List[int], perturbed: List[int], first: Dict[str, Any] | None, params: Dict[str, Any],
+            extra_statuses: Dict[str, Any] | None = None) -> None:
         m = expected_metrics(gt, true_t, pulse, bass_goal, bass_l, missing)
         st = {cid: status(m[metric], d, s, p) for cid, (metric, d, s, p) in BANDS.items()}
         st["CRIT-TABLA-STEADY"] = status(m["tabla.ioi_cv"], "lower", steady_sat, steady_partial)
         st["CRIT-TABLA-BOLS"] = "uncertain"
+        st["CRIT-TABLA-STROKES"] = "uncertain"
+        if extra_statuses:
+            st.update(extra_statuses)
         dsp_wav = OUT_DIR / f"{name}.wav"
         dsp_wav.write_bytes(dsp.wav_bytes(audio, SR))
         label = {
@@ -276,6 +280,57 @@ def main() -> int:
         ident, bl_b, [], section,
         {"time": round(t[section[0]], 4), "goal_stroke": section[0], "kinds": ["bass_missing"]},
         {"section_sec": [round(lo_t, 3), round(hi_t, 3)], "high_pass_hz": 320})
+
+    # 7. stroke_substitution: replace 6 strokes with splices from a DIFFERENT timbre class
+    goal_onsets = goal.payload["onsets"]
+    timbre = goal.payload.get("timbre")
+    if timbre is not None and timbre.get("k", 1) >= 2:
+        class_groups: Dict[int, List[int]] = {}
+        for j, o in enumerate(goal_onsets):
+            c = o.get("timbre_class")
+            if c is not None and c >= 0:
+                class_groups.setdefault(int(c), []).append(j)
+        sorted_classes = sorted(class_groups, key=lambda c: -len(class_groups[c]))
+        if len(sorted_classes) >= 2:
+            c_a, c_b = sorted_classes[0], sorted_classes[1]
+            pool_a = [j for j in class_groups[c_a] if 3 <= j <= n - 3]
+            pool_b = class_groups[c_b]
+            n_swap = min(6, len(pool_a), len(pool_b))
+            if n_swap >= 3:
+                swap_targets = sorted(pool_a[:n_swap])
+                swap_donors = pool_b[:n_swap]
+                segs_sub = list(segs)
+                for tgt, don in zip(swap_targets, swap_donors):
+                    n_sub = int(0.08 * SR)
+                    n_cf = int(0.005 * SR)
+                    donor_seg = np.zeros(n_sub, dtype=np.float32)
+                    d_src = segs[don]
+                    donor_seg[:min(n_sub, len(d_src))] = d_src[:min(n_sub, len(d_src))]
+                    new_seg = segs[tgt].copy()
+                    splice_len = min(n_sub, len(new_seg))
+                    new_seg[:splice_len] = donor_seg[:splice_len]
+                    cf = min(n_cf, splice_len // 4)
+                    if cf > 0:
+                        new_seg[:cf] = new_seg[:cf] * np.linspace(0, 1, cf, dtype=np.float32)
+                        end_cf = max(0, splice_len - cf)
+                        new_seg[end_cf:splice_len] = new_seg[end_cf:splice_len] * np.linspace(1, 0, splice_len - end_cf, dtype=np.float32)
+                    segs_sub[tgt] = new_seg
+                sub_audio = render(x, t, [t[j] for j in range(n)], segs_sub)
+                stroke_acc = round((n - n_swap) / n, 3)
+                st_strokes = status(stroke_acc, "higher", 0.80, 0.60)
+                add("stroke_substitution", sub_audio,
+                    f"{n_swap} strokes from timbre class {c_a} spliced with 80 ms from class {c_b} "
+                    f"(5 ms crossfade). Expected stroke_class_accuracy ~ {stroke_acc}.",
+                    ident, bl, [], swap_targets, None,
+                    {"swap_targets": swap_targets, "swap_donors": swap_donors,
+                     "expected_stroke_acc": stroke_acc, "class_a": c_a, "class_b": c_b},
+                    extra_statuses={"CRIT-TABLA-STROKES": st_strokes})
+            else:
+                print(f"stroke_substitution: only {n_swap} swaps possible, skipping (need >= 3)")
+        else:
+            print("stroke_substitution: fewer than 2 timbre classes, skipping")
+    else:
+        print("stroke_substitution: no timbre model (v1 goal) or k<2, skipping")
 
     write_json(LABEL_DIR / "index.json", {"seed": SEED, "cases": [c["name"] for c in cases]})
     return 0
