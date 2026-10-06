@@ -1,0 +1,30 @@
+{
+  "label_kind": "EVALUATION_GROUND_TRUTH",
+  "never_system_input": true,
+  "annotator": "claude (AI-assisted), pending human verification",
+  "annotated_at": "2026-10-06",
+  "method": "Manual review of frames sampled at 0.2 fps (0-335 s) side by side with the expert frames, plus thumbnail cross-correlation against the expert video at 4 fps (best lag 0.0 s).",
+  "source_id": "src.origami.learner_crane.v1",
+  "media": "Crane.ogv (Tavin, CC BY 3.0), 320x240, 25 fps",
+  "window_sec": [0.0, 194.0],
+  "observation": "Hand poses and paper states are identical to src.origami.demo.v1 at the same timestamps throughout the reviewed range: this is the same performance in a different encode/crop, not an independent recording. Expected evaluator outcome: all states reached in order, no violations, final state reached (positive control under an encoding/crop domain shift).",
+  "same_as": "expert_window_labels.json",
+  "time_offset_sec_vs_expert": 0.0,
+  "states": [
+    {"index": 0, "name": "flat square", "intervals": [[0.0, 3.0]]},
+    {"index": 1, "name": "book-folded rectangle", "intervals": [[8.0, 16.0], [24.0, 28.0]]},
+    {"index": 2, "name": "diagonal-folded triangle", "intervals": [[38.0, 44.0], [50.0, 58.0]]},
+    {"index": 3, "name": "square base", "intervals": [[72.0, 80.0]]},
+    {"index": 4, "name": "kite form", "intervals": [[88.0, 112.0]]},
+    {"index": 5, "name": "petal fold one side", "intervals": [[150.0, 157.0]]},
+    {"index": 6, "name": "bird base", "intervals": [[190.0, 194.0]]}
+  ],
+  "expected": {
+    "state_order": [0, 1, 2, 3, 4, 5, 6],
+    "missing_states": [],
+    "order_violations": 0,
+    "off_path_events": 0,
+    "final_reached": true,
+    "first_divergence": null
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "label_kind": "EVALUATION_GROUND_TRUTH",
+  "never_system_input": true,
+  "annotator": "claude (AI-assisted), pending human verification",
+  "annotated_at": "2026-10-06",
+  "method": "Manual review of frames sampled with tracks.common.media.sample_frames at 0.2 fps (0-335 s), 0.5 fps (0-212 s) and 0.5 fps contact sheets around boundaries. Times are the first/last sampled frame where the paper clearly shows the state (resolution about 1-2 s). Hands-in-motion frames between states are transitions.",
+  "source_id": "src.origami.demo.v1",
+  "media": "OrigamiCrane.ogv (Tavin, CC BY 3.0), 400x226, 29.97 fps",
+  "window_sec": [0.0, 194.0],
+  "window_rationale": "t=0 flat square sheet; bird base complete and shown at t~190-194; from t~196 the expert narrows the flaps (crane steps beyond the bird base).",
+  "states": [
+    {
+      "index": 0,
+      "name": "flat square",
+      "properties": ["single unfolded square sheet", "coloured side up", "no creases"],
+      "intervals": [[0.0, 3.0]],
+      "keyframe_sec": 1.0
+    },
+    {
+      "index": 1,
+      "name": "book-folded rectangle",
+      "properties": ["square folded in half edge to edge", "rectangle shape", "coloured side outside"],
+      "intervals": [[8.0, 16.0], [24.0, 28.0]],
+      "keyframe_sec": 15.0,
+      "notes": "Folded in half one way (8-16), unfolded/flipped (18-22), folded the other way (24-28); square with cross creases visible 30-34 (counted as transition)."
+    },
+    {
+      "index": 2,
+      "name": "diagonal-folded triangle",
+      "properties": ["square folded corner to corner", "triangle shape", "white side outside"],
+      "intervals": [[38.0, 44.0], [50.0, 58.0]],
+      "keyframe_sec": 58.0,
+      "notes": "Both diagonals folded; 46-48 flip between the two diagonal folds."
+    },
+    {
+      "index": 3,
+      "name": "square base",
+      "properties": ["collapsed into a smaller square (diamond orientation)", "open end pointing down", "two flaps each side"],
+      "intervals": [[72.0, 80.0]],
+      "keyframe_sec": 78.0,
+      "notes": "Unfolded star crease pattern 62-66 and collapse 68-70 are transitions (preliminary base)."
+    },
+    {
+      "index": 4,
+      "name": "kite form",
+      "properties": ["lower edges folded to the centre crease", "kite shape", "top triangle folded down over the kite folds"],
+      "intervals": [[88.0, 112.0]],
+      "keyframe_sec": 110.0,
+      "notes": "Kite folds 82-98, top triangle folded down 100-106; these are creasing folds, unfolded 114-122 before the petal fold."
+    },
+    {
+      "index": 5,
+      "name": "petal fold one side",
+      "properties": ["front layer lifted and folded upward", "long diamond with a tall flap on one side", "back side still a square base"],
+      "intervals": [[150.0, 157.0]],
+      "keyframe_sec": 154.0,
+      "notes": "Unfold 114-122, petal fold 124-148. 158-188 the model is flipped, the kite folds and petal fold are repeated on the back (transition)."
+    },
+    {
+      "index": 6,
+      "name": "bird base",
+      "properties": ["both sides petal-folded", "long narrow diamond", "two flaps at the bottom that can separate"],
+      "intervals": [[190.0, 194.0]],
+      "keyframe_sec": 190.0,
+      "notes": "Shown flat at 190 and lifted with flaps visible at 192."
+    }
+  ],
+  "key_state": {
+    "index": 5,
+    "rule": "state with the longest expert transition into it (start_j - end_{j-1}, using each state's first start and last end); transitions: R1 5 s, R2 10 s, R3 14 s, R4 8 s, R5 38 s, R6 33 s",
+    "note": "Matches the usual origami view that the petal fold is the critical step of the bird base."
+  }
+}

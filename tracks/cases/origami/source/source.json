@@ -13,14 +13,18 @@
       "duration_sec": 335.0,
       "license": "CC BY 3.0",
       "mime_type": "video/ogg",
-      "notes": "Demonstration source. Skill window (crane up to bird base) set in window_sec once identified.",
+      "notes": "Demonstration source. Skill window [0, 194] s: flat square (t=0) to completed bird base (t~190-194); from t~196 the expert starts narrowing the bird-base flaps (crane steps beyond scope). Window identified by manual review of sampled frames (AI-assisted, pending human verification).",
       "path": "media/cache/src.origami.demo.v1.ogv",
       "role": "expert_video",
       "runtime_label": "INTERNET_REFERENCE",
       "sha256": "4489d37966da1be348742b9cb8f0e99abda7553078bfce2e7abe94062f32b485",
       "source_id": "src.origami.demo.v1",
       "url": "https://upload.wikimedia.org/wikipedia/commons/b/bb/OrigamiCrane.ogv",
-      "used_by_system": true
+      "used_by_system": true,
+      "window_sec": [
+        0.0,
+        194.0
+      ]
     },
     {
       "access_level": "public",
@@ -34,14 +38,18 @@
       "duration_sec": 336.35,
       "license": "CC BY 3.0",
       "mime_type": "video/ogg",
-      "notes": "Separate recording used as a test learner attempt (Track B input), not as goal source.",
+      "notes": "Used as a test learner attempt (Track B input), not as goal source. Observed 2026-10-06: frame-by-frame review and thumbnail correlation (best lag 0.0 s) indicate this is the SAME performance as src.origami.demo.v1 in a different encode/crop (320x240, 25 fps), not an independent recording. Treat it as a near-perfect positive control with an encoding/crop domain shift, not as an independent learner attempt. Same skill window [0, 194] s.",
       "path": "media/cache/src.origami.learner_crane.v1.ogv",
       "role": "learner_attempt",
       "runtime_label": "INTERNET_REFERENCE",
       "sha256": "546bb1108199f510d719f1b5c0e79f23cb1b907af1fd803a33e364819c559939",
       "source_id": "src.origami.learner_crane.v1",
       "url": "https://upload.wikimedia.org/wikipedia/commons/a/a0/Crane.ogv",
-      "used_by_system": false
+      "used_by_system": false,
+      "window_sec": [
+        0.0,
+        194.0
+      ]
     }
   ]
 }
