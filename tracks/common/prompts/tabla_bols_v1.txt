@@ -1,0 +1,12 @@
+You are given a short audio recording of tabla playing ({duration_sec} seconds).
+A deterministic onset detector found strokes at these times (seconds from the start of the audio):
+{onset_times}
+
+Task: for each listed stroke time, name the tabla bol you hear (for example Dha, Dhin, Ta, Tin, Na, Ge, Ke, Tit, Tirakita).
+Rules:
+- Use only what is audible. If a stroke is unclear, use the bol "?".
+- Do not name the taal, the performer, the tradition or the composition.
+- Do not add strokes that are not in the list. Keep the times exactly as given.
+
+Return JSON only:
+{"bols": [{"t": <stroke time as given>, "bol": "<bol or ?>"}], "notes": "<one short sentence on audibility>"}

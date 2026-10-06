@@ -72,6 +72,14 @@ def test_onsets_silence_is_empty():
     assert len(detect_onsets(np.zeros(SR, dtype=np.float32), SR)) == 0
 
 
+def test_onsets_pure_tone_gives_no_onsets():
+    """A steady 440 Hz sine wave has tiny spectral-flux changes; the absolute floor must suppress them."""
+    t = np.arange(5 * SR) / SR
+    x = (0.8 * np.sin(2 * np.pi * 440 * t)).astype(np.float32)
+    on = detect_onsets(x, SR)
+    assert len(on) <= 1, f"Expected <= 1 onset on a pure tone, got {len(on)}"
+
+
 def test_decode_audio_wav_roundtrip(tmp_path):
     x = click_track([0.25, 0.75], dur=1.0)
     p = tmp_path / "a.wav"

@@ -1,0 +1,31 @@
+{
+  "constraints": [
+    {
+      "constraint_type": "duration",
+      "description": "Record about the same length as the source segment",
+      "value": "12s"
+    },
+    {
+      "constraint_type": "tempo",
+      "description": "Play at the source tempo (counted beats per minute)",
+      "value": "158 BPM"
+    },
+    {
+      "constraint_type": "media",
+      "description": "Audio upload, at least 3 s, no clipping; video optional and not scored",
+      "value": "audio"
+    }
+  ],
+  "instructions": "1. Listen to the source segment (20.0-32.0 s of the recording, 12 s) several times. Its stroke pulse is 0.189 s, about 158 beats per minute counting 2 strokes per beat [CLM-01].\n2. Record yourself playing about the same length (12 s) at the source tempo, placing every stroke on the pulse as the source does [CLM-02].\n3. Sound the bass (bayan) on the same strokes as the source and withhold it elsewhere: BBB--.B---B- repeating every 12 pulses [CLM-04] [CLM-03].\n4. Keep the pulse steady from the first stroke to the last; do not speed up or slow down [CLM-05].\n5. Record in a quiet room with the phone about 1 m from the drums and check the recording is not distorted. Upload audio (any common format); a video may be attached but is not scored [CLM-06].",
+  "package_id": "kp.tabla.1",
+  "rubric_id": "rubric.tabla.1",
+  "target_criteria_ids": [
+    "CRIT-TABLA-TEMPO",
+    "CRIT-TABLA-TIMING",
+    "CRIT-TABLA-BAYAN",
+    "CRIT-TABLA-COMPLETE",
+    "CRIT-TABLA-STEADY"
+  ],
+  "task_id": "task.tabla.1",
+  "title": "Play the source tabla segment at its tempo with the same bass pattern"
+}

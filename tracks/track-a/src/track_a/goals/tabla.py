@@ -31,7 +31,7 @@ from track_a.goals import CriterionTemplate, GoalBuildResult
 
 SR = 16000
 BUILDER_VERSION = "tabla_goal_v1"
-PROMPT_PATH = Path(__file__).resolve().parents[3] / "prompts" / "tabla_bols_v1.txt"
+PROMPT_PATH = Path(__file__).resolve().parents[4] / "common" / "prompts" / "tabla_bols_v1.txt"
 MIN_ONSETS = 8
 
 # evaluation-core §5.2 default bands
@@ -141,8 +141,12 @@ def build(source_path: Path, source: SourceRecord, ctx: RunContext, *, case_id: 
     pulse = payload["stroke_pulse_sec"]
 
     def ev(kind: str, idx: int, start: float, end: float, excerpt: str, state=VerificationState.OBSERVED, conf=1.0) -> EvidenceRef:
+        # Derive evidence modality from the source MIME type so grounding.py's modality
+        # check passes regardless of container format (e.g. audio/wav vs video/webm).
+        mime_major = source.mime_type.split("/", 1)[0].lower()
+        ev_modality = Modality.VIDEO if mime_major == "video" else Modality.AUDIO
         return EvidenceRef(
-            evidence_id=f"ev.{case_id}.{kind}.{idx:02d}", source_id=sid, modality=Modality.AUDIO,
+            evidence_id=f"ev.{case_id}.{kind}.{idx:02d}", source_id=sid, modality=ev_modality,
             start_sec=round(start, 3), end_sec=round(end, 3), cue_excerpt=excerpt,
             verification_state=state, confidence=conf,
         )

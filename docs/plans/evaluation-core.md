@@ -172,6 +172,12 @@ Bands are calibrated on the synthetic + hand-drawn set (§7) and versioned in th
 | `CRIT-TABLA-STEADY`: steady pulse | | 1 | CV ≤ 0.08 sat · ≤ 0.15 partial |
 | `CRIT-TABLA-BOLS` (only if the audio model is enabled): bol identity | | 2 | edit-distance accuracy ≥ 0.85 sat · ≥ 0.6 partial |
 
+> **Reported-only metric:** `tabla.timing_p90_ms` (90th-percentile stroke deviation, ms) is computed
+> alongside the median and included in the metrics dict, but has no observer band and does not affect
+> criterion status. The median is the criterion because it is robust to sparse outliers; those outliers
+> are already captured individually as divergence events and, when systematic, by `CRIT-TABLA-STEADY`.
+> The p90 makes heavy-but-infrequent timing errors visible to the UI without changing scoring.
+
 ## 6. Feedback and transmission (shared)
 
 - **Feedback** for the first-divergence criterion first. Each item gives what was observed (numbers + locator), the goal's version (reference region, keyframe or audio segment from the criterion map), why it matters (cites the claim), and the drill.
