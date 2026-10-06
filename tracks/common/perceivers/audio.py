@@ -21,7 +21,7 @@ from tracks.common.runtime import RunContext
 
 log = logging.getLogger(__name__)
 
-_PROMPTS_DIR = Path(__file__).resolve().parents[2] / "prompts"
+_PROMPTS_DIR = Path(__file__).resolve().parents[1] / "prompts"
 _PROMPT_ID = "perceive_audio"
 _PROMPT_VERSION_FILE = "perceive_audio_v1.txt"
 
