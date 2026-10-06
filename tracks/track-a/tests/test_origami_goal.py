@@ -104,14 +104,14 @@ class FakeGateway:
         return GenerationResult(ModelGateway._validate(text, schema, prompt_id), text, meta)
 
 
-EXPERT_SEQ = [(0, 3), ("t", 2), (1, 4), ("t", 3), (2, 4), ("t", 2), (3, 3), ("t", 6), (4, 3), ("t", 4), (5, 3)]
+EXPERT_SEQ = [(0, 6), ("t", 4), (1, 8), ("t", 6), (2, 8), ("t", 4), (3, 6), ("t", 12), (4, 6), ("t", 8), (5, 6)]
 
 
 @pytest.fixture
 def expert(tmp_path):
     video = make_video(tmp_path / "expert.mp4", EXPERT_SEQ)
     src = SourceRecord(source_id="src.origami.test.v1", role="expert_video", mime_type="video/mp4", sha256="0" * 64, bytes=1,
-                       path="expert.mp4", window_sec=[0.0, 37.0], creator="test", license="CC0", attribution="test",
+                       path="expert.mp4", window_sec=[0.0, 74.0], creator="test", license="CC0", attribution="test",
                        runtime_label="SYNTHETIC")
     case_dir = tmp_path / "case"
     case_dir.mkdir()
@@ -129,12 +129,12 @@ def test_build_states_claims_criteria(expert):
     goal = goal_schema.PAYLOAD_MODEL.model_validate(r.goal_payload)
     assert [s.name for s in goal.states] == NAMES          # names normalised (upper-case variant merged)
     assert goal.final_state_index == 5
-    # transitions into states: R1 2s, R2 3s, R3 2s, R4 6s, R5 4s -> key state R4
+    # transitions into states: R1 4s, R2 6s, R3 4s, R4 12s, R5 8s -> key state R4
     assert goal.key_state_index == 4
     for s in goal.states:
         assert (case_dir / "knowledge" / "goal_assets" / s.keyframe_asset).exists()
         assert s.start_sec <= s.keyframe_sec <= s.end_sec
-    assert goal.states[0].start_sec == 0.0 and goal.states[5].end_sec >= 34.0
+    assert goal.states[0].start_sec == 0.0 and goal.states[5].end_sec >= 68.0
     # claims: 6 observed states, 1 order claim, 5 inferred how-to claims
     assert [c.claim_id for c in r.claims] == [f"CLM-{i:02d}" for i in range(1, 13)]
     assert all(c.is_observed for c in r.claims[:7]) and not any(c.is_observed for c in r.claims[7:])
@@ -159,7 +159,7 @@ def test_build_states_claims_criteria(expert):
     lines = r.task_instructions.splitlines()
     assert lines[0].startswith("1. ") and all(re.search(r"\[CLM-\d\d\]", ln) for ln in lines)
     assert set(re.findall(r"CLM-\d\d", r.task_instructions)) <= claim_ids
-    assert len(r.run_keys) == len(gw.calls) == 4           # 37 frames / 12 per batch
+    assert len(r.run_keys) == len(gw.calls) == 10           # 37 frames / 4 per batch (FPS=0.5, 74s)
     assert r.built_with["placeholder"] is False
 
 
@@ -170,7 +170,7 @@ def test_frames_not_video_and_batch_limits(expert):
     raw = video.read_bytes()
     for call in gw.calls:
         assert call["model_key"] == "video_frames"
-        assert 1 <= len(call["parts"]) <= 12
+        assert 1 <= len(call["parts"]) <= 4   # BATCH_SIZE=4 (v2)
         for p in call["parts"]:
             assert isinstance(p, ImagePart) and p.mime_type == "image/jpeg" and p.data[:2] == b"\xff\xd8"
             assert p.data != raw and p.label.startswith("Frame t=")

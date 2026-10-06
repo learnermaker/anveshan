@@ -1,0 +1,3 @@
+{
+  "text": "{\"frames\": [{\"t\": 101.0, \"state\": \"transition\", \"note\": \"hands folding the paper, shape between R1 and R2\"}, {\"t\": 103.0, \"state\": \"transition\", \"note\": \"hands pressing down on a folded shape\"}, {\"t\": 105.0, \"state\": \"R2\", \"note\": \"triangular shape visible with fold lines\"}, {\"t\": 107.0, \"state\": \"transition\", \"note\": \"hands folding a corner, transitioning to R3\"}, {\"t\": 109.0, \"state\": \"R3\", \"note\": \"compact diamond shape with multiple layers\"}, {\"t\": 110.0, \"state\": \"R3\", \"note\": \"diamond shape being held by hands\"}, {\"t\": 112.0, \"state\": \"R4\", \"note\": \"arrowhead shape, kite form visible\"}, {\"t\": 114.0, \"state\": \"R4\", \"note\": \"kite form with yellow paper visible\"}]}"
+}

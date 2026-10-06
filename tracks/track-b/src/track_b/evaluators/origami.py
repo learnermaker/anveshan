@@ -36,11 +36,12 @@ from track_b.trajectory import AttemptMedia, DivergenceEvent, MetricValue, Traje
 FPS = 1.0
 MAX_FRAMES = 90
 MAX_SIDE = 384
-MAX_IMAGES_PER_CALL = 16
-MIN_LEARNER_FRAMES_PER_CALL = 4
+MAX_IMAGES_PER_CALL = 8   # v2: learner frames only (no reference images); was 16
+MIN_LEARNER_FRAMES_PER_CALL = 2
 MODEL_KEY = "video_frames"
 PROMPTS = Path(__file__).resolve().parents[3] / "prompts"
-MATCH_PROMPT = PROMPTS / "origami_match_v1.txt"
+MATCH_PROMPT = PROMPTS / "origami_match_v2.txt"   # v2: text-only reference states
+MATCH_PROMPT_V1 = PROMPTS / "origami_match_v1.txt"  # kept for reference
 FINAL_PROMPT = PROMPTS / "origami_final_v1.txt"
 ASSET_DIR = Path("knowledge") / "goal_assets"
 
@@ -63,6 +64,17 @@ class FrameMatchDTO(BaseModel):
     t: float
     state: Union[int, Literal["transition", "off_path", "unclear"]]
     note: str = ""
+
+    @field_validator("t", mode="before")
+    @classmethod
+    def _strip_s_suffix(cls, v: object) -> object:
+        """The model sometimes returns '12.0s' instead of 12.0; strip the trailing 's'."""
+        if isinstance(v, str):
+            try:
+                return float(v.rstrip("s"))
+            except ValueError:
+                pass
+        return v
 
     @field_validator("state", mode="before")
     @classmethod
@@ -120,22 +132,33 @@ def _ref_parts(goal: OrigamiGoal, refs: Sequence[Image.Image]) -> List[ImagePart
     return [ImagePart(data=image_to_jpeg_bytes(img), label=f"Reference R{s.index}: {s.name}") for s, img in zip(goal.states, refs)]
 
 
-def label_frames(goal: OrigamiGoal, refs: Sequence[Image.Image], frames: Sequence[Frame], ctx: RunContext):
-    """Per-frame labels from Gemma. Returns (labels, notes, run_keys)."""
-    k = goal.final_state_index
-    ref_parts = _ref_parts(goal, refs)
-    per_call = max(MIN_LEARNER_FRAMES_PER_CALL, MAX_IMAGES_PER_CALL - len(ref_parts))
+def label_frames(goal: OrigamiGoal, refs: Sequence[Image.Image], frames: Sequence[Frame], ctx: RunContext,
+                  inter_batch_sleep_s: float = 0.0):
+    """Per-frame labels from Gemma.
+
+    v2 policy: reference states described in text only (no reference images).
+    Sends up to MAX_IMAGES_PER_CALL learner frames per call.
+    Returns (labels, notes, run_keys).
+
+    ``inter_batch_sleep_s``: optional sleep between batches for free-tier rate limiting.
+    """
+    import time
+    per_call = MAX_IMAGES_PER_CALL  # learner frames only; ref states go as text in the prompt
     ref_text = "\n".join(f"- R{s.index}: {s.name} — {'; '.join(s.properties)}" for s in goal.states)
+    k = goal.final_state_index
     labels: List[Label] = []
     notes: List[str] = []
     keys: List[str] = []
-    for b in range(0, len(frames), per_call):
+    for bi, b in enumerate(range(0, len(frames), per_call)):
+        if bi > 0 and inter_batch_sleep_s > 0:
+            time.sleep(inter_batch_sleep_s)
         batch = frames[b: b + per_call]
         prompt, version = load_prompt(
             MATCH_PROMPT, k=str(k), reference_states=ref_text,
             frame_times=", ".join(f"t={f.time_sec:.1f}s" for f in batch),
         )
-        parts = ref_parts + [ImagePart(data=image_to_jpeg_bytes(f.image), label=f"Learner frame t={f.time_sec:.1f}s") for f in batch]
+        # v2: only learner frame images; reference states are in the prompt text
+        parts = [ImagePart(data=image_to_jpeg_bytes(f.image), label=f"Learner frame t={f.time_sec:.1f}s") for f in batch]
         res = ctx.gateway.generate_json(
             model_key=MODEL_KEY, prompt_id="origami_match", prompt_version=version, prompt_text=prompt,
             schema=MatchBatchDTO, parts=parts, expected_behavior="one reference-state label per learner frame",
@@ -309,7 +332,8 @@ def evaluate(goal: GoalModel, attempt: AttemptMedia, ctx: RunContext) -> Traject
     if len(frames) > MAX_FRAMES:
         warnings.append(f"attempt has {len(frames)} frames at {FPS:g} fps; subsampled evenly to {MAX_FRAMES}")
         frames = subsample_even(frames, MAX_FRAMES)
-    labels, notes, keys = label_frames(g, refs, frames, ctx)
+    labels, notes, keys = label_frames(g, refs, frames, ctx,
+                                       inter_batch_sleep_s=20.0 if ctx.mode == "live" else 0.0)
     tr = analyze([f.time_sec for f in frames], labels, g.final_state_index, g.key_state_index)
     pairwise, fkey = final_check(g, refs, frames[-1], ctx)
     return to_result(g, tr, notes, attempt, pairwise, warnings, keys + [fkey])  # type: ignore[arg-type]

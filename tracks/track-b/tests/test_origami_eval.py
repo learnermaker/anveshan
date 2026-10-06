@@ -195,14 +195,17 @@ def responder(prompt_id, prompt_text, parts):
     refs = [p for p in parts if p.label.startswith("Reference")]
     if prompt_id == "origami_match":
         frames = []
+        # v2: no reference image parts; all parts are learner frames
         for p in parts:
             m = re.match(r"Learner frame t=([\d.]+)s", p.label)
             if m:
                 frames.append({"t": float(m.group(1)), "state": classify(p.data), "note": "fake"})
         return json.dumps({"frames": frames})
     assert prompt_id == "origami_final"
-    last = classify(parts[1].data)
-    match = last == classify(refs[0].data) if last != U else None
+    # final check still has reference image as first part
+    ref_img = classify(refs[0].data) if refs else None
+    last = classify(parts[-1].data)
+    match = last == ref_img if last != U and ref_img is not None else None
     return json.dumps({"matches": match, "properties": [{"property": "p", "present": match}], "note": "fake"})
 
 
@@ -294,7 +297,11 @@ def test_frames_not_video_and_image_budget(goal_case, tmp_path):
             assert isinstance(p, ImagePart) and p.mime_type == "image/jpeg" and p.data[:2] == b"\xff\xd8"
             assert p.data != raw and raw.find(p.data) == -1
     match_calls = [c for c in gw.calls if c["prompt_id"] == "origami_match"]
-    assert all([p.label for p in c["parts"][:5]] == [f"Reference R{i}: state {i}" for i in range(5)] for c in match_calls)
+    # v2 policy: no reference images in match calls; all parts are learner frames
+    for mc in match_calls:
+        assert all(p.label.startswith("Learner frame") for p in mc["parts"])
+    # reference state text must still appear in the prompt
+    assert all("R0" in mc["prompt"] for mc in match_calls)
 
 
 def test_long_video_subsampled_with_warning(goal_case, tmp_path):

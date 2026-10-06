@@ -1,0 +1,251 @@
+{
+  "claims": [
+    {
+      "claim_id": "CLM-01",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 1.0,
+          "cue_excerpt": "flat; single layer; square shape",
+          "end_sec": 2.002,
+          "evidence_id": "ev.origami.state.00",
+          "modality": "video",
+          "source_id": "src.origami.demo.v1",
+          "start_sec": 0.0,
+          "verification_state": "observed"
+        },
+        {
+          "confidence": 1.0,
+          "cue_excerpt": "keyframe origami_state_0.jpg",
+          "end_sec": 2.002,
+          "evidence_id": "ev.origami.keyframe.00",
+          "modality": "video",
+          "source_id": "src.origami.demo.v1#frame=0.000",
+          "start_sec": 0.0,
+          "verification_state": "observed"
+        }
+      ],
+      "is_observed": true,
+      "statement": "State R0 (flat square): flat; single layer; square shape."
+    },
+    {
+      "claim_id": "CLM-02",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 1.0,
+          "cue_excerpt": "rectangular shape; folded in half",
+          "end_sec": 42.009,
+          "evidence_id": "ev.origami.state.01",
+          "modality": "video",
+          "source_id": "src.origami.demo.v1",
+          "start_sec": 40.007,
+          "verification_state": "observed"
+        },
+        {
+          "confidence": 1.0,
+          "cue_excerpt": "keyframe origami_state_1.jpg",
+          "end_sec": 40.007,
+          "evidence_id": "ev.origami.keyframe.01",
+          "modality": "video",
+          "source_id": "src.origami.demo.v1#frame=40.007",
+          "start_sec": 40.007,
+          "verification_state": "observed"
+        }
+      ],
+      "is_observed": true,
+      "statement": "State R1 (book-folded rectangle): rectangular shape; folded in half."
+    },
+    {
+      "claim_id": "CLM-03",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 0.33,
+          "cue_excerpt": "triangular shape; folded along diagonal; flat",
+          "end_sec": 98.031,
+          "evidence_id": "ev.origami.state.02",
+          "modality": "video",
+          "source_id": "src.origami.demo.v1",
+          "start_sec": 46.013,
+          "verification_state": "observed"
+        },
+        {
+          "confidence": 0.33,
+          "cue_excerpt": "keyframe origami_state_2.jpg",
+          "end_sec": 80.013,
+          "evidence_id": "ev.origami.keyframe.02",
+          "modality": "video",
+          "source_id": "src.origami.demo.v1#frame=80.013",
+          "start_sec": 80.013,
+          "verification_state": "observed"
+        }
+      ],
+      "is_observed": true,
+      "statement": "State R2 (diagonal-folded triangle): triangular shape; folded along diagonal; flat."
+    },
+    {
+      "claim_id": "CLM-04",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 1.0,
+          "cue_excerpt": "compact diamond; multiple layers",
+          "end_sec": 104.004,
+          "evidence_id": "ev.origami.state.03",
+          "modality": "video",
+          "source_id": "src.origami.demo.v1",
+          "start_sec": 102.002,
+          "verification_state": "observed"
+        },
+        {
+          "confidence": 1.0,
+          "cue_excerpt": "keyframe origami_state_3.jpg",
+          "end_sec": 102.002,
+          "evidence_id": "ev.origami.keyframe.03",
+          "modality": "video",
+          "source_id": "src.origami.demo.v1#frame=102.002",
+          "start_sec": 102.002,
+          "verification_state": "observed"
+        }
+      ],
+      "is_observed": true,
+      "statement": "State R3 (square base): compact diamond; multiple layers."
+    },
+    {
+      "claim_id": "CLM-05",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 0.43,
+          "cue_excerpt": "arrowhead shape; taller than wide; taller-than-wide; yellow paper visible",
+          "end_sec": 188.021,
+          "evidence_id": "ev.origami.state.04",
+          "modality": "video",
+          "source_id": "src.origami.demo.v1",
+          "start_sec": 130.03,
+          "verification_state": "observed"
+        },
+        {
+          "confidence": 0.43,
+          "cue_excerpt": "keyframe origami_state_4.jpg",
+          "end_sec": 154.021,
+          "evidence_id": "ev.origami.keyframe.04",
+          "modality": "video",
+          "source_id": "src.origami.demo.v1#frame=154.021",
+          "start_sec": 154.021,
+          "verification_state": "observed"
+        }
+      ],
+      "is_observed": true,
+      "statement": "State R4 (kite form): arrowhead shape; taller than wide; taller-than-wide; yellow paper visible."
+    },
+    {
+      "claim_id": "CLM-06",
+      "claim_type": "condition",
+      "evidence_refs": [
+        {
+          "confidence": 0.33,
+          "cue_excerpt": "R0 flat square -> R1 book-folded rectangle -> R2 diagonal-folded triangle -> R3 square base -> R4 kite form",
+          "end_sec": 188.021,
+          "evidence_id": "ev.origami.order",
+          "modality": "video",
+          "source_id": "src.origami.demo.v1",
+          "start_sec": 0.0,
+          "verification_state": "observed"
+        }
+      ],
+      "is_observed": true,
+      "statement": "In the demonstration the paper passes through the states in this order: R0 flat square -> R1 book-folded rectangle -> R2 diagonal-folded triangle -> R3 square base -> R4 kite form."
+    },
+    {
+      "claim_id": "CLM-07",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 0.5,
+          "cue_excerpt": "The paper is folded in half along a central axis to create a rectangular shape.",
+          "end_sec": 40.007,
+          "evidence_id": "ev.origami.howto.01",
+          "modality": "video",
+          "source_id": "src.origami.demo.v1",
+          "start_sec": 2.002,
+          "verification_state": "inferred"
+        }
+      ],
+      "is_observed": false,
+      "statement": "From R0 (flat square) to R1 (book-folded rectangle): The paper is folded in half along a central axis to create a rectangular shape."
+    },
+    {
+      "claim_id": "CLM-08",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 0.5,
+          "cue_excerpt": "The rectangle is folded along its diagonal to form a triangle.",
+          "end_sec": 46.013,
+          "evidence_id": "ev.origami.howto.02",
+          "modality": "video",
+          "source_id": "src.origami.demo.v1",
+          "start_sec": 42.009,
+          "verification_state": "inferred"
+        }
+      ],
+      "is_observed": false,
+      "statement": "From R1 (book-folded rectangle) to R2 (diagonal-folded triangle): The rectangle is folded along its diagonal to form a triangle."
+    },
+    {
+      "claim_id": "CLM-09",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 0.5,
+          "cue_excerpt": "The corners are folded toward the center to collapse the triangle into a compact diamond.",
+          "end_sec": 102.002,
+          "evidence_id": "ev.origami.howto.03",
+          "modality": "video",
+          "source_id": "src.origami.demo.v1",
+          "start_sec": 98.031,
+          "verification_state": "inferred"
+        }
+      ],
+      "is_observed": false,
+      "statement": "From R2 (diagonal-folded triangle) to R3 (square base): The corners are folded toward the center to collapse the triangle into a compact diamond."
+    },
+    {
+      "claim_id": "CLM-10",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 0.5,
+          "cue_excerpt": "The side edges of the square base are folded inward toward the center crease.",
+          "end_sec": 130.03,
+          "evidence_id": "ev.origami.howto.04",
+          "modality": "video",
+          "source_id": "src.origami.demo.v1",
+          "start_sec": 104.004,
+          "verification_state": "inferred"
+        }
+      ],
+      "is_observed": false,
+      "statement": "From R3 (square base) to R4 (kite form): The side edges of the square base are folded inward toward the center crease."
+    }
+  ],
+  "consent": {
+    "consent_scope": "public licence: CC BY 3.0",
+    "contributor_name": "Tavin",
+    "granted_at": null,
+    "notes": "OrigamiCrane.ogv by Tavin, CC BY 3.0, via Wikimedia Commons (https://commons.wikimedia.org/wiki/File:OrigamiCrane.ogv)",
+    "revocable": false
+  },
+  "expert_review": {
+    "notes": null,
+    "reviewed_at": null,
+    "reviewer_name": "unassigned",
+    "status": "pending"
+  },
+  "package_id": "kp.origami.1",
+  "skill_id": "skill.origami",
+  "summary": "5 paper states recognised in the expert video window 0-194 s: R0 flat square -> R1 book-folded rectangle -> R2 diagonal-folded triangle -> R3 square base -> R4 kite form.",
+  "title": "Origami crane: square to bird base"
+}

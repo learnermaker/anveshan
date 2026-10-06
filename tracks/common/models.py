@@ -238,6 +238,15 @@ class GenerationResult:
     metadata: RunMetadata
 
 
+_RETRYABLE_SIGNALS = ("504", "deadline_exceeded", "unavailable", "service unavailable")
+
+
+def _is_retryable_exc(exc: Exception) -> bool:
+    """Return True if the exception signals a transient server error worth one retry."""
+    msg = str(exc).lower()
+    return any(s in msg for s in _RETRYABLE_SIGNALS)
+
+
 class ModelGateway:
     def __init__(
         self,
@@ -245,15 +254,18 @@ class ModelGateway:
         store: RunStore,
         registry: Optional[ModelRegistry] = None,
         api_key: Optional[str] = None,
-        timeout_ms: int = 120_000,
+        timeout_ms: Optional[int] = None,
         client: Any = None,
     ) -> None:
+        """``timeout_ms`` defaults to ``ANVESHAN_MODEL_TIMEOUT_MS`` env var (default 300 000 ms)."""
         if mode not in ("live", "recorded"):
             raise ValueError(mode)
         self.mode = mode
         self.store = store
         self.registry = registry or ModelRegistry()
         self._api_key = api_key
+        if timeout_ms is None:
+            timeout_ms = int(os.environ.get("ANVESHAN_MODEL_TIMEOUT_MS", "300000"))
         self._timeout_ms = timeout_ms
         self._client = client
 
@@ -318,28 +330,37 @@ class ModelGateway:
         t0 = time.perf_counter()
         response = None
         last_exc: Optional[Exception] = None
-        for attempt, json_mode in enumerate((True, False)):
-            cfg: Dict[str, Any] = {"temperature": 0.0}
-            if system:
-                cfg["system_instruction"] = system
-            if json_mode:
-                cfg["response_mime_type"] = "application/json"
-            try:
-                response = client.models.generate_content(
-                    model=model_id, contents=contents, config=types.GenerateContentConfig(**cfg)
-                )
-                if json_mode is False:
-                    notes.append("json_mode_unsupported_retried_without")
+        for api_attempt in range(2):  # single retry on 504 / DEADLINE_EXCEEDED / UNAVAILABLE
+            for attempt, json_mode in enumerate((True, False)):
+                cfg: Dict[str, Any] = {"temperature": 0.0}
+                if system:
+                    cfg["system_instruction"] = system
+                if json_mode:
+                    cfg["response_mime_type"] = "application/json"
+                try:
+                    response = client.models.generate_content(
+                        model=model_id, contents=contents, config=types.GenerateContentConfig(**cfg)
+                    )
+                    if json_mode is False:
+                        notes.append("json_mode_unsupported_retried_without")
+                    break
+                except Exception as exc:  # provider error: retry without JSON mode, then fail explicitly
+                    last_exc = exc
+                    msg = str(exc).lower()
+                    if attempt == 0 and ("mime" in msg or "json" in msg or "response_mime_type" in msg or "invalid_argument" in msg):
+                        continue
+                    break
+            if response is not None:
                 break
-            except Exception as exc:  # provider error: retry once without JSON mode, then fail explicitly
-                last_exc = exc
-                msg = str(exc).lower()
-                if attempt == 0 and ("mime" in msg or "json" in msg or "response_mime_type" in msg or "invalid_argument" in msg):
-                    continue
-                break
+            # Check whether the failure is retryable (504 / DEADLINE_EXCEEDED / UNAVAILABLE).
+            if api_attempt == 0 and last_exc is not None and _is_retryable_exc(last_exc):
+                notes.append(f"retried_once_after_{type(last_exc).__name__}")
+                continue
+            break  # not retryable or already retried once
         latency = int((time.perf_counter() - t0) * 1000)
         if response is None:
-            cat = FailureCategory.MODEL_TIMEOUT if last_exc and "timeout" in str(last_exc).lower() else FailureCategory.MODEL_FAILURE
+            exc_msg = str(last_exc).lower() if last_exc else ""
+            cat = FailureCategory.MODEL_TIMEOUT if "timeout" in exc_msg or "deadline_exceeded" in exc_msg else FailureCategory.MODEL_FAILURE
             raise ModelError(cat, f"{model_id} call failed: {last_exc}", {"model_id": model_id})
         raw_text = getattr(response, "text", None) or ""
         meta = RunMetadata(

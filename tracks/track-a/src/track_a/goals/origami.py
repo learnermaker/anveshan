@@ -25,7 +25,7 @@ from pathlib import Path
 from typing import Dict, List, Literal, Optional, Sequence, Tuple
 
 import numpy as np
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from tracks.common import locators
 from tracks.common.casedata import Band, ObserverBinding, SourceRecord
@@ -43,15 +43,16 @@ from tracks.common.schemas import (
 )
 from track_a.goals import CriterionTemplate, GoalBuildResult
 
-ALGORITHM = "origami_goal_v1"
-FPS = 1.0
-BATCH_SIZE = 12
+ALGORITHM = "origami_goal_v3"
+FPS = 0.5   # reduced from 1.0; combined with inter_batch_sleep manages rate limits in live mode
+BATCH_SIZE = 4   # reduced from 12; keeps per-call image count small for complex analysis prompts
 MAX_SIDE = 384
 MIN_RUN = 2
 MODE_WINDOW = 3
 MODEL_KEY = "video_frames"
 PROMPT_ID = "origami_states"
-PROMPT_PATH = Path(__file__).resolve().parents[3] / "prompts" / "origami_states_v1.txt"
+PROMPT_PATH = Path(__file__).resolve().parents[3] / "prompts" / "origami_states_v3.txt"
+PROMPT_PATH_V1 = Path(__file__).resolve().parents[3] / "prompts" / "origami_states_v1.txt"  # kept for reference
 ASSET_DIR = Path("knowledge") / "goal_assets"
 
 METRIC_FINAL = "origami.final_match"
@@ -73,6 +74,14 @@ class FrameStateDTO(BaseModel):
     state_name: Optional[str] = None
     properties: List[str] = Field(default_factory=list)
     hands_occlude: bool = False
+
+    @field_validator("t", mode="before")
+    @classmethod
+    def _strip_s_suffix(cls, v: object) -> object:
+        """The model sometimes returns '12.0s' instead of 12.0; strip the trailing 's'."""
+        if isinstance(v, str):
+            return float(v.rstrip("s"))
+        return v
 
     @model_validator(mode="after")
     def _name(self) -> "FrameStateDTO":
@@ -209,13 +218,20 @@ def _known_states_text(known: Dict[str, List[str]]) -> str:
     return "\n".join(f"- {n}: {', '.join(p) if p else '(no properties yet)'}" for n, p in known.items())
 
 
-def observe_frames(frames: Sequence[Frame], ctx: RunContext, batch_size: int = BATCH_SIZE):
-    """Run the per-frame state recognition. Returns (per-frame DTOs, fold notes, run keys)."""
+def observe_frames(frames: Sequence[Frame], ctx: RunContext, batch_size: int = BATCH_SIZE,
+                   inter_batch_sleep_s: float = 0.0):
+    """Run the per-frame state recognition. Returns (per-frame DTOs, fold notes, run keys).
+
+    ``inter_batch_sleep_s``: optional sleep between batches for free-tier rate limiting.
+    """
+    import time
     out: List[FrameStateDTO] = []
     notes: Dict[str, str] = {}
     run_keys: List[str] = []
     known: Dict[str, List[str]] = {}
-    for b in range(0, len(frames), batch_size):
+    for bi, b in enumerate(range(0, len(frames), batch_size)):
+        if bi > 0 and inter_batch_sleep_s > 0:
+            time.sleep(inter_batch_sleep_s)
         batch = frames[b: b + batch_size]
         prompt, version = load_prompt(
             PROMPT_PATH,
@@ -279,7 +295,7 @@ def build(source_path: Path, source: SourceRecord, ctx: RunContext, *, case_id: 
     if len(frames) < 2 * MIN_RUN:
         raise AnveshanFailure(FailureCategory.INVALID_INPUT, f"too few frames in window [{w0}, {w1}] ({len(frames)})")
 
-    dtos, fold_notes, run_keys = observe_frames(frames, ctx)
+    dtos, fold_notes, run_keys = observe_frames(frames, ctx, inter_batch_sleep_s=12.0 if ctx.mode == "live" else 0.0)
     times = [f.time_sec for f in frames]
     raw = [norm_name(d.state_name) if d.phase == "state" else None for d in dtos]
     merged, merge_warn = merge_states(times, raw)
@@ -351,7 +367,8 @@ def build(source_path: Path, source: SourceRecord, ctx: RunContext, *, case_id: 
                         source_id=locators.with_frame(sid, s["keyframe_sec"]),
                         modality=Modality.VIDEO,
                         start_sec=s["keyframe_sec"],
-                        end_sec=s["keyframe_sec"],
+                        # Avoid 0.0/0.0 interval: if keyframe is at t=0 give it a small positive end
+                        end_sec=max(s["keyframe_sec"], s["end_sec"]) if s["keyframe_sec"] == 0.0 else s["keyframe_sec"],
                         cue_excerpt=f"keyframe {s['keyframe_asset']}",
                         verification_state=VerificationState.OBSERVED,
                         confidence=agreement[i],
@@ -524,11 +541,12 @@ def build(source_path: Path, source: SourceRecord, ctx: RunContext, *, case_id: 
             "mode_filter_window": MODE_WINDOW,
             "keyframe_rule": "lowest mean grayscale change to neighbouring frames among the state's frames, preferring frames without hand occlusion",
             "key_state_rule": "longest expert transition into the state (start_j - end_{j-1})",
-            "prompt": f"{PROMPT_ID}@v1",
+            "prompt": f"{PROMPT_ID}@v3",
             "model_key": MODEL_KEY,
             "window": [w0, w1],
             "frames_sampled": len(frames),
             "state_agreement": agreement,
             "placeholder": False,
+            "policy": "v3: batch_size=4, explicit origami vocabulary in prompt",
         },
     )

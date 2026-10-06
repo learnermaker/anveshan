@@ -1,0 +1,3 @@
+{
+  "text": "{\"frames\": [{\"t\": 69.0, \"state\": \"transition\", \"note\": \"hands folding a white heart shape, not matching reference states\"}, {\"t\": 72.0, \"state\": 2, \"note\": \"triangular shape being held\"}, {\"t\": 74.0, \"state\": 2, \"note\": \"triangular shape being held\"}, {\"t\": 76.0, \"state\": 2, \"note\": \"triangular shape being held\"}, {\"t\": 78.0, \"state\": 3, \"note\": \"compact diamond shape, multiple layers\"}, {\"t\": 80.0, \"state\": 3, \"note\": \"compact diamond shape, multiple layers\"}, {\"t\": 82.0, \"state\": \"transition\", \"note\": \"hands folding the diamond shape\"}, {\"t\": 85.0, \"state\": 4, \"note\": \"kite/arrowhead shape, yellow paper visible\"}]}"
+}

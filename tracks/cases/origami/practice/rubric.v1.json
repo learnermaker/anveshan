@@ -1,0 +1,49 @@
+{
+  "criteria": [
+    {
+      "criterion_id": "CRIT-ORI-ORDER",
+      "description": "The learner reaches the paper states in the order the expert demonstrated.",
+      "name": "Folds in the demonstrated order",
+      "observable_indicator": "number of states reached out of the demonstrated order",
+      "required": true,
+      "weight": 2.0
+    },
+    {
+      "criterion_id": "CRIT-ORI-COMPLETE",
+      "description": "Each paper state R0..Rk from the demonstration appears in the attempt.",
+      "name": "Every demonstrated state reached",
+      "observable_indicator": "number of demonstrated states never reached",
+      "required": false,
+      "weight": 2.0
+    },
+    {
+      "criterion_id": "CRIT-ORI-CLEAN",
+      "description": "No sustained folds outside the demonstrated states and no fall-back of two or more states.",
+      "name": "No off-path folds",
+      "observable_indicator": "number of off-path or regression events (>= 2 consecutive frames)",
+      "required": false,
+      "weight": 1.0
+    },
+    {
+      "criterion_id": "CRIT-ORI-KEYSTEP",
+      "description": "The learner reaches R1 (book-folded rectangle) in order and without off-path folds on the way.",
+      "name": "Key step executed as shown: R1 book-folded rectangle",
+      "observable_indicator": "R1 reached in order with a clean transition from R0",
+      "required": false,
+      "weight": 2.0
+    },
+    {
+      "criterion_id": "CRIT-ORI-FINAL",
+      "description": "The attempt ends in R4 (kite form).",
+      "name": "Reaches the target form (kite form)",
+      "observable_indicator": "last stable state is R_k and the final frame matches the R_k checklist",
+      "required": true,
+      "weight": 3.0
+    }
+  ],
+  "description": "Criteria authored from goal model v1 (origami_video). Metric bands live in practice/observers.v1.json; scores come only from the deterministic band policy.",
+  "passing_score": 7.0,
+  "rubric_id": "rubric.origami.1",
+  "skill_id": "skill.origami",
+  "title": "Origami crane: square to bird base — rubric"
+}

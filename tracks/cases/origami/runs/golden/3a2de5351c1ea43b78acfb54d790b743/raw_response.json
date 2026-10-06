@@ -1,0 +1,3 @@
+{
+  "text": "{\"frames\": [{\"t\": \"0.0s\", \"state\": 0, \"note\": \"flat square, yellow side up\"}, {\"t\": \"2.0s\", \"state\": 0, \"note\": \"flat square, yellow side up\"}, {\"t\": \"4.0s\", \"state\": \"transition\", \"note\": \"hands beginning to fold the square\"}, {\"t\": \"5.0s\", \"state\": \"transition\", \"note\": \"hands folding the paper\"}, {\"t\": \"7.0s\", \"state\": 1, \"note\": \"rectangular shape, folded in half\"}, {\"t\": \"9.0s\", \"state\": \"transition\", \"note\": \"hands folding the rectangle\"}, {\"t\": \"11.0s\", \"state\": \"transition\", \"note\": \"hands folding the paper into a shape\"}, {\"t\": \"13.0s\", \"state\": \"transition\", \"note\": \"hands manipulating the folded paper\"}]}"
+}

@@ -1,0 +1,3 @@
+{
+  "text": "{\"frames\": [{\"t\": 130.0, \"state\": 2, \"note\": \"triangular shape, folded along diagonal\"}, {\"t\": 132.0, \"state\": 2, \"note\": \"triangular shape, being held\"}, {\"t\": 134.0, \"state\": 2, \"note\": \"triangular shape, being held\"}, {\"t\": 136.0, \"state\": \"transition\", \"note\": \"folding a flap upwards\"}, {\"t\": 137.0, \"state\": \"transition\", \"note\": \"hands manipulating the paper flaps\"}, {\"t\": 139.0, \"state\": 4, \"note\": \"arrowhead shape, kite form\"}, {\"t\": 141.0, \"state\": 4, \"note\": \"kite form, yellow paper visible\"}, {\"t\": 143.0, \"state\": 4, \"note\": \"kite form, yellow paper visible\"}]}"
+}

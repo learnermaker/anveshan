@@ -1,0 +1,20 @@
+{
+  "expected_behavior": "one reference-state label per learner frame",
+  "input_digests": [
+    "ImagePart:fc03c1ca998f6e803fcbeca77c2cf2bbf96c35cba19567aaf3f3e7f2a05eb163",
+    "ImagePart:87899bbf52bc5531bce3189acd421b37dcdddb3e66da82f65d2f867385b3381a",
+    "text:fcf19cc99ff2d693562ec0d289ad4316eb7c2541f196fa759182a04508279d36"
+  ],
+  "latency_ms": 2912,
+  "model_id": "gemma-4-26b-a4b-it",
+  "model_key": "video_frames",
+  "notes": [],
+  "prompt_id": "origami_match",
+  "prompt_sha256": "fcf19cc99ff2d693562ec0d289ad4316eb7c2541f196fa759182a04508279d36",
+  "prompt_version": "v2",
+  "provider": "google-genai",
+  "replay_key": "2aac5d76677b9c0545865d9da16ca42c",
+  "run_id": "run.origami_match.20261006T172421.ed8384",
+  "runtime_class": "LIVE",
+  "started_at": "2026-10-06T17:24:18.400380+00:00"
+}

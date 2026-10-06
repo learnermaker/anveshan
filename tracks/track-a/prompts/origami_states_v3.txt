@@ -1,0 +1,19 @@
+Analyse these origami crane frames (sampled at {fps} fps from an expert folding a flat square sheet to a bird base). Each frame label says "Frame t=<seconds>s".
+
+Expected states (use these names; create a NEW name only for a clearly different shape):
+flat square | book-folded rectangle | diagonal-folded triangle | square base | kite form | petal fold one side | bird base
+
+Hint: "square base" = compact DIAMOND with 4+ layers; "kite form" = taller-than-wide arrowhead; "petal fold one side" = raised central flap visible on top. These differ from "diagonal-folded triangle" (flat, thin).
+
+Known states from earlier: {known_states}
+
+Return one JSON entry per frame in this order: {frame_times}
+- "t": number (e.g. 12.0, NOT "12.0s")
+- "phase": "state" | "transition" | "unclear"
+- "state_name": state name (when phase=="state", else null)
+- "properties": up to 3 visible properties (empty when not state)
+- "hands_occlude": true if hands cover most of the paper
+
+Also "fold_notes": for each NEW state in this batch, one sentence on how the expert reaches it.
+
+JSON only: {"frames": [{"t": 12.0, "phase": "state", "state_name": "square base", "properties": ["compact diamond", "multiple layers", "open end down"], "hands_occlude": false}], "fold_notes": [{"state_name": "square base", "how_to": "collapses both triangle halves inward into a diamond"}]}

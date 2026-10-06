@@ -1,0 +1,3 @@
+{
+  "text": "{\"frames\": [{\"t\": 82.0, \"state\": \"transition\", \"note\": \"hands folding the paper along a diagonal line\"}, {\"t\": 83.0, \"state\": \"transition\", \"note\": \"hands folding the paper along a diagonal line\"}, {\"t\": 85.0, \"state\": \"transition\", \"note\": \"hands folding a corner inward\"}, {\"t\": 86.0, \"state\": \"transition\", \"note\": \"hands folding a corner inward\"}, {\"t\": 88.0, \"state\": \"transition\", \"note\": \"hands manipulating the paper shape\"}, {\"t\": 89.0, \"state\": \"transition\", \"note\": \"hands manipulating the paper shape\"}, {\"t\": 91.0, \"state\": \"transition\", \"note\": \"hands folding the paper edges\"}, {\"t\": 92.0, \"state\": \"transition\", \"note\": \"hands folding the paper edges\"}]}"
+}

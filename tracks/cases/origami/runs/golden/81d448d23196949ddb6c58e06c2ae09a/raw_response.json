@@ -1,0 +1,3 @@
+{
+  "text": "{\"frames\": [{\"t\": \"52.0s\", \"state\": 1, \"note\": \"rectangular shape, folded in half\"}, {\"t\": \"54.0s\", \"state\": 1, \"note\": \"rectangular shape, folded in half\"}, {\"t\": \"56.0s\", \"state\": \"transition\", \"note\": \"hands folding the rectangle into a triangle\"}, {\"t\": \"59.0s\", \"state\": 2, \"note\": \"triangular shape, folded along diagonal\"}, {\"t\": \"61.0s\", \"state\": 2, \"note\": \"triangular shape, folded along diagonal\"}, {\"t\": \"63.0s\", \"state\": \"transition\", \"note\": \"hands folding the triangle into a square base\"}, {\"t\": \"65.0s\", \"state\": 3, \"note\": \"compact diamond shape, multiple layers\"}, {\"t\": \"67.0s\", \"state\": 4, \"note\": \"arrowhead shape, taller than wide\"}]}"
+}

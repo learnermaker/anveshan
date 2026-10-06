@@ -1,0 +1,3 @@
+{
+  "text": "{\"frames\": [{\"t\": 17.0, \"state\": 0, \"note\": \"flat square paper being held\"}, {\"t\": 20.0, \"state\": 1, \"note\": \"rectangular shape, folded in half\"}, {\"t\": 22.0, \"state\": 2, \"note\": \"triangular shape, folded along diagonal\"}, {\"t\": 24.0, \"state\": \"transition\", \"note\": \"hands folding the triangle into a square base\"}, {\"t\": 26.0, \"state\": \"transition\", \"note\": \"hands folding the paper towards kite form\"}, {\"t\": 28.0, \"state\": \"transition\", \"note\": \"hands manipulating the paper edges\"}, {\"t\": 30.0, \"state\": 3, \"note\": \"compact diamond shape, multiple layers\"}, {\"t\": 33.0, \"state\": 4, \"note\": \"kite form, yellow paper visible\"}]}"
+}

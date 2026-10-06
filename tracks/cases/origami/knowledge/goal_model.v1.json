@@ -1,0 +1,142 @@
+{
+  "built_with": {
+    "algorithm": "origami_goal_v3",
+    "batch_size": 4,
+    "fps": 0.5,
+    "frames_sampled": 97,
+    "key_state_rule": "longest expert transition into the state (start_j - end_{j-1})",
+    "keyframe_rule": "lowest mean grayscale change to neighbouring frames among the state's frames, preferring frames without hand occlusion",
+    "max_side": 384,
+    "min_run_frames": 2,
+    "mode_filter_window": 3,
+    "model_key": "video_frames",
+    "placeholder": false,
+    "policy": "v3: batch_size=4, explicit origami vocabulary in prompt",
+    "prompt": "origami_states@v3",
+    "run_keys": [
+      "0d6fec3adb9d334b4cf84b5dd6485dd2",
+      "3311ed1714c4e4b321c09aeb9cd3600d",
+      "23821d42153230280eaf39dd060b564b",
+      "d886e8b93aec4717dee19910ff7c0162",
+      "1f033ba6e865a711b980f327fcdb47b5",
+      "a772228b43f654cefa6995baf6459145",
+      "5945b1cb2f8e37472aa2c1c0d5cb2cc9",
+      "7f8d99e2b5e3019ad55d9ff2cf8a8511",
+      "721207c9e567db86a69b9b455131233b",
+      "a51c33506912316976195f3aa09de546",
+      "993dc9a6b22f9b4591a3f9d9267de8ea",
+      "c6108b7a966c2382135e02f033137078",
+      "a00b1d51200fddbc49440138a63a0934",
+      "b5329f6b4916f435748f1f1f1d88d9ca",
+      "8e6a7a240a75fe43a0e9e9f7cc2ee244",
+      "f53303c9d67bb4ab563f15993a4daf07",
+      "dde4999f75542552a7a2845658a1d9ea",
+      "49a18840e26d4e00c3438e478a403638",
+      "340ed2b1ec260b397ccb5bb09256e6a7",
+      "c7c1fa7317f000e268ba1200a3986da8",
+      "2f17987b578f267ddfbfad5fd3689647",
+      "4d281ef53cc368e64d8b7d2388853897",
+      "8bb28b49f80a02354cab655fd7899279",
+      "beae5fc4f48f815ca75017df59cf2c0f",
+      "714f85ddde6307519160727061d334f5"
+    ],
+    "state_agreement": [
+      1.0,
+      1.0,
+      0.33,
+      1.0,
+      0.43
+    ],
+    "window": [
+      0.0,
+      194.0
+    ]
+  },
+  "case_id": "origami",
+  "modality": "origami_video",
+  "package_id": "kp.origami.1",
+  "payload": {
+    "final_state_index": 4,
+    "fps": 0.5,
+    "key_state_index": 1,
+    "states": [
+      {
+        "end_sec": 2.002,
+        "index": 0,
+        "keyframe_asset": "origami_state_0.jpg",
+        "keyframe_sec": 0.0,
+        "name": "flat square",
+        "properties": [
+          "flat",
+          "single layer",
+          "square shape"
+        ],
+        "start_sec": 0.0
+      },
+      {
+        "end_sec": 42.009,
+        "index": 1,
+        "keyframe_asset": "origami_state_1.jpg",
+        "keyframe_sec": 40.007,
+        "name": "book-folded rectangle",
+        "properties": [
+          "rectangular shape",
+          "folded in half"
+        ],
+        "start_sec": 40.007
+      },
+      {
+        "end_sec": 98.031,
+        "index": 2,
+        "keyframe_asset": "origami_state_2.jpg",
+        "keyframe_sec": 80.013,
+        "name": "diagonal-folded triangle",
+        "properties": [
+          "triangular shape",
+          "folded along diagonal",
+          "flat"
+        ],
+        "start_sec": 46.013
+      },
+      {
+        "end_sec": 104.004,
+        "index": 3,
+        "keyframe_asset": "origami_state_3.jpg",
+        "keyframe_sec": 102.002,
+        "name": "square base",
+        "properties": [
+          "compact diamond",
+          "multiple layers"
+        ],
+        "start_sec": 102.002
+      },
+      {
+        "end_sec": 188.021,
+        "index": 4,
+        "keyframe_asset": "origami_state_4.jpg",
+        "keyframe_sec": 154.021,
+        "name": "kite form",
+        "properties": [
+          "arrowhead shape",
+          "taller than wide",
+          "taller-than-wide",
+          "yellow paper visible"
+        ],
+        "start_sec": 130.03
+      }
+    ],
+    "window": [
+      0.0,
+      194.0
+    ]
+  },
+  "schema_version": "1.0",
+  "source_ids": [
+    "src.origami.demo.v1"
+  ],
+  "version": 1,
+  "warnings": [
+    "state 'diagonal-folded triangle' seen again at t=144.0-146.0s after a later state; revisit ignored",
+    "state 'diagonal-folded triangle' seen again at t=160.0-162.0s after a later state; revisit ignored"
+  ]
+}
