@@ -1,0 +1,261 @@
+/**
+ * Source view for universal (composed) cases (K8 §6).
+ *
+ * Shows: reference media, property boxes/step strip/transcript,
+ * claims list with certainty badges, review panel, banner.
+ * All AI-perceived elements are labelled INFERRED.
+ */
+
+import React, { useState } from 'react';
+import { ArrowLeft, ArrowRight, Check, Pencil, RefreshCw, Search, X } from 'lucide-react';
+import type { KnowledgeClaim } from '../../types/contracts';
+import type { CaseView, ReviewAction, UniversalUiView } from '../../api/types';import { api } from '../../api/client';
+import { Badge, btn, ErrorNote, MockBadge, Panel, ReviewBadge, SourceLabelBadge, Spinner, VerificationBadge } from '../ui';
+
+interface Props {
+  view: CaseView;
+  onViewChange: (v: CaseView) => void;
+  onReload: () => void;
+  onEnterPractice: () => void;
+  onBack: () => void;
+}
+
+function GoalStateSection({ ui, caseId }: { ui: UniversalUiView; caseId: string }) {
+  const props = ui.goal_state ?? [];
+  const steps = ui.steps ?? [];
+  const transcript = ui.transcript;
+
+  return (
+    <div className="space-y-4">
+      {transcript && (
+        <div className="p-3 rounded-lg border border-outline bg-surface-dim">
+          <div className="text-[9px] font-mono uppercase text-on-surface-variant mb-1">Transcript (INFERRED)</div>
+          <p className="font-mono text-sm text-on-surface">"{transcript}"</p>
+        </div>
+      )}
+
+      {props.length > 0 && (
+        <div>
+          <div className="text-[9px] font-mono uppercase text-on-surface-variant mb-2">Goal properties</div>
+          <ul className="space-y-1.5">
+            {props.filter((p) => p.keep !== false).map((p) => (
+              <li key={p.prop_id} className="flex items-start gap-2 text-[11px]">
+                <VerificationBadge state={p.certainty as 'observed' | 'inferred' | 'unverified' ?? 'inferred'} />
+                <span className="text-on-surface">{p.statement}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {steps.length > 0 && (
+        <div>
+          <div className="text-[9px] font-mono uppercase text-on-surface-variant mb-2">Steps (INFERRED)</div>
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {steps.map((s, stepIdx) => (
+              <div key={s.step_id} className="shrink-0 w-24 space-y-1">
+                {s.keyframe_asset ? (
+                  <img src={api.goalAssetUrl(caseId, s.keyframe_asset)} alt={s.name} className="w-full aspect-video object-cover rounded border border-outline bg-surface-dim" />
+                ) : (
+                  <div className="w-full aspect-video bg-surface-dim border border-outline rounded flex items-center justify-center text-[9px] font-mono text-on-surface-variant">
+                    Step {stepIdx + 1}
+                  </div>
+                )}
+                <div className="text-[9px] font-mono text-on-surface-variant leading-tight">
+                  {s.name}
+                  {s.critical && <span className="text-divergence-crimson"> (critical)</span>}
+                </div>
+                {s.start_sec != null && <div className="text-[8px] font-mono text-outline">{s.start_sec.toFixed(0)}–{s.end_sec?.toFixed(0)}s</div>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {ui.structures.length > 0 && (
+        <div className="flex flex-wrap gap-1">
+          {ui.structures.map((s) => <Badge key={s} tone="cyan">{s}</Badge>)}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Inline review panel (subset of HeroSourceView's review functionality)
+function ReviewPanel({ view, onViewChange }: { view: CaseView; onViewChange: (v: CaseView) => void }) {
+  const [reviewer, setReviewer] = useState('');
+  const [note, setNote] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<unknown>(null);
+
+  const act = async (action: ReviewAction['action']) => {
+    if (!reviewer.trim()) return;
+    setBusy(true);
+    setErr(null);
+    try {
+      const updated = await api.reviewCase(view.case_id, { action, reviewer: reviewer.trim(), note });
+      onViewChange(updated);
+    } catch (e) {
+      setErr(e);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-2">
+        <ReviewBadge status={view.review_status} />
+        <span className="text-[11px] text-on-surface-variant">{view.review_status === 'approved' ? 'AI-perceived elements approved for use.' : 'Pending expert review of AI-perceived elements.'}</span>
+      </div>
+      <input value={reviewer} onChange={(e) => setReviewer(e.target.value)} placeholder="Your name (reviewer)" className="w-full bg-surface-dim border border-outline rounded-lg px-2.5 py-1.5 text-xs outline-none focus:border-caliper-cyan" aria-label="Reviewer name" />
+      <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Optional note" rows={2} className="w-full bg-surface-dim border border-outline rounded-lg px-2.5 py-1.5 text-xs outline-none focus:border-caliper-cyan resize-none" aria-label="Review note" />
+      <div className="flex flex-wrap gap-2">
+        <button disabled={busy || !reviewer.trim()} onClick={() => void act('approve')} className={`${btn.primary} text-[10px] py-1.5`}><Check className="w-3 h-3" /> Approve</button>
+        <button disabled={busy || !reviewer.trim()} onClick={() => void act('reject_package')} className={`${btn.secondary} text-[10px] py-1.5`}><X className="w-3 h-3" /> Reject</button>
+      </div>
+      <ErrorNote error={err} />
+    </div>
+  );
+}
+
+// Re-export view from parent (needed for type inference in the view prop)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+export function UniversalSourceView({ view, onViewChange, onReload, onEnterPractice, onBack }: Props) {
+  const ui = view.goal.ui_view as UniversalUiView;
+  const claims = view.package.claims;
+  const profile = view.profile;
+
+  const [queryText, setQueryText] = useState('');
+  const [queryAnswer, setQueryAnswer] = useState<string | null>(null);
+  const [queryBusy, setQueryBusy] = useState(false);
+  const [queryErr, setQueryErr] = useState<unknown>(null);
+  const [editClaim, setEditClaim] = useState<{ id: string; text: string } | null>(null);
+
+  const doQuery = async () => {
+    if (!queryText.trim()) return;
+    setQueryBusy(true);
+    setQueryErr(null);
+    try {
+      const r = await api.queryCase(view.case_id, queryText);
+      setQueryAnswer(r.answer);
+    } catch (e) {
+      setQueryErr(e);
+    } finally {
+      setQueryBusy(false);
+    }
+  };
+
+  const doRevise = async (claimId: string, newStatement: string) => {
+    try {
+      const updated = await api.reviewCase(view.case_id, { action: 'revise_claim', reviewer: 'editor', note: '', claim_id: claimId, new_statement: newStatement });
+      onViewChange(updated);
+    } catch {
+      // ignore
+    } finally {
+      setEditClaim(null);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-5 w-full animate-fade-in">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="space-y-1.5">
+          <button onClick={onBack} className={btn.ghost}><ArrowLeft className="w-3.5 h-3.5" /> Portfolio</button>
+          <div className="text-[10px] font-mono uppercase tracking-widest text-caliper-cyan font-bold">01 // SOURCE · Composed skill · Goal model v{view.goal.version}</div>
+          <h1 className="font-serif text-2xl sm:text-3xl text-on-surface">{view.title}</h1>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <SourceLabelBadge label={view.runtime_label} />
+            <ReviewBadge status={view.review_status} />
+            <Badge tone="cyan">UNIVERSAL</Badge>
+            <MockBadge />
+          </div>
+          <p className="text-[11px] font-mono text-cadmium-amber">Composed skill · AI-perceived elements are INFERRED until reviewed by an expert.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={onReload} className={btn.secondary} title="Reload case from the service"><RefreshCw className="w-3.5 h-3.5" /> Reload</button>
+          <button onClick={onEnterPractice} className={btn.primary}>Enter practice <ArrowRight className="w-3.5 h-3.5" /></button>
+        </div>
+      </div>
+
+      {[...(view.warnings ?? []), ...(view.goal.warnings ?? [])].map((w, i) => (
+        <p key={i} className="text-[11px] font-mono text-cadmium-amber">⚠ {w}</p>
+      ))}
+
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] gap-5">
+        <div className="space-y-5 min-w-0">
+          <Panel kicker="Goal state" title={view.package.title}>
+            <GoalStateSection ui={ui} caseId={view.case_id} />
+          </Panel>
+
+          {profile && (
+            <Panel kicker="Skill profile" title={`Domain: ${profile.domain}`}>
+              <div className="space-y-2 text-[11px]">
+                <p className="text-on-surface">{profile.skill_summary}</p>
+                <div className="flex flex-wrap gap-1">
+                  <span className="font-mono text-on-surface-variant">Mode:</span>
+                  <Badge tone="muted">{profile.transmission_mode}</Badge>
+                  <span className="font-mono text-on-surface-variant">Learner inputs:</span>
+                  {profile.learner_input_kinds.map((k) => <Badge key={k} tone="muted">{k}</Badge>)}
+                </div>
+              </div>
+            </Panel>
+          )}
+
+          <Panel kicker="Provenance" title="Sources">
+            <ul className="space-y-2 text-[11px]">
+              {view.sources.map((s) => (
+                <li key={s.source_id} className="flex flex-wrap items-center gap-2">
+                  <code className="font-mono text-caliper-cyan">{s.source_id}</code>
+                  <SourceLabelBadge label={s.runtime_label} />
+                  <span className="text-on-surface-variant">{s.attribution}</span>
+                  <span className="font-mono text-on-surface-variant">· {s.license}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-2 text-[10px] text-on-surface-variant">Consent: {view.package.consent.contributor_name} — {view.package.consent.consent_scope}</p>
+          </Panel>
+        </div>
+
+        <div className="space-y-5 min-w-0">
+          <Panel kicker="Knowledge package" title={`Claims (${claims.length})`}>
+            <ul className="space-y-2 text-[11px]">
+              {claims.map((c: KnowledgeClaim) => (
+                <li key={c.claim_id} className="flex items-start gap-2">
+                  <VerificationBadge state={c.is_observed ? 'observed' : 'inferred'} />
+                  {editClaim?.id === c.claim_id ? (
+                    <div className="flex-1 flex gap-1">
+                      <input value={editClaim!.text} onChange={(e) => setEditClaim({ id: c.claim_id, text: e.target.value })} className="flex-1 bg-surface-dim border border-outline rounded px-2 py-0.5 text-[10px] font-mono outline-none focus:border-caliper-cyan" aria-label="Edit claim" />
+                      <button onClick={() => void doRevise(c.claim_id, editClaim!.text)} className={`${btn.primary} py-0.5 text-[9px]`}>Save</button>
+                      <button onClick={() => setEditClaim(null)} className={`${btn.ghost}`}><X className="w-3 h-3" /></button>
+                    </div>
+                  ) : (
+                    <>
+                      <span className="flex-1 text-on-surface">{c.statement}</span>
+                      <button onClick={() => setEditClaim({ id: c.claim_id, text: c.statement })} className={`${btn.ghost} shrink-0`} title="Edit claim" aria-label="Edit claim"><Pencil className="w-3 h-3" /></button>
+                    </>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </Panel>
+
+          <Panel kicker="Query" title="Ask about this skill">
+            <div className="flex gap-2">
+              <input value={queryText} onChange={(e) => setQueryText(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && void doQuery()} placeholder="What is the key goal property?" className="flex-1 bg-surface-dim border border-outline rounded-lg px-2.5 py-1.5 text-xs outline-none focus:border-caliper-cyan" aria-label="Query text" />
+              <button onClick={() => void doQuery()} disabled={queryBusy} className={btn.secondary} aria-label="Submit query"><Search className="w-3.5 h-3.5" /></button>
+            </div>
+            {queryBusy && <Spinner label="Querying…" />}
+            {queryAnswer && <p className="mt-2 text-[11px] text-on-surface leading-relaxed">{queryAnswer}</p>}
+            <ErrorNote error={queryErr} />
+          </Panel>
+
+          <Panel kicker="Expert review" title="Review AI-perceived elements">
+            <ReviewPanel view={view} onViewChange={onViewChange} />
+          </Panel>
+        </div>
+      </div>
+    </div>
+  );
+}

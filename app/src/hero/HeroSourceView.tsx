@@ -8,6 +8,7 @@ import { api } from '../api/client';
 import { SourcePanel } from './SourcePanels';
 import { claimVerification, fmtTime } from './locators';
 import { Badge, btn, ErrorNote, MockBadge, Panel, ReviewBadge, SourceLabelBadge, Spinner, VerificationBadge } from './ui';
+import { UniversalSourceView } from './universal/UniversalSourceView';
 
 interface Props {
   view: CaseView;
@@ -17,7 +18,12 @@ interface Props {
   onBack: () => void;
 }
 
-export function HeroSourceView({ view, onViewChange, onReload, onEnterPractice, onBack }: Props) {
+export function HeroSourceView(props: Props) {
+  if (props.view.goal.modality === 'universal') return <UniversalSourceView {...props} />;
+  return <HeroSourceViewInner {...props} />;
+}
+
+function HeroSourceViewInner({ view, onViewChange, onReload, onEnterPractice, onBack }: Props) {
   const [focus, setFocus] = useState<{ claimId: string; ev: EvidenceRef } | null>(null);
   const claims = view.package.claims;
 

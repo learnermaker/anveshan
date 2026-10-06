@@ -42,7 +42,7 @@ export type RuntimeClass = 'LIVE' | 'RECORDED_LIVE' | 'DETERMINISTIC';
 // Case data (sidecars, casedata.py)
 // ---------------------------------------------------------------------------
 
-export type GoalModality = 'kolam_image' | 'origami_video' | 'tabla_audio';
+export type GoalModality = 'kolam_image' | 'origami_video' | 'tabla_audio' | 'universal';
 export type RuntimeLabel = 'INTERNET_REFERENCE' | 'OWNED_CONSENTED' | 'SYNTHETIC' | 'UPLOAD';
 
 export interface CaseSummary {
@@ -53,6 +53,10 @@ export interface CaseSummary {
   runtime_label: RuntimeLabel | string;
   review_status: ReviewStatus | string;
   derived_from?: string | null;
+  /** True for cases created via the universal-pipeline composer. */
+  composed?: boolean;
+  /** Structure tags for composed cases (e.g. ["final_state", "procedure"]). */
+  structures?: string[];
 }
 
 export interface SourceRecord {
@@ -188,7 +192,39 @@ export interface TablaUiView {
   modality?: string;
 }
 
-export type GoalUiView = KolamUiView | OrigamiUiView | TablaUiView;
+export type GoalUiView = KolamUiView | OrigamiUiView | TablaUiView | UniversalUiView;
+
+export interface UniversalUiView {
+  structures: string[];
+  steps?: Array<{
+    step_id: string;
+    name: string;
+    state_after: string;
+    critical?: boolean;
+    source_established?: boolean;
+    keyframe_asset?: string | null;
+    start_sec?: number | null;
+    end_sec?: number | null;
+  }>;
+  goal_state?: Array<{
+    prop_id: string;
+    statement: string;
+    region?: number[] | null;
+    keep?: boolean;
+    certainty?: string;
+  }>;
+  checks?: Array<{
+    check_id: string;
+    name: string;
+    method: string;
+    enabled?: boolean;
+    weight?: number;
+    required?: boolean;
+    observable_indicator?: string;
+  }>;
+  reference_assets?: string[];
+  transcript?: string | null;
+}
 
 export interface GoalView {
   case_id: string;
@@ -217,6 +253,8 @@ export interface CaseView {
   rubric: RubricDefinition;
   task: PracticeTask;
   criterion_map?: CriterionMap | null;
+  /** Composer: full CaseProfile for universal cases (null for hero cases). */
+  profile?: CaseProfile | null;
   /** Real service extra fields (additive; ignored by UI if absent). */
   manifest?: Record<string, unknown>;
   observers?: Record<string, unknown>;
@@ -421,4 +459,177 @@ export type ErrorCategory =
 
 export interface ApiErrorBody {
   error: { category: ErrorCategory | string; message: string; details?: unknown };
+}
+
+// ---------------------------------------------------------------------------
+// Composer: universal-pipeline types (tracks/common/perception.py,
+// skill_model.py, profile.py) — case data, NOT the 8 frozen contracts.
+// Field names mirror the Python models exactly.
+// ---------------------------------------------------------------------------
+
+export type Certainty = 'observed' | 'inferred' | 'unverified';
+
+export interface Segment {
+  segment_id: string;
+  kind: 'time' | 'region' | 'whole';
+  start_sec?: number | null;
+  end_sec?: number | null;
+  region?: number[] | null;
+  keyframe_sec?: number | null;
+  keyframe_asset?: string | null;
+  stability?: number | null;
+}
+
+export type ObservationKind = 'state' | 'action' | 'object' | 'property' | 'event' | 'speech' | 'measurement' | 'quality';
+
+export interface Observation {
+  obs_id: string;
+  segment_id: string;
+  kind: ObservationKind;
+  label: string;
+  detail?: string | null;
+  value?: number | null;
+  unit?: string | null;
+  certainty: Certainty;
+  producer: string;
+}
+
+export interface ProbeFacts {
+  modality: 'image' | 'video' | 'audio';
+  mime_type: string;
+  bytes: number;
+  sha256: string;
+  width?: number | null;
+  height?: number | null;
+  duration_sec?: number | null;
+  has_audio?: boolean | null;
+  metrics?: Record<string, number>;
+  structures_available: string[];
+  specialists_available?: string[];
+  reasons?: Record<string, string>;
+}
+
+export interface IntakeResult {
+  safety: Record<string, unknown>;
+  teachable: 'yes' | 'no' | 'unclear';
+  teachable_reason?: string;
+  skill_kind?: string | null;
+}
+
+export interface TargetProperty {
+  prop_id: string;
+  statement: string;
+  region?: number[] | null;
+  evidence?: string[];
+  certainty: Certainty;
+  keep?: boolean;
+}
+
+export interface SkillStep {
+  step_id: string;
+  index: number;
+  name: string;
+  state_after: string;
+  action?: string | null;
+  start_sec?: number | null;
+  end_sec?: number | null;
+  keyframe_asset?: string | null;
+  segment_id?: string | null;
+  evidence?: string[];
+  certainty: Certainty;
+  source_established: boolean;
+  critical?: boolean;
+}
+
+export interface SkillConstraint {
+  constraint_id: string;
+  statement: string;
+  evidence?: string[];
+  certainty: Certainty;
+  keep?: boolean;
+}
+
+export interface SkillRelevance {
+  expected_kinds: string[];
+  min_similarity?: number;
+  ambiguous_band?: number;
+  reference_segment_ids?: string[];
+}
+
+export type CheckMethod = 'deterministic' | 'model_status' | 'specialist';
+
+export interface SkillCheck {
+  check_id: string;
+  kind: string;
+  name: string;
+  observable_indicator: string;
+  targets?: string[];
+  metric_id: string;
+  method: CheckMethod;
+  params?: Record<string, unknown>;
+  weight?: number;
+  required?: boolean;
+  process?: boolean;
+  enabled?: boolean;
+}
+
+export interface SkillModel {
+  schema_version?: '1.0';
+  skill_title: string;
+  summary: string;
+  source_modality: 'image' | 'video' | 'audio';
+  structures: string[];
+  goal_state?: TargetProperty[];
+  steps?: SkillStep[];
+  order?: 'strict' | 'partial' | 'none';
+  constraints?: SkillConstraint[];
+  temporal?: Record<string, unknown> | null;
+  utterance?: Record<string, unknown> | null;
+  specialists?: Record<string, unknown>;
+  relevance: SkillRelevance;
+  checks: SkillCheck[];
+  vocabulary?: Record<string, string>;
+  warnings?: string[];
+}
+
+export interface CaseProfile {
+  schema_version?: '2.0';
+  case_id: string;
+  title: string;
+  skill_summary: string;
+  domain: string;
+  transmission_mode: 'forward' | 'goal-conditioned' | 'corrective';
+  learner_input_kinds: string[];
+  vocabulary?: Record<string, string>;
+  goal_hint?: string | null;
+  probe: ProbeFacts;
+  intake: IntakeResult;
+  skill_model: SkillModel;
+  perception_file?: string | null;
+  confirmed_by_user?: boolean;
+  confirmed_at?: string | null;
+  warnings?: string[];
+}
+
+export interface DraftView {
+  draft_id: string;
+  probe: ProbeFacts;
+  intake: IntakeResult;
+  proposal: CaseProfile | null;
+  refused: boolean;
+  refusal_message: string | null;
+  warnings: string[];
+  structure_labels: Record<string, string>;
+  specialist_labels: Record<string, string>;
+  perception: { segments: Segment[]; observations: Observation[] };
+}
+
+export interface CreateFromDraftEdits {
+  title: string;
+  skill_summary: string;
+  domain: string;
+  transmission_mode: string;
+  learner_input_kinds: string[];
+  goal_hint?: string | null;
+  skill_model: SkillModel;
 }

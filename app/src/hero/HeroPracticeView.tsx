@@ -11,6 +11,7 @@ import { AttemptResultView } from './results/AttemptResultView';
 import type { HeroSession, LocalAttemptMedia } from './session';
 import { Badge, btn, ErrorNote, MockBadge, Panel, ProgressBar, ReviewBadge, SourceLabelBadge, Spinner } from './ui';
 import { fmtTime } from './locators';
+import { UniversalPracticeView } from './universal/UniversalPracticeView';
 
 interface Props {
   view: CaseView;
@@ -18,6 +19,11 @@ interface Props {
   onSessionChange: (s: HeroSession | null) => void;
   onComplete: () => void;
   onBack: () => void;
+}
+
+export function HeroPracticeView(props: Props) {
+  if (props.view.goal.modality === 'universal') return <UniversalPracticeView {...props} />;
+  return <HeroPracticeViewInner {...props} />;
 }
 
 const EXPECTED: Record<string, string> = {
@@ -29,7 +35,7 @@ const EXPECTED: Record<string, string> = {
 
 type Phase = { kind: 'idle' } | { kind: 'uploading'; progress: number } | { kind: 'evaluating'; since: number; attemptKind: AttemptKind };
 
-export function HeroPracticeView({ view, session, onSessionChange, onComplete, onBack }: Props) {
+function HeroPracticeViewInner({ view, session, onSessionChange, onComplete, onBack }: Props) {
   const [learner, setLearner] = useState('');
   const [err, setErr] = useState<unknown>(null);
   const [phase, setPhase] = useState<Phase>({ kind: 'idle' });
