@@ -1,0 +1,31 @@
+{
+  "constraints": [
+    {
+      "constraint_type": "material_spec",
+      "description": "One square sheet of paper",
+      "value": "about 15 cm square"
+    },
+    {
+      "constraint_type": "scope",
+      "description": "Stop at R4 (kite form)",
+      "value": "R4"
+    },
+    {
+      "constraint_type": "capture",
+      "description": "Top-down video with the paper and hands in frame. Frames are sampled at 1 fps, at most 90 frames; longer videos are subsampled evenly.",
+      "value": "1 fps, <= 90 frames"
+    }
+  ],
+  "instructions": "1. Start from R0 (flat square): flat; single layer; square shape. [CLM-01]\n2. Fold to R1 (book-folded rectangle): rectangular shape; folded in half. The paper is folded in half along a central axis to create a rectangular shape. [CLM-02][CLM-07]\n3. Fold to R2 (diagonal-folded triangle): triangular shape; folded along diagonal; flat. The rectangle is folded along its diagonal to form a triangle. [CLM-03][CLM-08]\n4. Fold to R3 (square base): compact diamond; multiple layers. The corners are folded toward the center to collapse the triangle into a compact diamond. [CLM-04][CLM-09]\n5. Fold to R4 (kite form): arrowhead shape; taller than wide; taller-than-wide; yellow paper visible. The side edges of the square base are folded inward toward the center crease. [CLM-05][CLM-10]\n6. Stop at R4 (kite form) and hold it to the camera. [CLM-05][CLM-06]",
+  "package_id": "kp.origami.1",
+  "rubric_id": "rubric.origami.1",
+  "target_criteria_ids": [
+    "CRIT-ORI-ORDER",
+    "CRIT-ORI-COMPLETE",
+    "CRIT-ORI-CLEAN",
+    "CRIT-ORI-KEYSTEP",
+    "CRIT-ORI-FINAL"
+  ],
+  "task_id": "task.origami.1",
+  "title": "Fold a crane up to the bird base"
+}

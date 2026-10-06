@@ -1,0 +1,93 @@
+{
+  "criteria": {
+    "CRIT-ORI-CLEAN": {
+      "bands": [
+        {
+          "max": 0.0,
+          "min": null,
+          "status": "satisfied"
+        },
+        {
+          "max": 1.0,
+          "min": null,
+          "status": "partially_satisfied"
+        }
+      ],
+      "direction": "lower_is_better",
+      "metric": "origami.off_path_events",
+      "otherwise": "not_satisfied",
+      "process": true
+    },
+    "CRIT-ORI-COMPLETE": {
+      "bands": [
+        {
+          "max": 0.0,
+          "min": null,
+          "status": "satisfied"
+        },
+        {
+          "max": 1.0,
+          "min": null,
+          "status": "partially_satisfied"
+        }
+      ],
+      "direction": "lower_is_better",
+      "metric": "origami.missing_states",
+      "otherwise": "not_satisfied",
+      "process": true
+    },
+    "CRIT-ORI-FINAL": {
+      "bands": [
+        {
+          "max": null,
+          "min": 1.0,
+          "status": "satisfied"
+        },
+        {
+          "max": null,
+          "min": 0.5,
+          "status": "partially_satisfied"
+        }
+      ],
+      "direction": "higher_is_better",
+      "metric": "origami.final_match",
+      "otherwise": "not_satisfied",
+      "process": false
+    },
+    "CRIT-ORI-KEYSTEP": {
+      "bands": [
+        {
+          "max": null,
+          "min": 1.0,
+          "status": "satisfied"
+        }
+      ],
+      "direction": "higher_is_better",
+      "metric": "origami.keystep_ok",
+      "otherwise": "not_satisfied",
+      "process": true
+    },
+    "CRIT-ORI-ORDER": {
+      "bands": [
+        {
+          "max": 0.0,
+          "min": null,
+          "status": "satisfied"
+        },
+        {
+          "max": 1.0,
+          "min": null,
+          "status": "partially_satisfied"
+        }
+      ],
+      "direction": "lower_is_better",
+      "metric": "origami.order_violations",
+      "otherwise": "not_satisfied",
+      "process": true
+    }
+  },
+  "modality": "origami_video",
+  "rubric_id": "rubric.origami.1",
+  "score_policy": "score_policy_v1",
+  "version": 1
+}

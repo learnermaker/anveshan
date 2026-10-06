@@ -1,0 +1,70 @@
+{
+  "criteria": {
+    "CRIT-ORI-CLEAN": {
+      "drill_hint": "If the paper stops looking like any reference state, unfold to the last matching state and redo that fold.",
+      "order_index": 2,
+      "reference_evidence_ids": [
+        "ev.origami.order"
+      ],
+      "source_claim_ids": [
+        "CLM-06"
+      ],
+      "why_it_matters": "The expert goes from R0 to R4 along the demonstrated state sequence (CLM-06)."
+    },
+    "CRIT-ORI-COMPLETE": {
+      "drill_hint": "Pause at each reference state and compare your paper to its keyframe before folding on.",
+      "order_index": 1,
+      "reference_evidence_ids": [
+        "ev.origami.keyframe.00",
+        "ev.origami.keyframe.01",
+        "ev.origami.keyframe.02",
+        "ev.origami.keyframe.03",
+        "ev.origami.keyframe.04"
+      ],
+      "source_claim_ids": [
+        "CLM-01",
+        "CLM-02",
+        "CLM-03",
+        "CLM-04",
+        "CLM-05"
+      ],
+      "why_it_matters": "The demonstration passes through 5 distinct states (CLM-01-CLM-05)."
+    },
+    "CRIT-ORI-FINAL": {
+      "drill_hint": "Compare your final paper with the target keyframe property by property.",
+      "order_index": 4,
+      "reference_evidence_ids": [
+        "ev.origami.keyframe.04"
+      ],
+      "source_claim_ids": [
+        "CLM-05"
+      ],
+      "why_it_matters": "The demonstration ends in R4 (kite form): arrowhead shape; taller than wide; taller-than-wide; yellow paper visible (CLM-05)."
+    },
+    "CRIT-ORI-KEYSTEP": {
+      "drill_hint": "Practise the fold from R0 to R1 slowly, matching the reference keyframe.",
+      "order_index": 3,
+      "reference_evidence_ids": [
+        "ev.origami.keyframe.01"
+      ],
+      "source_claim_ids": [
+        "CLM-02",
+        "CLM-07"
+      ],
+      "why_it_matters": "R1 (book-folded rectangle) is the state the expert spends longest reaching (38 s of folding from R0) (CLM-02)."
+    },
+    "CRIT-ORI-ORDER": {
+      "drill_hint": "Fold along with the reference keyframes one state at a time and check each state before moving on.",
+      "order_index": 0,
+      "reference_evidence_ids": [
+        "ev.origami.order"
+      ],
+      "source_claim_ids": [
+        "CLM-06"
+      ],
+      "why_it_matters": "The expert's video establishes the path R0 flat square -> R1 book-folded rectangle -> R2 diagonal-folded triangle -> R3 square base -> R4 kite form (CLM-06)."
+    }
+  },
+  "package_id": "kp.origami.1",
+  "rubric_id": "rubric.origami.1"
+}

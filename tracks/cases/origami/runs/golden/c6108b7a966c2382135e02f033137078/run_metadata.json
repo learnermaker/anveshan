@@ -1,0 +1,22 @@
+{
+  "expected_behavior": "one paper-state label per expert frame",
+  "input_digests": [
+    "ImagePart:d9ae42c8b08fe5cac66e04d9479932162246ec9ac301c3d3ade3cf2c0c886b5c",
+    "ImagePart:bdafebf6df8b9c63792867ca5c760fb34cfb000198cbc5e9d05ec705ef286eec",
+    "ImagePart:04db2e6bcdbd203ae4813864e5e198e9d998f0d2da815d085404591ab795494a",
+    "ImagePart:c80368065b617e1e4a172008c8cc8f5539ef62280119013abfededee4296e7fc",
+    "text:35c1a8b2e7c15b2e2428f35907fa77fd51951e1aab1750424249a33cc0c12ee7"
+  ],
+  "latency_ms": 8302,
+  "model_id": "gemma-4-26b-a4b-it",
+  "model_key": "video_frames",
+  "notes": [],
+  "prompt_id": "origami_states",
+  "prompt_sha256": "35c1a8b2e7c15b2e2428f35907fa77fd51951e1aab1750424249a33cc0c12ee7",
+  "prompt_version": "v3",
+  "provider": "google-genai",
+  "replay_key": "c6108b7a966c2382135e02f033137078",
+  "run_id": "run.origami_states.20261006T164507.a8ba3c",
+  "runtime_class": "LIVE",
+  "started_at": "2026-10-06T16:44:58.814273+00:00"
+}
