@@ -4,9 +4,9 @@
 schema_version: 1
 project:
   name: anveshan
-  phase: validation
+  phase: active_development
   default_branch: main
-  current_gate: M0
+  current_gate: M1
   work_states: [BACKLOG, READY, IN_PROGRESS, IN_REVIEW, VALIDATING, DONE, BLOCKED, DEFERRED, REJECTED, SUPERSEDED]
   decision_states: [EXPLORATION, PROPOSED, DECIDED, VALIDATED, IMPLEMENTED, SUPERSEDED]
   scope_buckets:
@@ -24,9 +24,9 @@ project:
     ai_changes_require_evaluation: true
     validation_claims_require_evidence: true
   current_mvp:
-    exact_domain: OPEN
-    exact_skill: OPEN
-    expert: OPEN
-    learner: OPEN
-    rubric: OPEN
+    exact_domain: REFINING
+    exact_skill: REFINING
+    expert: REFINING
+    learner: REFINING
+    rubric: REFINING
   progress_unit: product_capability

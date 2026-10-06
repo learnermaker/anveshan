@@ -12,7 +12,13 @@
   "data_status": "external_source_catalogued_replay_bundle",
   "pack_version": "1.1",
   "case_version": "1.1",
-  "status": "AUTHENTIC_SOURCE_READY",
+  "status": "ENGINEERING_FIXTURE",
   "source_mode": "FORWARD",
-  "runtime_class": "REPLAY"
+  "runtime_class": "REPLAY",
+  "source_media": {
+    "type": "url",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/transcoded/5/5a/OrigamiCrane.ogv/OrigamiCrane.ogv.480p.webm",
+    "mime_type": "video/webm",
+    "attribution": "Tavin, CC BY 3.0, https://commons.wikimedia.org/wiki/File:OrigamiCrane.ogv"
+  }
 }

@@ -24,7 +24,7 @@ This file records decisions that materially affect scope, architecture, validati
 **Revisit trigger:** The repository collaboration model changes materially.
 
 ## 2026-10-03 — Current product scope remains validation-first
-**Status:** DECIDED
+**Status:** SUPERSEDED by 2026-10-04 active-development decision
 
 **Decision:** The competition effort remains in research/product-definition/validation until the core product hypothesis is supported by recorded evidence.
 
@@ -32,9 +32,20 @@ This file records decisions that materially affect scope, architecture, validati
 
 **Evidence:** docs/product/mvp-contract.md, docs/validation/, docs/product/open-questions.md.
 
-**Consequences:** Agents must not invent a domain or build a large app before the validation gate.
+**Consequences:** This decision governed the pre-implementation phase. It no longer blocks authorized implementation; its evidence/validation discipline remains applicable.
 
-**Revisit trigger:** A validation artifact records a supported bounded direction.
+**Revisit trigger:** Superseded when M0 authorization moved the project into active development.
+
+## 2026-10-04 — Active development with validation in parallel
+**Status:** DECIDED
+
+**Decision:** Anveshan is now in active development toward the M1 vertical slice. Implementation is authorized within bounded issues and the established architecture/ownership boundaries. Product validation continues in parallel; engineering implementation, replay fixtures, and prototypes must not be presented as authentic product validation.
+
+**Context:** M0 capability-validation work established sufficient direction to begin implementation. The repository now contains the common contract seam, case-pack layer, frontend prototype, CI, and parallel Track A/Track B workspaces.
+
+**Consequences:** Agents may implement authorized work without waiting for a separate validation gate to re-authorize each engineering task. Scope, evidence, provenance, replay-vs-authentic distinctions, and issue/PR governance remain mandatory.
+
+**Revisit trigger:** Material change to the selected development direction, M1 completion, or a validation finding that changes product scope.
 
 ## 2026-10-03 — GitHub/agent operating standard
 **Status:** DECIDED

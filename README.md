@@ -58,7 +58,7 @@ This is a prototype wedge, not the definition of the company.
 
 Source can be a demonstration, desired state, learner attempt, or combination. The transmission direction follows the capability and available evidence.
 
-The exact domain and skill remain open until authentic access and feasibility validation are confirmed.
+The exact domain/skill may still be refined as implementation and validation produce evidence; this does not block the current bounded development work.
 
 ## What is and is not novel
 
@@ -128,11 +128,11 @@ Do not claim "community-owned" unless the relevant community actually governs th
 
 ## Current status
 
-**Research → Product Definition → Validation**
+**Active Development — M1 Vertical Slice**
 
-No core product hypothesis is marked validated yet.
+Implementation is underway across the common seam, case-pack layer, frontend, Track A and Track B workspaces, with product validation continuing in parallel. Not every engineering fixture or prototype behavior is product-validated.
 
-The exact domain, skill, expert, learner and evaluation rubric remain open until authentic access is confirmed.
+The exact bounded case, expert access, learner flow and evaluation rubric remain subject to evidence and validation.
 
 ## Documentation
 
@@ -140,11 +140,11 @@ See docs/README.md for the complete map. The repository separates EXPLORED, DECI
 
 ### Parallel implementation workspaces
 
-Once M0 authorizes implementation, two developers can work independently under `tracks/track-a/` and `tracks/track-b/`, using the contract and replay-fixture boundary documented in `docs/architecture/parallel-work-contract.md`, with current execution gates in `docs/status/NOW.md`.
+Two developers can now work independently under `tracks/track-a/` and `tracks/track-b/`, using the contract and replay-fixture boundary documented in `docs/architecture/parallel-work-contract.md`, with current execution gates in `docs/status/NOW.md`.
 
 ## Implementation Status
 
-The repository is currently a **research/validation workspace with an implemented frontend prototype**. The app workspace is a clickable prototype/reference implementation; it is not evidence that the product thesis or fixture claims are validated. Application source, deployment configuration and CI are intentionally added only after the capability-validation gate produces a supported product direction.
+The repository is in **active development with a working frontend prototype and CI**. The app and engineering infrastructure are being developed toward the vertical slice; implementation status is not evidence that the product thesis or fixture claims are validated. Deployment and production hardening remain bounded by current implementation issues and validation evidence.
 
 For contributors, treat:
 - `docs/research/` as exploration and competitive/technical evidence;

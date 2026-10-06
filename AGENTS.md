@@ -138,7 +138,7 @@ Every implementation PR must:
 - identify an explicit trade if scope changed;
 - update durable documentation when required.
 
-The repository PR template and CI governance check enforce these expectations where technically possible.
+The repository PR template and CI validator enforce these expectations. Before opening a PR, agents should run `.github/scripts/check_pr_contract.py` against the proposed body; CI is the final enforcement gate.
 
 ## Scope firewall
 
@@ -208,9 +208,9 @@ The repository is the durable record. Chat, screenshots, PDFs, and generated pro
 
 ## Current repository state
 
-The repository is currently a research/validation workspace. Do not assume a runnable application exists unless the current tree and implementation-status documents show it.
+The repository is in **active development**. Runnable application code, CI, case packs, shared contracts, and parallel Track A/Track B work are present in the tree. Do not infer product validation merely from implementation status.
 
-The current competition domain, skill, expert, learner, and evaluation rubric remain open until the validation gate records a decision.
+Product validation continues in parallel with implementation. The selected bounded case, expert access, learner flow, and rubric may still be refined through evidence; that does not block authorized engineering work.
 
 
 ## Canonical case-pack boundary

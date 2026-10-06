@@ -14,5 +14,11 @@
   "case_version": "1.0",
   "status": "ENGINEERING_FIXTURE",
   "source_mode": "GOAL_CONDITIONED",
-  "runtime_class": "REPLAY"
+  "runtime_class": "REPLAY",
+  "source_media": {
+    "type": "local_file",
+    "path": "source/kolam.png",
+    "mime_type": "image/png",
+    "attribution": "Traditional 7x1 Sikku Kolam (with Crossover) goal pattern reference"
+  }
 }

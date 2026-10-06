@@ -88,3 +88,21 @@ Do not create `case-008`, `case-009`, or other ordinal directory names. Add a st
 Do not duplicate the same canonical case content under `tracks/track-a/` and `tracks/track-b/`. Track-local `data/` is reserved for implementation-specific artifacts.
 
 For production, keep this ownership model even when storage changes: versioned case content, large media, and mutable runtime state are separate concerns.
+
+
+## Manifest authority
+
+Each `tracks/cases/<case-id>/manifest.json` must conform to `tracks/cases/manifest.schema.json`. The schema is the authoritative vocabulary for case-pack metadata; prose documentation must not introduce new enum values.
+
+The manifest schema is intentionally separate from the eight shared contracts under `tracks/common/schemas/`. It governs case-pack metadata only.
+
+### Local validation
+
+Run:
+
+```bash
+python .github/scripts/check_case_packs.py
+python -m pytest .github/scripts/test_check_case_packs.py
+```
+
+A replay bundle is deterministic engineering evidence. It must not be labeled as authentic expert validation merely because an external reference or source is catalogued alongside it.

@@ -4,7 +4,7 @@ Use the repository root `AGENTS.md` as the authoritative cross-agent operating c
 
 ## Repository orientation
 
-Anveshan is a research/validation workspace for the Google Cloud AI Builder Cup 2026. The canonical product hierarchy is:
+Anveshan is an actively developed prototype for the Google Cloud AI Builder Cup 2026; product validation continues alongside implementation. The canonical product hierarchy is:
 
 - `docs/product/product-vision.md` — long-term product vision
 - `docs/product/product-thesis.md` — current competition/MVP wedge
@@ -18,7 +18,7 @@ Read `AGENTS.md` and `docs/status/NOW.md` before meaningful implementation. Sear
 
 ## Build / test
 
-The repository is currently a research/validation workspace; do not invent a runnable application or deployment path before the current validation gate authorizes it.
+The repository is in active development. Runnable application code and CI already exist. Do not invent additional deployment paths or infrastructure outside bounded issues and current architecture decisions.
 
 Existing CI validation is defined in `.github/workflows/checks.yml`. Preserve reproducibility and add focused tests/evaluations with behavior changes.
 
