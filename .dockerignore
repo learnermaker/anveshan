@@ -1,0 +1,36 @@
+# Keep the build context small and secret-free. The image needs only:
+# app/ (source, built in stage 1), service/, tracks/, tools/.
+.git
+.github
+.claude
+.venv
+venv
+**/__pycache__
+**/*.py[cod]
+**/.pytest_cache
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+service-account*.json
+credentials*.json
+
+# Runtime data and local tooling output
+var
+graphify-out
+screenshots
+research
+docs
+EXPLORATION.md
+DESIGN.md
+requirements.txt
+
+# Frontend build output and dependencies (rebuilt in the image)
+app/node_modules
+app/dist
+
+# Fetched media caches: re-downloaded and sha256-verified at image build time
+tracks/cases/*/media/cache
+tracks/track-a/data/runs
+tracks/track-b/data/runs

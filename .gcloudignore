@@ -1,0 +1,9 @@
+# Upload filter for `gcloud run deploy --source .` / `gcloud builds submit`.
+# Never upload secrets, local runtime data or caches; .dockerignore then trims the Docker context.
+.gcloudignore
+.git
+#!include:.gitignore
+.claude
+graphify-out
+screenshots
+research

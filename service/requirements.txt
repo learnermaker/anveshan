@@ -1,0 +1,12 @@
+# Runtime dependencies for the Cloud Run container (service + Track A + Track B + tracks/common).
+# Pinned to the versions the test suite runs against (Python 3.13). Ranges for local dev/CI live in
+# requirements-dev.txt. If a track adds a runtime dependency, add its pin here in the same PR.
+fastapi==0.142.2
+starlette==1.7.0
+uvicorn==0.54.0
+python-multipart==0.0.32
+pydantic==2.13.5
+numpy==2.5.3
+pillow==12.3.0
+av==19.0.1
+google-genai==2.28.0
