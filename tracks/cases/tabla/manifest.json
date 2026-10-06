@@ -14,5 +14,11 @@
   "case_version": "1.0",
   "status": "ENGINEERING_FIXTURE",
   "source_mode": "FORWARD",
-  "runtime_class": "REPLAY"
+  "runtime_class": "REPLAY",
+  "source_media": {
+    "type": "url",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/4/48/A_man_playing_tabla_in_village_pranpur_near_Chanderi.webm",
+    "mime_type": "video/webm",
+    "attribution": "A man playing tabla in village pranpur near Chanderi.webm by Manishontop02, CC BY-SA 4.0 (Wikimedia Commons); audio track only"
+  }
 }

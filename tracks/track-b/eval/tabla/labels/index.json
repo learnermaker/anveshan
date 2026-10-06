@@ -1,0 +1,11 @@
+{
+  "cases": [
+    "perfect",
+    "jitter_mild",
+    "jitter_heavy",
+    "tempo_plus8",
+    "dropped3",
+    "bass_removed_mid"
+  ],
+  "seed": 20261006
+}

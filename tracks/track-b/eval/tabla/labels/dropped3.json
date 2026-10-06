@@ -1,0 +1,304 @@
+{
+  "description": "Goal strokes [5, 35, 47] removed (silence).",
+  "expected_first_divergence": {
+    "goal_stroke": 5,
+    "kinds": [
+      "missing_stroke"
+    ],
+    "time": 2.672
+  },
+  "expected_metrics": {
+    "tabla.bass_accuracy": 1.0,
+    "tabla.ioi_cv": 0.1106,
+    "tabla.missing_extra": 3.0,
+    "tabla.tempo_error_pct": 0.0,
+    "tabla.timing_median_ms": 0.0
+  },
+  "expected_statuses": {
+    "CRIT-TABLA-BAYAN": "satisfied",
+    "CRIT-TABLA-BOLS": "uncertain",
+    "CRIT-TABLA-COMPLETE": "partially_satisfied",
+    "CRIT-TABLA-STEADY": "satisfied",
+    "CRIT-TABLA-TEMPO": "satisfied",
+    "CRIT-TABLA-TIMING": "satisfied"
+  },
+  "goal_package_id": "kp.tabla.1",
+  "goal_source_id": "src.tabla.demo.v1",
+  "goal_window_sec": [
+    20.0,
+    32.0
+  ],
+  "missing_goal_strokes": [
+    5,
+    35,
+    47
+  ],
+  "name": "dropped3",
+  "params": {
+    "dropped": [
+      5,
+      35,
+      47
+    ]
+  },
+  "perturbed_goal_strokes": [
+    5,
+    35,
+    47
+  ],
+  "runtime_label": "SYNTHETIC",
+  "seed": 20261006,
+  "true_onsets": [
+    {
+      "bass": true,
+      "goal": 0,
+      "t": 1.552
+    },
+    {
+      "bass": true,
+      "goal": 1,
+      "t": 1.728
+    },
+    {
+      "bass": true,
+      "goal": 2,
+      "t": 1.856
+    },
+    {
+      "bass": false,
+      "goal": 3,
+      "t": 2.048
+    },
+    {
+      "bass": false,
+      "goal": 4,
+      "t": 2.288
+    },
+    {
+      "bass": false,
+      "goal": 6,
+      "t": 2.864
+    },
+    {
+      "bass": false,
+      "goal": 7,
+      "t": 3.072
+    },
+    {
+      "bass": false,
+      "goal": 8,
+      "t": 3.248
+    },
+    {
+      "bass": true,
+      "goal": 9,
+      "t": 3.44
+    },
+    {
+      "bass": false,
+      "goal": 10,
+      "t": 3.632
+    },
+    {
+      "bass": true,
+      "goal": 11,
+      "t": 3.808
+    },
+    {
+      "bass": false,
+      "goal": 12,
+      "t": 4.0
+    },
+    {
+      "bass": false,
+      "goal": 13,
+      "t": 4.192
+    },
+    {
+      "bass": false,
+      "goal": 14,
+      "t": 4.352
+    },
+    {
+      "bass": true,
+      "goal": 15,
+      "t": 4.56
+    },
+    {
+      "bass": false,
+      "goal": 16,
+      "t": 4.752
+    },
+    {
+      "bass": true,
+      "goal": 17,
+      "t": 4.928
+    },
+    {
+      "bass": false,
+      "goal": 18,
+      "t": 5.12
+    },
+    {
+      "bass": false,
+      "goal": 19,
+      "t": 5.312
+    },
+    {
+      "bass": false,
+      "goal": 20,
+      "t": 5.472
+    },
+    {
+      "bass": true,
+      "goal": 21,
+      "t": 5.68
+    },
+    {
+      "bass": false,
+      "goal": 22,
+      "t": 5.888
+    },
+    {
+      "bass": true,
+      "goal": 23,
+      "t": 6.064
+    },
+    {
+      "bass": false,
+      "goal": 24,
+      "t": 6.272
+    },
+    {
+      "bass": false,
+      "goal": 25,
+      "t": 6.448
+    },
+    {
+      "bass": false,
+      "goal": 26,
+      "t": 6.624
+    },
+    {
+      "bass": true,
+      "goal": 27,
+      "t": 6.816
+    },
+    {
+      "bass": false,
+      "goal": 28,
+      "t": 7.056
+    },
+    {
+      "bass": true,
+      "goal": 29,
+      "t": 7.216
+    },
+    {
+      "bass": false,
+      "goal": 30,
+      "t": 7.424
+    },
+    {
+      "bass": false,
+      "goal": 31,
+      "t": 7.616
+    },
+    {
+      "bass": false,
+      "goal": 32,
+      "t": 7.776
+    },
+    {
+      "bass": false,
+      "goal": 33,
+      "t": 7.968
+    },
+    {
+      "bass": false,
+      "goal": 34,
+      "t": 8.192
+    },
+    {
+      "bass": false,
+      "goal": 36,
+      "t": 8.56
+    },
+    {
+      "bass": true,
+      "goal": 37,
+      "t": 8.752
+    },
+    {
+      "bass": false,
+      "goal": 38,
+      "t": 8.928
+    },
+    {
+      "bass": true,
+      "goal": 39,
+      "t": 9.104
+    },
+    {
+      "bass": false,
+      "goal": 40,
+      "t": 9.312
+    },
+    {
+      "bass": true,
+      "goal": 41,
+      "t": 9.472
+    },
+    {
+      "bass": false,
+      "goal": 42,
+      "t": 9.664
+    },
+    {
+      "bass": false,
+      "goal": 43,
+      "t": 9.856
+    },
+    {
+      "bass": false,
+      "goal": 44,
+      "t": 10.016
+    },
+    {
+      "bass": false,
+      "goal": 45,
+      "t": 10.224
+    },
+    {
+      "bass": false,
+      "goal": 46,
+      "t": 10.432
+    },
+    {
+      "bass": true,
+      "goal": 48,
+      "t": 10.8
+    },
+    {
+      "bass": true,
+      "goal": 49,
+      "t": 10.992
+    },
+    {
+      "bass": true,
+      "goal": 50,
+      "t": 11.376
+    },
+    {
+      "bass": false,
+      "goal": 51,
+      "t": 11.536
+    },
+    {
+      "bass": true,
+      "goal": 52,
+      "t": 11.744
+    }
+  ],
+  "wav": "var/eval/tabla/dropped3.wav"
+}

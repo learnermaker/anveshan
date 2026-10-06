@@ -1,0 +1,341 @@
+{
+  "description": "From stroke 6 on, strokes displaced by 55-90 ms in blocks (s, s, 0) with a random sign s per block (27 moved; a shift is skipped when it would bring two strokes closer than 0.10 s). Strokes 0..5 untouched.",
+  "expected_first_divergence": {
+    "goal_stroke": 6,
+    "kinds": [
+      "late_stroke",
+      "early_stroke"
+    ],
+    "time": 2.9247
+  },
+  "expected_metrics": {
+    "tabla.bass_accuracy": 1.0,
+    "tabla.ioi_cv": 0.286,
+    "tabla.missing_extra": 0.0,
+    "tabla.tempo_error_pct": 0.44,
+    "tabla.timing_median_ms": 41.0
+  },
+  "expected_statuses": {
+    "CRIT-TABLA-BAYAN": "satisfied",
+    "CRIT-TABLA-BOLS": "uncertain",
+    "CRIT-TABLA-COMPLETE": "satisfied",
+    "CRIT-TABLA-STEADY": "not_satisfied",
+    "CRIT-TABLA-TEMPO": "satisfied",
+    "CRIT-TABLA-TIMING": "satisfied"
+  },
+  "goal_package_id": "kp.tabla.1",
+  "goal_source_id": "src.tabla.demo.v1",
+  "goal_window_sec": [
+    20.0,
+    32.0
+  ],
+  "missing_goal_strokes": [],
+  "name": "jitter_heavy",
+  "params": {
+    "from_stroke": 6,
+    "jitter_abs_ms": [
+      55,
+      90
+    ],
+    "min_ioi_sec": 0.1
+  },
+  "perturbed_goal_strokes": [
+    6,
+    9,
+    10,
+    12,
+    13,
+    15,
+    18,
+    19,
+    21,
+    22,
+    24,
+    25,
+    27,
+    28,
+    30,
+    33,
+    34,
+    36,
+    37,
+    39,
+    40,
+    42,
+    45,
+    48,
+    49,
+    51,
+    52
+  ],
+  "runtime_label": "SYNTHETIC",
+  "seed": 20261006,
+  "true_onsets": [
+    {
+      "bass": true,
+      "goal": 0,
+      "t": 1.552
+    },
+    {
+      "bass": true,
+      "goal": 1,
+      "t": 1.728
+    },
+    {
+      "bass": true,
+      "goal": 2,
+      "t": 1.856
+    },
+    {
+      "bass": false,
+      "goal": 3,
+      "t": 2.048
+    },
+    {
+      "bass": false,
+      "goal": 4,
+      "t": 2.288
+    },
+    {
+      "bass": true,
+      "goal": 5,
+      "t": 2.672
+    },
+    {
+      "bass": false,
+      "goal": 6,
+      "t": 2.9247
+    },
+    {
+      "bass": false,
+      "goal": 7,
+      "t": 3.072
+    },
+    {
+      "bass": false,
+      "goal": 8,
+      "t": 3.248
+    },
+    {
+      "bass": true,
+      "goal": 9,
+      "t": 3.3741
+    },
+    {
+      "bass": false,
+      "goal": 10,
+      "t": 3.5573
+    },
+    {
+      "bass": true,
+      "goal": 11,
+      "t": 3.808
+    },
+    {
+      "bass": false,
+      "goal": 12,
+      "t": 3.9119
+    },
+    {
+      "bass": false,
+      "goal": 13,
+      "t": 4.1131
+    },
+    {
+      "bass": false,
+      "goal": 14,
+      "t": 4.352
+    },
+    {
+      "bass": true,
+      "goal": 15,
+      "t": 4.6204
+    },
+    {
+      "bass": false,
+      "goal": 16,
+      "t": 4.752
+    },
+    {
+      "bass": true,
+      "goal": 17,
+      "t": 4.928
+    },
+    {
+      "bass": false,
+      "goal": 18,
+      "t": 5.0566
+    },
+    {
+      "bass": false,
+      "goal": 19,
+      "t": 5.2518
+    },
+    {
+      "bass": false,
+      "goal": 20,
+      "t": 5.472
+    },
+    {
+      "bass": true,
+      "goal": 21,
+      "t": 5.7475
+    },
+    {
+      "bass": false,
+      "goal": 22,
+      "t": 5.962
+    },
+    {
+      "bass": true,
+      "goal": 23,
+      "t": 6.064
+    },
+    {
+      "bass": false,
+      "goal": 24,
+      "t": 6.2057
+    },
+    {
+      "bass": false,
+      "goal": 25,
+      "t": 6.3894
+    },
+    {
+      "bass": false,
+      "goal": 26,
+      "t": 6.624
+    },
+    {
+      "bass": true,
+      "goal": 27,
+      "t": 6.7411
+    },
+    {
+      "bass": false,
+      "goal": 28,
+      "t": 6.9721
+    },
+    {
+      "bass": true,
+      "goal": 29,
+      "t": 7.216
+    },
+    {
+      "bass": false,
+      "goal": 30,
+      "t": 7.5048
+    },
+    {
+      "bass": false,
+      "goal": 31,
+      "t": 7.616
+    },
+    {
+      "bass": false,
+      "goal": 32,
+      "t": 7.776
+    },
+    {
+      "bass": false,
+      "goal": 33,
+      "t": 8.0356
+    },
+    {
+      "bass": false,
+      "goal": 34,
+      "t": 8.2508
+    },
+    {
+      "bass": true,
+      "goal": 35,
+      "t": 8.352
+    },
+    {
+      "bass": false,
+      "goal": 36,
+      "t": 8.4736
+    },
+    {
+      "bass": true,
+      "goal": 37,
+      "t": 8.6728
+    },
+    {
+      "bass": false,
+      "goal": 38,
+      "t": 8.928
+    },
+    {
+      "bass": true,
+      "goal": 39,
+      "t": 9.0489
+    },
+    {
+      "bass": false,
+      "goal": 40,
+      "t": 9.2516
+    },
+    {
+      "bass": true,
+      "goal": 41,
+      "t": 9.472
+    },
+    {
+      "bass": false,
+      "goal": 42,
+      "t": 9.7503
+    },
+    {
+      "bass": false,
+      "goal": 43,
+      "t": 9.856
+    },
+    {
+      "bass": false,
+      "goal": 44,
+      "t": 10.016
+    },
+    {
+      "bass": false,
+      "goal": 45,
+      "t": 10.3024
+    },
+    {
+      "bass": false,
+      "goal": 46,
+      "t": 10.432
+    },
+    {
+      "bass": true,
+      "goal": 47,
+      "t": 10.592
+    },
+    {
+      "bass": true,
+      "goal": 48,
+      "t": 10.8711
+    },
+    {
+      "bass": true,
+      "goal": 49,
+      "t": 11.0522
+    },
+    {
+      "bass": true,
+      "goal": 50,
+      "t": 11.376
+    },
+    {
+      "bass": false,
+      "goal": 51,
+      "t": 11.6233
+    },
+    {
+      "bass": true,
+      "goal": 52,
+      "t": 11.8059
+    }
+  ],
+  "wav": "var/eval/tabla/jitter_heavy.wav"
+}
