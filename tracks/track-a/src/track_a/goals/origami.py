@@ -44,7 +44,7 @@ from tracks.common.schemas import (
 from track_a.goals import CriterionTemplate, GoalBuildResult
 
 ALGORITHM = "origami_goal_v3"
-FPS = 0.5   # lowered from 1.0 to reduce token usage (97 frames vs 194)
+FPS = 0.5   # reduced from 1.0; combined with inter_batch_sleep manages rate limits in live mode
 BATCH_SIZE = 4   # reduced from 12; keeps per-call image count small for complex analysis prompts
 MAX_SIDE = 384
 MIN_RUN = 2
@@ -295,7 +295,7 @@ def build(source_path: Path, source: SourceRecord, ctx: RunContext, *, case_id: 
     if len(frames) < 2 * MIN_RUN:
         raise AnveshanFailure(FailureCategory.INVALID_INPUT, f"too few frames in window [{w0}, {w1}] ({len(frames)})")
 
-    dtos, fold_notes, run_keys = observe_frames(frames, ctx, inter_batch_sleep_s=12.0)
+    dtos, fold_notes, run_keys = observe_frames(frames, ctx, inter_batch_sleep_s=12.0 if ctx.mode == "live" else 0.0)
     times = [f.time_sec for f in frames]
     raw = [norm_name(d.state_name) if d.phase == "state" else None for d in dtos]
     merged, merge_warn = merge_states(times, raw)
@@ -542,7 +542,6 @@ def build(source_path: Path, source: SourceRecord, ctx: RunContext, *, case_id: 
             "keyframe_rule": "lowest mean grayscale change to neighbouring frames among the state's frames, preferring frames without hand occlusion",
             "key_state_rule": "longest expert transition into the state (start_j - end_{j-1})",
             "prompt": f"{PROMPT_ID}@v3",
-            "fps": FPS,
             "model_key": MODEL_KEY,
             "window": [w0, w1],
             "frames_sampled": len(frames),
