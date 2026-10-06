@@ -1,0 +1,20 @@
+{
+  "expected_behavior": "pairwise final-state check against R_k checklist",
+  "input_digests": [
+    "ImagePart:5aedabcd53a94881bdf8ae13ed6410befedee3099b4a305c46895625e69506d3",
+    "ImagePart:40721b844a9151fb4dc5f419d5f86220d7e856a9db2c24d62da5b00c82383d1c",
+    "text:a23a30b204c1af27101dc43893c60c0ec5f9d9b3ddaba6c443cf3f86407a0eb2"
+  ],
+  "latency_ms": 3817,
+  "model_id": "gemma-4-26b-a4b-it",
+  "model_key": "video_frames",
+  "notes": [],
+  "prompt_id": "origami_final",
+  "prompt_sha256": "a23a30b204c1af27101dc43893c60c0ec5f9d9b3ddaba6c443cf3f86407a0eb2",
+  "prompt_version": "v1",
+  "provider": "google-genai",
+  "replay_key": "8451ff95f7ec1ce119bac1724dcd50fb",
+  "run_id": "run.origami_final.20261006T173718.4a829e",
+  "runtime_class": "LIVE",
+  "started_at": "2026-10-06T17:37:14.951104+00:00"
+}

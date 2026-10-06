@@ -1,0 +1,3 @@
+{
+  "text": "{\"frames\": [{\"t\": 17.0, \"state\": \"transition\", \"note\": \"hands folding the square paper in half\"}, {\"t\": 20.0, \"state\": 1, \"note\": \"rectangular shape, folded in half\"}, {\"t\": 22.0, \"state\": \"transition\", \"note\": \"hands folding the rectangle diagonally\"}, {\"t\": 24.0, \"state\": \"transition\", \"note\": \"hands manipulating the paper into a base\"}, {\"t\": 26.0, \"state\": \"transition\", \"note\": \"hands folding the paper into a kite shape\"}, {\"t\": 28.0, \"state\": 4, \"note\": \"kite form, yellow paper visible\"}, {\"t\": 30.0, \"state\": 4, \"note\": \"kite form, yellow paper visible\"}, {\"t\": 33.0, \"state\": 4, \"note\": \"kite form, yellow paper visible\"}]}"
+}

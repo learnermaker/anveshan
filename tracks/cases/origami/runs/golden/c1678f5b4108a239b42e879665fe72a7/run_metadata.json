@@ -1,0 +1,26 @@
+{
+  "expected_behavior": "one reference-state label per learner frame",
+  "input_digests": [
+    "ImagePart:ba0b80e0ee0edc9425237b58e81681d017f3bf0e2ca04e02a357dac4312caba0",
+    "ImagePart:ccdb84a0b916c0a9de6e68a365c84ba0128ac7cb7abbaf3450dae8152ae95c73",
+    "ImagePart:32c2b93fdf505aea765de81069345dbdf33cbd59c95ea4cc2357569a71de8b19",
+    "ImagePart:b631a1313e230625e7e8197b62a389034b7ac89fd0f27db5e130a0e874336abb",
+    "ImagePart:cd9e6421064da9b246a01f21d7dc3a42927be0b906220100ebe0bfad8c511ede",
+    "ImagePart:9b5c9ed7f825bc931d281fd378476a43ddfafe70bd7a80e8921895897ac78cdd",
+    "ImagePart:5e6aca631e0629e56823bb4c0ecff864a3e349886276633d5d48619b01b98fa2",
+    "ImagePart:e1e2c3d546046233184fa412afc3b215ec42d8c1584dadd11269e0926be229b1",
+    "text:3bd7817b702652e26ad4e21a19aa73dd8144f883e67b877a7128cc957e6df054"
+  ],
+  "latency_ms": 7405,
+  "model_id": "gemma-4-26b-a4b-it",
+  "model_key": "video_frames",
+  "notes": [],
+  "prompt_id": "origami_match",
+  "prompt_sha256": "3bd7817b702652e26ad4e21a19aa73dd8144f883e67b877a7128cc957e6df054",
+  "prompt_version": "v2",
+  "provider": "google-genai",
+  "replay_key": "c1678f5b4108a239b42e879665fe72a7",
+  "run_id": "run.origami_match.20261006T173406.7d6977",
+  "runtime_class": "LIVE",
+  "started_at": "2026-10-06T17:33:59.033796+00:00"
+}

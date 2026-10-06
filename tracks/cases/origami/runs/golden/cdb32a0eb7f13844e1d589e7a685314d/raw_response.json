@@ -1,0 +1,3 @@
+{
+  "text": "{\"frames\": [{\"t\": \"35.0s\", \"state\": \"transition\", \"note\": \"hands folding the yellow paper\"}, {\"t\": \"37.0s\", \"state\": \"transition\", \"note\": \"folding the paper, white side visible\"}, {\"t\": \"39.0s\", \"state\": \"R1\", \"note\": \"rectangular shape, folded in half\"}, {\"t\": \"41.0s\", \"state\": \"transition\", \"note\": \"folding a corner towards the center\"}, {\"t\": \"43.0s\", \"state\": \"transition\", \"note\": \"folding the paper, white side up\"}, {\"t\": \"46.0s\", \"state\": \"R3\", \"note\": \"compact diamond shape, multiple layers\"}, {\"t\": \"48.0s\", \"state\": \"R3\", \"note\": \"compact diamond shape, multiple layers\"}, {\"t\": \"50.0s\", \"state\": \"R4\", \"note\": \"kite form, yellow paper visible\"}]}"
+}

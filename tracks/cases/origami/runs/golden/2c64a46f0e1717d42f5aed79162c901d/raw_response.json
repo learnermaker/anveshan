@@ -1,0 +1,3 @@
+{
+  "text": "{\"frames\": [{\"t\": 117.0, \"state\": 2, \"note\": \"triangular shape with visible fold lines\"}, {\"t\": 118.0, \"state\": 2, \"note\": \"triangular shape, folded along diagonal\"}, {\"t\": 120.0, \"state\": \"transition\", \"note\": \"hands folding the triangle into a more compact shape\"}, {\"t\": 121.0, \"state\": \"transition\", \"note\": \"hands manipulating the paper towards a new shape\"}, {\"t\": 123.0, \"state\": \"transition\", \"note\": \"folding a flap over the center\"}, {\"t\": 124.0, \"state\": \"transition\", \"note\": \"folding a flap to create a kite-like shape\"}, {\"t\": 126.0, \"state\": 4, \"note\": \"kite form, yellow paper visible\"}, {\"t\": 127.0, \"state\": 4, \"note\": \"kite form, yellow paper visible\"}]}"
+}
