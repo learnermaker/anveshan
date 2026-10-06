@@ -21,6 +21,7 @@ BUILDERS: Dict[str, str] = {
     "kolam_image": "track_a.goals.kolam:build",
     "origami_video": "track_a.goals.origami:build",
     "tabla_audio": "track_a.goals.tabla:build",
+    "rubric_vlm": "track_a.goals.rubric_vlm:build",  # K7
 }
 
 
