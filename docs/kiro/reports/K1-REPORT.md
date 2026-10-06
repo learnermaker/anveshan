@@ -130,3 +130,47 @@ source). All six `*.v1.json` files were **BYTE-IDENTICAL** to the live-build art
 | `rubric.v1.json` | BYTE-IDENTICAL |
 | `observers.v1.json` | BYTE-IDENTICAL |
 
+---
+
+# K1 Kolam — Step 5 End-to-End Session Test Report
+
+Branch: `kiro/k1-kolam`
+Python: 3.13.14 | pytest 9.1.1
+
+## Test file
+
+`tracks/track-b/tests/test_kolam_session_e2e.py`
+
+Two flows tested, both in RECORDED mode (no API key, no live model calls):
+
+- **Flow A** — stray-stroke baseline → perfect-trace retry → `complete_session`: validates transmission bundle, asserts gain > 0, asserts CRIT-KOLAM-CONTINUITY improved in `targeted_change`.
+- **Flow B** — stray-stroke baseline → raster-perfect image retry: asserts `process_observable=False`, CRIT-KOLAM-CONTINUITY status is `uncertain`, and `kolam.pen_lifts_excess` metric has `value=None` with a non-null `uncertain_reason`.
+
+## Pytest run (`not live`)
+
+Command:
+```
+python -m pytest -v tracks/track-b/tests/test_kolam_session_e2e.py -m "not live"
+```
+
+Output:
+```
+================= test session starts ==================
+platform win32 -- Python 3.13.14, pytest-9.1.1, pluggy-1.6.0
+rootdir: .../anveshan-wt/k1-kolam
+
+tracks/track-b/tests/test_kolam_session_e2e.py::test_trace_stray_then_perfect PASSED [ 50%]
+tracks/track-b/tests/test_kolam_session_e2e.py::test_image_retry_process_criteria_uncertain PASSED [100%]
+
+================== 2 passed in 15.25s ==================
+```
+
+## Review findings resolved
+
+| Finding | Severity | Resolution |
+|---|---|---|
+| `missing-pytest-evidence` (Step 5) | blocking | Pytest output recorded above. Both e2e tests pass. |
+
+## Files changed in this iteration
+
+- `docs/kiro/reports/K1-REPORT.md` — this Step 5 section (pytest evidence for `test_kolam_session_e2e.py`)
