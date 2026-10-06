@@ -9,6 +9,10 @@ Bol names are never asserted from the deterministic analysis. Only if the option
 audio model is enabled (``ANVESHAN_AUDIO_MODEL``) does the builder ask it to name bols; those
 labels are INFERRED (confidence 0.5) and a CRIT-TABLA-BOLS criterion is added. The taal is
 never named.
+
+v2 adds: stroke timbre classes (MFCC-based k-means on expert strokes, CLM-07, OBSERVED),
+CRIT-TABLA-STROKES (stroke class accuracy, not required, weight 2), and bol class labels
+(INFERRED when the audio model is enabled). Calls payload_from_audio from the common layer.
 """
 
 from __future__ import annotations
@@ -20,9 +24,8 @@ import numpy as np
 
 from tracks.common import tabla_dsp as dsp
 from tracks.common.casedata import Band, ObserverBinding, SourceRecord
-from tracks.common.goals.tabla import PAYLOAD_MODEL
-from tracks.common.media import decode_audio
-from tracks.common.models import AnveshanFailure, AudioPart, FailureCategory, ModelError, load_prompt
+from tracks.common.goals.tabla import PAYLOAD_MODEL, payload_from_audio
+from tracks.common.models import AnveshanFailure, FailureCategory
 from tracks.common.onsets import OnsetParams
 from tracks.common.runtime import RunContext
 from tracks.common.schemas import ClaimType, EvidenceRef, KnowledgeClaim, Modality, TaskConstraint, VerificationState
@@ -30,9 +33,7 @@ from tracks.common.schemas import ClaimType, EvidenceRef, KnowledgeClaim, Modali
 from track_a.goals import CriterionTemplate, GoalBuildResult
 
 SR = 16000
-BUILDER_VERSION = "tabla_goal_v1"
-PROMPT_PATH = Path(__file__).resolve().parents[4] / "common" / "prompts" / "tabla_bols_v1.txt"
-MIN_ONSETS = 8
+BUILDER_VERSION = "tabla_goal_v2"
 
 # evaluation-core §5.2 default bands
 TEMPO_BANDS = (5.0, 10.0)
@@ -41,6 +42,7 @@ BASS_BANDS = (0.9, 0.7)
 COMPLETE_BANDS = (1.0, 3.0)
 STEADY_BANDS = (0.08, 0.15)
 BOL_BANDS = (0.85, 0.6)
+STROKES_BANDS = (0.80, 0.60)
 
 
 def _lower(sat: float, partial: float) -> List[Band]:
@@ -49,16 +51,6 @@ def _lower(sat: float, partial: float) -> List[Band]:
 
 def _higher(sat: float, partial: float) -> List[Band]:
     return [Band(status="satisfied", min=sat), Band(status="partially_satisfied", min=partial)]
-
-
-def analyze_window(x: np.ndarray, sample_rate: int = SR) -> Dict[str, Any]:
-    """Deterministic analysis of the expert window (tracks.common.tabla_dsp.analyze_goal_audio)."""
-    try:
-        return dsp.analyze_goal_audio(x, sample_rate, timing_ms=TIMING_BANDS[0], tempo_pct=TEMPO_BANDS[0],
-                                      min_onsets=MIN_ONSETS)
-    except dsp.GoalAnalysisError as exc:
-        cat = FailureCategory.INVALID_INPUT if exc.kind == "too_few_strokes" else FailureCategory.AMBIGUOUS_EVIDENCE
-        raise AnveshanFailure(cat, f"expert window: {exc}") from exc
 
 
 def _bass_pattern(payload: Dict[str, Any]) -> str:
@@ -70,62 +62,25 @@ def _bass_pattern(payload: Dict[str, Any]) -> str:
     return "".join(out)
 
 
-def _request_bols(x: np.ndarray, payload: Dict[str, Any], ctx: RunContext, warnings: List[str], run_keys: List[str]) -> None:
-    times = [o["t"] for o in payload["onsets"]]
-    prompt, version = load_prompt(
-        PROMPT_PATH,
-        duration_sec=f"{payload['duration_sec']:.2f}",
-        onset_times=", ".join(f"{v:.3f}" for v in times),
-    )
-    try:
-        res = ctx.gateway.generate_json(
-            model_key="audio",
-            prompt_id="tabla_bols",
-            prompt_version=version,
-            prompt_text=prompt,
-            schema=dsp.BolsDTO,
-            parts=[AudioPart(dsp.wav_bytes(x, payload["sample_rate"]))],
-            expected_behavior="one bol label per listed onset; '?' when unclear; no taal named",
-        )
-    except ModelError as exc:
-        payload["bols_status"] = "model_failed"
-        warnings.append(f"audio model bol naming failed ({exc.category.value}): {exc.message}; bols stay UNVERIFIED")
-        return
-    run_keys.append(res.metadata.replay_key)
-    labels, unmatched = dsp.match_bols(times, [(b.t, b.bol) for b in res.data.bols])
-    if unmatched:
-        warnings.append(f"{unmatched} audio-model bol labels matched no detected onset (dropped)")
-    payload["bols"] = [{"t": t, "bol": b} for t, b in zip(times, labels) if b]
-    payload["bols_status"] = "inferred" if payload["bols"] else "model_failed"
-
-
 def build(source_path: Path, source: SourceRecord, ctx: RunContext, *, case_id: str, version: int) -> GoalBuildResult:
-    w0, w1 = (source.window_sec or [0.0, None])[0], (source.window_sec or [0.0, None])[1]
-    try:
-        x = decode_audio(source_path, SR, start_sec=w0, end_sec=w1)
-    except ValueError as exc:
-        raise AnveshanFailure(FailureCategory.INVALID_INPUT, f"cannot decode audio from {source.source_id}: {exc}") from exc
-    if w1 is None:
-        w1 = w0 + len(x) / SR
-    warnings: List[str] = []
-    run_keys: List[str] = []
-    payload = analyze_window(x, SR)
-    payload["window_sec"] = [float(w0), float(w1)]
-    payload["bols"] = None
-    payload["bols_status"] = "audio_model_disabled"
-    audio_enabled = ctx.gateway.registry.enabled("audio")
-    if audio_enabled:
-        _request_bols(x, payload, ctx, warnings, run_keys)
+    w0, w1_raw = (source.window_sec or [0.0, None])[0], (source.window_sec or [0.0, None])[1]
+    window: Any = (w0, w1_raw)
 
-    # Steadiness bands are calibrated so that the source itself is "satisfied" (a perfect copy
-    # must not be penalised for the expert's own micro-timing).
+    payload, _built_with, warnings, run_keys = payload_from_audio(source_path, window, ctx)
+    w1 = payload["window_sec"][1]
+
+    if w1_raw is None:
+        w1_raw = w1
+
+    # Steadiness bands calibrated so the source is "satisfied"
     steady_sat = STEADY_BANDS[0]
     steady_partial = STEADY_BANDS[1]
-    if payload["ioi_cv"] is not None and payload["ioi_cv"] * 1.25 > steady_sat:
-        steady_sat = round(payload["ioi_cv"] * 1.25, 3)
-        steady_partial = round(max(steady_partial, payload["ioi_cv"] * 2.0), 3)
+    ioi_cv = payload.get("ioi_cv")
+    if ioi_cv is not None and ioi_cv * 1.25 > steady_sat:
+        steady_sat = round(ioi_cv * 1.25, 3)
+        steady_partial = round(max(steady_partial, ioi_cv * 2.0), 3)
         warnings.append(
-            f"source pulse-normalised IOI CV is {payload['ioi_cv']:.3f}; CRIT-TABLA-STEADY bands widened to "
+            f"source pulse-normalised IOI CV is {ioi_cv:.3f}; CRIT-TABLA-STEADY bands widened to "
             f"<= {steady_sat} sat / <= {steady_partial} partial (default 0.08 / 0.15)"
         )
     if payload["cycle_length_pulses"] is None:
@@ -139,10 +94,16 @@ def build(source_path: Path, source: SourceRecord, ctx: RunContext, *, case_id: 
     n = len(on)
     n_bass = sum(1 for o in on if o["bass"])
     pulse = payload["stroke_pulse_sec"]
+    audio_enabled = payload.get("bols_status") != "audio_model_disabled" or \
+        (ctx.gateway.registry.enabled("audio") if ctx else False)
+    # Re-read from ctx since payload_from_audio may not have called the model
+    try:
+        audio_enabled = ctx.gateway.registry.enabled("audio")
+    except Exception:
+        audio_enabled = False
 
-    def ev(kind: str, idx: int, start: float, end: float, excerpt: str, state=VerificationState.OBSERVED, conf=1.0) -> EvidenceRef:
-        # Derive evidence modality from the source MIME type so grounding.py's modality
-        # check passes regardless of container format (e.g. audio/wav vs video/webm).
+    def ev(kind: str, idx: int, start: float, end: float, excerpt: str,
+           state: VerificationState = VerificationState.OBSERVED, conf: float = 1.0) -> EvidenceRef:
         mime_major = source.mime_type.split("/", 1)[0].lower()
         ev_modality = Modality.VIDEO if mime_major == "video" else Modality.AUDIO
         return EvidenceRef(
@@ -215,6 +176,41 @@ def build(source_path: Path, source: SourceRecord, ctx: RunContext, *, case_id: 
             evidence_refs=[ev("bols", 6, a0, a1, "bol identity not analysed", VerificationState.UNVERIFIED, 0.3)],
         ))
 
+    # CLM-07: stroke timbre classes (OBSERVED, always present in v2)
+    timbre = payload.get("timbre")
+    if timbre is not None:
+        k = timbre["k"]
+        sil = timbre["silhouette"]
+        class_display = payload.get("class_display") or []
+        # Build bol class statement if any class labels are inferred
+        inferred_classes = [e for e in class_display if e.get("source") == "inferred"]
+        if inferred_classes:
+            bol_mapping = "; ".join(f"{e['label']}" for e in class_display)
+            bol_stmt = f" ({bol_mapping})"
+        else:
+            label_list = ", ".join(e["label"] for e in class_display)
+            bol_stmt = f" ({label_list})" if class_display else ""
+        claims.append(KnowledgeClaim(
+            claim_id="CLM-07", claim_type=ClaimType.CONDITION, is_observed=True,
+            statement=(
+                f"The source uses {k} distinct stroke timbres (silhouette {sil:.2f}); "
+                f"each stroke is assigned to a timbre class by k-means on its MFCC and spectral features{bol_stmt}."
+            ),
+            evidence_refs=[ev("timbre", 7, a0, a1, f"k={k} timbre classes, silhouette {sil:.2f}")],
+        ))
+        # Add INFERRED claim about bol-class correspondence when audio model ran
+        if payload["bols_status"] == "inferred" and inferred_classes:
+            bol_seq_labels = "; ".join(e["label"] for e in inferred_classes)
+            claims.append(KnowledgeClaim(
+                claim_id="CLM-08", claim_type=ClaimType.CUE, is_observed=False,
+                statement=(
+                    f"Stroke classes correspond mostly to bols: {bol_seq_labels} "
+                    f"(inferred by audio model; not confirmed by an expert)."
+                ),
+                evidence_refs=[ev("bol_class", 8, a0, a1, "audio model bol-class labels",
+                                   VerificationState.INFERRED, 0.5)],
+            ))
+
     criteria: List[CriterionTemplate] = [
         CriterionTemplate(
             criterion_id="CRIT-TABLA-TEMPO", name="Holds the source tempo",
@@ -273,6 +269,24 @@ def build(source_path: Path, source: SourceRecord, ctx: RunContext, *, case_id: 
             drill_hint="Recite the bols aloud with the source, then play them one cycle at a time.",
             observer=ObserverBinding(metric="tabla.bol_accuracy", direction="higher_is_better", bands=_higher(*BOL_BANDS), process=True),
         ))
+    # CRIT-TABLA-STROKES: stroke class accuracy (v2, not required)
+    if timbre is not None:
+        clm_ref = "CLM-07"
+        ev_ref = "ev.%s.timbre.07" % case_id
+        criteria.append(CriterionTemplate(
+            criterion_id="CRIT-TABLA-STROKES", name="Stroke timbre matches the source",
+            description="Each learner stroke belongs to the same timbre class as the aligned source stroke.",
+            observable_indicator="fraction of aligned stroke pairs where learner and source timbre classes match",
+            weight=2, required=False, order_index=6 if audio_enabled and payload["bols_status"] == "inferred" else 5,
+            source_claim_ids=[clm_ref], reference_evidence_ids=[ev_ref],
+            why_it_matters=(
+                f"The source has {timbre['k']} distinct stroke timbres (silhouette {timbre['silhouette']:.2f}, CLM-07); "
+                "matching them requires the same articulation and ring/mute technique."
+            ),
+            drill_hint="For each class, isolate just those strokes and practise until the sound matches the source.",
+            observer=ObserverBinding(metric="tabla.stroke_class_accuracy", direction="higher_is_better",
+                                     bands=_higher(*STROKES_BANDS), process=True),
+        ))
 
     dur = a1 - a0
     instructions = "\n".join([
@@ -295,6 +309,7 @@ def build(source_path: Path, source: SourceRecord, ctx: RunContext, *, case_id: 
         summary=(
             f"A {dur:.0f} s tabla segment ({n} strokes, pulse {pulse:.3f} s, bass on {n_bass} strokes"
             + (f", bass pattern repeating every {L} pulses" if L else "")
+            + (f", {timbre['k']} timbre classes" if timbre else "")
             + "). Timing and bass are measured deterministically from the audio; bols and taal are not asserted."
         ),
         goal_payload=payload,
@@ -312,6 +327,6 @@ def build(source_path: Path, source: SourceRecord, ctx: RunContext, *, case_id: 
             "onset_params": OnsetParams().__dict__.copy(),
             "audio_model_enabled": audio_enabled,
             "bands": {"tempo": TEMPO_BANDS, "timing": TIMING_BANDS, "bass": BASS_BANDS, "complete": COMPLETE_BANDS,
-                      "steady": [steady_sat, steady_partial], "bols": BOL_BANDS},
+                      "steady": [steady_sat, steady_partial], "bols": BOL_BANDS, "strokes": list(STROKES_BANDS)},
         },
     )

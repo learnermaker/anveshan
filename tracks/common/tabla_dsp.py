@@ -566,3 +566,300 @@ class BolsDTO(BaseModel):
 
     bols: List[BolItem]
     notes: str = ""
+
+
+class BolsV2DTO(BaseModel):
+    """Model output for prompts/tabla_bols_v2: ordered bol sequence, one per stroke."""
+
+    bols: List[str]
+    confidence: str = "low"   # "low" | "medium" | "high"
+
+
+# ---------------------------------------------------------------------------
+# Mel filterbank and stroke feature extraction (timbre, v2)
+# ---------------------------------------------------------------------------
+
+
+def mel_filterbank(sr: int, n_fft: int, n_mels: int, fmin: float, fmax: float) -> np.ndarray:
+    """Mel filterbank of shape (n_mels, n_fft//2+1). HTK mel formula: 2595*log10(1+f/700)."""
+    n_freqs = n_fft // 2 + 1
+    f = np.linspace(0.0, sr / 2.0, n_freqs)
+    mel_min = 2595.0 * np.log10(1.0 + fmin / 700.0)
+    mel_max = 2595.0 * np.log10(1.0 + fmax / 700.0)
+    mel_pts = np.linspace(mel_min, mel_max, n_mels + 2)
+    hz_pts = 700.0 * (10.0 ** (mel_pts / 2595.0) - 1.0)
+    lo = hz_pts[:-2, np.newaxis]    # (n_mels, 1)
+    cen = hz_pts[1:-1, np.newaxis]  # (n_mels, 1)
+    hi = hz_pts[2:, np.newaxis]     # (n_mels, 1)
+    f_ = f[np.newaxis, :]           # (1, n_freqs)
+    denom_up = np.where(cen > lo, cen - lo, 1.0)
+    denom_dn = np.where(hi > cen, hi - cen, 1.0)
+    up = np.where((f_ >= lo) & (f_ < cen), (f_ - lo) / denom_up, 0.0)
+    dn = np.where((f_ >= cen) & (f_ <= hi), (hi - f_) / denom_dn, 0.0)
+    fbank = (up + dn).astype(np.float64)
+    # Zero degenerate bands
+    fbank[(cen <= lo).ravel()] = 0.0
+    fbank[(hi <= cen).ravel()] = 0.0
+    return fbank
+
+
+def _dct2_ortho(x: np.ndarray) -> np.ndarray:
+    """Orthonormal DCT-II of a 1-D array (implemented with numpy, O(N^2))."""
+    N = len(x)
+    n = np.arange(N, dtype=np.float64)
+    k = np.arange(N, dtype=np.float64)[:, np.newaxis]
+    cos_mat = np.cos(np.pi * k * (2.0 * n + 1.0) / (2.0 * N))
+    y = cos_mat @ np.asarray(x, dtype=np.float64)
+    y[0] *= np.sqrt(1.0 / N)
+    y[1:] *= np.sqrt(2.0 / N)
+    return y
+
+
+def stroke_features(x: np.ndarray, sr: int, onset_times: Sequence[float], window_sec: float = 0.08) -> np.ndarray:
+    """Extract timbre feature vectors (n, 16) for each onset in `onset_times`.
+
+    Features:
+    - Indices 0-12: MFCCs 1..13 (DCT-II orthonormal on 40 mel bands, 50-7600 Hz; coeff 0 dropped).
+    - Index 13: spectral centroid in Hz / 1000.
+    - Index 14: low-band energy ratio (< 250 Hz), matching onsets.py's low_band_hz.
+    - Index 15: decay ratio = RMS(40-80 ms) / RMS(0-40 ms) after onset.
+
+    `x` must be mono float32. Returns float32 array of shape (n, 16); empty input -> (0, 16).
+    """
+    x = np.asarray(x, dtype=np.float32)
+    n_fft = 1024
+    n_mels = 40
+    win_n = min(int(window_sec * sr), n_fft)   # never exceed n_fft
+    fbank = mel_filterbank(sr, n_fft, n_mels, 50.0, 7600.0)
+    freqs = np.linspace(0.0, sr / 2.0, n_fft // 2 + 1)
+    low_mask = freqs < 250.0
+    hann = (0.5 * (1.0 - np.cos(2.0 * np.pi * np.arange(n_fft) / n_fft))).astype(np.float32)
+    n_40 = int(0.04 * sr)
+    n_80 = int(0.08 * sr)
+
+    rows: List[np.ndarray] = []
+    for t in onset_times:
+        a = int(round(float(t) * sr))
+        # Power spectrum of feature window (Hann-windowed, n_fft, zero-padded)
+        frame = np.zeros(n_fft, dtype=np.float32)
+        if a < len(x):
+            copy_n = min(win_n, len(x) - a)
+            frame[:copy_n] = x[a: a + copy_n]
+        spec = (np.abs(np.fft.rfft(frame * hann)) ** 2).astype(np.float64)
+        total_pwr = float(spec.sum()) + 1e-10
+        # MFCCs (coeff 1..13, drop coeff 0 = loudness)
+        mel_e = fbank @ spec
+        log_mel = np.log(mel_e + 1e-10)
+        mfcc = _dct2_ortho(log_mel)[1:14]
+        # Spectral centroid / 1000
+        centroid = float((freqs * spec).sum()) / total_pwr / 1000.0
+        # Low-band ratio (< 250 Hz)
+        low_ratio = float(spec[low_mask].sum()) / total_pwr
+        # Decay ratio: RMS(40-80 ms) / RMS(0-40 ms)
+        raw = np.zeros(n_80, dtype=np.float32)
+        if a < len(x):
+            copy_n2 = min(n_80, len(x) - a)
+            raw[:copy_n2] = x[a: a + copy_n2]
+        rms_0_40 = float(np.sqrt(np.mean(raw[:n_40] ** 2))) + 1e-10
+        rms_40_80 = float(np.sqrt(np.mean(raw[n_40:n_80] ** 2))) + 1e-10
+        decay_ratio = rms_40_80 / rms_0_40
+        rows.append(np.concatenate([mfcc, [centroid, low_ratio, decay_ratio]]).astype(np.float32))
+    return np.array(rows, dtype=np.float32) if rows else np.zeros((0, 16), dtype=np.float32)
+
+
+# ---------------------------------------------------------------------------
+# Timbre class model (k-means from expert strokes)
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class TimbreModel:
+    """Fitted timbre class model from expert strokes. All arrays are serializable via to_dict()."""
+    mean: np.ndarray       # (16,) z-score mean
+    std: np.ndarray        # (16,) z-score std
+    centroids: np.ndarray  # (k, 16) z-scored centroids
+    k: int
+    silhouette: float
+    radius_p95: float      # 95th pct of expert stroke distances to own centroid (z-scored space)
+    warning: Optional[str] = None
+
+    def to_dict(self) -> dict:
+        return {
+            "k": self.k,
+            "mean": [round(float(v), 6) for v in self.mean],
+            "std": [round(float(v), 6) for v in self.std],
+            "centroids": [[round(float(v), 6) for v in row] for row in self.centroids],
+            "silhouette": round(float(self.silhouette), 4),
+            "radius_p95": round(float(self.radius_p95), 4),
+        }
+
+    @classmethod
+    def from_dict(cls, d: dict) -> "TimbreModel":
+        return cls(
+            mean=np.array(d["mean"], dtype=np.float32),
+            std=np.array(d["std"], dtype=np.float32),
+            centroids=np.array(d["centroids"], dtype=np.float32),
+            k=int(d["k"]),
+            silhouette=float(d["silhouette"]),
+            radius_p95=float(d["radius_p95"]),
+        )
+
+
+def _zscore_features(features: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Z-score normalization. Returns (z, mean, std); std clamped to avoid div/0."""
+    mean = features.mean(axis=0)
+    std = features.std(axis=0, ddof=0)
+    std = np.where(std < 1e-8, 1.0, std)
+    return ((features - mean) / std).astype(np.float64), mean.astype(np.float32), std.astype(np.float32)
+
+
+def _kmeans_fit(z: np.ndarray, k: int) -> Tuple[np.ndarray, np.ndarray]:
+    """K-means with farthest-point init (start from stroke closest to global mean).
+
+    Returns (labels, centroids) with at most 100 iterations; Euclidean distance.
+    """
+    n = z.shape[0]
+    # Init: start from the point closest to the global mean
+    g_mean = z.mean(axis=0)
+    start_idx = int(np.argmin(np.sum((z - g_mean) ** 2, axis=1)))
+    centroids = [z[start_idx].copy()]
+    min_dists = np.sum((z - centroids[0]) ** 2, axis=1)
+    for _ in range(k - 1):
+        next_idx = int(np.argmax(min_dists))
+        centroids.append(z[next_idx].copy())
+        new_d = np.sum((z - centroids[-1]) ** 2, axis=1)
+        min_dists = np.minimum(min_dists, new_d)
+    C = np.array(centroids, dtype=np.float64)
+    labels = np.zeros(n, dtype=int)
+    for _ in range(100):
+        dists = np.sum((z[:, np.newaxis, :] - C[np.newaxis, :, :]) ** 2, axis=2)  # (n, k)
+        new_labels = np.argmin(dists, axis=1)
+        if np.array_equal(new_labels, labels):
+            break
+        labels = new_labels
+        for c in range(k):
+            mask = labels == c
+            if mask.any():
+                C[c] = z[mask].mean(axis=0)
+    return labels, C
+
+
+def _silhouette_score(z: np.ndarray, labels: np.ndarray, k: int) -> float:
+    """Mean silhouette coefficient; O(n^2), fine for n~53."""
+    n = z.shape[0]
+    if k < 2 or n < 2:
+        return 0.0
+    dists = np.sqrt(np.sum((z[:, np.newaxis, :] - z[np.newaxis, :, :]) ** 2, axis=2))
+    s_vals = []
+    for i in range(n):
+        same_mask = labels == labels[i]
+        same_mask[i] = False
+        a = float(dists[i, same_mask].mean()) if same_mask.any() else 0.0
+        b_list = []
+        for c in range(k):
+            if c == labels[i]:
+                continue
+            other = labels == c
+            if other.any():
+                b_list.append(float(dists[i, other].mean()))
+        b = min(b_list) if b_list else 0.0
+        denom = max(a, b)
+        s_vals.append((b - a) / denom if denom > 0 else 0.0)
+    return float(np.mean(s_vals)) if s_vals else 0.0
+
+
+def fit_timbre_classes(
+    features: np.ndarray,
+    k_range: Tuple[int, int] = (3, 6),
+    seed: int = 0,   # kept for API compatibility; farthest-point init is deterministic without a seed
+) -> TimbreModel:
+    """Fit timbre classes from expert stroke features. Choose k in k_range by max silhouette.
+
+    If best silhouette < 0.15, use k=2 (bass vs no-bass) and add a warning.
+    """
+    z, mean, std = _zscore_features(features)
+    best_k, best_sil, best_labels, best_C = None, -2.0, None, None
+    for k in range(k_range[0], k_range[1] + 1):
+        if features.shape[0] < k:
+            break
+        labels, C = _kmeans_fit(z, k)
+        sil = _silhouette_score(z, labels, k)
+        if sil > best_sil:
+            best_k, best_sil, best_labels, best_C = k, sil, labels, C
+
+    warning: Optional[str] = None
+    if best_sil < 0.15:
+        warning = "timbre classes weakly separated"
+        best_k = 2
+        if features.shape[0] >= 2:
+            best_labels, best_C = _kmeans_fit(z, 2)
+            best_sil = _silhouette_score(z, best_labels, 2)
+        else:
+            best_k = 1
+            best_labels = np.zeros(features.shape[0], dtype=int)
+            best_C = z[:1]
+
+    # radius_p95: 95th percentile of expert stroke distances to own centroid
+    dists_own = np.sqrt(np.sum((z - best_C[best_labels]) ** 2, axis=1))
+    radius_p95 = float(np.percentile(dists_own, 95))
+
+    return TimbreModel(
+        mean=mean, std=std,
+        centroids=best_C.astype(np.float32),
+        k=int(best_k),
+        silhouette=float(best_sil),
+        radius_p95=radius_p95,
+        warning=warning,
+    )
+
+
+def assign(model: TimbreModel, features: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    """Assign feature rows to timbre classes. Returns (labels int, distances float32).
+
+    A row with distance > 1.5 * model.radius_p95 gets label -1 ("unlike any expert stroke").
+    """
+    if features.shape[0] == 0:
+        return np.zeros(0, dtype=int), np.zeros(0, dtype=np.float32)
+    z = ((features.astype(np.float64) - model.mean) / model.std).astype(np.float64)
+    C = model.centroids.astype(np.float64)
+    dists = np.sqrt(np.sum((z[:, np.newaxis, :] - C[np.newaxis, :, :]) ** 2, axis=2))  # (n, k)
+    labels = np.argmin(dists, axis=1)
+    distances = dists[np.arange(len(labels)), labels].astype(np.float32)
+    threshold = 1.5 * model.radius_p95
+    labels = np.where(distances > threshold, -1, labels).astype(int)
+    return labels, distances
+
+
+def align_sequences(a: Sequence[str], b: Sequence[str]) -> List[Tuple[int, int]]:
+    """Levenshtein-style alignment; returns (i, j) index pairs for all non-gap positions.
+
+    When `a` and `b` have equal length and no equal elements, the diagonal is preferred
+    (every position becomes a substitution pair). Used to align model bol labels to expert
+    onset indices.
+    """
+    m, n = len(a), len(b)
+    if m == 0 or n == 0:
+        return []
+    D = np.zeros((m + 1, n + 1), dtype=np.int32)
+    for i in range(m + 1):
+        D[i, 0] = i
+    for j in range(n + 1):
+        D[0, j] = j
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            cost = 0 if a[i - 1] == b[j - 1] else 1
+            D[i, j] = min(D[i - 1, j - 1] + cost, D[i - 1, j] + 1, D[i, j - 1] + 1)
+    pairs: List[Tuple[int, int]] = []
+    i, j = m, n
+    while i > 0 and j > 0:
+        cost = 0 if a[i - 1] == b[j - 1] else 1
+        if D[i, j] == D[i - 1, j - 1] + cost:
+            pairs.append((i - 1, j - 1))
+            i -= 1
+            j -= 1
+        elif D[i, j] == D[i - 1, j] + 1:
+            i -= 1
+        else:
+            j -= 1
+    pairs.reverse()
+    return pairs

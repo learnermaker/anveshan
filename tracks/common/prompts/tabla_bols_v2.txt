@@ -1,0 +1,14 @@
+You are given a short tabla recording ({duration_sec} seconds).
+A deterministic onset detector found {n_strokes} strokes at these times (seconds from the start): {onset_times}
+
+Task: listen carefully and name each stroke in order, from first to last.
+Use standard bol names (for example: Dha, Dhin, Na, Ge, Ka, Ke, Ta, Tin, Tit, Tirakita, Te, Re).
+If a stroke is unclear, use "?".
+
+Rules:
+- Return exactly one bol per stroke, in the same order as the onset list above.
+- Do not name the taal, the composer, or the tradition.
+- Confidence must be "low", "medium", or "high" based on overall audibility.
+
+Return JSON only (no extra text):
+{"bols": ["<bol1>", "<bol2>", ...], "confidence": "<low|medium|high>"}
