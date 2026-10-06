@@ -63,7 +63,7 @@ class CaseHandoff:
 
     @property
     def modality(self) -> Optional[str]:
-        return config.modality_for(self.case_id)
+        return config.modality_for(self.case_id, self.case_dir)
 
     def to_view(self) -> dict:
         """JSON for GET /api/cases/{id}. Never exposes held-out or unused sources."""
@@ -79,6 +79,12 @@ class CaseHandoff:
                 "warnings": list(self.goal.warnings),
                 "ui_view": _goal_ui_view(self.goal, warnings),
             }
+
+        # Load CaseProfile for composed cases (universal modality)
+        profile_view = None
+        if self.modality == "universal":
+            profile_view = _load_profile_view(self.case_dir)
+
         return {
             "case_id": self.case_id,
             "title": self.manifest.get("title", self.case_id),
@@ -98,6 +104,7 @@ class CaseHandoff:
             "warnings": warnings,
             "versions": dict(self.versions),
             "lesson": lesson_outline(self),
+            "profile": profile_view,
         }
 
 
@@ -108,6 +115,22 @@ class CaseHandoff:
 
 def media_url(case_id: str, source_id: str) -> str:
     return f"/api/media/{case_id}/{source_id}"
+
+
+def _load_profile_view(case_dir: Path) -> Optional[dict]:
+    """Load a CaseProfile dict from case_dir/knowledge/case_profile.v*.json."""
+    try:
+        from tracks.common.profile import CaseProfile
+        profile_files = sorted(case_dir.glob("knowledge/case_profile.v*.json"))
+        if not profile_files:
+            return None
+        profile = CaseProfile.model_validate(
+            json.loads(profile_files[-1].read_text(encoding="utf-8"))
+        )
+        return profile.model_dump(mode="json")
+    except Exception as e:
+        log.warning("could not load profile from %s: %s", case_dir, e)
+        return None
 
 
 def public_sources(case_id: str, sources: SourceRegistry) -> List[dict]:
@@ -395,8 +418,45 @@ def upload_cases_root(data_dir: Path) -> Path:
     return Path(data_dir) / "cases"
 
 
+def _summary_composed(case_dir: Path) -> dict:
+    """Summary entry for a composed (universal) case."""
+    manifest = _read_manifest(case_dir)
+    case_id = manifest.get("case_id", case_dir.name)
+    title = manifest.get("title", case_id)
+    review_status = "pending"
+    built = False
+    structures: List[str] = []
+
+    # Try to read profile
+    profile_files = sorted(case_dir.glob("knowledge/case_profile.v*.json"))
+    if profile_files:
+        try:
+            from tracks.common.profile import CaseProfile
+            profile = CaseProfile.model_validate(
+                json.loads(profile_files[-1].read_text(encoding="utf-8"))
+            )
+            title = profile.title
+            structures = list(profile.skill_model.structures)
+            built = profile.confirmed_by_user
+            review_status = "pending"
+        except Exception:
+            pass
+
+    return {
+        "case_id": case_id,
+        "title": title,
+        "modality": "universal",
+        "hero": False,
+        "runtime_label": "UPLOAD",
+        "composed": True,
+        "structures": structures,
+        "review_status": review_status,
+        "built": built,
+    }
+
+
 def list_cases(cases_root: Path, data_dir: Path) -> List[dict]:
-    """Hero cases, then derived upload cases, then SYNTHETIC showcase cases."""
+    """Hero cases, then derived upload cases (hero-derived + composed), then SYNTHETIC showcase cases."""
     cases_root, data_dir = Path(cases_root), Path(data_dir)
     out: List[dict] = []
     for cid in config.HERO_CASES:
@@ -405,8 +465,13 @@ def list_cases(cases_root: Path, data_dir: Path) -> List[dict]:
     up = upload_cases_root(data_dir)
     if up.exists():
         for d in sorted(p for p in up.iterdir() if p.is_dir() and config.DERIVED_SEP in p.name):
-            if (d / "manifest.json").exists() and config.modality_for(d.name):
-                out.append(_summary(d, hero=False, derived_from=config.base_case_id(d.name)))
+            if (d / "manifest.json").exists():
+                # Hero-derived (e.g. kolam~sha12)
+                if config.modality_for(d.name):
+                    out.append(_summary(d, hero=False, derived_from=config.base_case_id(d.name)))
+                # Composed universal cases (have a case_profile)
+                elif list(d.glob("knowledge/case_profile.v*.json")):
+                    out.append(_summary_composed(d))
     index_path = cases_root / "index.json"
     indexed = json.loads(index_path.read_text(encoding="utf-8")).get("cases", []) if index_path.exists() else []
     for cid in indexed:

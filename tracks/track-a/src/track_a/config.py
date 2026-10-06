@@ -10,6 +10,9 @@ import re
 from pathlib import Path
 from typing import Dict, List, Optional, Pattern, Tuple
 
+# Modality for composed (universal) cases
+COMPOSED_MODALITY = "universal"
+
 TRACK_A_ROOT = Path(__file__).resolve().parents[2]
 PROMPTS_DIR = TRACK_A_ROOT / "prompts"
 
@@ -101,9 +104,35 @@ def is_derived(case_id: str) -> bool:
     return DERIVED_SEP in case_id
 
 
-def modality_for(case_id: str) -> Optional[str]:
-    """Goal modality for a hero case or a derived upload case; None for showcase cases."""
-    return HERO_CASES.get(base_case_id(case_id))
+def modality_for(case_id: str, case_dir: Optional[Path] = None) -> Optional[str]:
+    """Goal modality for a hero case, derived upload case, or composed case; None for showcase cases.
+
+    Checks (in order):
+    1. Hero cases (kolam, origami, tabla).
+    2. Hero-derived cases (e.g. kolam~<sha12>).
+    3. Composed cases with knowledge/case_profile.v*.json -> "universal".
+    4. Otherwise None (showcase/unbuilt).
+    """
+    # 1 & 2: hero and hero-derived
+    hero = HERO_CASES.get(base_case_id(case_id))
+    if hero is not None:
+        return hero
+
+    # 3: composed case — has a case_profile in knowledge/
+    # Try the supplied case_dir first, then infer it is not available
+    if case_dir is not None:
+        case_dir = Path(case_dir)
+        if any(case_dir.glob("knowledge/case_profile.v*.json")):
+            return COMPOSED_MODALITY
+
+    # Check case_id pattern: "<slug>~<sha12>" where base is NOT a hero case
+    # (hero-derived cases are already handled above via HERO_CASES lookup)
+    if DERIVED_SEP in case_id:
+        # Non-hero-derived: might be a composed case; no dir to check here -> return None
+        # (the caller that has case_dir should have passed it)
+        return None
+
+    return None
 
 
 def max_upload_bytes() -> int:
