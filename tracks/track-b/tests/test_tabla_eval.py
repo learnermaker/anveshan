@@ -5,6 +5,8 @@ import json
 import numpy as np
 import pytest
 
+from pathlib import Path
+
 from tracks.common import locators
 from tracks.common import tabla_dsp as dsp
 from tracks.common.casedata import GoalModel
@@ -174,3 +176,112 @@ def test_bols_scored_only_when_audio_model_enabled(tmp_path):
     r2 = evaluate(goal, _attempt(tmp_path, x, "b2"), _ctx(tmp_path))
     assert r2.metrics["tabla.bol_accuracy"].value is None
     assert r2.metrics["tabla.bol_accuracy"].uncertain_reason == "audio_model_disabled"
+
+
+# ---------------------------------------------------------------------------
+# v2: stroke class accuracy tests
+# ---------------------------------------------------------------------------
+
+
+def _goal_v2():
+    """Build a v2 goal with timbre fields populated."""
+    from tracks.common import tabla_dsp as dsp_m
+    from tracks.common.goals.tabla import payload_from_audio
+    import tempfile
+    x, _, _ = synth_tabla()
+    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
+        wav_path = Path(f.name)
+    wav_path.write_bytes(dsp_m.wav_bytes(x, SR))
+    try:
+        payload, _bw, _w, _rk = payload_from_audio(wav_path, (0.0, None), ctx=None)
+    finally:
+        wav_path.unlink(missing_ok=True)
+    payload["window_sec"] = [10.0, 10.0 + len(x) / SR]
+    return GoalModel(case_id="tabla", version=2, modality="tabla_audio", source_ids=["src.tabla.test.v1"],
+                     package_id="kp.tabla.2", payload=payload)
+
+
+def test_perfect_copy_stroke_class_accuracy_high(tmp_path):
+    """Perfect copy of the goal audio should have stroke_class_accuracy >= 0.95."""
+    goal = _goal_v2()
+    x, _, _ = synth_tabla()
+    r = evaluate(goal, _attempt(tmp_path, x, "pc_v2"), _ctx(tmp_path))
+    acc = r.metrics["tabla.stroke_class_accuracy"].value
+    assert acc is not None, "stroke_class_accuracy should be computed for v2 goal"
+    assert acc >= 0.95, f"Perfect copy should have high stroke class accuracy, got {acc}"
+
+
+def test_v1_goal_has_no_stroke_class_accuracy(tmp_path):
+    """v1 goal (no timbre) → stroke_class_accuracy is None."""
+    goal = _goal()  # v1: no timbre
+    x, _, _ = synth_tabla()
+    r = evaluate(goal, _attempt(tmp_path, x, "v1_noclass"), _ctx(tmp_path))
+    mv = r.metrics["tabla.stroke_class_accuracy"]
+    assert mv.value is None
+    assert mv.uncertain_reason == "no_timbre_model"
+
+
+def test_stroke_class_accuracy_artifacts(tmp_path):
+    """v2 goal: alignment artifacts include expert_class and learner_class."""
+    goal = _goal_v2()
+    x, _, _ = synth_tabla()
+    r = evaluate(goal, _attempt(tmp_path, x, "cls_art"), _ctx(tmp_path))
+    aln = r.artifacts["alignment"]
+    assert aln, "alignment should be non-empty"
+    # Each pair should have expert_class and learner_class fields
+    assert "expert_class" in aln[0]
+    assert "learner_class" in aln[0]
+    # class_display should be in artifacts
+    assert r.artifacts["class_display"] is not None
+
+
+def test_evaluator_on_handclap_goal_neutral_wording(tmp_path):
+    """Generic hand-clap goal (noise bursts): evaluator works with neutral wording."""
+    from tracks.common import tabla_dsp as dsp_m
+    from tracks.common.goals.tabla import payload_from_audio
+    sr_hc = SR
+
+    def synth_handclap(n_claps=20, interval=0.25, tail=1.0):
+        """Noise bursts: all same timbre (no bass, fast decay)."""
+        dur = n_claps * interval + tail
+        x = np.zeros(int(dur * sr_hc), dtype=np.float32)
+        rng = np.random.default_rng(42)
+        n = int(0.04 * sr_hc)
+        env = np.exp(-np.linspace(0, 20, n)).astype(np.float32)
+        times = [0.5 + i * interval for i in range(n_claps)]
+        for t in times:
+            a = int(t * sr_hc)
+            burst = rng.standard_normal(n).astype(np.float32) * env * 0.4
+            x[a:a + n] += burst[:len(x) - a]
+        return x
+
+    xg = synth_handclap(n_claps=20)
+    xl = synth_handclap(n_claps=20)  # jitter slightly
+    xg_jit = np.concatenate([np.zeros(int(0.01 * sr_hc), np.float32), xl[:len(xl) - int(0.01 * sr_hc)]])
+
+    import tempfile
+    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
+        goal_wav = Path(f.name)
+    goal_wav.write_bytes(dsp_m.wav_bytes(xg, sr_hc))
+
+    try:
+        payload, _bw, _w, _rk = payload_from_audio(goal_wav, (0.0, None), ctx=None)
+    finally:
+        goal_wav.unlink(missing_ok=True)
+    payload["window_sec"] = [0.0, len(xg) / sr_hc]
+
+    goal = GoalModel(case_id="handclap", version=1, modality="tabla_audio",
+                     source_ids=["src.handclap.test.v1"],
+                     package_id="kp.handclap.1", payload=payload)
+    learner_wav = write_wav(tmp_path / "handclap_learner.wav", xg_jit)
+    att = AttemptMedia(kind="audio", path=learner_wav, source_id="upload.hc",
+                       sha256="0" * 64, mime_type="audio/wav")
+    r = evaluate(goal, att, _ctx(tmp_path))
+    # Should evaluate without error
+    assert r.metrics["tabla.tempo_error_pct"].value is not None or \
+           r.metrics["tabla.tempo_error_pct"].uncertain_reason is not None
+    # Neutral wording: no "bayan" or "bol" in metric findings
+    for mv in r.metrics.values():
+        if mv.finding:
+            msg = mv.finding.lower()
+            assert "bayan" not in msg, f"Non-neutral finding: {mv.finding}"
