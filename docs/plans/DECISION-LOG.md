@@ -124,11 +124,11 @@ Launched workflow with Phase 0 parallel (K1 verify + K4 finish), followed by Pha
 
 ---
 
-## 2026-10-06 — Phase B (WP5 Integration) completion
+## 2026-10-06 ï¿½ Phase B (WP5 Integration) completion
 
 **Done:**
 - Step 2: Add universal to ACCEPTED_KINDS in track_b/api.py. 34 universal tests pass.
-- Step 3: Live checks — kolam same/half-erased/refused, rangoli, tabla_chanderi. Fix build_case modality_for bug. Calibrate quality gate (blur 15->0.002, brightness 0.08->0.02).
+- Step 3: Live checks ï¿½ kolam same/half-erased/refused, rangoli, tabla_chanderi. Fix build_case modality_for bug. Calibrate quality gate (blur 15->0.002, brightness 0.08->0.02).
 - Step 4: Add tools/e2e_smoke.py, service/tests/test_e2e_real.py (10 tests). All pass.
 - Step 5: Write universal-pipeline.md section 11 calibration log.
 - Step 6: Update docs/validation/experiments.md (E1-E5) and findings.md (honest scope).
@@ -142,3 +142,23 @@ Launched workflow with Phase 0 parallel (K1 verify + K4 finish), followed by Pha
 **Pushed:** m1/hero-cases to origin (HEAD: e6bbd13).
 
 **Next:** Jim to create GitHub issue #99 (or actual issue), open PR m1/hero-cases -> main using docs/plans/PR-BODY.md, and deploy via GCP console using docs/deploy/DEPLOY-CHECKLIST.md.
+
+---
+
+## 2026-10-06 â€” Orchestrator final verification
+
+Post-workflow independent checks by the Kiro orchestrator session:
+
+| Check | Result |
+|---|---|
+| Common + Track-A tests (not live) | 193 passed, 1 deselected |
+| Track-B + Service tests (not live) | 230 passed, 1 deselected, 1 warning (Starlette deprecation, unrelated) |
+| Total non-live tests | **423 passed** |
+| check_governance.py | **PASS** |
+| check_case_packs.py | **PASS** (7 packs) |
+| check_contract_parity.py | **PASS** (8 contracts, 17 interfaces, 7 enums) |
+| npm --prefix app run build | **PASS** (402 kB bundle, 26.81 s) |
+| check_pr_contract.py | **PASS** (linked issue #99) |
+| Final HEAD | 5c662f9 on m1/hero-cases (pushed) |
+
+PR-BODY.md: docs/plans/PR-BODY.md â€” ready for Jim to open in GitHub Desktop.
