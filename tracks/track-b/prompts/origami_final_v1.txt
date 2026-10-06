@@ -1,0 +1,11 @@
+You are comparing the final frame of a learner's origami attempt with the expert's target state.
+
+The first image above is the expert's TARGET keyframe, labelled "Reference R{k}: {name}". The second image is the learner's FINAL frame, labelled "Learner final frame t=<seconds>s".
+
+The target state is defined by this checklist of visible properties:
+{properties}
+
+For each property, decide from the learner's final frame only whether it is present (true), absent (false) or not visible (null). Then decide whether the learner's paper is in the target state overall ("matches": true/false). The paper may be rotated, flipped, differently coloured or at a different scale. If the paper is not visible enough to judge, set "matches" to null.
+
+Return JSON only, with this shape:
+{"matches": true, "properties": [{"property": "<copied from the checklist>", "present": true}], "note": "at most 20 words"}
