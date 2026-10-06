@@ -1,0 +1,394 @@
+{
+  "arcs": [
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 23,
+      "barbs_at_start": 73,
+      "curve": "C1",
+      "from_dot": "D01",
+      "length_px": 169.2,
+      "to_dot": "D09"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 6,
+      "barbs_at_start": 57,
+      "curve": "C1",
+      "from_dot": "D09",
+      "length_px": 108.5,
+      "to_dot": "D21"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 8,
+      "barbs_at_start": 43,
+      "curve": "C1",
+      "from_dot": "D21",
+      "length_px": 64.4,
+      "to_dot": "D31"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 9,
+      "barbs_at_start": 50,
+      "curve": "C1",
+      "from_dot": "D31",
+      "length_px": 135.3,
+      "to_dot": "D40"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 8,
+      "barbs_at_start": 47,
+      "curve": "C1",
+      "from_dot": "D40",
+      "length_px": 166.7,
+      "to_dot": "D39"
+    },
+    {
+      "author_direction": "unclear",
+      "barbs_at_end": 63,
+      "barbs_at_start": 68,
+      "curve": "C1",
+      "from_dot": "D39",
+      "length_px": 168.7,
+      "to_dot": "D26"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 17,
+      "barbs_at_start": 82,
+      "curve": "C1",
+      "from_dot": "D26",
+      "length_px": 109.3,
+      "to_dot": "D14"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 4,
+      "barbs_at_start": 57,
+      "curve": "C1",
+      "from_dot": "D14",
+      "length_px": 65.0,
+      "to_dot": "D10"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 2,
+      "barbs_at_start": 54,
+      "curve": "C1",
+      "from_dot": "D10",
+      "length_px": 136.3,
+      "to_dot": "D07"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 6,
+      "barbs_at_start": 45,
+      "curve": "C1",
+      "from_dot": "D07",
+      "length_px": 165.3,
+      "to_dot": "D25"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 10,
+      "barbs_at_start": 53,
+      "curve": "C1",
+      "from_dot": "D25",
+      "length_px": 169.5,
+      "to_dot": "D34"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 11,
+      "barbs_at_start": 56,
+      "curve": "C1",
+      "from_dot": "D34",
+      "length_px": 107.4,
+      "to_dot": "D29"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 17,
+      "barbs_at_start": 48,
+      "curve": "C1",
+      "from_dot": "D29",
+      "length_px": 64.9,
+      "to_dot": "D30"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 2,
+      "barbs_at_start": 65,
+      "curve": "C1",
+      "from_dot": "D30",
+      "length_px": 136.5,
+      "to_dot": "D17"
+    },
+    {
+      "author_direction": "unclear",
+      "barbs_at_end": 35,
+      "barbs_at_start": 41,
+      "curve": "C1",
+      "from_dot": "D17",
+      "length_px": 165.1,
+      "to_dot": "D03"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 40,
+      "barbs_at_start": 85,
+      "curve": "C1",
+      "from_dot": "D03",
+      "length_px": 170.6,
+      "to_dot": "D05"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 11,
+      "barbs_at_start": 66,
+      "curve": "C1",
+      "from_dot": "D05",
+      "length_px": 106.9,
+      "to_dot": "D15"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 1,
+      "barbs_at_start": 55,
+      "curve": "C1",
+      "from_dot": "D15",
+      "length_px": 64.9,
+      "to_dot": "D22"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 9,
+      "barbs_at_start": 42,
+      "curve": "C1",
+      "from_dot": "D22",
+      "length_px": 135.7,
+      "to_dot": "D36"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 2,
+      "barbs_at_start": 48,
+      "curve": "C1",
+      "from_dot": "D36",
+      "length_px": 165.4,
+      "to_dot": "D41"
+    },
+    {
+      "author_direction": "unclear",
+      "barbs_at_end": 64,
+      "barbs_at_start": 54,
+      "curve": "C1",
+      "from_dot": "D41",
+      "length_px": 170.4,
+      "to_dot": "D33"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 24,
+      "barbs_at_start": 81,
+      "curve": "C1",
+      "from_dot": "D33",
+      "length_px": 108.3,
+      "to_dot": "D19"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 3,
+      "barbs_at_start": 60,
+      "curve": "C1",
+      "from_dot": "D19",
+      "length_px": 64.0,
+      "to_dot": "D11"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 4,
+      "barbs_at_start": 54,
+      "curve": "C1",
+      "from_dot": "D11",
+      "length_px": 135.7,
+      "to_dot": "D02"
+    },
+    {
+      "author_direction": "unclear",
+      "barbs_at_end": 25,
+      "barbs_at_start": 47,
+      "curve": "C1",
+      "from_dot": "D02",
+      "length_px": 165.4,
+      "to_dot": "D04"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 9,
+      "barbs_at_start": 65,
+      "curve": "C1",
+      "from_dot": "D04",
+      "length_px": 169.5,
+      "to_dot": "D23"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 6,
+      "barbs_at_start": 59,
+      "curve": "C1",
+      "from_dot": "D23",
+      "length_px": 108.9,
+      "to_dot": "D28"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 9,
+      "barbs_at_start": 40,
+      "curve": "C1",
+      "from_dot": "D28",
+      "length_px": 65.1,
+      "to_dot": "D32"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 2,
+      "barbs_at_start": 55,
+      "curve": "C1",
+      "from_dot": "D32",
+      "length_px": 135.3,
+      "to_dot": "D35"
+    },
+    {
+      "author_direction": "unclear",
+      "barbs_at_end": 26,
+      "barbs_at_start": 40,
+      "curve": "C1",
+      "from_dot": "D35",
+      "length_px": 164.5,
+      "to_dot": "D16"
+    },
+    {
+      "author_direction": "unclear",
+      "barbs_at_end": 75,
+      "barbs_at_start": 72,
+      "curve": "C1",
+      "from_dot": "D16",
+      "length_px": 170.4,
+      "to_dot": "D08"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 14,
+      "barbs_at_start": 73,
+      "curve": "C1",
+      "from_dot": "D08",
+      "length_px": 108.9,
+      "to_dot": "D13"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 2,
+      "barbs_at_start": 51,
+      "curve": "C1",
+      "from_dot": "D13",
+      "length_px": 65.4,
+      "to_dot": "D12"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 3,
+      "barbs_at_start": 38,
+      "curve": "C1",
+      "from_dot": "D12",
+      "length_px": 135.2,
+      "to_dot": "D24"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 5,
+      "barbs_at_start": 48,
+      "curve": "C1",
+      "from_dot": "D24",
+      "length_px": 164.7,
+      "to_dot": "D38"
+    },
+    {
+      "author_direction": "unclear",
+      "barbs_at_end": 29,
+      "barbs_at_start": 47,
+      "curve": "C1",
+      "from_dot": "D38",
+      "length_px": 169.8,
+      "to_dot": "D37"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 32,
+      "barbs_at_start": 69,
+      "curve": "C1",
+      "from_dot": "D37",
+      "length_px": 108.8,
+      "to_dot": "D27"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 2,
+      "barbs_at_start": 59,
+      "curve": "C1",
+      "from_dot": "D27",
+      "length_px": 64.5,
+      "to_dot": "D18"
+    },
+    {
+      "author_direction": "backward",
+      "barbs_at_end": 5,
+      "barbs_at_start": 61,
+      "curve": "C1",
+      "from_dot": "D18",
+      "length_px": 135.0,
+      "to_dot": "D06"
+    },
+    {
+      "author_direction": "unclear",
+      "barbs_at_end": 45,
+      "barbs_at_start": 46,
+      "curve": "C1",
+      "from_dot": "D06",
+      "length_px": 166.4,
+      "to_dot": "D01"
+    }
+  ],
+  "arrow_direction": {
+    "backward": 32,
+    "consistency_of_decided": 1.0,
+    "forward": 0,
+    "majority": "backward",
+    "unclear": 8
+  },
+  "held_out_source": "src.kolam.direction_diagram.v1 (used_by_system: false)",
+  "inferred": {
+    "arcs_dot_to_dot": 40,
+    "closed": [
+      true
+    ],
+    "crossings": 32,
+    "curves": 1,
+    "dots": 41,
+    "tau_px": 6.0
+  },
+  "registration": {
+    "method": "ink_moments",
+    "scale": 0.9918,
+    "score": 0.9019,
+    "theta_deg": 269.25,
+    "tx": -3.88,
+    "ty": 505.18
+  },
+  "route_overlap": {
+    "diagram_line_within_tau_of_inferred": 0.9933,
+    "inferred_line_within_tau_of_diagram_ink": 0.9977
+  }
+}
