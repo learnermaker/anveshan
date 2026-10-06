@@ -17,6 +17,8 @@ export default {
         'surface-container': '#14181a',
         'surface-container-high': '#1c2124',
         'surface-container-highest': '#242a2e',
+        // used throughout the V0 components but previously undefined
+        'surface-elevated': '#14181a',
         'on-surface': '#edece8',
         'on-surface-variant': '#9ba1a6',
         outline: '#2e353b',
@@ -44,7 +46,13 @@ export default {
       },
       maxWidth: {
         workbench: '1440px',
-      }
+      },
+      keyframes: {
+        'fade-in': { from: { opacity: '0', transform: 'translateY(4px)' }, to: { opacity: '1', transform: 'none' } },
+      },
+      animation: {
+        'fade-in': 'fade-in 0.25s ease-out both',
+      },
     },
   },
   plugins: [],

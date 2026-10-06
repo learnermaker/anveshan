@@ -20,7 +20,7 @@ export function MicroPracticeRetryModal({
   const challenge = capCase.microPractice;
   const [interactiveState, setInteractiveState] = useState<number>(0);
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
-  const [successScore, setSuccessScore] = useState<number>(0);
+
 
   // Reset state when challenge opens
   const handleReset = () => {
@@ -47,7 +47,7 @@ export function MicroPracticeRetryModal({
                     setInteractiveState(clickNum);
                     if (clickNum === 3) {
                       setIsCompleted(true);
-                      setSuccessScore(4.0);
+
                     } else {
                       setIsCompleted(false);
                     }
@@ -68,12 +68,12 @@ export function MicroPracticeRetryModal({
             </div>
             {interactiveState === 3 && (
               <p className="text-xs text-transmission-emerald font-mono bg-transmission-emerald/10 p-2.5 rounded border border-transmission-emerald/30">
-                PASS: Exactly 3 clicks reached in the replay simulation. Physical torque is not measured by this fixture.
+                MATCHES THE SOURCE CUE: Exactly 3 clicks reached in the replay simulation. Physical torque is not measured by this fixture.
               </p>
             )}
             {interactiveState > 3 && (
               <p className="text-xs text-divergence-crimson font-mono bg-divergence-crimson/10 p-2.5 rounded border border-divergence-crimson/30">
-                OVER-TORQUE DETECTED: {interactiveState} clicks exceeds 5.0 N limit. Spindle anvil deflected.
+                DIFFERS FROM THE CUE: {interactiveState} clicks exceeds 5.0 N limit. Spindle anvil deflected.
               </p>
             )}
           </div>
@@ -105,7 +105,7 @@ export function MicroPracticeRetryModal({
                 onClick={() => {
                   setInteractiveState(2);
                   setIsCompleted(true);
-                  setSuccessScore(4.0);
+
                 }}
                 className={`p-3 rounded-lg border text-left text-xs font-mono transition-all ${
                   interactiveState === 2
@@ -119,7 +119,7 @@ export function MicroPracticeRetryModal({
             </div>
             {interactiveState === 2 && (
               <p className="text-xs text-transmission-emerald font-mono bg-transmission-emerald/10 p-2.5 rounded border border-transmission-emerald/30">
-                PASS: 8mm clearance maintained. Closed single-stroke topology and 4-fold rotational symmetry preserved.
+                MATCHES THE SOURCE CUE: 8mm clearance maintained. Closed single-stroke topology and 4-fold rotational symmetry preserved.
               </p>
             )}
           </div>
@@ -133,9 +133,9 @@ export function MicroPracticeRetryModal({
             </div>
             <div className="flex items-center gap-3">
               {[
-                { label: 'Unbuffed (Glazed)', score: 0.5, valid: false },
-                { label: 'Light Buff (10mm)', score: 2.0, valid: false },
-                { label: 'Matte Cross-Hatch (30mm)', score: 4.0, valid: true },
+                { label: 'Unbuffed (Glazed)', valid: false },
+                { label: 'Light Buff (10mm)', valid: false },
+                { label: 'Matte Cross-Hatch (30mm)', valid: true },
               ].map((lvl, idx) => (
                 <button
                   key={idx}
@@ -143,7 +143,7 @@ export function MicroPracticeRetryModal({
                     setInteractiveState(idx + 1);
                     if (lvl.valid) {
                       setIsCompleted(true);
-                      setSuccessScore(lvl.score);
+
                     } else {
                       setIsCompleted(false);
                     }
@@ -162,7 +162,7 @@ export function MicroPracticeRetryModal({
             </div>
             {interactiveState === 3 && (
               <p className="text-xs text-transmission-emerald font-mono bg-transmission-emerald/10 p-2.5 rounded border border-transmission-emerald/30">
-                PASS: 30mm matte zone creates polymer bond with vulcanizing solvent. Zero factory glaze remains.
+                MATCHES THE SOURCE CUE: 30mm matte zone creates polymer bond with vulcanizing solvent. Zero factory glaze remains.
               </p>
             )}
           </div>
@@ -194,7 +194,7 @@ export function MicroPracticeRetryModal({
                 onClick={() => {
                   setInteractiveState(2);
                   setIsCompleted(true);
-                  setSuccessScore(4.0);
+
                 }}
                 className={`p-3 rounded-lg border text-left text-xs font-mono transition-all ${
                   interactiveState === 2
@@ -208,7 +208,7 @@ export function MicroPracticeRetryModal({
             </div>
             {interactiveState === 2 && (
               <p className="text-xs text-transmission-emerald font-mono bg-transmission-emerald/10 p-2.5 rounded border border-transmission-emerald/30">
-                PASS: Foot treadle switch binds weft pick in crossed warp shed before beater impact.
+                MATCHES THE SOURCE CUE: Foot treadle switch binds weft pick in crossed warp shed before beater impact.
               </p>
             )}
           </div>
@@ -232,7 +232,7 @@ export function MicroPracticeRetryModal({
                     setInteractiveState(idx + 1);
                     if (timing.valid) {
                       setIsCompleted(true);
-                      setSuccessScore(4.0);
+
                     } else {
                       setIsCompleted(false);
                     }
@@ -251,7 +251,7 @@ export function MicroPracticeRetryModal({
             </div>
             {interactiveState === 2 && (
               <p className="text-xs text-transmission-emerald font-mono bg-transmission-emerald/10 p-2.5 rounded border border-transmission-emerald/30">
-                PASS: Delta T = 6ms (within 15ms window). Resonant composite Dha timbre confirmed on acoustic envelope.
+                MATCHES THE SOURCE CUE: Delta T = 6ms (within 15ms window). Resonant composite Dha timbre confirmed on acoustic envelope.
               </p>
             )}
           </div>
@@ -283,7 +283,7 @@ export function MicroPracticeRetryModal({
                 onClick={() => {
                   setInteractiveState(2);
                   setIsCompleted(true);
-                  setSuccessScore(4.0);
+
                 }}
                 className={`p-3 rounded-lg border text-left text-xs font-mono transition-all ${
                   interactiveState === 2
@@ -297,7 +297,7 @@ export function MicroPracticeRetryModal({
             </div>
             {interactiveState === 2 && (
               <p className="text-xs text-transmission-emerald font-mono bg-transmission-emerald/10 p-2.5 rounded border border-transmission-emerald/30">
-                PASS: Paper collapsed cleanly into diamond bird base without fiber crushing.
+                MATCHES THE SOURCE CUE: Paper collapsed cleanly into diamond bird base without fiber crushing.
               </p>
             )}
           </div>
@@ -329,7 +329,7 @@ export function MicroPracticeRetryModal({
                 onClick={() => {
                   setInteractiveState(2);
                   setIsCompleted(true);
-                  setSuccessScore(4.0);
+
                 }}
                 className={`p-3 rounded-lg border text-left text-xs font-mono transition-all ${
                   interactiveState === 2
@@ -343,7 +343,7 @@ export function MicroPracticeRetryModal({
             </div>
             {interactiveState === 2 && (
               <p className="text-xs text-transmission-emerald font-mono bg-transmission-emerald/10 p-2.5 rounded border border-transmission-emerald/30">
-                PASS: Square-knot topology achieved in the replay simulation. Tensile force is not measured by this fixture.
+                MATCHES THE SOURCE CUE: Square-knot topology achieved in the replay simulation. Tensile force is not measured by this fixture.
               </p>
             )}
           </div>
@@ -362,7 +362,7 @@ export function MicroPracticeRetryModal({
             </div>
             <div>
               <div className="text-[10px] font-mono uppercase tracking-widest text-transmission-emerald font-bold">
-                ADAPTIVE RETRY // BOUNDED MICRO-PRACTICE
+                UNSCORED MICRO-DRILL // GUIDANCE ONLY
               </div>
               <h2 className="text-base font-semibold text-on-surface">
                 {challenge.title}
@@ -396,22 +396,11 @@ export function MicroPracticeRetryModal({
             {renderInteractiveChallenge()}
           </div>
 
-          {/* Real-time Deterministic Rubric Impact */}
-          {isCompleted && (
-            <div className="p-3 bg-transmission-emerald/15 rounded-lg border border-transmission-emerald/40 flex items-center justify-between animate-fade-in">
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-transmission-emerald" />
-                <span className="text-xs font-mono text-on-surface font-semibold">
-                  RUBRIC SCORE RECALCULATION:
-                </span>
-              </div>
-              <div className="flex items-center gap-2 font-mono text-xs">
-                <span className="text-on-surface-variant line-through">0.5 pts</span>
-                <ArrowRight className="w-3 h-3 text-transmission-emerald" />
-                <span className="text-transmission-emerald font-bold">4.0 / 4.0 PTS (PASS)</span>
-              </div>
-            </div>
-          )}
+          {/* The drill is guidance only: it awards nothing and changes no score. */}
+          <div className="p-3 bg-surface-dim rounded-lg border border-outline/40 flex items-center gap-2 text-[11px] font-mono text-on-surface-variant">
+            <ShieldCheck className="w-4 h-4 text-caliper-cyan shrink-0" />
+            <span>UNSCORED. This drill changes no rubric score. Only the full retry (shown next, as a replay fixture) is evaluated.</span>
+          </div>
         </div>
 
         {/* Footer Actions */}
@@ -425,18 +414,13 @@ export function MicroPracticeRetryModal({
           </button>
 
           <button
-            disabled={!isCompleted}
             onClick={() => {
               onClose();
               onCompleteRetry();
             }}
-            className={`px-5 py-2.5 rounded-lg font-mono font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-all ${
-              isCompleted
-                ? 'bg-transmission-emerald text-background hover:bg-transmission-emerald/90 shadow-lg shadow-transmission-emerald/25 hover:scale-[1.02]'
-                : 'bg-surface-bright text-on-surface-variant cursor-not-allowed opacity-50'
-            }`}
+            className="px-5 py-2.5 rounded-lg font-mono font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-all bg-cadmium-amber text-background hover:bg-cadmium-amber/90"
           >
-            <span>SUBMIT RETRY RESULT</span>
+            <span>CONTINUE TO RETRY REPLAY</span>
             <TrendingUp className="w-4 h-4" />
           </button>
         </div>

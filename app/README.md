@@ -1,82 +1,73 @@
 # Anveshan — Transmission Instrument (Frontend)
 
-The high-precision, documentary-grade UI/UX for **Anveshan**, built for the Google Cloud AI Builder Cup 2026.
+React + Vite + Tailwind UI for **Anveshan** (Google Cloud AI Builder Cup 2026).
 
-## Core Architectural Seam
+- **Live hero cases** — `kolam` (final image only), `origami` (video), `tabla` (audio, optional video) — are served by the Anveshan service (`service/`, API in `docs/plans/service-api.md` §5). The learner draws or uploads; the service evaluates; the UI shows the progress-to-goal curve, the first divergence, criteria, feedback and an unscored drill, then a full retry and the transmission record.
+- **Showcase cases** — micrometer, bicycle repair, handloom weaving, square knot — are **SYNTHETIC replay** fixtures (`src/data/cases/registry.ts`). They never call the service.
+- **No model calls or keys in the browser.** All model work is server-side; the Runtime panel (header `MODE:` button) only reads `/api/health` and sets the requested `?mode=live|recorded`.
 
-The frontend consumes the frozen **8-contract shared data seam** defined only in `tracks/common/schemas/`. The UI type file is a downstream mirror; legacy replay fixture shapes are normalized at `app/src/data/adapter.ts` and must never become a second contract vocabulary:
-
-```text
-Track A (Expert Grounding)
-  ↓
-KnowledgePackage (PKG-OPT-001)
-  ↓
-RubricDefinition (RUBRIC-OPT-001)
-  ↓
-PracticeTask (TASK-OPT-001)
-  │
-  └─────────────── Shared Seam ───────────────┐
-                                              ↓
-Track B (Evaluation & Transmission)    LearnerAttempt (Baseline & Retry)
-                                              ↓
-                                         Evaluation (Criterion-Level)
-                                              ↓
-                                           Feedback (Evidence-Grounded)
-                                              ↓
-                                      TransmissionRecord (+5.5 pts gain)
-```
-
-## Aesthetic Identity
-
-- **Design System:** Precision Laboratory Instrument meets Documentary Craft.
-- **Palette:** Darkroom Optics (`#08090a`, `#0b0d0e`), Cadmium Amber (`#e67e22`) telemetry indicators, Transmission Emerald (`#10b981`) verification badges, Caliper Cyan (`#00e5ff`) technical reticles, and Divergence Crimson (`#f87171`) technique warnings.
-- **Typography:** Playfair Display (Serif authority), Plus Jakarta Sans (High-clarity geometry), JetBrains Mono (Raw instrumentation telemetry).
-- **Design Tokens:** Synchronized with `DESIGN.md` and Google Stitch MCP Project `6307547599991476233` (Screen `dabd99b4d7a24c598259db1dca58ba38`).
-
-## Key Capabilities & Interactions
-
-1. **Dual-Deck Comparative Telemetry:** Side-by-side inspection between a **reference replay fixture** and **learner replay attempt**, with toggleable Baseline vs Retry.
-2. **Jump to First Divergence:** One-click snap to the configured replay divergence at `00:19.2` (`CRIT-RATCHET`).
-3. **Multi-Modal Sensory Ribbon:** Replay annotations for ratchet clicks, drag duration, and dial-settle observations; physical force remains unmeasured.
-4. **8-Contract Rubric HUD:** Criterion-level replay scoring for `CRIT-WIPE`, `CRIT-RATCHET`, and `CRIT-LOCK`, with evidence jumps and model-assisted observation notes.
-5. **Deterministic Transmission Gain Hero:** Quantitative progression display showing the configured baseline-to-retry gain and improved criteria; it does not assert mastery or certification.
-6. **Provenance / Lineage Inspector:** Interactive replay lineage view showing contract nodes, hashes, parent links, and configured provenance metadata. Cryptographic display is fixture data unless backed by real verification.
-
-## Canonical prototype direction
-
-The current Transmission Instrument is the canonical **forensic workspace** for the micrometer case, not the entire Anveshan product.
-
-The prototype direction now demonstrates multiple source/transmission modes:
-- demonstration-first;
-- target/image-first;
-- attempt/correction-first.
-
-The seven capability cases and adaptive workspace mapping are documented in:
-- `docs/research/multimodal-capability-case-portfolio.md`
-- `docs/research/source-strategy-and-transmission-modes-2026-10-04.md`
-- `docs/status/CANONICAL-SOURCES.md`
-
-Prototype data must distinguish live Gemini results, replay/fixture results, and synthetic/illustrative data.
-
-## Running Locally
+## Run
 
 ```bash
-cd app
-npm install
-npm run dev
+npm --prefix app install
 ```
 
-## Production Build & Verification
+### Against the real service
 
 ```bash
-npm run build
-npm run audit:devtools
+# terminal 1 (repo root): start the service on :8080
+.venv/Scripts/python -m uvicorn anveshan_service.main:app --app-dir service --reload --port 8080
+# terminal 2
+npm --prefix app run dev        # http://localhost:5173 — /api is proxied to :8080
 ```
 
+`VITE_API_BASE` (see `.env.example`, copy to `.env.local`):
 
+| Value | Behaviour |
+|---|---|
+| empty (default) | same origin. In dev, Vite proxies `/api` to `http://localhost:8080` (override with `ANVESHAN_API_PROXY`). On Cloud Run the service serves `app/dist` and the API together. |
+| `http://host:port` | call that service directly (it must allow CORS for the app origin). |
+| `mock` | in-browser canned responses (below). |
 
-> **Replay boundary:** current fixture identities, consent metadata, review state, scores, and provenance displays are engineering fixtures unless explicitly replaced by authorized real evidence.
+### Mock mode (no backend)
+
+```bash
+npm --prefix app run dev:mock   # http://localhost:5174, `--mode mock` sets VITE_API_BASE=mock (vite.config.ts)
+npm --prefix app run build:mock # static build with the mock baked in
+```
+
+Mock mode serves every endpoint from `src/api/mock.ts` + `src/api/mock/*.ts`. Everything it returns is **SYNTHETIC** and the UI shows a red **MOCK DATA** badge in the header, discovery, case and result screens.
+
+- Kolam: real public-domain target image (`public/mock/kolam_target.jpg`, *Ithayakkamalam - 2.jpg* by Mayooranathan, via Wikimedia Commons) with **hand-approximated** dots/curves. Canvas traces are scored by a simplified browser re-implementation of evaluation-core §3.2, so drawing produces plausible feedback. Photo uploads return a canned final-state-only result (process criteria UNCERTAIN).
+- Origami: canned frame labels/curves; keyframes are generated SVG diagrams; the expert video is not bundled.
+- Tabla: a click/bass track synthesised in the browser from a 16-beat pattern; canned alignment with late, missing, extra and bass-mismatch beats.
+- Uploading "your own source" creates an in-memory derived case (`<base>~<sha12>`, label UPLOAD) that reuses the base case's canned goal model.
+
+## Build & checks
+
+```bash
+npm --prefix app run build                                  # tsc (strict) + vite build
+.venv/Scripts/python .github/scripts/check_contract_parity.py  # contracts.ts must mirror tracks/common/schemas
+```
+
+## Code map
+
+| Path | Role |
+|---|---|
+| `src/api/client.ts` | typed client for every service endpoint; `ApiError` from `{"error": {category, message, details}}`; XHR uploads with progress; `?mode=` |
+| `src/api/types.ts` | CaseView, AttemptResult, SessionResult, trajectory, first_divergence… (imports the 8 contracts from `src/types/contracts.ts`, never re-declares them) |
+| `src/api/runtime.ts` | `VITE_API_BASE`, mock switch, requested mode |
+| `src/api/mock.ts`, `src/api/mock/` | SYNTHETIC mock backend |
+| `src/hero/HeroSourceView.tsx` | 01 SOURCE: modality view, claims (OBSERVED/INFERRED/UNVERIFIED) with evidence highlight, evidence query, expert review |
+| `src/hero/SourcePanels.tsx` | Kolam overlays (dots, inferred curves, symmetry), origami video + keyframe strip, tabla audio + beat timeline |
+| `src/hero/HeroPracticeView.tsx` | 02 PRACTICE: session, Kolam canvas / uploads, progress + "Evaluating…", results, retry |
+| `src/hero/kolam/KolamCanvas.tsx` | drawing in goal-image pixels; trace JSON (service-api §4) + PNG raster |
+| `src/hero/results/*` | progress-to-goal curve (SVG), first-divergence card, criteria, feedback, unscored drill |
+| `src/hero/HeroTransmissionView.tsx` | 03 TRANSMISSION: curve overlay, contract / targeted / observability-excluded gains, transitions, lineage |
+| `src/components/`, `src/workspaces/` | V0 Transmission Instrument, used by the showcase cases |
 
 ## Contract authority
 
-**Single source of truth:** `tracks/common/schemas/`. Do not add or rename fields/enums in the UI contract mirror to accommodate case fixtures. Normalize legacy case data at the adapter boundary instead. The UI composite `TransmissionBundle` is a downstream view model, not a ninth shared contract.
+The eight shared contracts have one source of truth: `tracks/common/schemas/`. `src/types/contracts.ts` is a downstream mirror checked by CI. Service view shapes (`src/api/types.ts`) follow `docs/plans/service-api.md`; legacy showcase fixture shapes are normalised at `src/data/adapter.ts`.
+
+Nothing in this UI certifies a learner or validates a source. Scores come from deterministic bands; runtime labels (LIVE / RECORDED LIVE / DETERMINISTIC) come from the server.

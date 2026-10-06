@@ -31,13 +31,13 @@ export function TransmissionCompleteView({
 
         <div className="space-y-2">
           <div className="text-xs font-mono uppercase tracking-widest text-transmission-emerald font-bold">
-            STAGE 04 // CAPABILITY TRANSMISSION VERIFIED
+            STAGE 03 // SYNTHETIC REPLAY TRANSMISSION RECORD
           </div>
           <h1 className="text-3xl sm:text-4xl font-serif font-normal text-on-surface">
             Transmission Event Recorded
           </h1>
           <p className="text-sm text-on-surface-variant max-w-lg mx-auto">
-            Physical capability successfully transferred from expert <strong className="text-on-surface">{capCase.expertName}</strong> to learner <strong className="text-on-surface">{capCase.learnerName}</strong>.
+            Replay fixture: rubric-level change recorded between baseline and retry between synthetic expert <strong className="text-on-surface">{capCase.expertName}</strong> and learner <strong className="text-on-surface">{capCase.learnerName}</strong>.
           </p>
         </div>
 
@@ -64,7 +64,7 @@ export function TransmissionCompleteView({
           </div>
 
           <div className="text-right space-y-1">
-            <div className="text-[10px] font-mono uppercase text-on-surface-variant">VERIFIED RETRY</div>
+            <div className="text-[10px] font-mono uppercase text-on-surface-variant">RETRY (REPLAY)</div>
             <div className="text-xl font-mono font-bold text-transmission-emerald">
               {metrics.retryScore.toFixed(1)} / {metrics.maxPossibleScore.toFixed(1)}
             </div>

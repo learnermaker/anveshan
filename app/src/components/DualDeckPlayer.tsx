@@ -448,7 +448,7 @@ export const DualDeckPlayer: React.FC<DualDeckPlayerProps> = ({
             <span className="text-on-surface-variant">
               {learnerMode === 'baseline'
                 ? 'Apprentice applied 6 rapid ratchet clicks, introducing 12.4N clamping force which causes zero-datum error of +0.003mm.'
-                : 'Apprentice paused after approach, applied exactly 3 steady ratchet clicks at 0.5s cadence, verified zero deflection.'}
+                : 'Apprentice paused after approach, applied exactly 3 steady ratchet clicks at 0.5s cadence; replay shows no deflection.'}
             </span>
           </div>
         </div>

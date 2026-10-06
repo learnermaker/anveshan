@@ -826,7 +826,7 @@ const weavingBundle = normalizeTransmissionBundle({
         criterion_id: 'CRIT-SHED-CHANGE',
         score: 4.0,
         status: 'satisfied',
-        observation_notes: 'Treadle crossed before every reed strike; weave interlock 100% verified.',
+        observation_notes: 'Treadle crossed before every reed strike; weave interlock present in every replay pick.',
       },
       {
         criterion_id: 'CRIT-SELVAGE-TENS',
@@ -1711,7 +1711,7 @@ const knotSpec: WorkspaceSpecification = {
   tagline: 'Topological cord crossing selector, parallel exit bights, and tensile lock test',
   reasoningArchetype: 'First Divergence / Verification',
   primaryModalities: ['video', 'spatial', 'state'],
-  compilerRationale: 'Knot tying illustrates the purest Anveshan causal verification chain: Step 1 matches reference; Step 2 diverges in crossing orientation; targeted correction instantly transforms a catastrophic failure (Granny Knot) into verified capability (Square Knot).',
+  compilerRationale: 'Knot tying illustrates the purest Anveshan causal verification chain: Step 1 matches reference; Step 2 diverges in crossing orientation; targeted correction instantly transforms a catastrophic failure (Granny Knot) into a correct Square Knot in the replay.',
   evidenceProfile: {
     temporalResolution: 'Throw-by-throw chord crossing checkpoint',
     primarySensoryCues: ['Chord crossing orientation (Right-over-Left vs Left-over-Right)', 'Bight exit angle (Parallel 0 deg vs Perpendicular 90 deg)', 'Tensile slip displacement under 20N load'],
@@ -1757,7 +1757,7 @@ const knotMicroPractice: MicroPracticeChallenge = {
   targetLabel: 'Left-over-Right (Parallel Bights)',
   correctiveCue: 'Right over Left, then Left over Right! Keep tails exiting alongside their own color lines.',
   baselineDeficitExplanation: 'In baseline attempt, learner tied a Granny Knot which capsized and pulled through at 12N.',
-  successThresholdLabel: 'Tension lock verified at 25N load',
+  successThresholdLabel: 'Square-knot topology shown (load not measured)',
 };
 
 // ============================================================================
@@ -1863,7 +1863,7 @@ export const CAPABILITY_CASES: Record<string, CapabilityCase> = {
     transmissionMode: 'corrective',
     shortDescription: 'Pneumatic diagnosis via water bath bubble detection, abrasive buffing, and chemical vulcanizing patch.',
     expertName: 'Reference Expert (Synthetic Fixture)',
-    expertRole: 'Senior Bicycle Mechanic (Guild Certified)',
+    expertRole: 'Senior Bicycle Mechanic (Synthetic Fixture)',
     learnerName: 'Learner (Replay Fixture)',
     learnerBackground: 'Commuter Cyclist',
     primaryModalities: ['diagnostic', 'video', 'state'],
@@ -2053,6 +2053,13 @@ export const CAPABILITY_CASES: Record<string, CapabilityCase> = {
 
 export const ALL_CAPABILITY_IDS = Object.keys(CAPABILITY_CASES);
 export const DEFAULT_CASE_ID = 'micrometer';
+
+/**
+ * SYNTHETIC replay showcase cases (decision 2026-10-06 §9.10). Kolam, origami and tabla are live
+ * hero cases served by the Anveshan service (app/src/api); their replay entries above are retained
+ * for history only and are not listed in the UI.
+ */
+export const SHOWCASE_CASE_IDS = ['micrometer', 'bicycle_repair', 'weaving', 'square_knot'];
 
 export function hasCapabilityCase(id: string): boolean {
   return Object.prototype.hasOwnProperty.call(CAPABILITY_CASES, id);
