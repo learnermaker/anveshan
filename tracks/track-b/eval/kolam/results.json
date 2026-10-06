@@ -93,17 +93,17 @@
       "first_divergence": {
         "kind": "incomplete_stage",
         "locator": "src.attempt.kolam.synthetic.missing_stage.trace",
-        "position": 18.61
+        "position": 16.037
       },
       "first_divergence_ok": true,
       "kind": "trace",
       "metrics": {
-        "kolam.coverage": 0.8987,
+        "kolam.coverage": 0.7903,
         "kolam.curves_completed_ratio": 0.0,
         "kolam.dot_relation_match": 1.0,
         "kolam.pen_lifts_excess": 1.0,
         "kolam.precision": 1.0,
-        "kolam.stages_completed_ratio": 0.875
+        "kolam.stages_completed_ratio": 0.75
       },
       "process_observable": true,
       "registration": null,
@@ -216,22 +216,22 @@
       "first_divergence_ok": true,
       "kind": "image",
       "metrics": {
-        "kolam.coverage": 0.8995,
+        "kolam.coverage": 0.7903,
         "kolam.curves_completed_ratio": 0.0,
         "kolam.dot_relation_match": 1.0,
         "kolam.first_divergence": null,
         "kolam.pen_lifts_excess": null,
         "kolam.precision": 1.0,
-        "kolam.stages_completed_ratio": 0.875
+        "kolam.stages_completed_ratio": 0.75
       },
       "process_observable": false,
       "registration": {
         "method": "dots",
         "scale": 0.7694,
-        "score": 0.905,
-        "theta_deg": 22.5,
-        "tx": 99.74,
-        "ty": -105.54
+        "score": 0.8675,
+        "theta_deg": 22.0,
+        "tx": 96.62,
+        "ty": -104.31
       },
       "status_agreement": {
         "CRIT-KOLAM-CONTINUITY": true,

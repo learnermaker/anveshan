@@ -4,6 +4,10 @@
     {
       "kind": "incomplete_stage",
       "stage": "C1.S3"
+    },
+    {
+      "kind": "incomplete_stage",
+      "stage": "C1.S4"
     }
   ],
   "expected_first_divergence": {
@@ -18,6 +22,6 @@
     "CRIT-KOLAM-PRECISION": "satisfied"
   },
   "label": "SYNTHETIC",
-  "perturbation": "suggested stage C1.S3 omitted; the rest drawn in two strokes",
+  "perturbation": "suggested stages C1.S3+C1.S4 omitted; coverage ~0.79, well below 0.90 boundary",
   "variant": "missing_stage"
 }

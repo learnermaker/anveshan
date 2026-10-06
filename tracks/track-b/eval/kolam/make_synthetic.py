@@ -152,13 +152,21 @@ def main(out: Optional[Path] = None) -> Path:
         all_sat(), None)
     add("jittered", "trace", trace_json(goal, [jitter(p, rng, 0.4 * tau) for p in full]),
         f"smooth noise up to {0.4 * tau:.1f} px (inside the {tau:.1f} px tolerance)", all_sat(), None)
-    miss = 2 if n >= 3 else 0
+    # Omit TWO consecutive stages so coverage falls to ~0.79, well below the 0.90 sat boundary.
+    # (Omitting a single stage lands at ~0.899, right at the boundary, making the test fragile.)
+    miss = 2 if n >= 4 else 0
+    miss2 = miss + 1  # index of second stage to omit
+    before_m = join(polys[:miss]) if miss > 0 else None
+    after_m = join(polys[miss2 + 1 :]) if miss2 + 1 < n else None
+    stroke_polys_m = [p for p in [before_m, after_m] if p is not None]
     st = all_sat()
     st.update({"CRIT-KOLAM-COVERAGE": "partially_satisfied", "CRIT-KOLAM-CURVES": "not_satisfied"})
-    add("missing_stage", "trace", trace_json(goal, [join(polys[:miss]), join(polys[miss + 1 :])]),
-        f"suggested stage {stage_ids[miss]} omitted; the rest drawn in two strokes", st,
+    add("missing_stage", "trace", trace_json(goal, stroke_polys_m),
+        f"suggested stages {stage_ids[miss]}+{stage_ids[miss2]} omitted; coverage ~0.79, well below 0.90 boundary",
+        st,
         {"kind": "incomplete_stage", "stage": stage_ids[miss]},
-        [{"kind": "incomplete_stage", "stage": stage_ids[miss]}])
+        [{"kind": "incomplete_stage", "stage": stage_ids[miss]},
+         {"kind": "incomplete_stage", "stage": stage_ids[miss2]}])
     # stray stroke between two halves
     half = n // 2
     cx, cy = goal.symmetry.centre
@@ -202,9 +210,10 @@ def main(out: Optional[Path] = None) -> Path:
         img_st, None, extra={"process_observable": False, "transform": {"scale": 1.3, "theta_deg": 23.0, "tx": 190.0, "ty": -65.0}})
     st = dict(img_st)
     st.update({"CRIT-KOLAM-COVERAGE": "partially_satisfied", "CRIT-KOLAM-CURVES": "not_satisfied"})
+    raster_miss_polys = [p for p in [before_m, after_m] if p is not None]
     add("raster_missing_stage_rotated", "image",
-        render_attempt(goal, [join(polys[:miss]), join(polys[miss + 1 :])], size=(700, 720), transform=tf, blur=0.8, noise=6.0, seed=SEED + 1),
-        f"photo stand-in with suggested stage {stage_ids[miss]} missing", st, None,
+        render_attempt(goal, raster_miss_polys, size=(700, 720), transform=tf, blur=0.8, noise=6.0, seed=SEED + 1),
+        f"photo stand-in with stages {stage_ids[miss]}+{stage_ids[miss2]} missing", st, None,
         extra={"process_observable": False, "missing_stage": stage_ids[miss]})
 
     target = out or OUT
