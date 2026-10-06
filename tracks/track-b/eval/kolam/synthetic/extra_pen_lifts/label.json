@@ -1,0 +1,15 @@
+{
+  "attempt_kind": "trace",
+  "expected_events": [],
+  "expected_first_divergence": null,
+  "expected_statuses": {
+    "CRIT-KOLAM-CONTINUITY": "not_satisfied",
+    "CRIT-KOLAM-COVERAGE": "satisfied",
+    "CRIT-KOLAM-CURVES": "satisfied",
+    "CRIT-KOLAM-DOTS": "satisfied",
+    "CRIT-KOLAM-PRECISION": "satisfied"
+  },
+  "label": "SYNTHETIC",
+  "perturbation": "the loop broken into 8 strokes (one per suggested stage)",
+  "variant": "extra_pen_lifts"
+}

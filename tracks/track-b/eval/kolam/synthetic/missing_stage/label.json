@@ -1,0 +1,23 @@
+{
+  "attempt_kind": "trace",
+  "expected_events": [
+    {
+      "kind": "incomplete_stage",
+      "stage": "C1.S3"
+    }
+  ],
+  "expected_first_divergence": {
+    "kind": "incomplete_stage",
+    "stage": "C1.S3"
+  },
+  "expected_statuses": {
+    "CRIT-KOLAM-CONTINUITY": "satisfied",
+    "CRIT-KOLAM-COVERAGE": "partially_satisfied",
+    "CRIT-KOLAM-CURVES": "not_satisfied",
+    "CRIT-KOLAM-DOTS": "satisfied",
+    "CRIT-KOLAM-PRECISION": "satisfied"
+  },
+  "label": "SYNTHETIC",
+  "perturbation": "suggested stage C1.S3 omitted; the rest drawn in two strokes",
+  "variant": "missing_stage"
+}

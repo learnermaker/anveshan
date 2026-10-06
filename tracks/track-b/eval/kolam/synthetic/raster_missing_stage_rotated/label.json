@@ -1,0 +1,17 @@
+{
+  "attempt_kind": "image",
+  "expected_events": [],
+  "expected_first_divergence": null,
+  "expected_statuses": {
+    "CRIT-KOLAM-CONTINUITY": "uncertain",
+    "CRIT-KOLAM-COVERAGE": "partially_satisfied",
+    "CRIT-KOLAM-CURVES": "not_satisfied",
+    "CRIT-KOLAM-DOTS": "satisfied",
+    "CRIT-KOLAM-PRECISION": "satisfied"
+  },
+  "label": "SYNTHETIC",
+  "missing_stage": "C1.S3",
+  "perturbation": "photo stand-in with suggested stage C1.S3 missing",
+  "process_observable": false,
+  "variant": "raster_missing_stage_rotated"
+}

@@ -1,0 +1,15 @@
+{
+  "attempt_kind": "trace",
+  "expected_events": [],
+  "expected_first_divergence": null,
+  "expected_statuses": {
+    "CRIT-KOLAM-CONTINUITY": "satisfied",
+    "CRIT-KOLAM-COVERAGE": "satisfied",
+    "CRIT-KOLAM-CURVES": "satisfied",
+    "CRIT-KOLAM-DOTS": "satisfied",
+    "CRIT-KOLAM-PRECISION": "satisfied"
+  },
+  "label": "SYNTHETIC",
+  "perturbation": "smooth noise up to 2.4 px (inside the 6.0 px tolerance)",
+  "variant": "jittered"
+}

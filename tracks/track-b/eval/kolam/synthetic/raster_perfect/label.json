@@ -1,0 +1,16 @@
+{
+  "attempt_kind": "image",
+  "expected_events": [],
+  "expected_first_divergence": null,
+  "expected_statuses": {
+    "CRIT-KOLAM-CONTINUITY": "uncertain",
+    "CRIT-KOLAM-COVERAGE": "satisfied",
+    "CRIT-KOLAM-CURVES": "satisfied",
+    "CRIT-KOLAM-DOTS": "satisfied",
+    "CRIT-KOLAM-PRECISION": "satisfied"
+  },
+  "label": "SYNTHETIC",
+  "perturbation": "goal line rendered white on black at goal size",
+  "process_observable": false,
+  "variant": "raster_perfect"
+}
