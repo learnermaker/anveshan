@@ -49,7 +49,7 @@ MIN_PERCUSSIVE_CONTRAST = 1.5   # p95/p50 short-time RMS; real tabla recordings 
 # threshold): missing/extra soft strokes are still counted in tabla.missing_extra but are
 # "minor" events, so they never become the first (material) divergence.
 SOFT_STROKE = 0.25
-BOL_PROMPT = Path(__file__).resolve().parents[4] / "track-a" / "prompts" / "tabla_bols_v1.txt"
+BOL_PROMPT = Path(__file__).resolve().parents[4] / "common" / "prompts" / "tabla_bols_v1.txt"
 
 M_TEMPO = "tabla.tempo_error_pct"
 M_TIMING = "tabla.timing_median_ms"

@@ -31,7 +31,7 @@ from track_a.goals import CriterionTemplate, GoalBuildResult
 
 SR = 16000
 BUILDER_VERSION = "tabla_goal_v1"
-PROMPT_PATH = Path(__file__).resolve().parents[3] / "prompts" / "tabla_bols_v1.txt"
+PROMPT_PATH = Path(__file__).resolve().parents[4] / "common" / "prompts" / "tabla_bols_v1.txt"
 MIN_ONSETS = 8
 
 # evaluation-core §5.2 default bands
