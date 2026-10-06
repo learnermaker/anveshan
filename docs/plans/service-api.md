@@ -132,3 +132,40 @@ Optional `?mode=live|recorded`; the default is `ANVESHAN_MODE`.
 | GET | `/api/media/{case_id}/{source_id}` | — | media bytes (committed/cached source; uploads under the derived case) |
 | GET | `/api/media/{case_id}/goal/{asset}` | — | goal assets (e.g. origami keyframe JPEGs) |
 | GET | `/` | — | built React app (`app/dist`) |
+
+## 6. Compose endpoints (`/api/compose`, WP1)
+
+These routes handle the universal pipeline: upload → analyze (Layer 1 perception + intake) → draft → confirm → case.
+
+| Method | Path | Body | Returns |
+|---|---|---|---|
+| POST | `/api/compose/analyze` | multipart `file`, form `title?`, `description?`, `rights_confirmed` | `Draft.to_view()` — HTTP 200 even for refused drafts (check `refused` field) |
+| GET | `/api/compose/{draft_id}` | — | `Draft.to_view()` or 404 |
+| POST | `/api/compose/{draft_id}/refine` | `{title, description}` | `Draft.to_view()` (re-proposes with new hints, no new perception) |
+| POST | `/api/compose/{draft_id}/create` | `{title?, skill_summary?, domain?, transmission_mode?, learner_input_kinds?, goal_hint?, skill_model?}` | `CaseHandoff.to_view()` |
+
+### Draft.to_view() shape
+
+```json
+{
+  "draft_id": "<16 hex chars>",
+  "probe": {...ProbeFacts...} | null,
+  "intake": {"safety": {...}, "teachable": "yes|no|unclear", "teachable_reason": "...", "skill_kind": "..."},
+  "proposal": {...CaseProfile...} | null,
+  "refused": false,
+  "refusal_message": null | "...",
+  "warnings": [...],
+  "structure_labels": {"final_state": "...", ...},
+  "specialist_labels": {"line_art": "...", ...},
+  "perception": {
+    "segments": [...Segment...],
+    "observations": [...Observation (no embeddings)...]
+  }
+}
+```
+
+- `draft_id` format: `^[0-9a-f]{16}$`
+- Refused drafts return HTTP 200; the UI checks `refused: true` and shows `refusal_message`.
+- After `/analyze` returns `refused: false, proposal: null`, the UI should call `/refine` with title + description.
+- After `/refine` returns `proposal` (non-null), the UI calls `/create` with optional edits.
+
