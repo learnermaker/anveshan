@@ -17,7 +17,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install Python test dependencies
-        run: python -m pip install "pydantic>=2,<3" pytest
+        run: python -m pip install -r requirements-dev.txt
 
       - name: Check repository governance invariants
         run: python .github/scripts/check_governance.py
@@ -31,8 +31,13 @@ jobs:
       - name: Check canonical Python -> UI contract parity
         run: python .github/scripts/check_contract_parity.py
 
-      - name: Run common contract tests
-        run: python -m pytest tracks/common/tests
+      - name: Run Python tests (common, tracks, service; no live model calls)
+        run: |
+          dirs=""
+          for d in tracks/common/tests tracks/track-a/tests tracks/track-b/tests service/tests; do
+            if [ -d "$d" ]; then dirs="$dirs $d"; fi
+          done
+          python -m pytest $dirs -m "not live"
 
       - name: Validate PR contract
         if: github.event_name == 'pull_request'
