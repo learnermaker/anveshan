@@ -67,6 +67,49 @@ Launched workflow with Phase 0 parallel (K1 verify + K4 finish), followed by Pha
 
 ---
 
+---
+
+## Phase A Merge — COMPLETE (2026-10-06)
+
+### Phase A Merge Results
+
+| Step | Result | Details |
+|---|---|---|
+| `git merge --no-ff kiro/wp4-tabla` | SUCCESS | Clean auto-merge; 31 files changed, 3809 insertions. Added tabla v2 DSP (mel filterbank, timbre classes, stroke_features), CRIT-TABLA-STROKES criterion, v2 artifacts, stroke_substitution eval variant |
+| Verify after WP4 | PASS | 341 passed, 2 deselected; governance PASS; case packs PASS (7); contract parity PASS (8 contracts, 17 interfaces, 7 enums) |
+| `git merge --no-ff kiro/wp1-perception` | SUCCESS | Clean auto-merge; 19 files changed, 4273 insertions. Added perceivers (image, video, audio, screen, specialist_probe), composer backend, /api/compose/* service routes |
+| Verify after WP1 | PASS | 379 passed, 2 deselected; all static checks PASS |
+| `git merge --no-ff kiro/wp2-universal` | SUCCESS | Clean auto-merge — NO CONFLICT. 14 files changed, 5011 insertions. WP2 added build_case for universal modality; WP1's list_cases/to_view already on m1/hero-cases — both preserved. |
+| api.py conflict resolution | NO CONFLICT NEEDED | api.py merged cleanly; WP1 owned list_cases (line 458) + to_view (line 68), WP2 owned build_case (line 500) + universal branch (line 540). All 4 functions present in merged file. |
+| Verify after WP2 | PASS | 413 passed, 2 deselected; all static checks PASS; lazy imports (perceivers) work with real perceivers now present |
+| `git merge --no-ff kiro/wp3-composer-ui` | SUCCESS | Clean auto-merge; 20 files changed, 2861 insertions. Added Composer wizard (7 steps), UniversalSourceView, UniversalPracticeView, mock backend, lucide-react ambient types fix |
+| Verify after WP3 (Python) | PASS | 413 passed, 2 deselected; all static checks PASS |
+| Verify after WP3 (npm build) | PASS | 1648 modules; index-BO8LM1PM.js 402 kB (no chunk > 500 kB); built in 20.44 s |
+| `git push origin m1/hero-cases` | SUCCESS | 0205f2c..3b38179 pushed |
+
+**Post-merge HEAD:** `3b38179` — "Merge branch 'kiro/wp3-composer-ui' into m1/hero-cases"  
+**Test count delta:** 327 (Phase 0 baseline) → 413 (+86 tests from WP4 + WP1 + WP2; WP3 is TypeScript only)  
+**Contracts:** All 8 frozen contracts unchanged — PASS  
+**Hero cases:** byte-identical — PASS  
+**api.py conflict summary:** No manual resolution required. git auto-merged correctly because WP1 and WP2 edited disjoint regions of api.py (WP1: lines 68–494, list_cases/to_view/config; WP2: lines 500–560, build_case universal branch). Both change sets are present in the merged file.
+
+### Phase A WP deviations noted
+
+- **WP4:** `payload_from_audio` returns 4-tuple (payload, built_with, warnings, run_keys) vs 2-tuple in spec. Callers destructure all 4. No contract impact.
+- **WP1:** `>=` used instead of `≥` in ASCII-only specialist probe reason strings (Windows CP1252 compatibility). Fallback skill model drops `temporal_pattern` pending K7 (WP5).
+- **WP2:** Session e2e test monkeypatches `ACCEPTED_KINDS` to add "universal" — WP5 must add this to the real `track_b/api.py`. All perceivers lazy-imported; tests inject fakes; real wiring deferred to WP5.
+- **WP3:** `KolamCanvas` in universal practice uses placeholder geometry; real line_art specialist payload wired at WP5.
+
+### Requests passed to WP5 (Phase B)
+
+1. Add `"universal": ("trace", "image", "audio", "video")` to `ACCEPTED_KINDS` in `track_b/api.py`.
+2. Wire `propose_skill_model` to handle `temporal_pattern` with WP4's rhythm specialist payload.
+3. Wire real `tracks.common.perceivers.perceive` into WP2's universal evaluator.
+4. Wire real `profile.skill_model.specialists.line_art` payload into `UniversalPracticeView` KolamCanvas.
+5. Consider `audio/webm` MIME type in format gate for audio-first uploads.
+
+---
+
 ## Template for future decisions
 
 ```
