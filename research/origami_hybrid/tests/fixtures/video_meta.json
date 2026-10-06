@@ -1,0 +1,9 @@
+{
+  "fps": 24.0,
+  "duration_sec": 335.0,
+  "width": 480,
+  "height": 270,
+  "total_frame_count": 8040,
+  "source_video": "data/crane/input.mp4",
+  "extraction_step": 10
+}
