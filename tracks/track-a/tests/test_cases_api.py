@@ -49,7 +49,9 @@ def test_list_cases_orders_hero_upload_showcase(cases_root, data_dir, tmp_path, 
     assert by[up.name]["hero"] is False and by[up.name]["modality"] == "kolam_image" and by[up.name]["built"] is False
     for cid in SHOWCASE:
         assert by[cid]["runtime_label"] == "SYNTHETIC" and by[cid]["hero"] is False and by[cid]["modality"] is None
-    assert by["tabla"]["built"] is True   # v1 artifacts committed in K2
+    # Test case roots copy real cases WITHOUT versioned artifacts (conftest ignores *.v*.json),
+    # so hero cases other than the one built above start unbuilt.
+    assert by["tabla"]["built"] is False
 
 
 def test_list_cases_on_real_case_root(data_dir):
