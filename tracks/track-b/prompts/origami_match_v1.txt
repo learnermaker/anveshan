@@ -1,0 +1,21 @@
+You are checking a learner's origami attempt against an expert's reference states.
+
+The first images above are the REFERENCE keyframes from the expert video, labelled "Reference R<i>: <name>". They show the paper states R0 .. R{k} in the order the expert folded them:
+{reference_states}
+
+The remaining images are frames from the LEARNER's video, labelled "Learner frame t=<seconds>s".
+
+For EVERY learner frame listed here, return one entry, in the same order: {frame_times}
+
+Per learner frame:
+- "t": the frame time in seconds, copied exactly from its label.
+- "state": the integer index i of the reference state the paper is in (compare the paper's shape, visible side, flaps and folds with the reference keyframe and its properties; the paper may be rotated, flipped, differently coloured or seen at a different scale);
+  or "transition" if a fold is in progress between states;
+  or "off_path" if the paper is clearly in a shape that matches none of the reference states and is not between two of them (for example a fold the expert never made);
+  or "unclear" if the paper is not visible enough to decide (occluded by hands, out of frame, blurred).
+- "note": at most 15 words saying what you see that supports the label.
+
+Judge only what is visible in each frame. Do not assume the learner follows the reference order: label each frame on its own.
+
+Return JSON only, with this shape:
+{"frames": [{"t": 3.0, "state": 0, "note": "flat unfolded square, coloured side up"}, {"t": 4.0, "state": "transition", "note": "hands folding the sheet in half"}]}
