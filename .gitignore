@@ -119,3 +119,6 @@ graphify-out/
 var/
 tracks/cases/*/media/cache/
 tracks/track-b/data/runs/
+
+# Claude Code agent worktrees
+.claude/worktrees/
