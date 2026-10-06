@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Header, type CaseOption } from './components/Header';
 import { DiscoveryView, type CaseKey } from './components/DiscoveryView';
+import { ComposerWizard } from './components/composer/ComposerWizard';
 import { SourceAnalysisView } from './components/SourceAnalysisView';
 import { WorkspaceCompiler } from './workspaces/WorkspaceCompiler';
 import { TransmissionCompleteView } from './components/TransmissionCompleteView';
@@ -29,13 +30,13 @@ function readUrl(): { view: AppView; key: CaseKey } {
   if (typeof window === 'undefined') return { view: 'discovery', key: DEFAULT_KEY };
   const p = new URLSearchParams(window.location.search);
   const v = p.get('view') as AppView;
-  const view: AppView = v && ['discovery', 'source', 'practice', 'transmission'].includes(v) ? v : 'discovery';
+  const view: AppView = v && ['discovery', 'source', 'practice', 'transmission', 'composer'].includes(v) ? v : 'discovery';
   const c = p.get('case');
   const key: CaseKey = !c ? DEFAULT_KEY : SHOWCASE_CASE_IDS.includes(c) ? { kind: 'showcase', id: c } : { kind: 'hero', id: c };
   return { view, key };
 }
 
-const keyStr = (k: CaseKey) => `${k.kind}:${k.id}`;
+const keyStr = (k: CaseKey) => k.kind === 'composer' ? 'composer:wizard' : `${k.kind}:${k.id}`;
 
 export function App() {
   const initial = readUrl();
@@ -47,7 +48,7 @@ export function App() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     params.set('view', currentView);
-    params.set('case', selected.id);
+    if (selected.kind !== 'composer') params.set('case', selected.id);
     window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
   }, [currentView, selected]);
 
@@ -94,7 +95,6 @@ export function App() {
   const setHeroSession = (s: HeroSession | null) => {
     if (selected.kind === 'hero') setSessions((prev) => ({ ...prev, [selected.id]: s }));
   };
-
   // ---------------- showcase (SYNTHETIC replay) ----------------
   const capCase = getCapabilityCase(selected.kind === 'showcase' ? selected.id : 'micrometer');
   const [currentTime, setCurrentTime] = useState<number>(19.2);
@@ -137,22 +137,24 @@ export function App() {
 
   const select = (key: CaseKey, view: AppView = 'source') => {
     setSelected(key);
-    setCurrentView(view);
+    setCurrentView(key.kind === 'composer' ? 'composer' : view);
     setCurrentTime(19.2);
     setIsPlaying(false);
     if (key.kind === 'hero' && heroCases && !heroCases.some((c) => c.case_id === key.id)) void loadCases();
   };
 
   const caseOptions: CaseOption[] = [
-    ...(heroCases ?? []).map((c) => ({ value: `hero:${c.case_id}`, label: c.title, group: c.hero ? 'Live hero cases' : 'Your uploads' })),
+    ...(heroCases ?? []).map((c) => ({ value: `hero:${c.case_id}`, label: c.title, group: c.hero ? 'Live hero cases' : c.composed ? 'Your composed skills' : 'Your uploads' })),
     ...(selected.kind === 'hero' && !(heroCases ?? []).some((c) => c.case_id === selected.id) ? [{ value: keyStr(selected), label: selected.id, group: 'Live hero cases' }] : []),
     ...SHOWCASE_CASE_IDS.map((id) => ({ value: `showcase:${id}`, label: `${CAPABILITY_CASES[id]?.title ?? id} (synthetic)`, group: 'Synthetic replay showcase' })),
   ];
 
+  const selectedId = selected.kind !== 'composer' ? selected.id : '';
+
   const heroBody = (render: (v: CaseView) => React.ReactNode) => {
-    if (caseLoading && !caseView) return <Spinner label={`Loading ${selected.id}…`} />;
+    if (caseLoading && !caseView) return <Spinner label={`Loading ${selectedId}…`} />;
     if (caseError) return <ErrorNote error={caseError} />;
-    if (!caseView || caseView.case_id !== selected.id) return <Spinner label={`Loading ${selected.id}…`} />;
+    if (!caseView || caseView.case_id !== selectedId) return <Spinner label={`Loading ${selectedId}…`} />;
     return render(caseView);
   };
 
@@ -165,10 +167,14 @@ export function App() {
         selectedCase={keyStr(selected)}
         onSelectCase={(v) => {
           const [kind, ...rest] = v.split(':');
-          select({ kind: kind as CaseKey['kind'], id: rest.join(':') }, currentView === 'discovery' ? 'source' : currentView);
+          if (kind === 'composer') {
+            select({ kind: 'composer' });
+          } else {
+            select({ kind: kind as CaseKey['kind'], id: rest.join(':') }, currentView === 'discovery' ? 'source' : currentView);
+          }
         }}
         requestedMode={requestedMode}
-        caseKindLabel={selected.kind === 'hero' ? (IS_MOCK ? 'LIVE CASE · MOCK DATA' : 'LIVE CASE') : 'SYNTHETIC REPLAY'}
+        caseKindLabel={selected.kind === 'hero' ? (IS_MOCK ? 'LIVE CASE · MOCK DATA' : 'LIVE CASE') : selected.kind === 'composer' ? 'COMPOSER' : 'SYNTHETIC REPLAY'}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenStitchDesign={() => setIsStitchOpen(true)}
       />
@@ -176,6 +182,21 @@ export function App() {
       <main className="flex-1 max-w-workbench w-full mx-auto p-3 sm:p-4 lg:p-6 flex flex-col gap-6">
         {currentView === 'discovery' && (
           <DiscoveryView heroCases={heroCases} heroError={heroError} heroLoading={heroLoading} onRefreshHero={loadCases} onSelect={(k) => select(k)} selected={selected} />
+        )}
+
+        {(currentView === 'composer' || selected.kind === 'composer') && (
+          <div className="flex flex-col gap-4 w-full animate-fade-in">
+            <div className="text-[10px] font-mono uppercase tracking-widest text-caliper-cyan font-bold">Composer — Create a new skill</div>
+            <ComposerWizard
+              onDone={(view) => {
+                void loadCases();
+                setSelected({ kind: 'hero', id: view.case_id });
+                setCurrentView('source');
+                void loadCase(view.case_id);
+              }}
+              onCancel={() => { setSelected(DEFAULT_KEY); setCurrentView('discovery'); }}
+            />
+          </div>
         )}
 
         {selected.kind === 'hero' && currentView === 'source' &&
@@ -235,7 +256,7 @@ export function App() {
             ANVESHAN PROTOTYPE
           </span>
           <span className="text-outline">|</span>
-          <span>CASE: {selected.id}</span>
+          <span>CASE: {selected.kind === 'composer' ? 'wizard' : selected.id}</span>
           <span className="text-outline">|</span>
           <span className="text-cadmium-amber">GOOGLE CLOUD AI BUILDER CUP 2026</span>
         </div>
@@ -245,7 +266,7 @@ export function App() {
               VIEW PROVENANCE DAG
             </button>
           )}
-          <span>{selected.kind === 'showcase' ? 'SYNTHETIC REPLAY FIXTURE' : IS_MOCK ? 'MOCK DATA (SYNTHETIC)' : 'SERVICE-BACKED'}</span>
+          <span>{selected.kind === 'showcase' ? 'SYNTHETIC REPLAY FIXTURE' : selected.kind === 'composer' ? 'COMPOSER' : IS_MOCK ? 'MOCK DATA (SYNTHETIC)' : 'SERVICE-BACKED'}</span>
         </div>
       </footer>
 

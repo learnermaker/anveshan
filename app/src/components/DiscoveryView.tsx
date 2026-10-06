@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Activity, ChevronRight, Compass, FileUp, Layers, Music, RefreshCw, Scissors, Shield, Wrench } from 'lucide-react';
+import { Activity, ChevronRight, Compass, FileUp, Layers, Music, PlusCircle, RefreshCw, Scissors, Shield, Sparkles, Wrench } from 'lucide-react';
 import { CAPABILITY_CASES, SHOWCASE_CASE_IDS } from '../data/cases/registry';
 import type { CaseSummary } from '../api/types';
 import { api } from '../api/client';
 import { IS_MOCK, API_BASE } from '../api/runtime';
 import { Badge, ErrorNote, MockBadge, ProgressBar, ReviewBadge, SourceLabelBadge, Spinner } from '../hero/ui';
 
-export type CaseKey = { kind: 'hero'; id: string } | { kind: 'showcase'; id: string };
+export type CaseKey = { kind: 'hero'; id: string } | { kind: 'showcase'; id: string } | { kind: 'composer' };
 
 interface DiscoveryViewProps {
   heroCases: CaseSummary[] | null;
@@ -32,7 +32,8 @@ const SHOWCASE_ICON: Record<string, React.ReactNode> = {
 
 export function DiscoveryView({ heroCases, heroError, heroLoading, onRefreshHero, onSelect, selected }: DiscoveryViewProps) {
   const heroes = (heroCases ?? []).filter((c) => c.hero);
-  const derived = (heroCases ?? []).filter((c) => !c.hero && c.derived_from);
+  const derived = (heroCases ?? []).filter((c) => !c.hero && c.derived_from && !c.composed);
+  const composed = (heroCases ?? []).filter((c) => c.composed === true);
 
   return (
     <div className="flex flex-col gap-10 max-w-6xl w-full mx-auto p-2 lg:p-6 animate-fade-in text-on-surface">
@@ -94,6 +95,56 @@ export function DiscoveryView({ heroCases, heroError, heroLoading, onRefreshHero
             </div>
           </div>
         )}
+      </section>
+
+      {/* Create a new skill card */}
+      <section className="space-y-4">
+        <div className="border-b border-outline pb-3">
+          <div className="text-[10px] font-mono uppercase tracking-widest text-caliper-cyan font-bold flex items-center gap-2">Composer <MockBadge /></div>
+          <h2 className="text-xl font-semibold font-serif">Create a new skill</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <button
+            onClick={() => onSelect({ kind: 'composer' })}
+            className={`p-5 rounded-xl border flex flex-col gap-3 text-left transition-colors ${selected.kind === 'composer' ? 'border-caliper-cyan bg-surface-container shadow-lg shadow-caliper-cyan/10' : 'border-outline bg-surface-container-low hover:border-caliper-cyan'}`}
+            aria-label="Open the skill composer wizard"
+          >
+            <div className="flex items-start justify-between gap-2">
+              <div className="w-10 h-10 rounded-lg bg-surface-dim border border-outline flex items-center justify-center">
+                <PlusCircle className="w-5 h-5 text-caliper-cyan" />
+              </div>
+              <Badge tone="cyan">COMPOSER</Badge>
+            </div>
+            <div>
+              <h3 className="font-semibold text-base">Upload a source · get a teachable skill</h3>
+              <div className="text-[10px] font-mono text-on-surface-variant mt-0.5">image · video · audio → universal pipeline</div>
+            </div>
+            <p className="text-[11px] text-on-surface-variant">Drop any image, video, or audio file. The universal pipeline perceives the skill structure and proposes a rubric for you to review. AI-perceived elements are labelled INFERRED.</p>
+            <div className="mt-auto inline-flex items-center gap-1.5 text-[11px] font-mono font-bold text-caliper-cyan">
+              <Sparkles className="w-3.5 h-3.5" /> Open composer
+            </div>
+          </button>
+
+          {composed.length > 0 && (
+            <div className="space-y-2">
+              <div className="text-[10px] font-mono uppercase text-on-surface-variant">Your composed skills</div>
+              <div className="flex flex-col gap-2">
+                {composed.map((c) => (
+                  <button
+                    key={c.case_id}
+                    onClick={() => onSelect({ kind: 'hero', id: c.case_id })}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg border border-outline bg-surface-container-low hover:border-caliper-cyan text-left"
+                  >
+                    <Badge tone="cyan">UPLOAD</Badge>
+                    {(c.structures ?? []).map((s) => <Badge key={s} tone="muted">{s}</Badge>)}
+                    <span className="text-xs flex-1 truncate">{c.title}</span>
+                    <ReviewBadge status={c.review_status} />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </section>
 
       <section className="space-y-4">
