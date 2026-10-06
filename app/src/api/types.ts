@@ -92,19 +92,40 @@ export interface CriterionMap {
 // --- goal ui_view per modality (small JSON produced by tracks/common/goals/<m>.py ui_view) ---
 
 export interface KolamDot {
+  id?: string;
   x: number;
   y: number;
   r?: number;
   relation?: 'on_line' | 'enclosed' | string;
 }
 
+export interface KolamCurveStage {
+  id: string;
+  start: number;
+  end: number;
+}
+
+/** Real-service curve shape: each curve is an object with id, closed, points, stages. */
+export interface KolamCurveObj {
+  id: string;
+  closed: boolean;
+  /** [x, y] pairs in goal-image pixels */
+  points: number[][];
+  stages: KolamCurveStage[];
+}
+
 export interface KolamUiView {
   canvas: { width: number; height: number };
   dots: KolamDot[];
-  /** continuous curves, each an ordered polyline of [x, y] in goal-image pixels (INFERRED) */
-  curves: number[][][];
+  /** Real service: array of KolamCurveObj; legacy mock: number[][][] for backward compat. */
+  curves: KolamCurveObj[] | number[][][];
   stroke_width?: number;
   tau?: number;
+  /** Real service: rotation_order at top level. */
+  rotation_order?: number;
+  curve_count?: number;
+  kind?: string;
+  /** Legacy mock: symmetry object. Real service uses rotation_order at top level. */
   symmetry?: { rotational_order?: number | null; mirror_axes?: number[]; center?: number[] };
   target_source_id?: string;
 }
@@ -118,28 +139,53 @@ export interface OrigamiState {
   keyframe_sec?: number;
   /** asset name under GET /api/media/{case_id}/goal/{asset} */
   keyframe_asset?: string;
+  label?: string;
 }
 
 export interface OrigamiUiView {
   states: OrigamiState[];
+  /** Real service: 'window'. Legacy mock: 'window_sec'. Both kept. */
+  window?: number[];
   window_sec?: number[];
   source_id?: string;
+  kind?: string;
+  final_state_index?: number;
+  key_state_index?: number | null;
 }
 
 export interface TablaBeat {
-  index: number;
-  time_sec: number;
+  /** Real service field name. */
+  i: number;
+  /** Real service field name (seconds from window start). */
+  t: number;
   bass: boolean;
   strength?: number;
+  /** Legacy mock aliases — kept for backward compat during transition. */
+  index?: number;
+  time_sec?: number;
 }
 
 export interface TablaUiView {
   beats: TablaBeat[];
+  /** Real service: stroke_pulse_sec. Legacy mock: period_sec. */
+  stroke_pulse_sec?: number;
   period_sec?: number;
   tempo_bpm?: number;
+  /** Real service: cycle_length_pulses + cycle_length_beats. Legacy mock: cycle_length. */
+  cycle_length_pulses?: number;
+  cycle_length_beats?: number;
   cycle_length?: number;
+  beat_pulses?: number;
   duration_sec?: number;
+  window_sec?: number[];
+  strokes_per_min?: number;
+  strokes?: Array<{ i: number; t: number; bass: boolean; strength: number }>;
+  bols?: unknown;
+  bols_status?: string;
+  tolerances?: { timing_ms: number; tempo_pct: number };
+  /** Legacy mock: source_id. Real service uses source_ids from goal. */
   source_id?: string;
+  modality?: string;
 }
 
 export type GoalUiView = KolamUiView | OrigamiUiView | TablaUiView;
@@ -171,6 +217,11 @@ export interface CaseView {
   rubric: RubricDefinition;
   task: PracticeTask;
   criterion_map?: CriterionMap | null;
+  /** Real service extra fields (additive; ignored by UI if absent). */
+  manifest?: Record<string, unknown>;
+  observers?: Record<string, unknown>;
+  versions?: Record<string, number>;
+  lesson?: Record<string, unknown>;
 }
 
 // ---------------------------------------------------------------------------
@@ -213,18 +264,34 @@ export interface DivergenceEvent {
 }
 
 export interface TablaAlignmentRow {
-  goal_index: number | null;
-  goal_time_sec: number | null;
-  learner_time_sec: number | null;
+  /** Real service fields (from track_b evaluator). */
+  goal?: number | null;
+  learner?: number | null;
+  goal_t?: number | null;
+  learner_t?: number | null;
+  dev_ms?: number | null;
+  bass_goal?: boolean | null;
+  bass_learner?: boolean | null;
+  bass_ok?: boolean | null;
+  on_time?: boolean | null;
+  /** Legacy mock field aliases. */
+  goal_index?: number | null;
+  goal_time_sec?: number | null;
+  learner_time_sec?: number | null;
   deviation_ms?: number | null;
-  status: 'ok' | 'late' | 'early' | 'missing' | 'extra' | string;
+  status?: 'ok' | 'late' | 'early' | 'missing' | 'extra' | string;
   bass_expected?: boolean | null;
   bass_played?: boolean | null;
 }
 
 export interface OrigamiFrameLabel {
   t: number;
-  state: number | 'transition' | 'off_path' | 'unclear' | string;
+  /** Real service: raw label per frame. */
+  raw?: number | 'transition' | 'off_path' | 'unclear' | string;
+  /** Real service: filtered label per frame. */
+  filtered?: number | 'transition' | 'off_path' | 'unclear' | string;
+  /** Legacy mock field. */
+  state?: number | 'transition' | 'off_path' | 'unclear' | string;
   note?: string;
 }
 
@@ -234,8 +301,12 @@ export interface TrajectoryArtifacts {
   alignment?: TablaAlignmentRow[];
   /** origami: filtered per-frame state labels */
   frame_labels?: OrigamiFrameLabel[];
-  /** kolam: stroke indices flagged off-path */
+  /** kolam: stroke indices flagged off-path (mock only; real uses per_stroke) */
   off_path_strokes?: number[];
+  /** kolam real service: per-stroke detail */
+  per_stroke?: unknown[];
+  stage_completion_order?: unknown;
+  tau_px?: number;
   /** kolam image upload: registration result */
   registration?: Record<string, unknown>;
   [key: string]: unknown;
@@ -309,9 +380,14 @@ export interface SessionView {
 
 export interface TargetedChange {
   criterion_id?: string | null;
+  /** Real service field names. */
+  before?: CriterionStatus | string | null;
+  after?: CriterionStatus | string | null;
+  improved?: boolean;
+  changed?: boolean;
+  /** Legacy mock field names. */
   baseline_status?: CriterionStatus | null;
   retry_status?: CriterionStatus | null;
-  changed?: boolean;
   kind?: string;
   [key: string]: unknown;
 }

@@ -36,7 +36,8 @@ export function KolamSourcePanel({ view, focus }: SourcePanelProps) {
   const [animKey, setAnimKey] = useState(0);
   const src = ui.target_source_id ?? view.goal.source_ids[0];
   const loc = focus ? parseLocator(focus.source_id) : null;
-  const order = ui.symmetry?.rotational_order;
+  // Real service: rotation_order at top level; legacy mock: symmetry.rotational_order
+  const order = ui.rotation_order ?? ui.symmetry?.rotational_order;
 
   return (
     <div className="space-y-3">
@@ -161,21 +162,26 @@ export function TablaSourcePanel({ view, focus }: SourcePanelProps) {
   const ui = view.goal.ui_view as TablaUiView;
   const audioRef = useRef<HTMLAudioElement>(null);
   const [now, setNow] = useState<number | null>(null);
-  const src = ui.source_id ?? view.goal.source_ids[0];
+  // Real service: no source_id in ui_view; fall back to goal.source_ids[0]
+  const src = (ui as { source_id?: string }).source_id ?? view.goal.source_ids[0];
   const url = src ? api.mediaUrl(view.case_id, src) : '';
   useSeek(audioRef, focus);
   const loc = focus ? parseLocator(focus.source_id) : null;
   const highlight: [number, number] | null =
     focus && typeof focus.start_sec === 'number' ? [focus.start_sec, focus.end_sec ?? focus.start_sec + 0.3] : null;
+  // Real service: stroke_pulse_sec; legacy mock: period_sec
+  const pulseSec = ui.stroke_pulse_sec ?? (ui as { period_sec?: number }).period_sec;
+  // Real service: cycle_length_pulses; legacy mock: cycle_length
+  const cycleLen = ui.cycle_length_pulses ?? (ui as { cycle_length?: number }).cycle_length;
 
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-3 text-[11px] font-mono">
         <Music className="w-4 h-4 text-cadmium-amber" />
         {ui.tempo_bpm && <span>tempo <b className="text-on-surface">{ui.tempo_bpm} BPM</b></span>}
-        {ui.period_sec && <span>period <b className="text-on-surface">{Math.round(ui.period_sec * 1000)} ms</b></span>}
-        {ui.cycle_length && <span>cycle <b className="text-on-surface">{ui.cycle_length} beats</b></span>}
-        <span>{ui.beats.length} onsets · {ui.beats.filter((b) => b.bass).length} with bass</span>
+        {pulseSec && <span>stroke pulse <b className="text-on-surface">{Math.round(pulseSec * 1000)} ms</b></span>}
+        {cycleLen && <span>cycle <b className="text-on-surface">{cycleLen} pulses</b></span>}
+        <span>{ui.beats.length} beats · {ui.beats.filter((b) => b.bass).length} with bass</span>
       </div>
       {url ? (
         <audio ref={audioRef} src={url} controls className="w-full" onTimeUpdate={(e) => setNow(e.currentTarget.currentTime)} />

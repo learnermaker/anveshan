@@ -1,0 +1,26 @@
+{
+  "constraints": [
+    {
+      "constraint_type": "tool_spec",
+      "description": "Draw on the app canvas over the target dots (goal-image pixel coordinates).",
+      "value": "492x499 px"
+    },
+    {
+      "constraint_type": "material_spec",
+      "description": "Continuous lines preferred: draw each line without lifting.",
+      "value": "1 line(s)"
+    }
+  ],
+  "instructions": "1. The canvas shows the 41 dots of the target [CLM-01]. Draw on the canvas; the dots stay where they are.\n2. The target is 1 continuous line with no loose ends [CLM-02, CLM-05]; try to draw each without lifting.\n3. Pass through every dot the target line passes through, and keep dots the line leaves free untouched [CLM-04].\n4. Stage C1.S1 - one suggested way (inferred), not the original drawing order: follow [CLM-06].\n5. Stage C1.S2 - one suggested way (inferred), not the original drawing order: follow [CLM-07].\n6. Stage C1.S3 - one suggested way (inferred), not the original drawing order: follow [CLM-08].\n7. Stage C1.S4 - one suggested way (inferred), not the original drawing order: follow [CLM-09].\n8. Stage C1.S5 - one suggested way (inferred), not the original drawing order: follow [CLM-10].\n9. Stage C1.S6 - one suggested way (inferred), not the original drawing order: follow [CLM-11].\n10. Stage C1.S7 - one suggested way (inferred), not the original drawing order: follow [CLM-12].\n11. Stage C1.S8 - one suggested way (inferred), not the original drawing order: follow [CLM-13].\n12. Check the finished drawing against the 8-fold symmetry of the target [CLM-03].",
+  "package_id": "kp.kolam.1",
+  "rubric_id": "rubric.kolam.1",
+  "target_criteria_ids": [
+    "CRIT-KOLAM-COVERAGE",
+    "CRIT-KOLAM-PRECISION",
+    "CRIT-KOLAM-DOTS",
+    "CRIT-KOLAM-CURVES",
+    "CRIT-KOLAM-CONTINUITY"
+  ],
+  "task_id": "task.kolam.1",
+  "title": "Draw the kolam on the dot grid"
+}

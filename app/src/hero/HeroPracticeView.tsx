@@ -126,7 +126,7 @@ export function HeroPracticeView({ view, session, onSessionChange, onComplete, o
         )}
       </div>
 
-      {view.review_status !== 'approved' && (
+      {view.review_status !== 'approved' && view.review_status !== 'revised' && (
         <div className="text-[11px] font-mono text-cadmium-amber">⚠ The knowledge package is “{view.review_status}”: the service may refuse attempts until an expert approves it (HUMAN_REVIEW_REQUIRED).</div>
       )}
 
@@ -236,6 +236,7 @@ function KolamCapture({ view, busy, onSubmit }: { view: CaseView; busy: boolean;
   const [photo, setPhoto] = useState<File | null>(null);
   const photoUrl = useMemo(() => (photo ? URL.createObjectURL(photo) : null), [photo]);
   const startRef = useRef<number | null>(null);
+  const MAX_UPLOAD_BYTES = 30 * 1024 * 1024;
 
   const submitTrace = async () => {
     const json = buildTraceJson(ui, view.case_id, view.goal.version, strokes, startRef.current);
@@ -276,9 +277,14 @@ function KolamCapture({ view, busy, onSubmit }: { view: CaseView; busy: boolean;
           <div className="space-y-2">
             <FilePick accept="image/*" label="Photo of your drawn kolam" file={photo} onFile={setPhoto} disabled={busy} />
             {photoUrl && <img src={photoUrl} alt="preview" className="max-h-72 rounded-lg border border-outline" />}
+            {photo && photo.size > MAX_UPLOAD_BYTES && (
+              <p className="text-[11px] font-mono text-divergence-crimson">
+                File is {(photo.size / 1e6).toFixed(1)} MB — limit is 30 MB. Resize the image before uploading.
+              </p>
+            )}
             <button
               className={btn.primary}
-              disabled={busy || !photo}
+              disabled={busy || !photo || photo.size > MAX_UPLOAD_BYTES}
               onClick={() => photo && onSubmit({ kind: 'image', file: photo, fileName: photo.name }, { kind: 'image', url: photoUrl ?? undefined, fileName: photo.name })}
             >
               <Send className="w-3.5 h-3.5" /> Submit photo
@@ -298,6 +304,7 @@ function KolamCapture({ view, busy, onSubmit }: { view: CaseView; busy: boolean;
 function OrigamiCapture({ view, busy, onSubmit }: { view: CaseView; busy: boolean; onSubmit: (u: AttemptUpload, m: LocalAttemptMedia) => void }) {
   const ui = view.goal.ui_view as OrigamiUiView;
   const [file, setFile] = useState<File | null>(null);
+  const MAX_UPLOAD_BYTES = 30 * 1024 * 1024;
   return (
     <div className="space-y-3">
       <div className="flex gap-2 overflow-x-auto pb-1">
@@ -309,9 +316,14 @@ function OrigamiCapture({ view, busy, onSubmit }: { view: CaseView; busy: boolea
         ))}
       </div>
       <FilePick accept="video/*" label="Video of your folding attempt" file={file} onFile={setFile} disabled={busy} />
+      {file && file.size > MAX_UPLOAD_BYTES && (
+        <p className="text-[11px] font-mono text-divergence-crimson">
+          File is {(file.size / 1e6).toFixed(1)} MB — limit is 30 MB. Re-encode at a lower bitrate (e.g. ffmpeg -i input.mp4 -crf 28 out.mp4).
+        </p>
+      )}
       <button
         className={btn.primary}
-        disabled={busy || !file}
+        disabled={busy || !file || file.size > MAX_UPLOAD_BYTES}
         onClick={() => file && onSubmit({ kind: 'video', file, fileName: file.name }, { kind: 'video', url: URL.createObjectURL(file), fileName: file.name })}
       >
         <Send className="w-3.5 h-3.5" /> Submit video
@@ -325,6 +337,9 @@ function TablaCapture({ view, busy, onSubmit }: { view: CaseView; busy: boolean;
   const ui = view.goal.ui_view as TablaUiView;
   const [audio, setAudio] = useState<File | null>(null);
   const [video, setVideo] = useState<File | null>(null);
+  const MAX_UPLOAD_BYTES = 30 * 1024 * 1024;
+  // Real service: cycle_length_pulses; legacy mock: cycle_length
+  const cycleLen = ui.cycle_length_pulses ?? (ui as { cycle_length?: number }).cycle_length;
   return (
     <div className="space-y-3">
       <BeatTimeline ui={ui} />
@@ -332,9 +347,14 @@ function TablaCapture({ view, busy, onSubmit }: { view: CaseView; busy: boolean;
         <FilePick accept="audio/*,video/*" label="Audio of your playing (required)" file={audio} onFile={setAudio} disabled={busy} />
         <FilePick accept="video/*" label="Video (optional — shown, not scored)" file={video} onFile={setVideo} disabled={busy} />
       </div>
+      {audio && audio.size > MAX_UPLOAD_BYTES && (
+        <p className="text-[11px] font-mono text-divergence-crimson">
+          File is {(audio.size / 1e6).toFixed(1)} MB — limit is 30 MB. Re-encode at a lower bitrate (e.g. ffmpeg -i input.wav -b:a 64k out.mp3).
+        </p>
+      )}
       <button
         className={btn.primary}
-        disabled={busy || !audio}
+        disabled={busy || !audio || audio.size > MAX_UPLOAD_BYTES}
         onClick={() =>
           audio &&
           onSubmit(
@@ -346,7 +366,7 @@ function TablaCapture({ view, busy, onSubmit }: { view: CaseView; busy: boolean;
         <Send className="w-3.5 h-3.5" /> Submit audio
       </button>
       <p className="text-[10px] text-on-surface-variant">
-        Source: {ui.tempo_bpm ?? '?'} BPM · {ui.cycle_length ?? '?'}-beat cycle · {fmtTime(ui.duration_sec ?? null)}. Onsets and bass are measured deterministically.
+        Source: {ui.tempo_bpm ?? '?'} BPM · {cycleLen ?? '?'}-beat cycle · {fmtTime(ui.duration_sec ?? null)}. Onsets and bass are measured deterministically.
       </p>
     </div>
   );

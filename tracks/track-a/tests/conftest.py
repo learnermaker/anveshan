@@ -62,7 +62,8 @@ def cases_root(tmp_path: Path) -> Path:
     )
     write_json(kolam / "source" / "source.json", reg)
     for cid in ("micrometer", "bicycle-repair", "handloom-weaving", "square-knot", "origami", "tabla"):
-        shutil.copytree(REAL_CASES / cid, root / cid, ignore=shutil.ignore_patterns("cache"))
+        # Ignore cache (media) AND versioned build artifacts (*.v*.json) so tests start unbuilt
+        shutil.copytree(REAL_CASES / cid, root / cid, ignore=shutil.ignore_patterns("cache", "*.v[0-9]*.json"))
     shutil.copyfile(REAL_CASES / "index.json", root / "index.json")
     return root
 

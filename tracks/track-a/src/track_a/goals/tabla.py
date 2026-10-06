@@ -140,9 +140,13 @@ def build(source_path: Path, source: SourceRecord, ctx: RunContext, *, case_id: 
     n_bass = sum(1 for o in on if o["bass"])
     pulse = payload["stroke_pulse_sec"]
 
+    # Derive modality from the source MIME type (source.json may be video/webm or audio/*)
+    _mime_major = source.mime_type.split("/", 1)[0].lower()
+    _src_modality = Modality.VIDEO if _mime_major == "video" else Modality.AUDIO
+
     def ev(kind: str, idx: int, start: float, end: float, excerpt: str, state=VerificationState.OBSERVED, conf=1.0) -> EvidenceRef:
         return EvidenceRef(
-            evidence_id=f"ev.{case_id}.{kind}.{idx:02d}", source_id=sid, modality=Modality.AUDIO,
+            evidence_id=f"ev.{case_id}.{kind}.{idx:02d}", source_id=sid, modality=_src_modality,
             start_sec=round(start, 3), end_sec=round(end, 3), cue_excerpt=excerpt,
             verification_state=state, confidence=conf,
         )

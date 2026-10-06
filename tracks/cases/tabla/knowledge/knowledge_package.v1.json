@@ -1,0 +1,129 @@
+{
+  "claims": [
+    {
+      "claim_id": "CLM-01",
+      "claim_type": "condition",
+      "evidence_refs": [
+        {
+          "confidence": 1.0,
+          "cue_excerpt": "pulse 0.189 s over 53 strokes",
+          "end_sec": 32.0,
+          "evidence_id": "ev.tabla.tempo.01",
+          "modality": "video",
+          "source_id": "src.tabla.demo.v1",
+          "start_sec": 20.0,
+          "verification_state": "observed"
+        }
+      ],
+      "is_observed": true,
+      "statement": "The source keeps a stroke pulse of 0.189 s (317 strokes per minute); counted in groups of 2 pulses this is 158 beats per minute (a counting convention; the matra is not established from audio)."
+    },
+    {
+      "claim_id": "CLM-02",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 1.0,
+          "cue_excerpt": "53 strokes on 55 slots",
+          "end_sec": 31.744,
+          "evidence_id": "ev.tabla.grid.02",
+          "modality": "video",
+          "source_id": "src.tabla.demo.v1",
+          "start_sec": 21.552,
+          "verification_state": "observed"
+        }
+      ],
+      "is_observed": true,
+      "statement": "The 53 strokes of the segment occupy 53 of 55 slots of that pulse grid; the median distance of a stroke from the fitted grid is 10 ms."
+    },
+    {
+      "claim_id": "CLM-03",
+      "claim_type": "condition",
+      "evidence_refs": [
+        {
+          "confidence": 1.0,
+          "cue_excerpt": "cycle 12 pulses",
+          "end_sec": 23.804,
+          "evidence_id": "ev.tabla.cycle.03",
+          "modality": "video",
+          "source_id": "src.tabla.demo.v1",
+          "start_sec": 21.532,
+          "verification_state": "observed"
+        }
+      ],
+      "is_observed": true,
+      "statement": "The bass pattern repeats every 12 pulses (about 2.27 s; autocorrelation 0.65). The taal is not identified by the system."
+    },
+    {
+      "claim_id": "CLM-04",
+      "claim_type": "cue",
+      "evidence_refs": [
+        {
+          "confidence": 1.0,
+          "cue_excerpt": "bass on 21/53 strokes; pattern BBB--.B---B-",
+          "end_sec": 32.0,
+          "evidence_id": "ev.tabla.bass.04",
+          "modality": "video",
+          "source_id": "src.tabla.demo.v1",
+          "start_sec": 20.0,
+          "verification_state": "observed"
+        }
+      ],
+      "is_observed": true,
+      "statement": "The bass drum (bayan) is sounded on 21 of 53 strokes and withheld on the rest; one cycle reads BBB--.B---B- (B = bass stroke, - = stroke without bass, . = empty pulse)."
+    },
+    {
+      "claim_id": "CLM-05",
+      "claim_type": "condition",
+      "evidence_refs": [
+        {
+          "confidence": 1.0,
+          "cue_excerpt": "pulse-normalised IOI CV 0.1132",
+          "end_sec": 32.0,
+          "evidence_id": "ev.tabla.steady.05",
+          "modality": "video",
+          "source_id": "src.tabla.demo.v1",
+          "start_sec": 20.0,
+          "verification_state": "observed"
+        }
+      ],
+      "is_observed": true,
+      "statement": "The pulse is steady: intervals between strokes, divided by their pulse count, vary by 11.3% (coefficient of variation)."
+    },
+    {
+      "claim_id": "CLM-06",
+      "claim_type": "cue",
+      "evidence_refs": [
+        {
+          "confidence": 0.3,
+          "cue_excerpt": "bol identity not analysed",
+          "end_sec": 32.0,
+          "evidence_id": "ev.tabla.bols.06",
+          "modality": "video",
+          "source_id": "src.tabla.demo.v1",
+          "start_sec": 20.0,
+          "verification_state": "unverified"
+        }
+      ],
+      "is_observed": false,
+      "statement": "The bol names of these strokes are not identified by the system (no audio model was used); they are unverified."
+    }
+  ],
+  "consent": {
+    "consent_scope": "public licence: CC BY-SA 4.0",
+    "contributor_name": "Manishontop02",
+    "granted_at": null,
+    "notes": "A man playing tabla in village pranpur near Chanderi.webm by Manishontop02, CC BY-SA 4.0, via Wikimedia Commons (https://commons.wikimedia.org/wiki/File:A_man_playing_tabla_in_village_pranpur_near_Chanderi.webm)",
+    "revocable": false
+  },
+  "expert_review": {
+    "notes": null,
+    "reviewed_at": null,
+    "reviewer_name": "unassigned",
+    "status": "pending"
+  },
+  "package_id": "kp.tabla.1",
+  "skill_id": "skill.tabla",
+  "summary": "A 12 s tabla segment (53 strokes, pulse 0.189 s, bass on 21 strokes, bass pattern repeating every 12 pulses). Timing and bass are measured deterministically from the audio; bols and taal are not asserted.",
+  "title": "Tabla stroke pattern: tempo, grid and bayan"
+}

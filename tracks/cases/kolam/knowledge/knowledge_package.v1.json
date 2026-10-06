@@ -1,0 +1,255 @@
+{
+  "claims": [
+    {
+      "claim_id": "CLM-01",
+      "claim_type": "condition",
+      "evidence_refs": [
+        {
+          "confidence": 1.0,
+          "cue_excerpt": "41 dots detected (computed)",
+          "end_sec": null,
+          "evidence_id": "ev.kolam.clm-01",
+          "modality": "image",
+          "source_id": "src.kolam.target.v1#xywh=percent:3.05,5.41,92.28,91.07",
+          "start_sec": null,
+          "verification_state": "observed"
+        }
+      ],
+      "is_observed": true,
+      "statement": "The finished kolam has 41 pulli (dots); by distance from the centre: 1 at radius ~0 px, 8 at radius ~44 px, 8 at radius ~88 px, 8 at radius ~131 px, 8 at radius ~175 px, 8 at radius ~219 px."
+    },
+    {
+      "claim_id": "CLM-02",
+      "claim_type": "condition",
+      "evidence_refs": [
+        {
+          "confidence": 1.0,
+          "cue_excerpt": "1 curve(s), 32 crossings (computed)",
+          "end_sec": null,
+          "evidence_id": "ev.kolam.clm-02",
+          "modality": "image",
+          "source_id": "src.kolam.target.v1#xywh=percent:3.46,5.90,91.41,90.14",
+          "start_sec": null,
+          "verification_state": "observed"
+        }
+      ],
+      "is_observed": true,
+      "statement": "The line work forms 1 continuous line (a closed loop) when every one of the 32 crossings is read as two lines passing straight through."
+    },
+    {
+      "claim_id": "CLM-03",
+      "claim_type": "condition",
+      "evidence_refs": [
+        {
+          "confidence": 1.0,
+          "cue_excerpt": "rotation order 8 (computed overlap)",
+          "end_sec": null,
+          "evidence_id": "ev.kolam.clm-03",
+          "modality": "image",
+          "source_id": "src.kolam.target.v1#xywh=percent:3.46,5.90,91.41,90.14",
+          "start_sec": null,
+          "verification_state": "observed"
+        }
+      ],
+      "is_observed": true,
+      "statement": "The pattern has 8-fold rotational symmetry about its centre and no mirror symmetry (it turns in one direction)."
+    },
+    {
+      "claim_id": "CLM-04",
+      "claim_type": "condition",
+      "evidence_refs": [
+        {
+          "confidence": 1.0,
+          "cue_excerpt": "dot-line relations (computed)",
+          "end_sec": null,
+          "evidence_id": "ev.kolam.clm-04",
+          "modality": "image",
+          "source_id": "src.kolam.target.v1#xywh=percent:3.05,5.41,92.28,91.07",
+          "start_sec": null,
+          "verification_state": "observed"
+        }
+      ],
+      "is_observed": true,
+      "statement": "40 dots lie on the line (it passes through them); 1 is enclosed by the line without touching it."
+    },
+    {
+      "claim_id": "CLM-05",
+      "claim_type": "condition",
+      "evidence_refs": [
+        {
+          "confidence": 1.0,
+          "cue_excerpt": "0 free line ends (computed)",
+          "end_sec": null,
+          "evidence_id": "ev.kolam.clm-05",
+          "modality": "image",
+          "source_id": "src.kolam.target.v1#xywh=percent:3.46,5.90,91.41,90.14",
+          "start_sec": null,
+          "verification_state": "observed"
+        }
+      ],
+      "is_observed": true,
+      "statement": "Every line in the image belongs to these continuous lines: there are no loose ends and no stray marks."
+    },
+    {
+      "claim_id": "CLM-06",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 0.4,
+          "cue_excerpt": "inferred stage C1.S1",
+          "end_sec": null,
+          "evidence_id": "ev.kolam.clm-06",
+          "modality": "image",
+          "source_id": "src.kolam.target.v1#xywh=percent:16.76,5.90,52.55,84.16",
+          "start_sec": null,
+          "verification_state": "inferred"
+        }
+      ],
+      "is_observed": false,
+      "statement": "Suggested stage 1 of 8 (one possible way, inferred from the final image; line C1): without lifting, draw from (49% across, 7% down) to (18% across, 82% down), passing through 6 dots."
+    },
+    {
+      "claim_id": "CLM-07",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 0.4,
+          "cue_excerpt": "inferred stage C1.S2",
+          "end_sec": null,
+          "evidence_id": "ev.kolam.clm-07",
+          "modality": "image",
+          "source_id": "src.kolam.target.v1#xywh=percent:13.01,24.05,81.86,59.07",
+          "start_sec": null,
+          "verification_state": "inferred"
+        }
+      ],
+      "is_observed": false,
+      "statement": "Suggested stage 2 of 8 (one possible way, inferred from the final image; line C1): without lifting, draw from (18% across, 82% down) to (94% across, 51% down), passing through 6 dots."
+    },
+    {
+      "claim_id": "CLM-08",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 0.4,
+          "cue_excerpt": "inferred stage C1.S3",
+          "end_sec": null,
+          "evidence_id": "ev.kolam.clm-08",
+          "modality": "image",
+          "source_id": "src.kolam.target.v1#xywh=percent:9.35,18.99,85.50,51.79",
+          "start_sec": null,
+          "verification_state": "inferred"
+        }
+      ],
+      "is_observed": false,
+      "statement": "Suggested stage 3 of 8 (one possible way, inferred from the final image; line C1): without lifting, draw from (94% across, 51% down) to (18% across, 20% down), passing through 6 dots."
+    },
+    {
+      "claim_id": "CLM-09",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 0.4,
+          "cue_excerpt": "inferred stage C1.S4",
+          "end_sec": null,
+          "evidence_id": "ev.kolam.clm-09",
+          "modality": "image",
+          "source_id": "src.kolam.target.v1#xywh=percent:16.53,15.23,59.68,80.77",
+          "start_sec": null,
+          "verification_state": "inferred"
+        }
+      ],
+      "is_observed": false,
+      "statement": "Suggested stage 4 of 8 (one possible way, inferred from the final image; line C1): without lifting, draw from (18% across, 20% down) to (49% across, 95% down), passing through 6 dots."
+    },
+    {
+      "claim_id": "CLM-10",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 0.4,
+          "cue_excerpt": "inferred stage C1.S5",
+          "end_sec": null,
+          "evidence_id": "ev.kolam.clm-10",
+          "modality": "image",
+          "source_id": "src.kolam.target.v1#xywh=percent:28.88,11.82,52.64,84.22",
+          "start_sec": null,
+          "verification_state": "inferred"
+        }
+      ],
+      "is_observed": false,
+      "statement": "Suggested stage 5 of 8 (one possible way, inferred from the final image; line C1): without lifting, draw from (49% across, 95% down) to (81% across, 20% down), passing through 6 dots."
+    },
+    {
+      "claim_id": "CLM-11",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 0.4,
+          "cue_excerpt": "inferred stage C1.S6",
+          "end_sec": null,
+          "evidence_id": "ev.kolam.clm-11",
+          "modality": "image",
+          "source_id": "src.kolam.target.v1#xywh=percent:3.46,18.68,81.91,59.07",
+          "start_sec": null,
+          "verification_state": "inferred"
+        }
+      ],
+      "is_observed": false,
+      "statement": "Suggested stage 6 of 8 (one possible way, inferred from the final image; line C1): without lifting, draw from (81% across, 20% down) to (5% across, 51% down), passing through 6 dots."
+    },
+    {
+      "claim_id": "CLM-12",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 0.4,
+          "cue_excerpt": "inferred stage C1.S7",
+          "end_sec": null,
+          "evidence_id": "ev.kolam.clm-12",
+          "modality": "image",
+          "source_id": "src.kolam.target.v1#xywh=percent:3.46,31.06,85.37,51.75",
+          "start_sec": null,
+          "verification_state": "inferred"
+        }
+      ],
+      "is_observed": false,
+      "statement": "Suggested stage 7 of 8 (one possible way, inferred from the final image; line C1): without lifting, draw from (5% across, 51% down) to (81% across, 82% down), passing through 6 dots."
+    },
+    {
+      "claim_id": "CLM-13",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 0.4,
+          "cue_excerpt": "inferred stage C1.S8",
+          "end_sec": null,
+          "evidence_id": "ev.kolam.clm-13",
+          "modality": "image",
+          "source_id": "src.kolam.target.v1#xywh=percent:21.95,5.96,59.97,80.61",
+          "start_sec": null,
+          "verification_state": "inferred"
+        }
+      ],
+      "is_observed": false,
+      "statement": "Suggested stage 8 of 8 (one possible way, inferred from the final image; line C1): without lifting, draw from (81% across, 82% down) to (49% across, 7% down), passing through 6 dots."
+    }
+  ],
+  "consent": {
+    "consent_scope": "public licence: Public domain",
+    "contributor_name": "Mayooranathan (Tamil Wikipedia)",
+    "granted_at": null,
+    "notes": "Ithayakkamalam - 2.jpg, by Mayooranathan, public domain, via Wikimedia Commons (https://commons.wikimedia.org/wiki/File:Ithayakkamalam_-_2.jpg)",
+    "revocable": false
+  },
+  "expert_review": {
+    "notes": null,
+    "reviewed_at": null,
+    "reviewer_name": "unassigned",
+    "status": "pending"
+  },
+  "package_id": "kp.kolam.1",
+  "skill_id": "skill.kolam",
+  "summary": "Finished kolam image only: 41 dots, 1 continuous line(s), 32 crossings, 8-fold rotation (computed). The 8-stage drawing path is an inferred suggestion.",
+  "title": "Kolam (final image): reconstruct the line through the dots"
+}

@@ -3,8 +3,8 @@
  *
  * The target image is the real public-domain source (Ithayakkamalam - 2.jpg, Mayooranathan,
  * via Wikimedia Commons), copied to app/public/mock/kolam_target.jpg for offline UI work.
- * The geometry below (dots, curves) is a HAND-APPROXIMATED stand-in for what the Track A
- * kolam goal builder computes (8 rotated loops); it is not the builder's output.
+ * The geometry below (dots, curves) is the REAL builder output from the Track A kolam goal
+ * builder, dumped from GET /api/cases/kolam. It replaces the earlier hand-approximated geometry.
  *
  * The mock trace evaluator is a simplified browser re-implementation of evaluation-core §3.2
  * (coverage / precision within τ, off-path runs, dot relations, curve completion, pen lifts)
@@ -12,67 +12,31 @@
  */
 
 import type { EvidenceRef } from '../../types/contracts';
-import type { AttemptResult, CaseView, DivergenceEvent, KolamDot, KolamUiView, MetricView } from '../types';
+import type { AttemptResult, CaseView, DivergenceEvent, KolamCurveObj, KolamDot, KolamUiView, MetricView } from '../types';
 import { assembleResult, buildAttempt, buildEvaluation, buildFirstDivergence, evidence, type CriterionOutcome } from './builders';
+import REAL_UI_VIEW from './kolam-real-ui-view.json';
 
 export const KOLAM_TARGET_SOURCE = 'src.kolam.target.v1';
 export const KOLAM_TARGET_URL = '/mock/kolam_target.jpg';
 
-const W = 492;
-const H = 499;
-const CX = 242;
-const CY = 254;
-const LOOPS = 8;
-const R = 125;
-const D = 95;
-const TAU = 6;
+// Real builder geometry (from GET /api/cases/kolam — replaces hand-approximated loops)
+const W = REAL_UI_VIEW.canvas.width;
+const H = REAL_UI_VIEW.canvas.height;
+const TAU = REAL_UI_VIEW.tau ?? 6;
+const LOOPS = REAL_UI_VIEW.rotation_order ?? 8;   // still 8-fold; used for rubric labels
 
-function loop(k: number): number[][] {
-  const phi = (k / LOOPS) * Math.PI * 2 - Math.PI / 2; // loop 0 points up
-  const cx = CX + D * Math.cos(phi);
-  const cy = CY + D * Math.sin(phi);
-  const pts: number[][] = [];
-  const n = 144;
-  for (let i = 0; i < n; i++) {
-    // start at the outermost point (topmost for loop 0), clockwise in screen coords
-    const t = phi + (i / n) * Math.PI * 2;
-    pts.push([Number((cx + R * Math.cos(t)).toFixed(1)), Number((cy + R * Math.sin(t)).toFixed(1))]);
-  }
-  pts.push(pts[0]);
-  return pts;
-}
-
-const curves = Array.from({ length: LOOPS }, (_, k) => loop(k));
-
-const dots: KolamDot[] = (() => {
-  const out: KolamDot[] = [{ x: CX, y: CY, r: 3, relation: 'enclosed' }];
-  for (let k = 0; k < LOOPS; k++) {
-    const phi = (k / LOOPS) * Math.PI * 2 - Math.PI / 2;
-    // outer tip (on the line)
-    out.push({ x: Number((CX + (D + R) * Math.cos(phi)).toFixed(1)), y: Number((CY + (D + R) * Math.sin(phi)).toFixed(1)), r: 3, relation: 'on_line' });
-    // inner ring (enclosed between loops)
-    const p2 = phi + Math.PI / LOOPS;
-    out.push({ x: Number((CX + 46 * Math.cos(p2)).toFixed(1)), y: Number((CY + 46 * Math.sin(p2)).toFixed(1)), r: 3, relation: 'enclosed' });
-    // mid ring between neighbouring loops
-    out.push({ x: Number((CX + 150 * Math.cos(p2)).toFixed(1)), y: Number((CY + 150 * Math.sin(p2)).toFixed(1)), r: 3, relation: 'enclosed' });
-  }
-  // derive relations from the geometry itself so goal and mock evaluator agree
-  for (const d of out) {
-    let best = Infinity;
-    for (const c of curves) for (const [x, y] of c) best = Math.min(best, Math.hypot(x - d.x, y - d.y));
-    d.relation = best <= TAU ? 'on_line' : 'enclosed';
-  }
-  return out;
-})();
+// Real builder curves and dots (KolamCurveObj shape, not legacy number[][])
+const curves = REAL_UI_VIEW.curves as KolamCurveObj[];
+const dots = REAL_UI_VIEW.dots as KolamDot[];
 const ON_LINE = dots.filter((d) => d.relation === 'on_line').length;
 
+// Compute center for evidence regions from real dot data
+const _cx = W / 2;
+const _cy = H / 2;
+
 export const kolamUiView: KolamUiView = {
-  canvas: { width: W, height: H },
-  dots,
-  curves,
-  stroke_width: 3,
-  tau: TAU,
-  symmetry: { rotational_order: 8, mirror_axes: [], center: [CX, CY] },
+  ...(REAL_UI_VIEW as KolamUiView),
+  // Ensure target_source_id is set for mock URL lookup
   target_source_id: KOLAM_TARGET_SOURCE,
 };
 
@@ -84,8 +48,10 @@ function pct(x: number, y: number, w: number, h: number): string {
 }
 
 function curveBox(k: number, pad = 8): string {
-  const xs = curves[k].map((p) => p[0]);
-  const ys = curves[k].map((p) => p[1]);
+  // Support KolamCurveObj (real service format) and legacy number[][] (old mock)
+  const pts = (curves[k] as KolamCurveObj).points ?? (curves[k] as unknown as number[][]);
+  const xs = pts.map((p) => p[0]);
+  const ys = pts.map((p) => p[1]);
   const x0 = Math.min(...xs) - pad;
   const y0 = Math.min(...ys) - pad;
   return pct(x0, y0, Math.max(...xs) - x0 + pad, Math.max(...ys) - y0 + pad);
@@ -103,7 +69,7 @@ export function kolamCaseView(caseId = 'kolam', extra: Partial<CaseView> = {}): 
     runtime_label: 'INTERNET_REFERENCE',
     review_status: 'pending',
     derived_from: null,
-    warnings: ['MOCK DATA: geometry hand-approximated for offline UI work; run the service for builder output.'],
+    warnings: ['MOCK DATA: real builder geometry (GET /api/cases/kolam); some package claims are mock-only.'],
     sources: [
       {
         source_id: KOLAM_TARGET_SOURCE,
@@ -126,7 +92,7 @@ export function kolamCaseView(caseId = 'kolam', extra: Partial<CaseView> = {}): 
       modality: 'kolam_image',
       source_ids: [KOLAM_TARGET_SOURCE],
       package_id: 'kp.kolam.v1',
-      built_with: { builder: 'mock (hand-approximated)', tau_px: TAU },
+      built_with: { builder: 'kolam_goal_v1 (real)', tau_px: TAU },
       warnings: [],
       ui_view: kolamUiView,
     },
@@ -164,7 +130,7 @@ export function kolamCaseView(caseId = 'kolam', extra: Partial<CaseView> = {}): 
           claim_type: 'condition',
           statement: 'Each outer-tip dot lies on the line; the dots marked enclosed (including the centre dot) are never touched.',
           is_observed: true,
-          evidence_refs: [ev(pct(CX - 60, CY - 60, 120, 120), 'observed', 0.8, 'dot/curve relation')],
+          evidence_refs: [ev(pct(_cx - 60, _cy - 60, 120, 120), 'observed', 0.8, 'dot/curve relation')],
         },
         {
           claim_id: 'CLM-KOLAM-005',
@@ -244,10 +210,12 @@ interface Trace {
 const goalSamples: { x: number; y: number; curve: number }[] = (() => {
   const out: { x: number; y: number; curve: number }[] = [];
   curves.forEach((c, k) => {
+    // Support KolamCurveObj (real service format) and legacy number[][] (old mock)
+    const pts = (c as KolamCurveObj).points ?? (c as unknown as number[][]);
     let carry = 0;
-    for (let i = 1; i < c.length; i++) {
-      const [x0, y0] = c[i - 1];
-      const [x1, y1] = c[i];
+    for (let i = 1; i < pts.length; i++) {
+      const [x0, y0] = pts[i - 1];
+      const [x1, y1] = pts[i];
       const len = Math.hypot(x1 - x0, y1 - y0);
       let s = carry;
       while (s < len) {
@@ -356,6 +324,7 @@ export function evaluateKolamTrace(view: CaseView, sessionId: string, learner: s
     return t ? c / t : 0;
   });
   const curvesDone = perCurve.filter((v) => v >= 0.9).length;
+  const numCurves = curves.length;
 
   // dot relations for dots in covered regions
   let dotChecked = 0;
@@ -384,12 +353,12 @@ export function evaluateKolamTrace(view: CaseView, sessionId: string, learner: s
       ? { status: band(dotAcc, 0.95, 0.8), finding: `dot relations ${dotOk}/${dotChecked} correct in drawn regions` }
       : { status: 'uncertain', finding: 'No drawn region near any dot.', deviation: 'no dots in covered regions' },
     'CRIT-KOLAM-CURVES': {
-      status: curvesDone === LOOPS ? 'satisfied' : curvesDone === LOOPS - 1 ? 'partially_satisfied' : 'not_satisfied',
-      finding: `${curvesDone}/${LOOPS} curves completed (coverage ≥ 0.9 each)`,
+      status: curvesDone === numCurves ? 'satisfied' : curvesDone === numCurves - 1 ? 'partially_satisfied' : 'not_satisfied',
+      finding: `${curvesDone}/${numCurves} curves completed (coverage ≥ 0.9 each)`,
     },
     'CRIT-KOLAM-CONTINUITY': {
-      status: lifts <= LOOPS + 1 ? 'satisfied' : lifts <= 2 * LOOPS ? 'partially_satisfied' : 'not_satisfied',
-      finding: `${lifts} pen lifts for K=${LOOPS} curves`,
+      status: lifts <= numCurves + 1 ? 'satisfied' : lifts <= 2 * numCurves ? 'partially_satisfied' : 'not_satisfied',
+      finding: `${lifts} pen lifts for K=${numCurves} curves`,
     },
   };
 
@@ -413,7 +382,7 @@ export function evaluateKolamTrace(view: CaseView, sessionId: string, learner: s
   } else {
     const missing = perCurve.findIndex((v) => v < 0.9);
     if (missing >= 0) {
-      first = buildFirstDivergence(view, evaluation, 'CRIT-KOLAM-COVERAGE', null, 'stroke', null, ev(curveBox(missing), 'inferred', 0.45, `suggested loop ${missing + 1}`), `Loop ${missing + 1} of ${LOOPS} is ${Math.round(perCurve[missing] * 100)}% drawn.`);
+      first = buildFirstDivergence(view, evaluation, 'CRIT-KOLAM-COVERAGE', null, 'stroke', null, ev(curveBox(missing), 'inferred', 0.45, `suggested curve ${missing + 1}`), `Curve ${missing + 1} of ${numCurves} is ${Math.round(perCurve[missing] * 100)}% drawn.`);
     }
   }
   for (const e of events) delete (e as DivergenceEvent & { _box?: number[] })._box;
@@ -433,8 +402,8 @@ export function evaluateKolamTrace(view: CaseView, sessionId: string, learner: s
     metrics,
     first,
     expertRefFor: (cid) => {
-      if (cid === 'CRIT-KOLAM-DOTS') return ev(pct(CX - 60, CY - 60, 120, 120), 'observed', 0.8);
-      return ev(curveBox(Math.max(0, perCurve.findIndex((v) => v < 0.9))), 'inferred', 0.45, 'suggested loop');
+      if (cid === 'CRIT-KOLAM-DOTS') return ev(pct(W / 2 - 60, H / 2 - 60, 120, 120), 'observed', 0.8);
+      return ev(curveBox(Math.max(0, perCurve.findIndex((v) => v < 0.9))), 'inferred', 0.45, 'suggested curve');
     },
     runtimeClass: 'DETERMINISTIC',
   });

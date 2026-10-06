@@ -5,7 +5,7 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import type { KolamUiView } from '../../api/types';
+import type { KolamCurveObj, KolamUiView } from '../../api/types';
 
 export type Stroke = number[][]; // [[x, y, t_ms], ...]
 
@@ -26,8 +26,10 @@ function drawScene(ctx: CanvasRenderingContext2D, ui: KolamUiView, strokes: Stro
     ctx.strokeStyle = 'rgba(155,161,166,0.18)';
     ctx.lineWidth = 2;
     for (const c of ui.curves) {
+      // Support both real-service shape (KolamCurveObj with .points) and legacy array shape
+      const pts = (c as KolamCurveObj).points ?? (c as unknown as number[][]);
       ctx.beginPath();
-      c.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])));
+      pts.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])));
       ctx.stroke();
     }
   }

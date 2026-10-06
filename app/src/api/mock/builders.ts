@@ -214,8 +214,8 @@ const RANK: Record<CriterionStatus, number> = { not_satisfied: 0, partially_sati
 
 function transitionKind(a: CriterionStatus | undefined, b: CriterionStatus | undefined): string {
   if (!a || !b) return 'unchanged';
-  if (a === 'uncertain' && b !== 'uncertain') return 'observability_gained';
-  if (a !== 'uncertain' && b === 'uncertain') return 'observability_lost';
+  if (a === 'uncertain' && b !== 'uncertain') return 'observability_gain';   // real service name
+  if (a !== 'uncertain' && b === 'uncertain') return 'observability_loss';   // real service name
   if (RANK[b] > RANK[a]) return 'improved';
   if (RANK[b] < RANK[a]) return 'regressed';
   return 'unchanged';
@@ -298,9 +298,14 @@ export async function buildSessionResult(view: CaseView, sessionId: string, base
       transitions,
       targeted_change: {
         criterion_id: targetId,
+        // Real service field names
+        before: tb,
+        after: tr,
+        improved: targetId ? (RANK[tr!] > RANK[tb!]) : false,
+        changed: tb !== tr,
+        // Legacy aliases (kept for any existing code paths)
         baseline_status: tb,
         retry_status: tr,
-        changed: tb !== tr,
         kind: targetId ? transitionKind(tb ?? undefined, tr ?? undefined) : 'none',
       },
       skill_gain_excluding_observability: Number(skillGain.toFixed(3)),

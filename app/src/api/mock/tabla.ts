@@ -15,18 +15,25 @@ const OFFSET = 0.5;
 const BASS16 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1];
 
 const beats: TablaBeat[] = Array.from({ length: 32 }, (_, i) => ({
-  index: i,
-  time_sec: Number((OFFSET + i * PERIOD).toFixed(3)),
+  i,                                                    // real service field name
+  t: Number((OFFSET + i * PERIOD).toFixed(3)),          // real service field name
   bass: BASS16[i % 16] === 1,
   strength: i % 16 === 0 ? 1 : 0.7,
+  // Legacy aliases for backward compat during transition
+  index: i,
+  time_sec: Number((OFFSET + i * PERIOD).toFixed(3)),
 }));
 
 export const tablaUiView: TablaUiView = {
   beats,
-  period_sec: PERIOD,
+  stroke_pulse_sec: PERIOD,    // real service field name
+  period_sec: PERIOD,          // legacy alias
   tempo_bpm: 80,
-  cycle_length: 16,
+  cycle_length_pulses: 16,     // real service field name
+  cycle_length_beats: 16,
+  cycle_length: 16,            // legacy alias
   duration_sec: OFFSET + 32 * PERIOD + 0.5,
+  // Real service: no source_id in ui_view; mock keeps it for URL lookup
   source_id: TABLA_SOURCE,
 };
 
@@ -39,7 +46,8 @@ export function tablaAudioUrl(): string {
   const n = Math.ceil((tablaUiView.duration_sec ?? 25) * sr);
   const data = new Float32Array(n);
   for (const b of beats) {
-    const start = Math.floor(b.time_sec * sr);
+    const bt = b.t ?? b.time_sec ?? 0;
+    const start = Math.floor(bt * sr);
     for (let i = 0; i < sr * 0.35 && start + i < n; i++) {
       const t = i / sr;
       let v = 0.45 * Math.sin(2 * Math.PI * 2100 * t) * Math.exp(-t * 60) + 0.2 * Math.sin(2 * Math.PI * 520 * t) * Math.exp(-t * 25);
@@ -178,19 +186,36 @@ export function evaluateTabla(view: CaseView, sessionId: string, learner: string
       if (i === 25 || i === 26) bassPlayed = true;
       if (i === 20) { status = 'missing'; bassPlayed = null; }
     }
-    const learnerT = status === 'missing' ? null : Number((b.time_sec + dev / 1000).toFixed(3));
-    rows.push({ goal_index: i, goal_time_sec: b.time_sec, learner_time_sec: learnerT, deviation_ms: status === 'missing' ? null : dev, status, bass_expected: b.bass, bass_played: bassPlayed });
+    const bt = b.t ?? b.time_sec ?? 0;
+    const learnerT = status === 'missing' ? null : Number((bt + dev / 1000).toFixed(3));
+    rows.push({
+      // Real service field names
+      goal: i, goal_t: bt, learner_t: learnerT,
+      dev_ms: status === 'missing' ? null : dev,
+      bass_goal: b.bass, bass_learner: bassPlayed,
+      bass_ok: bassPlayed === b.bass,
+      on_time: status === 'ok',
+      // Legacy aliases
+      goal_index: i, goal_time_sec: bt, learner_time_sec: learnerT,
+      deviation_ms: status === 'missing' ? null : dev,
+      status, bass_expected: b.bass, bass_played: bassPlayed,
+    });
     const ok = status === 'ok' && bassPlayed === b.bass;
     if (ok) correct++;
     curve.push([i + 1, Number((correct / beats.length).toFixed(4))]);
     const ev = (kind: string, detail: string, metric: string) =>
-      events.push({ metric, kind, position: i + 1, position_kind: 'beat', evidence: evidence(`${sourceId}#onset=${i}`, 'audio', 'observed', 0.9, { start_sec: learnerT ?? b.time_sec, end_sec: (learnerT ?? b.time_sec) + 0.2 }), detail, severity: 'material' });
+      events.push({ metric, kind, position: learnerT ?? bt, position_kind: 'time', evidence: evidence(`${sourceId}#onset=${i}`, 'audio', 'observed', 0.9, { start_sec: learnerT ?? bt, end_sec: (learnerT ?? bt) + 0.2 }), detail, severity: 'material' });
     if (status === 'late') ev('late_stroke', `Beat ${i + 1} is ${dev} ms late (tolerance 50 ms).`, 'timing');
     if (status === 'missing') ev('missing_stroke', `Beat ${i + 1} has no matching stroke.`, 'complete');
     if (status === 'ok' && bassPlayed !== b.bass) ev('bass_mismatch', `Beat ${(i % 16) + 1} of the cycle: bass played where the source withholds it.`, 'bayan');
   });
   if (!retry) {
-    rows.splice(14, 0, { goal_index: null, goal_time_sec: null, learner_time_sec: 11.21, deviation_ms: null, status: 'extra', bass_expected: null, bass_played: false });
+    rows.splice(14, 0, {
+      goal: null, goal_t: null, learner_t: 11.21, dev_ms: null, on_time: false,
+      bass_goal: null, bass_learner: false, bass_ok: null,
+      goal_index: null, goal_time_sec: null, learner_time_sec: 11.21, deviation_ms: null,
+      status: 'extra', bass_expected: null, bass_played: false,
+    });
   }
   const bassAcc = retry ? 1 : 27 / 31;
   const outcomes: Record<string, CriterionOutcome> = retry
@@ -212,7 +237,7 @@ export function evaluateTabla(view: CaseView, sessionId: string, learner: string
   events.sort((a, b) => a.position - b.position);
   const fe = events[0];
   const first = fe
-    ? buildFirstDivergence(view, evaluation, fe.metric === 'timing' ? 'CRIT-TABLA-TIMING' : fe.metric === 'bayan' ? 'CRIT-TABLA-BAYAN' : 'CRIT-TABLA-COMPLETE', fe.position, 'beat', fe.evidence, aev(beats[fe.position - 1].time_sec, beats[fe.position - 1].time_sec + 0.3, `source beat ${fe.position}`, String(fe.position - 1)), fe.detail)
+    ? buildFirstDivergence(view, evaluation, fe.metric === 'timing' ? 'CRIT-TABLA-TIMING' : fe.metric === 'bayan' ? 'CRIT-TABLA-BAYAN' : 'CRIT-TABLA-COMPLETE', fe.position, 'time', fe.evidence, aev(fe.position, fe.position + 0.3, `source at ${fe.position.toFixed(2)}s`), fe.detail)
     : null;
   return assembleResult({
     view,

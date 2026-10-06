@@ -17,8 +17,10 @@ interface Props {
 const TRANSITION_TONE: Record<string, 'emerald' | 'crimson' | 'cyan' | 'muted' | 'amber'> = {
   improved: 'emerald',
   regressed: 'crimson',
-  observability_gained: 'cyan',
-  observability_lost: 'amber',
+  observability_gain: 'cyan',    // real service name
+  observability_gained: 'cyan',  // legacy mock name (kept for backward compat)
+  observability_loss: 'amber',   // real service name
+  observability_lost: 'amber',   // legacy mock name (kept for backward compat)
   unchanged: 'muted',
 };
 
@@ -47,6 +49,12 @@ export function HeroTransmissionView({ view, session, onBackToPractice, onExplor
   const maxScore = view.rubric.criteria.reduce((s, c) => s + c.weight, 0);
   const kind = baseline?.trajectory.curve_kind ?? 'time';
   const targetName = view.rubric.criteria.find((c) => c.criterion_id === tc.criterion_id)?.name ?? tc.criterion_id;
+  // Support both real-service (before/after/improved) and legacy mock (baseline_status/retry_status/kind) fields
+  const tcBefore = tc.before ?? tc.baseline_status;
+  const tcAfter = tc.after ?? tc.retry_status;
+  const tcKind = tc.improved !== undefined
+    ? (tc.improved ? 'improved' : 'unchanged')
+    : (tc.kind ?? 'changed');
 
   return (
     <div className="flex flex-col gap-5 w-full animate-fade-in">
@@ -85,11 +93,11 @@ export function HeroTransmissionView({ view, session, onBackToPractice, onExplor
             <>
               <div className="text-sm text-on-surface mt-1">{targetName}</div>
               <div className="flex items-center gap-2 mt-2">
-                {tc.baseline_status && <StatusBadge status={tc.baseline_status} />}
+                {tcBefore && <StatusBadge status={tcBefore} />}
                 <ArrowRight className="w-3 h-3 text-on-surface-variant" />
-                {tc.retry_status && <StatusBadge status={tc.retry_status} />}
+                {tcAfter && <StatusBadge status={tcAfter} />}
               </div>
-              <div className="text-[10px] font-mono text-on-surface-variant mt-1">{tc.changed ? `changed (${tc.kind ?? 'changed'})` : 'did not change'}</div>
+              <div className="text-[10px] font-mono text-on-surface-variant mt-1">{tc.changed ? `changed (${tcKind})` : 'did not change'}</div>
             </>
           ) : (
             <div className="text-xs text-on-surface-variant mt-1">No baseline divergence was established, so no targeted change is claimed.</div>
