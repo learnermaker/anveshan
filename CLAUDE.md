@@ -2,6 +2,8 @@
 
 # Claude Code notes for this repository
 
+**New session? Read `docs/HANDOFF.md` first** (full context from previous sessions: decisions, state, branches, gotchas, how to resume).
+
 ## Current execution plan
 - Plan and decisions: `docs/plans/track-plan-review-2026-10-06.md` (read §9 "Decisions 2026-10-06" first).
 - Track specs: `docs/plans/track-a-spec.md`, `docs/plans/track-b-spec.md`.
