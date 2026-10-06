@@ -59,8 +59,8 @@ export const Header: React.FC<HeaderProps> = ({
               <button onClick={() => onSelectView('discovery')} className="font-mono text-xs font-bold tracking-widest text-on-surface uppercase hover:text-cadmium-amber transition-colors">
                 ANVESHAN
               </button>
-              <span className="text-outline text-xs">//</span>
-              <span className="font-mono text-[10px] tracking-wider text-cadmium-amber uppercase bg-cadmium-amber/10 px-1.5 py-0.5 rounded border border-cadmium-amber/20 whitespace-nowrap">
+              <span className="text-outline text-xs hidden sm:inline">//</span>
+              <span className="hidden sm:inline font-mono text-[10px] tracking-wider text-cadmium-amber uppercase bg-cadmium-amber/10 px-1.5 py-0.5 rounded border border-cadmium-amber/20 whitespace-nowrap">
                 {caseKindLabel}
               </span>
             </div>

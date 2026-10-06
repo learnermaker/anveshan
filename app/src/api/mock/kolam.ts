@@ -56,8 +56,15 @@ const dots: KolamDot[] = (() => {
     // mid ring between neighbouring loops
     out.push({ x: Number((CX + 150 * Math.cos(p2)).toFixed(1)), y: Number((CY + 150 * Math.sin(p2)).toFixed(1)), r: 3, relation: 'enclosed' });
   }
+  // derive relations from the geometry itself so goal and mock evaluator agree
+  for (const d of out) {
+    let best = Infinity;
+    for (const c of curves) for (const [x, y] of c) best = Math.min(best, Math.hypot(x - d.x, y - d.y));
+    d.relation = best <= TAU ? 'on_line' : 'enclosed';
+  }
   return out;
 })();
+const ON_LINE = dots.filter((d) => d.relation === 'on_line').length;
 
 export const kolamUiView: KolamUiView = {
   canvas: { width: W, height: H },
@@ -133,7 +140,7 @@ export function kolamCaseView(caseId = 'kolam', extra: Partial<CaseView> = {}): 
         {
           claim_id: 'CLM-KOLAM-001',
           claim_type: 'condition',
-          statement: `The target has ${dots.length} pulli (dots): one centre dot, 8 outer-tip dots on the line and 16 dots enclosed between loops.`,
+          statement: `The target has ${dots.length} pulli (dots): ${ON_LINE} lie on the line (including the 8 outer tips) and ${dots.length - ON_LINE} are enclosed.`,
           is_observed: true,
           evidence_refs: [ev(pct(15, 25, 462, 455), 'observed', 0.9, 'dot detection on the target image')],
         },
@@ -155,7 +162,7 @@ export function kolamCaseView(caseId = 'kolam', extra: Partial<CaseView> = {}): 
         {
           claim_id: 'CLM-KOLAM-004',
           claim_type: 'condition',
-          statement: 'Each outer-tip dot lies on the line; the centre dot and the inner ring of dots are enclosed and never touched.',
+          statement: 'Each outer-tip dot lies on the line; the dots marked enclosed (including the centre dot) are never touched.',
           is_observed: true,
           evidence_refs: [ev(pct(CX - 60, CY - 60, 120, 120), 'observed', 0.8, 'dot/curve relation')],
         },
@@ -359,7 +366,7 @@ export function evaluateKolamTrace(view: CaseView, sessionId: string, learner: s
     for (const [x, y] of allPts) near = Math.min(near, Math.hypot(x - dot.x, y - dot.y));
     if (near > 3 * TAU * 3) continue; // region not drawn
     dotChecked++;
-    const rel = near <= TAU / 2 + 2 ? 'on_line' : 'enclosed';
+    const rel = near <= TAU ? 'on_line' : 'enclosed';
     if (rel === dot.relation) dotOk++;
     else if (!firstDotError) firstDotError = dot;
   }

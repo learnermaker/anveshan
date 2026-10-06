@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:mock": "vite --mode mock --port 5174",
+    "build:mock": "tsc && vite build --mode mock",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "audit:devtools": "node scripts/check_devtools.js"

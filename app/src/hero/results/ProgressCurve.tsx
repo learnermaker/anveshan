@@ -70,13 +70,22 @@ export function ProgressCurve({ series, kind, firstDivergence, height = 220, onS
         {firstDivergence != null && (
           <g>
             <line x1={sx(firstDivergence)} x2={sx(firstDivergence)} y1={m.t} y2={H - m.b} stroke="#f87171" strokeWidth={2} />
-            <text x={sx(firstDivergence) + 4} y={m.t + 9} fontSize={9} fill="#f87171" fontFamily="JetBrains Mono, monospace" fontWeight={700}>
+            <text
+              x={sx(firstDivergence) > W * 0.7 ? sx(firstDivergence) - 4 : sx(firstDivergence) + 4}
+              textAnchor={sx(firstDivergence) > W * 0.7 ? 'end' : 'start'}
+              y={m.t + 9}
+              fontSize={9}
+              fill="#f87171"
+              fontFamily="JetBrains Mono, monospace"
+              fontWeight={700}
+            >
               FIRST DIVERGENCE
             </text>
           </g>
         )}
 
-        {series.map((s) => (
+        {/* later series drawn first so the first (e.g. dashed baseline) stays visible on top */}
+        {[...series].reverse().map((s) => (
           <g key={s.id}>
             <path d={path(s.points)} fill="none" stroke={s.color} strokeWidth={2.2} strokeDasharray={s.dashed ? '5 4' : undefined} strokeLinejoin="round" />
             {(s.events ?? []).map((e, i) => {
