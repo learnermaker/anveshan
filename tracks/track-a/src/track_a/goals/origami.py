@@ -43,15 +43,16 @@ from tracks.common.schemas import (
 )
 from track_a.goals import CriterionTemplate, GoalBuildResult
 
-ALGORITHM = "origami_goal_v1"
+ALGORITHM = "origami_goal_v2"
 FPS = 1.0
-BATCH_SIZE = 12
+BATCH_SIZE = 4   # reduced from 12; keeps per-call image count small for complex analysis prompts
 MAX_SIDE = 384
 MIN_RUN = 2
 MODE_WINDOW = 3
 MODEL_KEY = "video_frames"
 PROMPT_ID = "origami_states"
-PROMPT_PATH = Path(__file__).resolve().parents[3] / "prompts" / "origami_states_v1.txt"
+PROMPT_PATH = Path(__file__).resolve().parents[3] / "prompts" / "origami_states_v2.txt"
+PROMPT_PATH_V1 = Path(__file__).resolve().parents[3] / "prompts" / "origami_states_v1.txt"  # kept for reference
 ASSET_DIR = Path("knowledge") / "goal_assets"
 
 METRIC_FINAL = "origami.final_match"
@@ -530,5 +531,6 @@ def build(source_path: Path, source: SourceRecord, ctx: RunContext, *, case_id: 
             "frames_sampled": len(frames),
             "state_agreement": agreement,
             "placeholder": False,
+            "policy": "v2: batch_size=4, text-known-states context between batches",
         },
     )

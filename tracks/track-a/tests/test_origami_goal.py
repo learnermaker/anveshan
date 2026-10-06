@@ -159,7 +159,7 @@ def test_build_states_claims_criteria(expert):
     lines = r.task_instructions.splitlines()
     assert lines[0].startswith("1. ") and all(re.search(r"\[CLM-\d\d\]", ln) for ln in lines)
     assert set(re.findall(r"CLM-\d\d", r.task_instructions)) <= claim_ids
-    assert len(r.run_keys) == len(gw.calls) == 4           # 37 frames / 12 per batch
+    assert len(r.run_keys) == len(gw.calls) == 10           # 37 frames / 4 per batch
     assert r.built_with["placeholder"] is False
 
 
@@ -170,7 +170,7 @@ def test_frames_not_video_and_batch_limits(expert):
     raw = video.read_bytes()
     for call in gw.calls:
         assert call["model_key"] == "video_frames"
-        assert 1 <= len(call["parts"]) <= 12
+        assert 1 <= len(call["parts"]) <= 4   # BATCH_SIZE=4 (v2)
         for p in call["parts"]:
             assert isinstance(p, ImagePart) and p.mime_type == "image/jpeg" and p.data[:2] == b"\xff\xd8"
             assert p.data != raw and p.label.startswith("Frame t=")
