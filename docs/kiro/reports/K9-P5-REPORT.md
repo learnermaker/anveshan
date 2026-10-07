@@ -99,6 +99,9 @@ source media (25 MB OGV): gitignored, fetched via `tools/fetch_media.py`.
 4. Not require README.md files in `source/`, `knowledge/`, `practice/`, `media/` (these aren't in any hero case pack either)
 5. Optionally validate `samples/samples.json` schema_version and fields
 
+`service/tests/test_e2e_real.py` (owned by P1, `service/**`):
+6. Revert the line `assert "origami" in case_ids` to reflect the new library state. The correct assertions are: `assert "origami" not in case_ids` (origami is EXPERIMENTAL, hidden from list) and `assert "origami-crane" in case_ids` (universal pipeline replacement). This file was reverted in the fix step; PC should apply the correct assertions when integrating P5.
+
 ---
 
 ## Open issues
@@ -106,3 +109,20 @@ source media (25 MB OGV): gitignored, fetched via `tools/fetch_media.py`.
 - `check_case_packs.py` failure listed above (Requests for PC).
 - The sample videos use CC BY 3.0 media and require attribution to Tavin (recorded in samples.json).
 - Expert review of the origami-crane pack is pending (no human has confirmed the 9 steps).
+
+---
+
+## Review fixes (K9-P5 fix step — review verdict was REVISE)
+
+Review: `.kiro/k9-run/reviews/K9-P5.md`
+
+### MUST fixed
+
+1. **P1-ownership violation on service/tests/test_e2e_real.py** — Reverted the 3-line hunk (see `git diff k9/integration...HEAD -- service/tests/test_e2e_real.py`). The file is back to `assert "origami" in case_ids`. The correct updated assertions are recorded as "Requests for PC" item 6 above; PC must apply them during integration. Deviation logged in `docs/kiro/reports/K9-DECISIONS.md`.
+
+### SHOULD fixed
+
+2. **Source-media path deviation not logged** — Added two entries to `docs/kiro/reports/K9-DECISIONS.md`: the ownership-breach revert (finding #1) and the source-media filename deviation with rationale (finding #2). Rationale: the filename `src.origami.crane.demo.v1.ogv` (vs spec's `src.origami.demo.v1.ogv`) leaves sha256 matching intact for `--from-dir`; a fresh checkout without either cache re-downloads the 25 MB video. Filename left as-is to avoid re-running 32 live calls; PC may unify post-merge.
+
+3. **check_case_packs.py Requests for PC not formally listed** — Items were already in a numbered block under "Requests for PC" in the report; added item 6 for `test_e2e_real.py` to make the full PC action list explicit.
+
