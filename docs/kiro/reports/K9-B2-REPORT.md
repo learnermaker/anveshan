@@ -49,6 +49,16 @@ None. Spec followed literally.
 
 None.
 
+## Review Fixes (2026-10-07, post-review)
+
+Review verdict: **APPROVED** (no MUST items). Three SHOULD items fixed.
+
+1. **Hardcoded model strings (SHOULD)** — `_model_info()` now instantiates `ModelRegistry` and calls `.model_id("vision_fast")` and `.model_id("embedding")` rather than hand-typing the strings. The emitted values are identical to the previous run because the registry defaults match, but future registry changes will now be reflected automatically.
+
+2. **Score inversion absent from evidence.json notes (SHOULD)** — Added sentence to origami-crane `notes`: "The 'good' test clip covers only the first 25 s of a 2-minute procedure and is evaluated as incomplete." Both `app/public/evidence.json` (already-committed artifact) and `stability_runs.py` (future re-runs) were updated.
+
+3. **Per-quality outcome map last-write-wins (SHOULD)** — Replaced the silent overwrite in the evidence-building loop with an explicit `RuntimeError` when a duplicate quality is encountered. No current case triggers this; the guard prevents silent data loss if a future case adds two "good" samples.
+
 ## Open Issues
 
 - The origami-crane "good" sample consistency (0.67) is a known limit of the universal video evaluator on partial attempts. Noted in evidence.json and E10.

@@ -242,13 +242,17 @@ def _validate_evidence_schema(evidence: Dict[str, Any]) -> List[str]:
 # ---------------------------------------------------------------------------
 
 def _model_info(case_ids: List[str]) -> Dict[str, str]:
-    """Return the model keys used for each case."""
+    """Return the model keys used for each case, reading from the ModelRegistry (spec §2)."""
+    import tracks.common.models as models_mod
+    registry = models_mod.ModelRegistry()
     info: Dict[str, str] = {}
     for cid in case_ids:
         if cid in ("kolam", "tabla"):
             info[cid] = "deterministic (no model calls)"
         elif cid == "origami-crane":
-            info[cid] = "vision_fast=gemini-3.5-flash-lite, embedding=gemini-embedding-2"
+            vision = registry.model_id("vision_fast") or "(disabled)"
+            embed = registry.model_id("embedding") or "(disabled)"
+            info[cid] = f"vision_fast={vision}, embedding={embed}"
     return info
 
 
@@ -418,9 +422,16 @@ def main() -> None:
         if not cr:
             continue
 
-        samples_out = {}
+        samples_out: Dict[str, str] = {}
         for sid, sd in cr["samples"].items():
-            samples_out[sd["quality"]] = sd["outcome"]
+            quality = sd["quality"]
+            if quality in samples_out:
+                raise RuntimeError(
+                    f"[{case_id}] duplicate quality '{quality}' in samples; "
+                    f"would silently overwrite outcome '{samples_out[quality]}' with '{sd['outcome']}'. "
+                    "Review samples.json for duplicate quality entries."
+                )
+            samples_out[quality] = sd["outcome"]
 
         # Samples are indexed by quality (good/flawed/unrelated)
         good_out = samples_out.get("good", "passed")
@@ -448,6 +459,12 @@ def main() -> None:
                 )
             else:
                 notes_parts.append("AI-assisted checks; some variation expected across runs.")
+            # If the good sample failed, explain why (e.g. the test clip is incomplete).
+            if samples_out.get("good") == "failed":
+                notes_parts.append(
+                    "The 'good' test clip covers only the first 25 s of a 2-minute procedure "
+                    "and is evaluated as incomplete."
+                )
             notes = " ".join(notes_parts) if notes_parts else "AI-assisted checks."
 
         skills.append({

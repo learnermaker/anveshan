@@ -39,7 +39,7 @@
         "flawed": "caught",
         "unrelated": "refused"
       },
-      "notes": "Some variation observed (consistency=0.89). Swapped-order mistakes are not always caught in video."
+      "notes": "Some variation observed (consistency=0.89). Swapped-order mistakes are not always caught in video. The 'good' test clip covers only the first 25 s of a 2-minute procedure and is evaluated as incomplete."
     }
   ],
   "not_yet": [
