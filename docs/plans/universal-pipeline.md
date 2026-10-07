@@ -279,3 +279,48 @@ Rationale: The synthetic waveform does not exhibit realistic percussive contrast
 
 All within the latency budget (case build < 45 s, attempt < 30 s per §9). The tabla chanderi video evaluation at 19.8 s is close to the 30 s budget; this was due to the procedure structure doing embedding-based step alignment over a long video.
 
+
+## 12. Video procedures for ANY upload: robustness revision (2026-10-07, IMPLEMENTED)
+
+**Why:** the WP5 live checks covered images and audio only, and reported "PASS" whenever no exception was raised. A video stress harness (`tools/stress_universal_video.py`) that composes a case exactly like the UI and reads real session verdicts showed the video path was broken for new uploads:
+- the perceiver only looked at the first 120 s;
+- pixel-motion segmentation merged steps whenever hands kept moving;
+- the judges never received an image for video attempts, so they always returned "cannot tell";
+- the wording prompt path was wrong, so wording was silently disabled;
+- expert reference keyframes were looked up in the wrong folder.
+
+### 12.1 Design (domain-agnostic; nothing knows origami, drawing or cooking)
+
+| Stage | Technique | Where |
+|---|---|---|
+| Sampling | adaptive fps over the whole video (≤ 120 frames); uploads up to 600 s, cost flat | `perceivers/video.py` |
+| State segmentation | one Gemini Embedding 2 vector per frame, fused with a 24×14 layout thumbnail; optimal K-segment DP (deliberately over-segmenting, K ≤ 16); high-motion frames down-weighted | `tracks/common/segmentation.py::segment_k` |
+| Stage naming | ONE vision_fast call sees all keyframes in order and groups them into stages (non-decreasing, repaired deterministically); brief all-in-progress stages dropped | `perceive_frames_v2`, `_monotone_stages`, `_drop_brief_in_progress` |
+| Steps | settled stages → `SkillModel.steps`; low-calm segments are transitions, not steps | `track_a/universal.py::_build_steps` |
+| Relevance gate | median frame-level best match vs the source's own non-adjacent self-consistency, minus 0.15 | `_relevance_gate` |
+| Step identity | (a) per-frame cosine to step span centroids, z-scored per frame (scene-level similarity cancels); (b) ONE `match_steps_v1` call labels learner keyframes against expert step keyframes, fused as an observation | `_procedure_checks`, `_reference_step_matches` |
+| Coverage / progress | Drop-DTW-style monotone alignment (steps may be skipped, never revisited; frames may be dropped as "off") | `segmentation.monotone_align` |
+| Order | present steps minus the longest increasing subsequence of step times, with a 2-sample tolerance | `order_violations` |
+| Off-path | calm runs (≥ 2 s) far below the attempt's own typical match level are states the expert never showed | `_procedure_checks` |
+| Judges | several frames each: final evidence = matcher-labelled final-step keyframes (else the end-window frames most like the final step); step evidence = frames around the moment aligned to the step; both compared with the expert keyframe re-decoded at 512 px | `judge_*_v2` |
+
+Concepts reused from elsewhere:
+- optimal change-point segmentation (dynamic programming over all change points);
+- Drop-DTW (Dvornik et al., NeurIPS 2021): monotone alignment with a drop cost, used for procedure-step localisation;
+- LIS / Kendall-style rank distance for order;
+- visual-RAG-style "show the reference next to the candidate" for fine-grained identity.
+
+Model outputs remain observations. Every score comes from deterministic metrics, bands and policy.
+
+### 12.2 Evidence (live, 2026-10-07; summaries in `tracks/track-b/eval/universal_video/`)
+
+| Scenario | Attempts → verdict |
+|---|---|
+| Synthetic "draw a house" (5 steps, never seen before) | re-performance PASS; missing door FAIL (coverage, final); stopped early FAIL; unrelated video REFUSED (0.64); swapped walls/roof is **unstable** (FAIL with an off-path state in some runs, PASS in others) |
+| Full `OrigamiCrane.ogv` as a new upload (no origami code) | 8–9 steps through to the finished crane; `Crane.ogv` positive control PASS 11/11; first 40 % FAIL; unrelated REFUSED |
+| Hard clip: 0–194 s window at 400×226, hands always on the paper (the dedicated-engine eval setup) | unrelated REFUSED; missing, swapped and truncated attempts flagged; **the perfect re-encode does not pass reliably**. Stage names vary between runs, and the clip has no clean final moment |
+
+### 12.3 Known limits (honest)
+- Global embeddings separate scenes, not fine-grained object states. When hands dominate a low-resolution frame, step identity depends on the vision model, whose answers vary between live runs even at temperature 0. Recorded replay makes demos reproducible; live answers can differ.
+- Composed steps are proposals. The composer's review step, where the expert confirms or edits steps, is the product safeguard. Steps stay INFERRED until then.
+- Next options, not yet authorised: self-consistency (2–3 matcher calls with agreement weighting); crop to the work region before embedding.
