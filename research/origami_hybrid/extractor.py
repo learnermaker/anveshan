@@ -12,6 +12,10 @@ Responsibilities
   so the user can trim it down to the representative keyframes they want
   FoldingAgent to process.
 
+The sequence name in keyframes.json is derived from the video filename
+(e.g. ``origami_bird.mp4`` → ``origami_bird``). No assumptions are made
+about the origami subject — any instructional origami video is accepted.
+
 Output layout
 -------------
 <output_dir>/

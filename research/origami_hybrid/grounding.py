@@ -247,7 +247,7 @@ class GeminiEvidenceEnricher:
         Override the default prompt file location.
     """
 
-    DEFAULT_MODEL = "gemini-3.8-flash"
+    DEFAULT_MODEL = "gemini-3.8-flash"  # overridden by HYBRID_MODEL in .env
     PROMPT_FILE = Path(__file__).parent / "prompts" / "evidence_grounder_v1.txt"
 
     def __init__(
@@ -256,9 +256,13 @@ class GeminiEvidenceEnricher:
         api_key: str | None = None,
         prompt_path: Path | None = None,
     ) -> None:
-        self.model_id = model_id or self.DEFAULT_MODEL
-        self._api_key = api_key
+        # Load config from .env; explicit args take precedence
+        from config import HybridConfig
+        cfg = HybridConfig.load()
+        self.model_id = model_id or cfg.hybrid_model
+        self._api_key = api_key or cfg.api_key_for(self.model_id)
         self._prompt_path = prompt_path or self.PROMPT_FILE
+        self._fallback_model = cfg.hybrid_fallback_model
         self._client: Any = None
 
     # ------------------------------------------------------------------
@@ -333,11 +337,12 @@ class GeminiEvidenceEnricher:
         if self._client is not None:
             return self._client
 
-        key = self._api_key or self._load_env_key()
+        key = self._api_key
         if not key:
             raise RuntimeError(
-                "GOOGLE_API_KEY not set. "
-                "Add it to research/origami_hybrid/.env before running live enrichment."
+                f"No API key found for model '{self.model_id}'. "
+                "Set the appropriate key (GOOGLE_API_KEY / ANTHROPIC_API_KEY / OPENAI_API_KEY) "
+                "in research/origami_hybrid/.env or your shell environment."
             )
 
         from google import genai

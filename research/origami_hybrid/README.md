@@ -41,15 +41,41 @@ The hybrid pipeline takes a raw origami instruction video and produces valid Anv
 
 ## Environment Variables
 
-Copy `.env.example` to `.env` and fill in your API key(s). The provider is selected by the model ID in `config.py`:
+Copy `.env.example` to `.env` and fill in your values. The file controls both API keys and model selection:
 
 ```
-GOOGLE_API_KEY=<your key>        # for gemini-* models (default)
-ANTHROPIC_API_KEY=<your key>     # for claude-* models
-OPENAI_API_KEY=<your key>        # for gpt-* / o1 / o3 / o4-* models
+# API keys (only the one(s) you use need to be set)
+GOOGLE_API_KEY=          # for gemini-* models
+ANTHROPIC_API_KEY=       # for claude-* models (recommended for FoldingAgent)
+OPENAI_API_KEY=          # for gpt-* / o-series models
+
+# Model for the hybrid pipeline's LLM enrichment steps
+HYBRID_MODEL=gemini-3.8-flash     # or claude-3-5-haiku-20241022, gpt-4o-mini, etc.
+HYBRID_FALLBACK_MODEL=            # optional fallback if HYBRID_MODEL returns 404
+
+# Reference model for FoldingAgent (must also set in FoldingAgent/src/foldingagent/config.py)
+FOLDINGAGENT_MODEL=gemini-3.8-flash
 ```
 
-Only the key for the model you use needs to be set. Set `GOOGLE_API_KEY` for the default Gemini model.
+**Which key do I need for FoldingAgent?**
+
+FoldingAgent infers the provider from the model ID it's configured with. The keys map as:
+- `gemini-*` → `GOOGLE_API_KEY`
+- `claude-*` → `ANTHROPIC_API_KEY` ← recommended for FoldingAgent
+- `gpt-*` / `o-series` → `OPENAI_API_KEY`
+
+FoldingAgent runs a multi-turn ReAct loop — 50–200+ model calls per origami sequence. The Gemini free tier (20 req/day) is almost certainly insufficient for a full run. **Recommended: use Anthropic Claude with a separate API key**, or a paid Gemini key. The hybrid pipeline's enrichment steps (EvidenceGrounder, RubricSynthesizer) are separate and use only 2–10 calls per run.
+
+**FoldingAgent reads from environment variables directly**, not from our `.env` file. Export the key in your shell before running FoldingAgent:
+
+```powershell
+# PowerShell
+$env:ANTHROPIC_API_KEY = "your-key-here"
+# then run FoldingAgent from its repo root
+python -m foldingagent.main data/origami/keyframes.json
+```
+
+Or add the key to `FoldingAgent/.env` (FoldingAgent also loads `.env` from its own repo root).
 
 ---
 
@@ -79,25 +105,39 @@ cp research/origami_hybrid/.env.example research/origami_hybrid/.env
 
 ## How to Run
 
-> **Video source**: A placeholder is used until you supply a video. Place your video at `data/crane/input.mp4` (or any path) and pass it to the CLI.
+> **Video source**: Supply any instructional origami video — any subject, not just cranes. Place it at any path and pass it to the CLI. The sequence name in `keyframes.json` is derived from the video filename automatically.
 
 ```bash
 # Step 1 — Extract keyframes (PyAV probes FPS automatically)
+#   Replace "data/origami/input.mp4" with your actual video path.
 python research/origami_hybrid/pipeline.py extract-frames \
-    --video data/crane/input.mp4 \
-    --output data/crane/
+    --video data/origami/input.mp4 \
+    --output data/origami/
 
-# Step 2 — Review and edit data/crane/keyframes.json
-#   (select the representative frame indices you want FoldingAgent to process)
+# Step 2 — Review and trim data/origami/keyframes.json
+#   Keep only the ~10-20 representative frame indices for FoldingAgent.
 
 # Step 3 — Run FoldingAgent reconstruction
-python -m foldingagent.main data/crane/keyframes.json
+#   Export your API key first (see Environment Variables above).
+#   FoldingAgent runs from its own repo root:
+python -m foldingagent.main data/origami/keyframes.json
 
 # Step 4 — Run hybrid adapter → Anveshan contracts
 python research/origami_hybrid/pipeline.py adapt \
-    --fold-output out/run_<timestamp>_<model>_crane/ \
-    --video-meta data/crane/video_meta.json \
-    --output research/origami_hybrid/output/
+    --fold-output out/run_<timestamp>_<model>_<sequence>/ \
+    --video-meta data/origami/video_meta.json \
+    --output research/origami_hybrid/output/ \
+    --attribution "Video creator name, license, source URL"
+
+# Output files:
+#   output/knowledge_package.json
+#   output/rubric.json
+#   output/practice_task.json
+#   output/run_metadata.json
+#   output/expert_review_sheet.md
+#   output/fold_state_log.json
+#   output/crease_evidence.json
+```
 
 # Output files:
 #   output/knowledge_package.json
@@ -142,7 +182,8 @@ The hybrid pipeline uses `consent_scope="research_prototype"`. Before using any 
 ```
 research/origami_hybrid/
   README.md                        ← this file
-  .env.example                     ← API key template
+  .env.example                     ← API key + model config template
+  config.py                        ← HybridConfig: loads model names + keys from .env
   pipeline.py                      ← entry point: extract-frames + adapt subcommands
   adapter.py                       ← FoldingAgentAdapter: checkpoints.json → Anveshan contracts
   grounding.py                     ← EvidenceGrounder: epistemic tagging via Gemini

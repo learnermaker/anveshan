@@ -385,7 +385,7 @@ class GeminiRubricSynthesizer:
         Passed through to RubricDefinition (default 0.7).
     """
 
-    DEFAULT_MODEL = "gemini-3.8-flash"
+    DEFAULT_MODEL = "gemini-3.8-flash"  # overridden by HYBRID_MODEL in .env
     PROMPT_FILE = Path(__file__).parent / "prompts" / "rubric_synth_v1.txt"
 
     def __init__(
@@ -395,8 +395,10 @@ class GeminiRubricSynthesizer:
         prompt_path: Path | None = None,
         passing_score_fraction: float = 0.7,
     ) -> None:
-        self.model_id = model_id or self.DEFAULT_MODEL
-        self._api_key = api_key
+        from config import HybridConfig
+        cfg = HybridConfig.load()
+        self.model_id = model_id or cfg.hybrid_model
+        self._api_key = api_key or cfg.api_key_for(self.model_id)
         self._prompt_path = prompt_path or self.PROMPT_FILE
         self.passing_score_fraction = passing_score_fraction
         self._client: Any = None
@@ -515,10 +517,12 @@ class GeminiRubricSynthesizer:
     def _ensure_client(self) -> Any:
         if self._client is not None:
             return self._client
-        key = self._api_key or self._load_env_key()
+        key = self._api_key
         if not key:
             raise RuntimeError(
-                "GOOGLE_API_KEY not set. Add it to research/origami_hybrid/.env."
+                f"No API key found for model '{self.model_id}'. "
+                "Set the appropriate key (GOOGLE_API_KEY / ANTHROPIC_API_KEY / OPENAI_API_KEY) "
+                "in research/origami_hybrid/.env or your shell environment."
             )
         from google import genai
         from google.genai import types
