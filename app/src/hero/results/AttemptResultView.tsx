@@ -8,6 +8,7 @@ import { ProgressCurve } from './ProgressCurve';
 import { FirstDivergenceCard } from './FirstDivergenceCard';
 import { Badge, MockBadge, Panel, RuntimeClassBadge, StatusBadge } from '../ui';
 import { fmtPosition } from '../locators';
+import { OriginBadge, StepStrip, criterionMetricIds, isUniversalView } from '../universal/ResultExtras';
 
 interface Props {
   view: CaseView;
@@ -19,6 +20,8 @@ export function AttemptResultView({ view, result, media }: Props) {
   const t = result.trajectory;
   const ev = result.evaluation;
   const maxScore = view.rubric.criteria.reduce((s, c) => s + c.weight, 0);
+  const universal = isUniversalView(view);
+  const metricIds = universal ? criterionMetricIds(view) : {};
   const label = result.attempt.attempt_type === 'baseline' ? 'Baseline' : `Retry #${result.attempt.attempt_number - 1}`;
 
   return (
@@ -60,6 +63,10 @@ export function AttemptResultView({ view, result, media }: Props) {
         )}
       </Panel>
 
+      {universal && media.kind === 'video' && (
+        <Panel kicker="Video attempt" title="Step strip"><StepStrip view={view} result={result} /></Panel>
+      )}
+
       <FirstDivergenceCard view={view} result={result} media={media} />
 
       <Panel kicker="Deterministic score policy" title="Criteria">
@@ -83,6 +90,7 @@ export function AttemptResultView({ view, result, media }: Props) {
                       <div className="text-[9px] font-mono text-on-surface-variant">
                         {c.criterion_id}{c.required ? ' · required' : ''}
                       </div>
+                      {universal && <div className="mt-1"><OriginBadge metricId={metricIds[c.criterion_id]} /></div>}
                     </td>
                     <td className="py-2 pr-3">{r ? <StatusBadge status={r.status} /> : <span className="text-on-surface-variant">—</span>}</td>
                     <td className="py-2 pr-3 text-right font-mono whitespace-nowrap">{r ? `${r.score.toFixed(1)} / ${c.weight}` : '—'}</td>

@@ -5,7 +5,7 @@
  * Relevance refusals (INVALID_INPUT "doesn't look like an attempt") are shown inline.
  */
 
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, FileUp, Play, RotateCcw, Send } from 'lucide-react';
 import type { AttemptKind, CaseView } from '../../api/types';
 import { api, type AttemptUpload } from '../../api/client';
@@ -14,7 +14,8 @@ import { AttemptResultView } from '../results/AttemptResultView';
 import type { HeroSession, LocalAttemptMedia } from '../session';
 import { Badge, btn, ErrorNote, MockBadge, Panel, ProgressBar, ReviewBadge, SourceLabelBadge, Spinner } from '../ui';
 import { KolamCanvas, buildRasterPng, buildTraceJson, type Stroke } from '../kolam/KolamCanvas';
-import type { KolamUiView, UniversalUiView } from '../../api/types';
+import type { UniversalUiView } from '../../api/types';
+import { lineArtToKolamUi } from './lineArt';
 
 interface Props {
   view: CaseView;
@@ -183,7 +184,11 @@ function FilePick({ accept, label, file, onFile, disabled }: { accept: string; l
   );
 }
 
-function UniversalCapture({ view, allowedKinds, busy, onSubmit }: { view: CaseView; allowedKinds: AttemptKind[]; busy: boolean; onSubmit: (u: AttemptUpload, m: LocalAttemptMedia) => void }) {
+function UniversalCapture({ view, allowedKinds: allowedKindsIn, busy, onSubmit }: { view: CaseView; allowedKinds: AttemptKind[]; busy: boolean; onSubmit: (u: AttemptUpload, m: LocalAttemptMedia) => void }) {
+  const lineArtPayload = view.profile?.skill_model?.specialists?.['line_art'];
+  const kolamUi = useMemo(() => lineArtToKolamUi(lineArtPayload), [lineArtPayload]);
+  // Trace needs a real drawing canvas; without one, do not offer it.
+  const allowedKinds = useMemo(() => allowedKindsIn.filter((k) => k !== 'trace' || kolamUi !== null), [allowedKindsIn, kolamUi]);
   const [activeKind, setActiveKind] = useState<AttemptKind>(allowedKinds[0] ?? 'image');
   const [file, setFile] = useState<File | null>(null);
   const [strokes, setStrokes] = useState<Stroke[]>([]);
@@ -191,13 +196,6 @@ function UniversalCapture({ view, allowedKinds, busy, onSubmit }: { view: CaseVi
 
   const MAX_MB = 30 * 1024 * 1024;
   const ui = view.goal.ui_view as UniversalUiView;
-
-  // If trace is available (has line_art specialist) and no kolam ui_view, make a simple placeholder
-  const kolamUi: KolamUiView = {
-    canvas: { width: 400, height: 400 },
-    dots: [],
-    curves: [],
-  };
 
   const handleFile = (f: File | null) => {
     setFile(f);
@@ -213,7 +211,7 @@ function UniversalCapture({ view, allowedKinds, busy, onSubmit }: { view: CaseVi
     video: 'video/*',
   };
 
-  if (activeKind === 'trace' && (view.profile?.skill_model?.specialists?.['line_art'] !== undefined)) {
+  if (activeKind === 'trace' && kolamUi) {
     return (
       <div className="space-y-2">
         <div className="flex gap-2">

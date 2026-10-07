@@ -216,6 +216,7 @@ export interface UniversalUiView {
   checks?: Array<{
     check_id: string;
     name: string;
+    metric_id?: string;
     method: string;
     enabled?: boolean;
     weight?: number;
