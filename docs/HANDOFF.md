@@ -1,6 +1,6 @@
 # Anveshan — Session Handoff (context for the next Claude Code / coding-agent session)
 
-**Written:** 2026-10-06 by the Claude Code session (Opus 5.5) that did planning, foundation, integration and orchestration.
+**Written:** 2026-10-06 (updated 2026-10-07) by the Claude Code session (Opus 5.5) that did planning, foundation, integration and orchestration.
 **Read this first in any new session**, then `CLAUDE.md` → `AGENTS.md` → the docs it points to. The repo is the durable record; this file summarises everything that was only in chat.
 
 ## 1. Who and what
@@ -66,21 +66,23 @@ Showcase cases (micrometer, bicycle-repair, handloom-weaving, square-knot) are *
 
 The models are cross-checks, not authority (e.g. flash-lite said 7-fold symmetry; the geometry says 8).
 
-## 6. Branches, folders and status (end of this session)
-- **Integration branch:** `m1/hero-cases` (pushed). `main` is untouched; the PR to `main` comes at the end (Jim merges via GitHub Desktop).
-- **Merged into `m1/hero-cases`:**
-  - foundation; Track A core; Track B core; service; app UI;
-  - Kolam / Origami / Tabla engines (agents);
-  - Kiro K2 (tabla finish) and K3 (app ↔ service);
-  - universal-pipeline schemas + `embed()`.
-- **291 tests green** at the last check; governance, case-pack and contract-parity checks pass; the app builds.
-- **In progress / next:** a single Kiro session runs `docs/kiro/specs/KIRO-ORCHESTRATOR.md`:
-  - Phase 0: K1 Kolam finish + K4 Origami live (branches `kiro/k1-kolam`, `kiro/k4-origami`);
-  - Phase A: WP1–WP4 in folders `C:\Users\JIMSEELAN\Desktop\Projects\hackathons\anveshan-wt\{k1-kolam,k4-origami,wp1-perception,wp2-universal,wp3-composer-ui,wp4-tabla}`;
-  - Phase B: integration.
+## 6. Branches, folders and status (updated 2026-10-07)
+- **Integration branch:** `m1/hero-cases` (pushed). `main` is untouched; Jim opens the PR (`docs/plans/PR-BODY.md`) in GitHub Desktop. The PR needs a real issue number in place of the `#99` placeholder.
+- **Everything from Kiro is merged:** K1–K4 and WP1–WP5 (see `docs/plans/DECISION-LOG.md` and `docs/kiro/reports/*`). The `anveshan-wt/*` folders are git worktrees of this repo; remove them with `git worktree remove` once they are no longer needed.
+- **2026-10-07 (Claude Code), universal-pipeline robustness for ANY upload** (Jim's priority over tuning single hero videos):
+  - video segmentation, alignment, relevance and judges redesigned;
+  - image completeness check added;
+  - audio skills that aren't tabla now compose;
+  - 429 backoff in the gateway.
 
-  Work definition: `docs/plans/wave2-master-spec.md` (WP1–WP5, ownership, overrides, 13-item review log) + K-specs in `docs/kiro/specs/`. Decisions are logged in `docs/plans/DECISION-LOG.md` (created by the orchestrator).
-- **Alternative runner:** `docs/plans/cloud-runbook.md` (for a Claude Code cloud session; Linux paths).
+  Design, evidence and limits: `docs/plans/universal-pipeline.md` §12 and `docs/validation/experiments.md` E6. Stress tools: `tools/stress_universal_video.py --scenario synth|origami|origami_window`, `tools/stress_universal_other.py --scenario image|audio` (`--mode recorded` replays from `var/stress/*/data/runs`; `--mode live` costs a few cents).
+- **Tests:** 434+ non-live passing; governance, case-pack and parity checks pass; the app builds.
+- **Known limits:**
+  - fine-grained states in low-resolution, hand-dominated video (the Origami bird-base clip);
+  - the swapped-order synthetic verdict varies between live runs (vision-model variance);
+  - speech skills are untested.
+- **Dedicated Origami engine:** its own RESULTS show it fails its "perfect" attempt (5 of 7 states; see `tracks/track-b/eval/origami/RESULTS.md`). The full `OrigamiCrane.ogv` through the universal path does better (positive control passes 11/11). This is Jim's decision: either present Origami through the universal path, or keep the dedicated engine and label it honestly.
+- **UI wiring of universal views** (source media, step thumbnails, line_art canvas, MEASURED vs AI-JUDGED badges): branch `ui/universal-wiring` (worktree `anveshan-wt/ui-universal`). Merge it if it isn't merged yet.
 
 ## 7. How to resume in a new session
 1. `git checkout m1/hero-cases && git pull`. Read `docs/plans/DECISION-LOG.md` and `docs/kiro/reports/*-REPORT.md` to see what Kiro finished.
