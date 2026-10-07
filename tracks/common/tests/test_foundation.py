@@ -212,8 +212,12 @@ def test_gateway_504_does_not_retry_twice(tmp_path):
     assert fake.calls == 2
 
 
-def test_gateway_non_retryable_error_not_retried(tmp_path):
-    """Non-retryable errors (e.g. quota exceeded) are NOT retried by the 504 path."""
+def test_gateway_quota_error_bounded_backoff_then_fails(tmp_path, monkeypatch):
+    """A persistent 429 is retried exactly len(RATE_LIMIT_BACKOFF_S) times with backoff, then fails explicitly."""
+    import tracks.common.models as M
+
+    waits = []
+    monkeypatch.setattr(M, "_sleep", lambda s: waits.append(s))
 
     class _QuotaFail:
         def __init__(self):
@@ -228,8 +232,8 @@ def test_gateway_non_retryable_error_not_retried(tmp_path):
                       client=_FakeClient(fake))
     with pytest.raises(ModelError):
         gw.generate_json(model_key="text_image", prompt_id="p", prompt_version="v1", prompt_text="hi", schema=_DTO)
-    # json_mode retry may kick in, but 504 retry must NOT → calls stay at ≤ 2
-    assert fake.calls <= 2
+    assert fake.calls == 1 + len(M.RATE_LIMIT_BACKOFF_S)
+    assert waits == list(M.RATE_LIMIT_BACKOFF_S)
 
 
 def test_gateway_live_records_then_replays(tmp_path):
@@ -272,3 +276,27 @@ def test_criterion_map_requires_citation():
         CriterionMap.model_validate(
             {"rubric_id": "r", "package_id": "p", "criteria": {"C": {"order_index": 0, "source_claim_ids": ["CLM-01"], "why_it_matters": "no cite", "drill_hint": "d"}}}
         )
+
+
+def test_generate_json_backs_off_on_429(tmp_path, monkeypatch):
+    """HTTP 429 (per-minute quota) is retried with backoff, succeeds, and is noted in the run metadata."""
+    import tracks.common.models as M
+
+    waits = []
+    monkeypatch.setattr(M, "_sleep", lambda s: waits.append(s))
+
+    class _Flaky:
+        def __init__(self):
+            self.calls = 0
+
+        def generate_content(self, model, contents, config):
+            self.calls += 1
+            if self.calls <= 2:
+                raise RuntimeError("429 RESOURCE_EXHAUSTED: quota exceeded")
+            return _FakeModels('{"answer": "ok"}').generate_content(model, contents, config)
+
+    gw = ModelGateway("live", RunStore([tmp_path]), ModelRegistry({"text_image": "gemma-test"}),
+                      client=_FakeClient(_Flaky()))
+    res = gw.generate_json(model_key="text_image", prompt_id="p", prompt_version="v1", prompt_text="hi", schema=_DTO)
+    assert waits == [5.0, 15.0]
+    assert any("rate_limited_backoff" in n for n in res.metadata.notes)

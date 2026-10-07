@@ -247,6 +247,19 @@ def _is_retryable_exc(exc: Exception) -> bool:
     return any(s in msg for s in _RETRYABLE_SIGNALS)
 
 
+_RATE_LIMIT_SIGNALS = ("429", "resource_exhausted", "rate limit", "quota")
+RATE_LIMIT_BACKOFF_S = (5.0, 15.0, 30.0)   # waits before retries 1..3 on HTTP 429 (per-minute quotas)
+
+
+def _is_rate_limited(exc: Exception) -> bool:
+    msg = str(exc).lower()
+    return any(s in msg for s in _RATE_LIMIT_SIGNALS)
+
+
+def _sleep(seconds: float) -> None:   # indirection so tests can patch the wait
+    time.sleep(seconds)
+
+
 class ModelGateway:
     def __init__(
         self,
@@ -330,7 +343,8 @@ class ModelGateway:
         t0 = time.perf_counter()
         response = None
         last_exc: Optional[Exception] = None
-        for api_attempt in range(2):  # single retry on 504 / DEADLINE_EXCEEDED / UNAVAILABLE
+        rate_waits = 0
+        for api_attempt in range(2 + len(RATE_LIMIT_BACKOFF_S)):  # 1 retry on 5xx; up to 3 backoff retries on 429
             for attempt, json_mode in enumerate((True, False)):
                 cfg: Dict[str, Any] = {"temperature": 0.0}
                 if system:
@@ -353,10 +367,16 @@ class ModelGateway:
             if response is not None:
                 break
             # Check whether the failure is retryable (504 / DEADLINE_EXCEEDED / UNAVAILABLE).
+            if last_exc is not None and _is_rate_limited(last_exc) and rate_waits < len(RATE_LIMIT_BACKOFF_S):
+                wait = RATE_LIMIT_BACKOFF_S[rate_waits]
+                rate_waits += 1
+                notes.append(f"rate_limited_backoff_{wait:g}s")
+                _sleep(wait)
+                continue
             if api_attempt == 0 and last_exc is not None and _is_retryable_exc(last_exc):
                 notes.append(f"retried_once_after_{type(last_exc).__name__}")
                 continue
-            break  # not retryable or already retried once
+            break  # not retryable or retries exhausted
         latency = int((time.perf_counter() - t0) * 1000)
         if response is None:
             exc_msg = str(last_exc).lower() if last_exc else ""
@@ -433,11 +453,18 @@ class ModelGateway:
         try:
             for i in range(0, len(items), batch_size):
                 chunk = items[i : i + batch_size]
-                resp = client.models.embed_content(
-                    model=model_id,
-                    contents=[to_content(p) for p in chunk],
-                    config=types.EmbedContentConfig(output_dimensionality=dims),
-                )
+                for wait in (*RATE_LIMIT_BACKOFF_S, None):
+                    try:
+                        resp = client.models.embed_content(
+                            model=model_id,
+                            contents=[to_content(p) for p in chunk],
+                            config=types.EmbedContentConfig(output_dimensionality=dims),
+                        )
+                        break
+                    except Exception as exc:  # 429: back off and retry; anything else fails below
+                        if wait is None or not _is_rate_limited(exc):
+                            raise
+                        _sleep(wait)
                 if len(resp.embeddings) != len(chunk):
                     raise ModelError(FailureCategory.MODEL_FAILURE, f"{model_id}: got {len(resp.embeddings)} embeddings for {len(chunk)} items")
                 rows.extend(e.values for e in resp.embeddings)
