@@ -30,3 +30,7 @@
 - `anveshan-verify` — run the full local verification suite before any commit/PR.
 - `model-gateway` — rules and patterns for every Gemma/Gemini call (registry, recording, replay, no silent fallback).
 - `case-media` — adding internet/uploaded media to a case pack with license, sha256 and size rules.
+- `anveshan-ux` — three roles, what each may see, plain-language copy, honesty labels, visual language (read before any UI change).
+- `anveshan-ui-check` — visual verification loop: preview, role walks, phone/desktop screenshots, check:plain, proof.
+- `anveshan-a11y` — accessibility checklist with grep/contrast commands.
+- Kiro reads the UI skills through `.kiro/steering/anveshan-ui.md` (auto-included for `app/**`).

@@ -87,6 +87,12 @@ spacing:
 
 # Anveshan Design System — Transmission Workbench
 
+> **Status (2026-10-07): tokens and typography CURRENT; learner-facing parts of §4 SUPERSEDED.**
+> The three-roles decision (`docs/status/DECISIONS.md` 2026-10-07; `docs/kiro/specs/K9-00-PRODUCT-UX.md`) changes **who sees what**:
+> - Learners and creators never see criterion IDs, `SATISFIED`-style enums, confidence, hashes or the lineage drawer. They see "Met / Partly met / Not met / Couldn't tell", "where you first went off track", and "Why this feedback?". The §4 primitives keep their visual design, but their technical labels are now for the steward console and `?debug=1` only.
+> - `on-surface-variant` is moving from `#9ba1a6` to `#a9afb4` for contrast (K9-B1).
+> - Agents: apply `.claude/skills/anveshan-ux/SKILL.md` and `.claude/skills/anveshan-a11y/SKILL.md` alongside this file.
+
 **Aesthetic Identity:** Precision Laboratory Instrument meets Documentary Craft.  
 **Core Thesis:** Human expertise is bodily, physical, and temporal. The software interface must treat evidence not as metadata, but as an undeniable physical artifact.
 
