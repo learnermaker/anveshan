@@ -1,4 +1,4 @@
-﻿# Anveshan
+# Anveshan
 
 Anveshan turns a real demonstration into a skill someone else can learn, practise and get verified feedback on.
 
@@ -50,7 +50,7 @@ See [`docs/plans/evaluation-core.md`](docs/plans/evaluation-core.md) and [`docs/
 
 | Job | Model | Guard |
 |---|---|---|
-| Perceiving uploads | gemini-3.5-flash-lite | Recorded runs, explicit failures |
+| Perceiving uploads | gemini-3.5-flash-lite; audio model configured separately (disabled by default; set `ANVESHAN_AUDIO_MODEL` to enable) | Recorded runs, explicit failures |
 | Embeddings for alignment | gemini-embedding-2 | — |
 | Answering questions about a skill | gemini-3.5-flash-lite, from cited claims only | Insufficient-evidence refusal |
 | Wording coaching advice | gemini-3.5-flash-lite | Guard rejects new numbers or verdict words; template fallback |

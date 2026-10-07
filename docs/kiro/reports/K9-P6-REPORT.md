@@ -30,6 +30,22 @@ None.
 - J-18, J-19: Jim's decisions (screenshots, large modules). Not a K9 task.
 - J-20: Python version mismatch between CI and container remains open.
 
+## Review fixes (2026-10-08)
+
+Review verdict was REVISE (1 MUST, 2 SHOULD).
+
+**MUST — README UTF-8 BOM (fixed)**
+- `README.md` had a UTF-8 BOM (`EF BB BF`) at offset 0. Stripped by reading raw bytes, decoding as UTF-8, and rewriting with `encoding='utf-8'` (not `utf-8-sig`).
+- Verified: `[System.IO.File]::ReadAllBytes('README.md')[0..2]` → `0x23 0x20 0x41` (`# A`). No BOM.
+- Verify JSON updated with byte-level BOM check.
+
+**SHOULD — Gen AI table audio model row (fixed)**
+- Spec §3.5 lists `vision_fast, audio` for the Perceiving uploads row. The initial README listed only `gemini-3.5-flash-lite`.
+- Row updated to: `gemini-3.5-flash-lite; audio model configured separately (disabled by default; set \`ANVESHAN_AUDIO_MODEL\` to enable)`.
+
+**SHOULD — Run locally npm install (no action)**
+- Review noted `npm install` before `npm run dev` deviates from CLAUDE.md. Reviewer marked it minor ("No action needed unless the spec intent was to match CLAUDE.md exactly"). Left as-is; it is correct for a fresh clone.
+
 ## Live calls used
 
 0
