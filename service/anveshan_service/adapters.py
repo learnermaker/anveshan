@@ -132,6 +132,12 @@ def session_lock(session_id: str) -> threading.Lock:
         return _session_locks.setdefault(session_id, threading.Lock())
 
 
+def resource_lock(kind: str, key: str) -> threading.Lock:
+    """One lock per draft/case directory, so concurrent requests (Cloud Run concurrency > 1) never
+    interleave writes to the same directory while independent visitors still run in parallel."""
+    return session_lock(f"{kind}:{key}")
+
+
 def _plain(value: Any) -> Any:
     return value.value if isinstance(value, Enum) else value
 

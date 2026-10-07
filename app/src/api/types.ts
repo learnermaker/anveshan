@@ -29,9 +29,15 @@ export type ServiceMode = 'live' | 'recorded';
 export interface HealthResponse {
   ok: boolean;
   mode: ServiceMode | string;
+  /** false on the public demo: ?mode= is ignored and the runtime panel is hidden */
+  mode_override?: boolean;
+  /** false on the public demo: reviewing the curated cases needs an invitation token */
+  curated_review_open?: boolean;
   models: {
     text_image: string;
     video_frames: string;
+    vision_fast?: string | null;
+    embedding?: string | null;
     audio_enabled: boolean;
   };
 }
@@ -380,12 +386,28 @@ export interface FirstDivergence {
   drill_hint: string;
 }
 
+/** How the feedback advice was worded: by the AI (guarded) or the deterministic template. */
+export interface CoachingView {
+  status: 'ai_worded' | 'template' | string;
+  reason?: string | null;
+  model_id?: string | null;
+  run_key?: string | null;
+  /** the template advice per criterion, kept when the AI wording was used */
+  template_advice?: Record<string, string>;
+}
+
 /** Unscored drill. Never carries a score. */
 export interface DrillView {
   criterion_id?: string;
   title?: string;
+  /** service field (track_b/drill.py) */
+  instruction?: string;
+  /** legacy mock field */
   instructions?: string;
   drill_hint?: string;
+  /** what success looks like (the criterion's observable indicator) */
+  success_hint?: string;
+  kind?: 'practice' | 're_record' | string;
   source_claim_ids?: string[];
   reference_evidence?: EvidenceRef | null;
   [key: string]: unknown;
@@ -399,6 +421,8 @@ export interface AttemptResult {
   first_divergence: FirstDivergence | null;
   feedback: Feedback | null;
   drill: DrillView | null;
+  /** AI wording of the advice (never scores); absent on older results */
+  coaching?: CoachingView | null;
   runtime_class: RuntimeClass;
   warnings: string[];
   run_keys: string[];

@@ -1,6 +1,6 @@
 /** 01 SOURCE for a live hero case: modality source view, claims, evidence query, expert review. */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, MessageSquareQuote, Pencil, RefreshCw, Search, X } from 'lucide-react';
 import type { EvidenceRef, KnowledgeClaim } from '../types/contracts';
 import type { CaseView, QueryAnswer, ReviewAction } from '../api/types';
@@ -32,14 +32,14 @@ function HeroSourceViewInner({ view, onViewChange, onReload, onEnterPractice, on
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="space-y-1.5">
           <button onClick={onBack} className={btn.ghost}>
-            <ArrowLeft className="w-3.5 h-3.5" /> PORTFOLIO
+            <ArrowLeft className="w-3.5 h-3.5" /> All skills
           </button>
-          <div className="text-[10px] font-mono uppercase tracking-widest text-cadmium-amber font-bold">01 // SOURCE · GOAL MODEL v{view.goal.version}</div>
+          <div className="text-xs font-mono uppercase tracking-widest text-cadmium-amber font-bold">Step 1 of 3 · Learn from the source</div>
           <h1 className="font-serif text-2xl sm:text-3xl text-on-surface">{view.title}</h1>
           <div className="flex flex-wrap items-center gap-1.5">
             <SourceLabelBadge label={view.runtime_label} />
             <ReviewBadge status={view.review_status} />
-            <Badge tone="muted">{view.modality}</Badge>
+            <Badge tone="muted" title={`goal model v${view.goal.version}`}>{view.modality}</Badge>
             {view.derived_from && <Badge tone="muted">derived from {view.derived_from}</Badge>}
             <MockBadge />
           </div>
@@ -49,10 +49,15 @@ function HeroSourceViewInner({ view, onViewChange, onReload, onEnterPractice, on
             <RefreshCw className="w-3.5 h-3.5" /> Reload
           </button>
           <button onClick={onEnterPractice} className={btn.primary}>
-            Enter practice <ArrowRight className="w-3.5 h-3.5" />
+            Start practising <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
+
+      <p className="text-sm text-on-surface-variant max-w-3xl">
+        This page shows what Anveshan learned from the source. Each step and check is a numbered claim (CLM-01, CLM-02…) linked to evidence. OBSERVED claims were
+        measured or seen in the source; INFERRED ones are the AI's reading and may be wrong. When you are ready, press <strong className="text-on-surface">Start practising</strong>.
+      </p>
 
       {[...new Set([...(view.warnings ?? []), ...(view.goal.warnings ?? [])])].length > 0 && (
         <ul className="text-[11px] font-mono text-cadmium-amber space-y-0.5">
@@ -154,7 +159,7 @@ function EvidenceQuery({ view, onCite }: { view: CaseView; onCite: (claimId: str
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="e.g. Which dots stay enclosed?"
+          placeholder={QUESTION_EXAMPLE[view.modality] ?? 'e.g. What is the most important step?'}
           className="flex-1 min-w-0 bg-surface-dim border border-outline rounded-lg px-3 py-2 text-xs text-on-surface placeholder:text-on-surface-variant/50 focus:border-caliper-cyan outline-none"
         />
         <button type="submit" disabled={busy || !q.trim()} className={btn.secondary}>
@@ -188,7 +193,21 @@ function EvidenceQuery({ view, onCite }: { view: CaseView; onCite: (claimId: str
   );
 }
 
+const QUESTION_EXAMPLE: Record<string, string> = {
+  kolam_image: 'e.g. Which dots stay enclosed?',
+  origami_video: 'e.g. When is the paper folded into a square base?',
+  tabla_audio: 'e.g. What tempo is the pattern played at?',
+};
+
 function ExpertReviewPanel({ view, onViewChange }: { view: CaseView; onViewChange: (v: CaseView) => void }) {
+  const [open, setOpen] = useState<boolean | null>(null);
+  const [token, setToken] = useState('');
+  useEffect(() => {
+    api
+      .health()
+      .then((h) => setOpen(h.curated_review_open !== false || view.case_id.includes('~')))
+      .catch(() => setOpen(true));
+  }, [view.case_id]);
   const [reviewer, setReviewer] = useState('');
   const [note, setNote] = useState('');
   const [editing, setEditing] = useState<string | null>(null);
@@ -200,7 +219,7 @@ function ExpertReviewPanel({ view, onViewChange }: { view: CaseView; onViewChang
     setBusy(true);
     setErr(null);
     try {
-      const v = await api.reviewCase(view.case_id, { ...a, reviewer: reviewer.trim() || 'anonymous reviewer', note: note.trim() });
+      const v = await api.reviewCase(view.case_id, { ...a, reviewer: reviewer.trim() || 'anonymous reviewer', note: note.trim() }, token.trim() ? { reviewToken: token.trim() } : undefined);
       onViewChange(v);
       setEditing(null);
     } catch (x) {
@@ -213,7 +232,26 @@ function ExpertReviewPanel({ view, onViewChange }: { view: CaseView; onViewChang
   const review = view.package.expert_review;
   return (
     <Panel kicker="Expert review" title="Approve, revise or reject claims" right={<ReviewBadge status={view.review_status} />}>
-      <div className="space-y-3 text-xs">
+      {open === false && (
+        <div className="mb-3 space-y-2 text-sm text-on-surface-variant">
+          <p>
+            In this public demo, experts review the ready-made skills <strong className="text-on-surface">by invitation</strong>, so a visitor cannot approve them.
+            Learners can practise normally while review is pending. Skills you create yourself can be reviewed by you.
+          </p>
+          <label className="flex flex-wrap items-center gap-2 text-xs">
+            <span>Invited expert? Enter your invitation code:</span>
+            <input
+              value={token}
+              onChange={(e) => setToken(e.target.value)}
+              type="password"
+              autoComplete="off"
+              aria-label="Invitation code"
+              className="bg-surface-dim border border-outline rounded-lg px-2 py-1 text-xs outline-none focus:border-caliper-cyan"
+            />
+          </label>
+        </div>
+      )}
+      <div className={`space-y-3 text-xs ${open === false && !token.trim() ? 'opacity-50 pointer-events-none' : ''}`} aria-disabled={open === false && !token.trim()}>
         {review && (
           <div className="text-[10px] font-mono text-on-surface-variant">
             Last: {review.reviewer_name} · {review.status}{review.reviewed_at ? ` · ${review.reviewed_at.slice(0, 16).replace('T', ' ')}` : ''}{review.notes ? ` · “${review.notes}”` : ''}

@@ -19,6 +19,7 @@ except the summary JSON under tracks/track-b/eval/universal_video/ (with --save)
 """
 from __future__ import annotations
 
+import os
 import argparse
 import json
 import math
@@ -40,6 +41,8 @@ load_dotenv(ROOT / ".env")
 import av  # noqa: E402
 import numpy as np  # noqa: E402
 from PIL import Image, ImageDraw  # noqa: E402
+
+os.environ.setdefault("ANVESHAN_LIVE_CACHE", "0")  # variance study: never reuse an earlier live call
 
 W, H, FPS = 480, 270, 10
 

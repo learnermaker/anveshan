@@ -29,6 +29,9 @@ def deviation_analysis(crit: RubricCriterion, scored: ScoredCriterion) -> str:
     if scored.status == CriterionStatus.UNCERTAIN:
         return f"Could not be compared with the expected indicator ({indicator}): {scored.uncertain_reason}."
     label = "Partly meets" if scored.status == CriterionStatus.PARTIALLY_SATISFIED else "Does not meet"
+    target = getattr(scored, "target", None)
+    if target and scored.value is not None:
+        return f"{label} the target. Measured {scored.value:.3g} for {indicator}; the target is {target}."
     return f"{label} the expected indicator: {indicator}."
 
 

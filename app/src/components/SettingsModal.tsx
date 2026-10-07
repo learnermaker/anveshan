@@ -4,6 +4,7 @@ import { api } from '../api/client';
 import { API_BASE, IS_MOCK, getRequestedMode, setRequestedMode, type RequestedMode } from '../api/runtime';
 import type { HealthResponse } from '../api/types';
 import { Badge, ErrorNote, MockBadge, Spinner } from '../hero/ui';
+import { useEscape } from '../hero/useEscape';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -37,6 +38,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     if (isOpen) void load();
   }, [isOpen]);
 
+  useEscape(isOpen, onClose);
   if (!isOpen) return null;
 
   const choose = (m: RequestedMode) => {
@@ -53,8 +55,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             <h2 className="text-sm font-semibold font-mono text-on-surface">RUNTIME</h2>
             <MockBadge />
           </div>
-          <button onClick={onClose} className="p-1 rounded text-on-surface-variant hover:text-on-surface transition-colors" aria-label="Close">
-            <X className="w-5 h-5" />
+          <button onClick={onClose} className="flex items-center gap-1 px-2 py-1 rounded text-on-surface-variant hover:text-on-surface transition-colors" aria-label="Close" title="Close (Esc)">
+            <X className="w-5 h-5" aria-hidden="true" /><span className="text-xs font-mono">Close</span>
           </button>
         </div>
 

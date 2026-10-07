@@ -1,5 +1,5 @@
 import React from 'react';
-import { Compass, Cpu, Layers, Award, ChevronDown, Settings, Sparkles, Lock } from 'lucide-react';
+import { Compass, Cpu, Layers, Award, ChevronDown, Settings, Sparkles, Lock, Check, HelpCircle } from 'lucide-react';
 import type { AppView } from '../types/workspace';
 import type { RequestedMode } from '../api/runtime';
 import { IS_MOCK } from '../api/runtime';
@@ -21,6 +21,19 @@ interface HeaderProps {
   caseKindLabel: string;
   onOpenSettings: () => void;
   onOpenStitchDesign?: () => void;
+  /** Show the runtime (mode) chip: local development or ?debug=1. Hidden on the public demo. */
+  showRuntime?: boolean;
+  /** Per-step state for the stepper: progress hints and whether a step is ready yet. */
+  steps?: Partial<Record<AppView, StepState>>;
+  onOpenGuide?: () => void;
+}
+
+export interface StepState {
+  status: 'done' | 'todo' | 'locked';
+  /** short progress text shown under the label, e.g. "1/2 attempts" */
+  hint?: string;
+  /** tooltip explaining what is needed */
+  title?: string;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -33,12 +46,15 @@ export const Header: React.FC<HeaderProps> = ({
   caseKindLabel,
   onOpenSettings,
   onOpenStitchDesign,
+  showRuntime = false,
+  steps = {},
+  onOpenGuide,
 }) => {
   const views: { id: AppView; label: string; number: string; icon: typeof Compass }[] = [
-    { id: 'discovery', number: '00', label: 'PORTFOLIO', icon: Layers },
-    { id: 'source', number: '01', label: 'SOURCE', icon: Compass },
-    { id: 'practice', number: '02', label: 'PRACTICE', icon: Cpu },
-    { id: 'transmission', number: '03', label: 'TRANSMISSION', icon: Award },
+    { id: 'discovery', number: '', label: 'Skills', icon: Layers },
+    { id: 'source', number: '1', label: 'Learn', icon: Compass },
+    { id: 'practice', number: '2', label: 'Practise', icon: Cpu },
+    { id: 'transmission', number: '3', label: 'Results', icon: Award },
   ];
   const groups = Array.from(new Set(caseOptions.map((o) => o.group)));
   const modeLabel = IS_MOCK ? 'MOCK DATA' : requestedMode === 'default' ? 'SERVER DEFAULT' : requestedMode.toUpperCase();
@@ -86,52 +102,75 @@ export const Header: React.FC<HeaderProps> = ({
               <ChevronDown className="w-3 h-3 text-caliper-cyan pointer-events-none -ml-4" />
             </div>
           </div>
-          <button
-            onClick={onOpenSettings}
-            className={`ml-auto md:ml-2 flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[10px] font-mono font-medium border transition-colors ${
-              IS_MOCK ? 'text-divergence-crimson border-divergence-crimson/40 bg-divergence-crimson/10' : 'text-cadmium-amber border-cadmium-amber/30 hover:bg-cadmium-amber/15'
-            }`}
-            title="Runtime panel"
-          >
-            <span className={`w-1.5 h-1.5 rounded-full ${IS_MOCK ? 'bg-divergence-crimson' : 'bg-cadmium-amber'}`} />
-            <span>MODE: {modeLabel}</span>
-            <Settings className="w-3 h-3 opacity-60" />
-          </button>
+          {(showRuntime || IS_MOCK) && (
+            <button
+              onClick={onOpenSettings}
+              className={`ml-auto md:ml-2 flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[11px] font-mono font-medium border transition-colors ${
+                IS_MOCK ? 'text-divergence-crimson border-divergence-crimson/40 bg-divergence-crimson/10' : 'text-cadmium-amber border-cadmium-amber/30 hover:bg-cadmium-amber/15'
+              }`}
+              title="Runtime panel (developer)"
+              aria-label={`Runtime panel, mode ${modeLabel}`}
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${IS_MOCK ? 'bg-divergence-crimson' : 'bg-cadmium-amber'}`} />
+              <span>MODE: {modeLabel}</span>
+              <Settings className="w-3 h-3 opacity-60" aria-hidden="true" />
+            </button>
+          )}
         </div>
 
-        <nav aria-label="Lifecycle Stepper" className="flex items-center bg-surface-dim p-1 rounded-lg border border-outline overflow-x-auto max-w-full">
+        <nav aria-label="Steps" className="flex items-center bg-surface-dim p-1 rounded-lg border border-outline overflow-x-auto max-w-full">
           {views.map((v, idx) => {
             const isActive = currentView === v.id;
+            const st = steps[v.id];
+            const locked = st?.status === 'locked' && !isActive;
             return (
               <React.Fragment key={v.id}>
                 <button
                   onClick={() => onSelectView(v.id)}
-                  className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-md text-[11px] font-mono transition-all duration-150 whitespace-nowrap ${
-                    isActive ? 'bg-cadmium-amber text-surface-dim font-bold' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container'
+                  aria-current={isActive ? 'step' : undefined}
+                  title={st?.title}
+                  className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-md text-xs transition-all duration-150 whitespace-nowrap ${
+                    isActive
+                      ? 'bg-cadmium-amber text-surface-dim font-bold'
+                      : locked
+                        ? 'text-on-surface-variant/70 hover:text-on-surface hover:bg-surface-container'
+                        : 'text-on-surface hover:bg-surface-container'
                   }`}
                 >
-                  <span>{v.number}.</span>
-                  <span>{v.label}</span>
+                  {st?.status === 'done' && !isActive ? (
+                    <Check className="w-3.5 h-3.5 text-transmission-emerald" aria-label="done" />
+                  ) : locked ? (
+                    <Lock className="w-3 h-3" aria-label="not ready yet" />
+                  ) : v.number ? (
+                    <span className="font-mono">{v.number}.</span>
+                  ) : null}
+                  <span className="font-semibold">{v.label}</span>
+                  {st?.hint && <span className={`font-mono text-[11px] ${isActive ? 'text-surface-dim/80' : 'text-on-surface-variant'}`}>· {st.hint}</span>}
                 </button>
-                {idx < views.length - 1 && <span className="text-outline text-xs px-0.5 select-none">→</span>}
+                {idx < views.length - 1 && <span className="text-outline text-xs px-0.5 select-none" aria-hidden="true">→</span>}
               </React.Fragment>
             );
           })}
         </nav>
 
-        <div className="hidden lg:flex items-center gap-3">
-          <div className="text-right text-[10px] font-mono leading-tight text-on-surface-variant flex items-center gap-1">
-            <Lock className="w-2.5 h-2.5 text-transmission-emerald" />
-            <span>SEAM: 8 CONTRACTS · SCORES DETERMINISTIC</span>
-          </div>
-          {onOpenStitchDesign && (
+        <div className="hidden md:flex items-center gap-2">
+          {onOpenGuide && (
+            <button
+              onClick={onOpenGuide}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded border border-outline hover:border-cadmium-amber text-xs text-on-surface transition-colors"
+            >
+              <HelpCircle className="w-3.5 h-3.5 text-cadmium-amber" aria-hidden="true" />
+              <span>How it works</span>
+            </button>
+          )}
+          {showRuntime && onOpenStitchDesign && (
             <button
               onClick={onOpenStitchDesign}
               className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container border border-outline hover:border-cadmium-amber text-[11px] font-mono text-on-surface transition-colors"
-              title="View Google Stitch design reference"
+              title="Design reference (developer)"
             >
-              <Sparkles className="w-3 h-3 text-cadmium-amber" />
-              <span>STITCH</span>
+              <Sparkles className="w-3 h-3 text-cadmium-amber" aria-hidden="true" />
+              <span>Design ref</span>
             </button>
           )}
         </div>

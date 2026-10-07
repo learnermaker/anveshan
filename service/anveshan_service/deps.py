@@ -14,5 +14,8 @@ def get_settings(request: Request) -> Settings:
 
 
 def get_mode(request: Request, mode: Optional[Literal["live", "recorded"]] = Query(None)) -> str:
-    """``?mode=live|recorded`` override; the default is ANVESHAN_MODE."""
-    return mode or get_settings(request).mode
+    """``?mode=live|recorded`` override (when allowed); the default is ANVESHAN_MODE."""
+    settings = get_settings(request)
+    if mode and settings.allow_mode_override:
+        return mode
+    return settings.mode

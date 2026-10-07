@@ -2,6 +2,7 @@ import React from 'react';
 import { AlertTriangle, ArrowRight, CheckCircle2, HelpCircle, Shield, X, Eye, Sparkles } from 'lucide-react';
 import type { CapabilityCase } from '../types/workspace';
 import type { CertaintyState } from '../types/workspace';
+import { useEscape } from '../hero/useEscape';
 
 interface FirstDivergenceModalProps {
   capCase: CapabilityCase;
@@ -16,6 +17,7 @@ export function FirstDivergenceModal({
   onClose,
   onLaunchMicroPractice,
 }: FirstDivergenceModalProps) {
+  useEscape(isOpen, onClose);
   if (!isOpen) return null;
 
   const div = capCase.firstDivergence;
@@ -67,11 +69,11 @@ export function FirstDivergenceModal({
               </h2>
             </div>
           </div>
-          <button
+          <button aria-label="Close" title="Close (Esc)"
             onClick={onClose}
-            className="p-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-bright transition-colors"
+            className="flex items-center gap-1 px-2 py-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-bright transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5" aria-hidden="true" /><span className="text-xs font-mono">Close</span>
           </button>
         </div>
 

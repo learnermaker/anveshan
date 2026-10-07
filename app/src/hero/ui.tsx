@@ -4,8 +4,7 @@ import React from 'react';
 import { AlertTriangle, Loader2 } from 'lucide-react';
 import type { CriterionStatus, VerificationState } from '../types/contracts';
 import type { RuntimeClass } from '../api/types';
-import { ApiError } from '../api/errors';
-import { IS_MOCK } from '../api/runtime';
+import { friendlyError } from '../api/errors';
 
 const base = 'inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-wider border whitespace-nowrap';
 
@@ -24,13 +23,9 @@ export function Badge({ tone, children, title }: { tone: 'amber' | 'emerald' | '
   );
 }
 
-export function MockBadge() {
-  if (!IS_MOCK) return null;
-  return (
-    <Badge tone="crimson" title="VITE_API_BASE=mock: canned SYNTHETIC responses, no service or model was called">
-      MOCK DATA
-    </Badge>
-  );
+/** Mock mode is shown once, in the header and footer; per-panel badges were noise (warning fatigue). */
+export function MockBadge(): React.ReactElement | null {
+  return null;
 }
 
 export function SourceLabelBadge({ label }: { label: string }) {
@@ -99,13 +94,17 @@ export function Panel({ title, kicker, right, children, className = '' }: { titl
 
 export function ErrorNote({ error }: { error: unknown }) {
   if (!error) return null;
-  const e = error instanceof ApiError ? error : null;
+  const f = friendlyError(error);
   return (
-    <div className="flex items-start gap-2 p-3 rounded-lg border border-divergence-crimson/40 bg-divergence-crimson/10 text-xs text-on-surface">
-      <AlertTriangle className="w-4 h-4 text-divergence-crimson shrink-0 mt-0.5" />
-      <div>
-        <div className="font-mono font-bold text-divergence-crimson text-[10px] uppercase">{e ? e.category : 'ERROR'}{e?.status ? ` · HTTP ${e.status}` : ''}</div>
-        <div>{error instanceof Error ? error.message : String(error)}</div>
+    <div role="alert" className="flex items-start gap-2 p-3 rounded-lg border border-divergence-crimson/40 bg-divergence-crimson/10 text-sm text-on-surface">
+      <AlertTriangle className="w-4 h-4 text-divergence-crimson shrink-0 mt-0.5" aria-hidden="true" />
+      <div className="space-y-1">
+        <div className="font-semibold text-divergence-crimson">{f.title}</div>
+        <div>{f.message}</div>
+        <details className="text-xs text-on-surface-variant">
+          <summary className="cursor-pointer select-none">Technical details</summary>
+          <code className="font-mono break-all">{f.technical}</code>
+        </details>
       </div>
     </div>
   );

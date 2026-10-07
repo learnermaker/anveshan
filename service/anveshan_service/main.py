@@ -10,9 +10,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, Response
 
 from anveshan_service.errors import ServiceError, error_response, install_error_handlers
+from anveshan_service.housekeeping import SweepEvery
+from anveshan_service.limits import RateLimitMiddleware
 from anveshan_service.paths import within
 from anveshan_service.routes import cases, compose, health, media, sessions
 from anveshan_service.settings import Settings
+from anveshan_service.visitors import VisitorMiddleware
 
 MAX_UPLOAD_FILES = 3  # attempts: file + raster + video
 
@@ -41,6 +44,21 @@ class BodyLimitMiddleware:
         await self.app(scope, receive, send)
 
 
+class HousekeepingMiddleware:
+    """After each POST, bound the data directory (at most once per interval, off the event loop)."""
+
+    def __init__(self, app, sweeper: SweepEvery) -> None:
+        self.app = app
+        self.sweeper = sweeper
+
+    async def __call__(self, scope, receive, send):
+        await self.app(scope, receive, send)
+        if scope["type"] == "http" and scope.get("method") == "POST":
+            import anyio
+
+            await anyio.to_thread.run_sync(self.sweeper.maybe)
+
+
 def _mount_static(app: FastAPI, static_dir: Path) -> None:
     index = static_dir / "index.html"
 
@@ -64,6 +82,13 @@ def create_app(settings: Optional[Settings] = None) -> FastAPI:
         app.add_middleware(
             CORSMiddleware, allow_origins=settings.cors_origins, allow_methods=["GET", "POST"], allow_headers=["*"]
         )
+    if settings.data_ttl_hours > 0 or settings.data_cap_mb > 0:
+        sweeper = SweepEvery(settings.data_dir, settings.data_ttl_hours, int(settings.data_cap_mb * 1024 * 1024))
+        sweeper.maybe()  # once at startup
+        app.add_middleware(HousekeepingMiddleware, sweeper=sweeper)
+    app.add_middleware(VisitorMiddleware, secure=settings.secure_cookies)
+    if settings.rate_limits:
+        app.add_middleware(RateLimitMiddleware, limits=settings.rate_limits)
     app.add_middleware(BodyLimitMiddleware, limit_bytes=settings.max_upload_bytes * MAX_UPLOAD_FILES + (1 << 20))
     for module in (health, cases, sessions, media, compose):
         app.include_router(module.router)

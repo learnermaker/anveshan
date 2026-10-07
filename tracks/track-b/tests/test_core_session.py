@@ -43,7 +43,7 @@ def run_full(tmp_path, monkeypatch, **kw):
 def test_full_session_produces_valid_bundle(tmp_path, monkeypatch):
     s, b, r, res = run_full(tmp_path, monkeypatch)
     bj, rj, out = b.to_json(), r.to_json(), res.to_json()
-    assert set(bj) == {"attempt", "evaluation", "trajectory", "metrics", "first_divergence", "feedback", "drill",
+    assert set(bj) == {"attempt", "evaluation", "trajectory", "metrics", "first_divergence", "feedback", "drill", "coaching",
                        "runtime_class", "warnings", "run_keys"}
     assert set(bj["trajectory"]) == {"curve", "curve_kind", "events", "process_observable", "artifacts", "final_state"}
     assert bj["attempt"]["attempt_id"] == "attempt.fakecase.sess-0001.baseline.1"

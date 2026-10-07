@@ -6,12 +6,14 @@ import type { AttemptKind, CaseView, KolamUiView, OrigamiUiView, TablaUiView } f
 import { api, type AttemptUpload } from '../api/client';
 import { KolamCanvas, buildRasterPng, buildTraceJson, type Stroke } from './kolam/KolamCanvas';
 import { KolamFigure } from './kolam/KolamFigure';
+import { KolamTeach } from './kolam/KolamTeach';
 import { BeatTimeline } from './tabla/BeatTimeline';
 import { AttemptResultView } from './results/AttemptResultView';
 import type { HeroSession, LocalAttemptMedia } from './session';
 import { Badge, btn, ErrorNote, MockBadge, Panel, ProgressBar, ReviewBadge, SourceLabelBadge, Spinner } from './ui';
 import { fmtTime } from './locators';
 import { UniversalPracticeView } from './universal/UniversalPracticeView';
+import { AttemptProgress, ReviewNote, TaskInstructions } from './Guidance';
 
 interface Props {
   view: CaseView;
@@ -29,7 +31,7 @@ export function HeroPracticeView(props: Props) {
 const EXPECTED: Record<string, string> = {
   trace: 'a few seconds (deterministic geometry)',
   image: '5–15 s (registration + geometry)',
-  video: '1–3 min (Gemma reads sampled frames)',
+  video: '1–3 min (the AI reads sampled frames)',
   audio: 'a few seconds (deterministic onsets + alignment)',
 };
 
@@ -57,8 +59,9 @@ function HeroPracticeViewInner({ view, session, onSessionChange, onComplete, onB
   const start = async () => {
     setErr(null);
     try {
-      const s = await api.createSession(view.case_id, learner.trim() || 'Learner');
-      onSessionChange({ caseId: view.case_id, sessionId: s.session_id, learnerName: learner.trim() || 'Learner', attempts: [], result: null });
+      const name = learner.trim() || 'Guest';
+      const s = await api.createSession(view.case_id, name);
+      onSessionChange({ caseId: view.case_id, sessionId: s.session_id, learnerName: name, attempts: [], result: null });
       setShowCapture(true);
     } catch (x) {
       setErr(x);
@@ -86,6 +89,11 @@ function HeroPracticeViewInner({ view, session, onSessionChange, onComplete, onB
     }
   };
 
+  const openRetry = () => {
+    setShowCapture(true);
+    setTimeout(() => captureRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  };
+
   const complete = async () => {
     if (!session) return;
     setCompleting(true);
@@ -106,35 +114,41 @@ function HeroPracticeViewInner({ view, session, onSessionChange, onComplete, onB
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="space-y-1.5">
           <button onClick={onBack} className={btn.ghost}>
-            <ArrowLeft className="w-3.5 h-3.5" /> SOURCE
+            <ArrowLeft className="w-3.5 h-3.5" /> Back to Learn
           </button>
-          <div className="text-[10px] font-mono uppercase tracking-widest text-cadmium-amber font-bold">02 // PRACTICE · {view.task.title}</div>
+          <div className="text-xs font-mono uppercase tracking-widest text-cadmium-amber font-bold">Step 2 of 3 · Practise · {view.task.title}</div>
           <h1 className="font-serif text-2xl text-on-surface">{view.title}</h1>
           <div className="flex flex-wrap gap-1.5">
             <SourceLabelBadge label={view.runtime_label} />
             <ReviewBadge status={view.review_status} />
-            {session && <Badge tone="muted">session {session.sessionId}</Badge>}
-            {session && <Badge tone="muted">learner {session.learnerName}</Badge>}
+            {session && <Badge tone="muted" title={`Session ${session.sessionId}`}>Learner: {session.learnerName}</Badge>}
             <MockBadge />
           </div>
         </div>
         {session && (
           <div className="flex flex-wrap gap-2">
-            <button onClick={() => onSessionChange(null)} className={btn.secondary} title="Discard this session locally and start over">
-              New session
+            <button onClick={() => onSessionChange(null)} className={btn.secondary} title="Discard these attempts and start again">
+              Start over
             </button>
             {n >= 2 && (
               <button onClick={complete} disabled={completing} className={btn.primary}>
-                {completing ? 'Recording…' : 'Complete transmission'} <ArrowRight className="w-3.5 h-3.5" />
+                {completing ? 'Saving the record…' : 'See what changed'} <ArrowRight className="w-3.5 h-3.5" />
               </button>
             )}
           </div>
         )}
       </div>
 
-      {view.review_status !== 'approved' && view.review_status !== 'revised' && (
-        <div className="text-[11px] font-mono text-cadmium-amber">⚠ The knowledge package is “{view.review_status}”: the service may refuse attempts until an expert approves it (HUMAN_REVIEW_REQUIRED).</div>
-      )}
+      <ReviewNote status={view.review_status} />
+
+      <AttemptProgress
+        attempts={n}
+        started={Boolean(session)}
+        completing={completing}
+        retryOpen={canSubmit && showCapture}
+        onRetry={openRetry}
+        onComplete={complete}
+      />
 
       <ErrorNote error={err} />
 
@@ -144,14 +158,17 @@ function HeroPracticeViewInner({ view, session, onSessionChange, onComplete, onB
             <input
               value={learner}
               onChange={(e) => setLearner(e.target.value)}
-              placeholder="Learner name (shown in the record)"
-              className="flex-1 bg-surface-dim border border-outline rounded-lg px-3 py-2 text-xs outline-none focus:border-caliper-cyan"
+              placeholder="Your name (optional, shown in the record)"
+              aria-label="Your name (optional)"
+              className="flex-1 bg-surface-dim border border-outline rounded-lg px-3 py-2 text-sm outline-none focus:border-caliper-cyan"
             />
             <button onClick={start} className={btn.primary}>
               <Play className="w-3.5 h-3.5" /> Start session
             </button>
           </div>
-          <p className="mt-3 text-xs text-on-surface-variant leading-relaxed">{view.task.instructions}</p>
+          <div className="mt-4">
+            <TaskInstructions text={view.task.instructions} claims={view.package.claims} />
+          </div>
         </Panel>
       ) : (
         <>
@@ -162,7 +179,12 @@ function HeroPracticeViewInner({ view, session, onSessionChange, onComplete, onB
                 title={view.task.title}
                 right={<Badge tone="muted">{view.task.constraints.map((c) => c.description).join(' · ')}</Badge>}
               >
-                <p className="text-xs text-on-surface-variant leading-relaxed mb-4">{view.task.instructions}</p>
+                <details className="mb-4" open={stage === 'baseline'}>
+                  <summary className="cursor-pointer text-sm font-semibold text-on-surface">Task steps</summary>
+                  <div className="mt-2">
+                    <TaskInstructions text={view.task.instructions} claims={view.package.claims} />
+                  </div>
+                </details>
                 <Capture view={view} busy={phase.kind !== 'idle'} onSubmit={submit} />
                 <div className="mt-4">
                   <PhaseStatus phase={phase} />
@@ -183,20 +205,18 @@ function HeroPracticeViewInner({ view, session, onSessionChange, onComplete, onB
                 </button>
               ))}
               {canSubmit && !showCapture && (
-                <button
-                  onClick={() => {
-                    setShowCapture(true);
-                    setTimeout(() => captureRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
-                  }}
-                  className={btn.primary}
-                >
-                  <RotateCcw className="w-3.5 h-3.5" /> Retry — full task again
+                <button onClick={openRetry} className={btn.primary}>
+                  <RotateCcw className="w-3.5 h-3.5" /> Retry the whole task
                 </button>
               )}
             </div>
           )}
 
           {shown && <AttemptResultView view={view} result={shown.result} media={shown.media} />}
+
+          {n > 0 && (
+            <AttemptProgress attempts={n} started completing={completing} retryOpen={canSubmit && showCapture} onRetry={openRetry} onComplete={complete} />
+          )}
         </>
       )}
     </div>
@@ -238,6 +258,7 @@ function Capture({ view, busy, onSubmit }: { view: CaseView; busy: boolean; onSu
 function KolamCapture({ view, busy, onSubmit }: { view: CaseView; busy: boolean; onSubmit: (u: AttemptUpload, m: LocalAttemptMedia) => void }) {
   const ui = view.goal.ui_view as KolamUiView;
   const [mode, setMode] = useState<'draw' | 'photo'>('draw');
+  const [aside, setAside] = useState<'target' | 'teach'>('teach');
   const [strokes, setStrokes] = useState<Stroke[]>([]);
   const [photo, setPhoto] = useState<File | null>(null);
   const photoUrl = useMemo(() => (photo ? URL.createObjectURL(photo) : null), [photo]);
@@ -277,7 +298,7 @@ function KolamCapture({ view, busy, onSubmit }: { view: CaseView; busy: boolean;
                 <Send className="w-3.5 h-3.5" /> Submit drawing
               </button>
             </div>
-            <p className="text-[10px] text-on-surface-variant">Undo is allowed before submitting. Timing and stroke order are recorded so the evaluator can see the process.</p>
+            <p className="text-xs text-on-surface-variant">Draw the line through the dots, ideally without lifting. Undo is allowed before submitting. Timing and stroke order are recorded so the evaluator can see the process.</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -299,8 +320,29 @@ function KolamCapture({ view, busy, onSubmit }: { view: CaseView; busy: boolean;
           </div>
         )}
         <div className="space-y-1.5">
-          <div className="text-[9px] font-mono uppercase text-on-surface-variant">Target</div>
-          <KolamFigure ui={ui} imageUrl={api.mediaUrl(view.case_id, ui.target_source_id ?? view.goal.source_ids[0])} />
+          <div className="flex gap-1" role="tablist" aria-label="Reference">
+            {(
+              [
+                ['teach', 'Show me how'],
+                ['target', 'Target image'],
+              ] as const
+            ).map(([k, label]) => (
+              <button
+                key={k}
+                role="tab"
+                aria-selected={aside === k}
+                onClick={() => setAside(k)}
+                className={`px-3 py-1 rounded-md border text-xs ${aside === k ? 'border-cadmium-amber text-cadmium-amber bg-cadmium-amber/10' : 'border-outline text-on-surface-variant'}`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          {aside === 'teach' ? (
+            <KolamTeach ui={ui} />
+          ) : (
+            <KolamFigure ui={ui} imageUrl={api.mediaUrl(view.case_id, ui.target_source_id ?? view.goal.source_ids[0])} />
+          )}
         </div>
       </div>
     </div>

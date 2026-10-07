@@ -74,6 +74,16 @@ export function KolamCanvas({ ui, strokes, onStrokesChange, startRef, disabled, 
     return [Math.round(x * 10) / 10, Math.round(y * 10) / 10, Math.round(performance.now() - startRef.current)];
   };
 
+  const finishStroke = () => {
+    if (!current.current) return;
+    const s = current.current;
+    current.current = null;
+    // Update the ref now so two strokes finished before the next render are both kept.
+    const next = [...strokesRef.current, s];
+    strokesRef.current = next;
+    onStrokesChange(next);
+  };
+
   return (
     <canvas
       ref={ref}
@@ -83,7 +93,13 @@ export function KolamCanvas({ ui, strokes, onStrokesChange, startRef, disabled, 
       style={{ aspectRatio: `${ui.canvas.width} / ${ui.canvas.height}` }}
       onPointerDown={(e) => {
         if (disabled) return;
-        e.currentTarget.setPointerCapture(e.pointerId);
+        try {
+          // Keeps the stroke when the pointer leaves the canvas; unavailable for synthetic or
+          // assistive-technology pointers, which still draw (the stroke ends on leave instead).
+          e.currentTarget.setPointerCapture(e.pointerId);
+        } catch {
+          /* NotFoundError / InvalidStateError: no active native pointer */
+        }
         current.current = [toGoal(e)];
         redraw();
       }}
@@ -95,11 +111,9 @@ export function KolamCanvas({ ui, strokes, onStrokesChange, startRef, disabled, 
         current.current.push(p);
         redraw();
       }}
-      onPointerUp={() => {
-        if (!current.current) return;
-        const s = current.current;
-        current.current = null;
-        onStrokesChange([...strokesRef.current, s]);
+      onPointerUp={finishStroke}
+      onPointerLeave={(e) => {
+        if (!e.currentTarget.hasPointerCapture?.(e.pointerId)) finishStroke();
       }}
       onPointerCancel={() => {
         current.current = null;

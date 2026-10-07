@@ -20,15 +20,20 @@ from anveshan_service.deps import get_mode, get_settings
 from anveshan_service.errors import ServiceError, invalid, not_found
 from anveshan_service.paths import store_upload
 from anveshan_service.settings import Settings
+from anveshan_service.visitors import add_owner, visible
 
 router = APIRouter(prefix="/api/compose")
 
 _DRAFT_ID_RE = re.compile(r"^[0-9a-f]{16}$")
 
 
-def _check_draft_id(draft_id: str) -> str:
+def _check_draft_id(draft_id: str, settings: Optional[Settings] = None) -> str:
     if not _DRAFT_ID_RE.fullmatch(draft_id or ""):
         raise invalid("invalid draft id", draft_id=draft_id[:32] if draft_id else draft_id)
+    if settings is not None and settings.isolate_visitors:
+        ddir = settings.data_dir / "drafts" / draft_id
+        if ddir.is_dir() and not visible(ddir):
+            raise not_found(f"draft {draft_id} not found", draft_id=draft_id)
     return draft_id
 
 
@@ -82,7 +87,7 @@ def analyze_upload(
 
     ctx = adapters.run_context(settings, settings.data_dir, mode)
 
-    with adapters.translated():
+    with adapters.resource_lock("draft", stored.sha256[:16]), adapters.translated():
         draft = composer.create_draft(
             settings.data_dir,
             stored.path,
@@ -92,7 +97,10 @@ def analyze_upload(
             description=description,
             rights_confirmed=rights_confirmed,
         )
-    return draft.to_view()
+    view = draft.to_view()
+    if isinstance(view, dict) and view.get("draft_id"):
+        add_owner(settings.data_dir / "drafts" / str(view["draft_id"]))
+    return view
 
 
 @router.get("/{draft_id}")
@@ -100,7 +108,7 @@ def get_draft(
     draft_id: str,
     settings: Settings = Depends(get_settings),
 ) -> Any:
-    _check_draft_id(draft_id)
+    _check_draft_id(draft_id, settings)
     composer = _composer()
     with adapters.translated():
         draft = composer.load_draft(settings.data_dir, draft_id)
@@ -114,10 +122,10 @@ def refine_draft(
     settings: Settings = Depends(get_settings),
     mode: str = Depends(get_mode),
 ) -> Any:
-    _check_draft_id(draft_id)
+    _check_draft_id(draft_id, settings)
     composer = _composer()
     ctx = adapters.run_context(settings, settings.data_dir, mode)
-    with adapters.translated():
+    with adapters.resource_lock("draft", draft_id), adapters.translated():
         draft = composer.refine_draft(
             settings.data_dir,
             draft_id,
@@ -135,17 +143,18 @@ def create_case(
     settings: Settings = Depends(get_settings),
     mode: str = Depends(get_mode),
 ) -> Any:
-    _check_draft_id(draft_id)
+    _check_draft_id(draft_id, settings)
     composer = _composer()
     track_a = _track_a()
     ctx = adapters.run_context(settings, settings.data_dir, mode)
     edits = body.model_dump(exclude_none=True) if body else {}
-    with adapters.translated():
+    with adapters.resource_lock("draft", draft_id), adapters.translated():
         case_dir = composer.create_case_from_draft(
             settings.cases_root,
             settings.data_dir,
             draft_id,
             edits,
         )
+        add_owner(case_dir)
         handoff = track_a.build_case(case_dir, ctx)
     return handoff.to_view()

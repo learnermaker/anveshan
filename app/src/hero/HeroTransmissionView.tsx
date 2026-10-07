@@ -1,7 +1,7 @@
-/** 03 TRANSMISSION for a live hero case: baseline vs retry curves, gains, transitions, lineage. */
+/** Step 3 RESULTS for a live case: what to do next, baseline vs retry curves, gains, transitions, record. */
 
 import React from 'react';
-import { ArrowLeft, ArrowRight, GitBranch, Target } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Compass, GitBranch, Layers, RotateCcw, Target } from 'lucide-react';
 import type { CaseView } from '../api/types';
 import type { HeroSession } from './session';
 import { ProgressCurve } from './results/ProgressCurve';
@@ -11,31 +11,52 @@ interface Props {
   view: CaseView;
   session: HeroSession | null;
   onBackToPractice: () => void;
+  /** discard the session and start a fresh baseline */
+  onPractiseAgain?: () => void;
+  onStudySource?: () => void;
   onExploreMore: () => void;
 }
 
 const TRANSITION_TONE: Record<string, 'emerald' | 'crimson' | 'cyan' | 'muted' | 'amber'> = {
   improved: 'emerald',
   regressed: 'crimson',
-  observability_gain: 'cyan',    // real service name
-  observability_gained: 'cyan',  // legacy mock name (kept for backward compat)
-  observability_loss: 'amber',   // real service name
-  observability_lost: 'amber',   // legacy mock name (kept for backward compat)
+  observability_gain: 'cyan', // real service name
+  observability_gained: 'cyan', // legacy mock name (kept for backward compat)
+  observability_loss: 'amber', // real service name
+  observability_lost: 'amber', // legacy mock name (kept for backward compat)
   unchanged: 'muted',
 };
 
-const signed = (v: number) => `${v >= 0 ? '+' : ''}${v.toFixed(1)}`;
+const signed = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(1)}`;
+const scoreTone = (v: number) => (v > 0 ? 'text-transmission-emerald' : v < 0 ? 'text-divergence-crimson' : 'text-on-surface');
 
-export function HeroTransmissionView({ view, session, onBackToPractice, onExploreMore }: Props) {
+export function HeroTransmissionView({ view, session, onBackToPractice, onPractiseAgain, onStudySource, onExploreMore }: Props) {
   const res = session?.result;
   if (!session || !res) {
+    const n = session?.attempts.length ?? 0;
+    const status =
+      n === 0
+        ? 'You have not submitted an attempt yet.'
+        : n === 1
+          ? 'You have done attempt 1 (the baseline). Read its feedback, then retry the whole task once.'
+          : 'Both attempts are done. Press "See what changed" in Practise to save the record.';
     return (
       <div className="max-w-xl mx-auto w-full p-6 text-center space-y-3 animate-fade-in">
-        <div className="text-[10px] font-mono uppercase tracking-widest text-cadmium-amber font-bold">03 // TRANSMISSION</div>
-        <h1 className="font-serif text-2xl">No completed session yet</h1>
-        <p className="text-xs text-on-surface-variant">Submit a baseline and a full retry in PRACTICE, then complete the session. The transmission record is computed only from those two evaluated attempts.</p>
+        <div className="text-xs font-mono uppercase tracking-widest text-cadmium-amber font-bold">Step 3 of 3 · Results</div>
+        <h1 className="font-serif text-2xl">Results appear after two attempts</h1>
+        <p className="text-sm text-on-surface-variant">Results compare your first attempt (the baseline) with one full retry, criterion by criterion. {status}</p>
+        <div className="flex justify-center gap-1 text-sm" aria-label={`${Math.min(n, 2)} of 2 attempts done`}>
+          {[0, 1].map((i) => (
+            <span
+              key={i}
+              className={`px-2 py-0.5 rounded-full border ${i < n ? 'border-transmission-emerald/50 text-transmission-emerald' : 'border-outline text-on-surface-variant'}`}
+            >
+              Attempt {i + 1} {i < n ? '✓' : ''}
+            </span>
+          ))}
+        </div>
         <button onClick={onBackToPractice} className={btn.primary}>
-          Go to practice <ArrowRight className="w-3.5 h-3.5" />
+          {n === 1 ? 'Go to Practise and retry' : 'Go to Practise'} <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
     );
@@ -52,79 +73,90 @@ export function HeroTransmissionView({ view, session, onBackToPractice, onExplor
   // Support both real-service (before/after/improved) and legacy mock (baseline_status/retry_status/kind) fields
   const tcBefore = tc.before ?? tc.baseline_status;
   const tcAfter = tc.after ?? tc.retry_status;
-  const tcKind = tc.improved !== undefined
-    ? (tc.improved ? 'improved' : 'unchanged')
-    : (tc.kind ?? 'changed');
+  const tcKind = tc.improved !== undefined ? (tc.improved ? 'improved' : 'unchanged') : tc.kind ?? 'changed';
+  const internet = view.runtime_label === 'INTERNET_REFERENCE';
 
   return (
     <div className="flex flex-col gap-5 w-full animate-fade-in">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="space-y-1.5">
           <button onClick={onBackToPractice} className={btn.ghost}>
-            <ArrowLeft className="w-3.5 h-3.5" /> PRACTICE
+            <ArrowLeft className="w-3.5 h-3.5" /> Back to Practise
           </button>
-          <div className="text-[10px] font-mono uppercase tracking-widest text-transmission-emerald font-bold">03 // TRANSMISSION RECORDED</div>
+          <div className="text-xs font-mono uppercase tracking-widest text-transmission-emerald font-bold">Step 3 of 3 · Results recorded</div>
           <h1 className="font-serif text-2xl sm:text-3xl">{view.title}</h1>
           <div className="flex flex-wrap gap-1.5 items-center">
             <SourceLabelBadge label={view.runtime_label} />
-            {baseline && <span className="text-[9px] font-mono text-on-surface-variant">baseline</span>}
+            {baseline && <span className="text-xs font-mono text-on-surface-variant">attempt 1</span>}
             {baseline && <RuntimeClassBadge value={baseline.runtime_class} />}
-            {retry && <span className="text-[9px] font-mono text-on-surface-variant">retry</span>}
+            {retry && <span className="text-xs font-mono text-on-surface-variant">attempt 2</span>}
             {retry && <RuntimeClassBadge value={retry.runtime_class} />}
             <MockBadge />
           </div>
         </div>
         <button onClick={onExploreMore} className={btn.secondary}>
-          Portfolio <ArrowRight className="w-3.5 h-3.5" />
+          All skills <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
 
+      <WhatNext
+        gain={rec.transmission_gain}
+        passed={Boolean(retry?.evaluation.passed)}
+        targetChanged={Boolean(tc.criterion_id) && Boolean(tc.changed)}
+        targetName={tc.criterion_id ? targetName ?? null : null}
+        onPractiseAgain={onPractiseAgain}
+        onStudySource={onStudySource}
+        onExploreMore={onExploreMore}
+      />
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="p-5 rounded-xl border border-transmission-emerald/40 bg-surface-container-low">
-          <div className="text-[9px] font-mono uppercase text-on-surface-variant">Contract gain (TransmissionRecord)</div>
-          <div className={`text-4xl font-mono font-bold ${rec.transmission_gain >= 0 ? 'text-transmission-emerald' : 'text-divergence-crimson'}`}>{signed(rec.transmission_gain)}</div>
-          <div className="text-[11px] font-mono text-on-surface-variant">
+        <div className="p-5 rounded-xl border border-outline bg-surface-container-low">
+          <div className="text-xs font-mono uppercase text-on-surface-variant">Score change</div>
+          <div className={`text-4xl font-mono font-bold ${scoreTone(rec.transmission_gain)}`}>{signed(rec.transmission_gain)}</div>
+          <div className="text-xs font-mono text-on-surface-variant">
             {rec.baseline_score.toFixed(1)} → {rec.retry_score.toFixed(1)} of {maxScore.toFixed(1)}
           </div>
         </div>
         <div className="p-5 rounded-xl border border-outline bg-surface-container-low">
-          <div className="text-[9px] font-mono uppercase text-on-surface-variant flex items-center gap-1"><Target className="w-3 h-3" /> Targeted change (baseline first divergence)</div>
+          <div className="text-xs font-mono uppercase text-on-surface-variant flex items-center gap-1">
+            <Target className="w-3 h-3" aria-hidden="true" /> Where you first went off track
+          </div>
           {tc.criterion_id ? (
             <>
               <div className="text-sm text-on-surface mt-1">{targetName}</div>
               <div className="flex items-center gap-2 mt-2">
                 {tcBefore && <StatusBadge status={tcBefore} />}
-                <ArrowRight className="w-3 h-3 text-on-surface-variant" />
+                <ArrowRight className="w-3 h-3 text-on-surface-variant" aria-hidden="true" />
                 {tcAfter && <StatusBadge status={tcAfter} />}
               </div>
-              <div className="text-[10px] font-mono text-on-surface-variant mt-1">{tc.changed ? `changed (${tcKind})` : 'did not change'}</div>
+              <div className="text-xs text-on-surface-variant mt-1">{tc.changed ? `Changed on the retry (${tcKind}).` : 'Not fixed on the retry yet.'}</div>
             </>
           ) : (
-            <div className="text-xs text-on-surface-variant mt-1">No baseline divergence was established, so no targeted change is claimed.</div>
+            <div className="text-sm text-on-surface-variant mt-1">Attempt 1 never clearly left the path, so no single fix is claimed.</div>
           )}
         </div>
         <div className="p-5 rounded-xl border border-outline bg-surface-container-low">
-          <div className="text-[9px] font-mono uppercase text-on-surface-variant">Skill gain excluding observability</div>
-          <div className="text-4xl font-mono font-bold text-caliper-cyan">{signed(cmp.skill_gain_excluding_observability)}</div>
-          <div className="text-[10px] text-on-surface-variant">Only criteria assessable in both attempts; UNCERTAIN → known changes are excluded.</div>
+          <div className="text-xs font-mono uppercase text-on-surface-variant">Change on criteria checked both times</div>
+          <div className={`text-4xl font-mono font-bold ${scoreTone(cmp.skill_gain_excluding_observability)}`}>{signed(cmp.skill_gain_excluding_observability)}</div>
+          <div className="text-xs text-on-surface-variant">Leaves out criteria that were UNCERTAIN in one attempt, so better evidence alone does not count as improvement.</div>
         </div>
       </div>
 
-      <Panel kicker="Baseline vs retry" title="Progress toward the goal">
+      <Panel kicker="Attempt 1 vs attempt 2" title="Progress toward the goal">
         <ProgressCurve
           kind={kind}
           height={260}
           series={[
-            { id: 'b', label: 'Baseline', points: cmp.curves.baseline, color: '#e67e22', dashed: true, events: baseline?.trajectory.events },
-            { id: 'r', label: 'Retry', points: cmp.curves.retry, color: '#10b981', events: retry?.trajectory.events },
+            { id: 'b', label: 'Attempt 1 (baseline)', points: cmp.curves.baseline, color: '#e67e22', dashed: true, events: baseline?.trajectory.events },
+            { id: 'r', label: 'Attempt 2 (retry)', points: cmp.curves.retry, color: '#10b981', events: retry?.trajectory.events },
           ]}
           firstDivergence={baseline?.first_divergence?.position ?? null}
         />
       </Panel>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <Panel kicker="Criteria transitions" title="What changed, criterion by criterion">
-          <table className="w-full text-xs">
+        <Panel kicker="Criterion by criterion" title="What changed between attempts">
+          <table className="w-full text-sm">
             <tbody>
               {view.rubric.criteria.map((c) => {
                 const b = baseline?.evaluation.criterion_results.find((x) => x.criterion_id === c.criterion_id);
@@ -134,29 +166,41 @@ export function HeroTransmissionView({ view, session, onBackToPractice, onExplor
                   <tr key={c.criterion_id} className="border-b border-outline/40">
                     <td className="py-2 pr-2">
                       <div>{c.name}</div>
-                      <div className="text-[9px] font-mono text-on-surface-variant">{c.criterion_id}</div>
+                      <div className="text-[11px] font-mono text-on-surface-variant">{c.criterion_id}</div>
                     </td>
                     <td className="py-2 pr-2 whitespace-nowrap">{b && <StatusBadge status={b.status} />}</td>
-                    <td className="py-2 pr-2 text-on-surface-variant">→</td>
+                    <td className="py-2 pr-2 text-on-surface-variant" aria-hidden="true">
+                      →
+                    </td>
                     <td className="py-2 pr-2 whitespace-nowrap">{r && <StatusBadge status={r.status} />}</td>
-                    <td className="py-2 text-right"><Badge tone={TRANSITION_TONE[k] ?? 'muted'}>{k.replace(/_/g, ' ')}</Badge></td>
+                    <td className="py-2 text-right">
+                      <Badge tone={TRANSITION_TONE[k] ?? 'muted'}>{k.replace(/_/g, ' ')}</Badge>
+                    </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
-          <p className="mt-2 text-[10px] text-on-surface-variant">criteria_improved (contract): {rec.criteria_improved.length ? rec.criteria_improved.join(', ') : 'none'}</p>
+          <p className="mt-2 text-xs text-on-surface-variant">Criteria improved: {rec.criteria_improved.length ? rec.criteria_improved.join(', ') : 'none yet'}</p>
         </Panel>
 
-        <Panel kicker="Lineage" title={<span className="flex items-center gap-2"><GitBranch className="w-4 h-4 text-caliper-cyan" />TransmissionRecord</span>}>
-          <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1 text-[11px] font-mono">
+        <Panel
+          kicker="Record (for audit)"
+          title={
+            <span className="flex items-center gap-2">
+              <GitBranch className="w-4 h-4 text-caliper-cyan" aria-hidden="true" />
+              Transmission record
+            </span>
+          }
+        >
+          <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1 text-xs font-mono">
             {(
               [
                 ['transmission_id', rec.transmission_id],
                 ['skill_id', rec.skill_id],
                 ['package_id', rec.package_id],
                 ['rubric_id', rec.rubric_id],
-                ['expert_id', rec.expert_id],
+                internet ? ['source author', `${rec.expert_id} (internet reference, not a verified expert)`] : ['expert_id', rec.expert_id],
                 ['learner_id', rec.learner_id],
                 ['baseline_attempt', rec.baseline_attempt_id],
                 ['retry_attempt', rec.retry_attempt_id],
@@ -171,12 +215,71 @@ export function HeroTransmissionView({ view, session, onBackToPractice, onExplor
               </React.Fragment>
             ))}
           </dl>
-          {rec.lineage.adaptation_notes && <p className="mt-2 text-[10px] text-cadmium-amber">{rec.lineage.adaptation_notes}</p>}
-          <p className="mt-2 text-[10px] text-on-surface-variant">
-            The hash identifies this record’s inputs. It records that a baseline and retry were evaluated against this package; it is not a certification of skill.
+          {rec.lineage.adaptation_notes && <p className="mt-2 text-xs text-cadmium-amber">{rec.lineage.adaptation_notes}</p>}
+          <p className="mt-2 text-xs text-on-surface-variant">
+            The hash identifies this record’s inputs. It records that a baseline and a retry were evaluated against this skill; it is not a certification of skill.
           </p>
         </Panel>
       </div>
     </div>
+  );
+}
+
+function WhatNext({
+  gain,
+  passed,
+  targetChanged,
+  targetName,
+  onPractiseAgain,
+  onStudySource,
+  onExploreMore,
+}: {
+  gain: number;
+  passed: boolean;
+  targetChanged: boolean;
+  targetName: string | null;
+  onPractiseAgain?: () => void;
+  onStudySource?: () => void;
+  onExploreMore: () => void;
+}) {
+  let headline: string;
+  let body: string;
+  if (passed) {
+    headline = 'Your retry met every required check.';
+    body = 'The skill transferred for this task. Try another skill, or practise again to make it consistent.';
+  } else if (gain > 0 || targetChanged) {
+    headline = 'Your retry improved.';
+    body =
+      targetChanged && targetName
+        ? `You changed "${targetName}", where you first went off track. Some required checks are still open: practise again to close them.`
+        : 'Some checks improved, but not every required check is met yet. Practise again to close the rest.';
+  } else {
+    headline = 'No change yet. That is normal on a first try.';
+    body = targetName
+      ? `Focus on "${targetName}", where you first went off track. Study that step in the source, then practise again with a fresh baseline and retry.`
+      : 'Study the steps in the source, then practise again with a fresh baseline and retry.';
+  }
+  return (
+    <section className="rounded-xl border border-cadmium-amber/40 bg-cadmium-amber/5 p-4 space-y-3" aria-live="polite">
+      <div>
+        <div className="text-base font-semibold text-on-surface">{headline}</div>
+        <p className="text-sm text-on-surface-variant mt-1">{body}</p>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {onPractiseAgain && (
+          <button onClick={onPractiseAgain} className={btn.primary}>
+            <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" /> Practise again
+          </button>
+        )}
+        {onStudySource && (
+          <button onClick={onStudySource} className={btn.secondary}>
+            <Compass className="w-3.5 h-3.5" aria-hidden="true" /> Study the source steps
+          </button>
+        )}
+        <button onClick={onExploreMore} className={btn.secondary}>
+          <Layers className="w-3.5 h-3.5" aria-hidden="true" /> Try another skill
+        </button>
+      </div>
+    </section>
   );
 }

@@ -10,6 +10,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import type { TransmissionTelemetry } from '../data/adapter';
+import { useEscape } from '../hero/useEscape';
 
 interface LineageDrawerProps {
   telemetry: TransmissionTelemetry;
@@ -28,6 +29,7 @@ export const LineageDrawer: React.FC<LineageDrawerProps> = ({
   );
   const [copied, setCopied] = useState<boolean>(false);
 
+  useEscape(isOpen, onClose);
   if (!isOpen) return null;
 
   // Canonical DAG representation of the 8 contracts
@@ -140,11 +142,11 @@ export const LineageDrawer: React.FC<LineageDrawerProps> = ({
             </div>
           </div>
 
-          <button
+          <button aria-label="Close" title="Close (Esc)"
             onClick={onClose}
-            className="p-1.5 rounded bg-surface-container-highest hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors"
+            className="flex items-center gap-1 px-2 py-1 rounded bg-surface-container-highest hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5" aria-hidden="true" /><span className="text-xs font-mono">Close</span>
           </button>
         </div>
 

@@ -192,7 +192,7 @@ export function UniversalSourceView({ view, onViewChange, onReload, onEnterPract
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="space-y-1.5">
           <button onClick={onBack} className={btn.ghost}><ArrowLeft className="w-3.5 h-3.5" /> Portfolio</button>
-          <div className="text-[10px] font-mono uppercase tracking-widest text-caliper-cyan font-bold">01 // SOURCE · Composed skill · Goal model v{view.goal.version}</div>
+          <div className="text-xs font-mono uppercase tracking-widest text-caliper-cyan font-bold">Step 1 of 3 · Learn from the source</div>
           <h1 className="font-serif text-2xl sm:text-3xl text-on-surface">{view.title}</h1>
           <div className="flex flex-wrap items-center gap-1.5">
             <SourceLabelBadge label={view.runtime_label} />
@@ -204,7 +204,7 @@ export function UniversalSourceView({ view, onViewChange, onReload, onEnterPract
         </div>
         <div className="flex items-center gap-2">
           <button onClick={onReload} className={btn.secondary} title="Reload case from the service"><RefreshCw className="w-3.5 h-3.5" /> Reload</button>
-          <button onClick={onEnterPractice} className={btn.primary}>Enter practice <ArrowRight className="w-3.5 h-3.5" /></button>
+          <button onClick={onEnterPractice} className={btn.primary}>Start practising <ArrowRight className="w-3.5 h-3.5" /></button>
         </div>
       </div>
 
@@ -276,7 +276,7 @@ export function UniversalSourceView({ view, onViewChange, onReload, onEnterPract
 
           <Panel kicker="Query" title="Ask about this skill">
             <div className="flex gap-2">
-              <input value={queryText} onChange={(e) => setQueryText(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && void doQuery()} placeholder="What is the key goal property?" className="flex-1 bg-surface-dim border border-outline rounded-lg px-2.5 py-1.5 text-xs outline-none focus:border-caliper-cyan" aria-label="Query text" />
+              <input value={queryText} onChange={(e) => setQueryText(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && void doQuery()} placeholder="e.g. What is the most important step?" className="flex-1 bg-surface-dim border border-outline rounded-lg px-2.5 py-1.5 text-xs outline-none focus:border-caliper-cyan" aria-label="Query text" />
               <button onClick={() => void doQuery()} disabled={queryBusy} className={btn.secondary} aria-label="Submit query"><Search className="w-3.5 h-3.5" /></button>
             </div>
             {queryBusy && <Spinner label="Querying…" />}

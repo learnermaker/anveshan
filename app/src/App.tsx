@@ -16,11 +16,13 @@ import { HeroPracticeView } from './hero/HeroPracticeView';
 import { HeroTransmissionView } from './hero/HeroTransmissionView';
 import type { HeroSession } from './hero/session';
 import { ErrorNote, Spinner } from './hero/ui';
+import { GuideModal } from './components/HowItWorks';
+import type { StepState } from './components/Header';
 
 import { CAPABILITY_CASES, SHOWCASE_CASE_IDS, getCapabilityCase } from './data/cases/registry';
 import { api } from './api/client';
 import { IS_MOCK, getRequestedMode, subscribeMode, type RequestedMode } from './api/runtime';
-import type { CaseSummary, CaseView } from './api/types';
+import type { CaseSummary, CaseView, HealthResponse } from './api/types';
 import type { AppView } from './types/workspace';
 import type { LifecycleStage } from './components/LifecycleInspectorModal';
 
@@ -44,12 +46,24 @@ export function App() {
   const [selected, setSelected] = useState<CaseKey>(initial.key);
   const [requestedMode, setMode] = useState<RequestedMode>(getRequestedMode());
   useEffect(() => subscribeMode(setMode), []);
+  const [health, setHealth] = useState<HealthResponse | null>(null);
+  useEffect(() => {
+    api.health().then(setHealth).catch(() => setHealth(null));
+  }, []);
+  const debug = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('debug') === '1';
+  const showRuntime = debug || health?.mode_override === true;
+  const [guideOpen, setGuideOpen] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     params.set('view', currentView);
     if (selected.kind !== 'composer') params.set('case', selected.id);
     window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
+  }, [currentView, selected]);
+
+  // A new screen starts at the top (otherwise the header and title can be scrolled out of view).
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
   }, [currentView, selected]);
 
   // ---------------- hero cases (service) ----------------
@@ -153,6 +167,24 @@ export function App() {
 
   const selectedId = selected.kind !== 'composer' ? selected.id : '';
 
+  // Stepper state for live cases: what is done, what is next, and what is not ready yet.
+  const steps: Partial<Record<AppView, StepState>> = {};
+  if (selected.kind === 'hero') {
+    const n = heroSession?.attempts.length ?? 0;
+    const done = Boolean(heroSession?.result);
+    steps.source = { status: heroSession ? 'done' : 'todo' };
+    steps.practice = {
+      status: n >= 2 ? 'done' : 'todo',
+      hint: heroSession ? `${Math.min(n, 2)}/2 attempts` : undefined,
+      title: 'Do the task once (baseline), read the feedback, then retry once.',
+    };
+    steps.transmission = done
+      ? { status: 'done' }
+      : n >= 2
+        ? { status: 'todo', hint: 'ready', title: 'Both attempts are done: open Results to see what changed.' }
+        : { status: 'locked', title: 'Available after a baseline and one retry in Practise.' };
+  }
+
   const heroBody = (render: (v: CaseView) => React.ReactNode) => {
     if (caseLoading && !caseView) return <Spinner label={`Loading ${selectedId}…`} />;
     if (caseError) return <ErrorNote error={caseError} />;
@@ -179,11 +211,22 @@ export function App() {
         caseKindLabel={selected.kind === 'hero' ? (IS_MOCK ? 'LIVE CASE · MOCK DATA' : 'LIVE CASE') : selected.kind === 'composer' ? 'COMPOSER' : 'SYNTHETIC REPLAY'}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenStitchDesign={() => setIsStitchOpen(true)}
+        showRuntime={showRuntime}
+        steps={steps}
+        onOpenGuide={() => setGuideOpen(true)}
       />
 
       <main className="flex-1 max-w-workbench w-full mx-auto p-3 sm:p-4 lg:p-6 flex flex-col gap-6">
         {currentView === 'discovery' && (
-          <DiscoveryView heroCases={heroCases} heroError={heroError} heroLoading={heroLoading} onRefreshHero={loadCases} onSelect={(k) => select(k)} selected={selected} />
+          <DiscoveryView
+            heroCases={heroCases}
+            heroError={heroError}
+            heroLoading={heroLoading}
+            onRefreshHero={loadCases}
+            onSelect={(k) => select(k)}
+            selected={selected}
+            onOpenGuide={() => setGuideOpen(true)}
+          />
         )}
 
         {(currentView === 'composer' || selected.kind === 'composer') && (
@@ -220,7 +263,17 @@ export function App() {
           ))}
         {selected.kind === 'hero' && currentView === 'transmission' &&
           heroBody((v) => (
-            <HeroTransmissionView view={v} session={heroSession} onBackToPractice={() => setCurrentView('practice')} onExploreMore={() => setCurrentView('discovery')} />
+            <HeroTransmissionView
+              view={v}
+              session={heroSession}
+              onBackToPractice={() => setCurrentView('practice')}
+              onPractiseAgain={() => {
+                setHeroSession(null);
+                setCurrentView('practice');
+              }}
+              onStudySource={() => setCurrentView('source')}
+              onExploreMore={() => setCurrentView('discovery')}
+            />
           ))}
 
         {selected.kind === 'showcase' && currentView === 'source' && (
@@ -258,8 +311,6 @@ export function App() {
             ANVESHAN PROTOTYPE
           </span>
           <span className="text-outline">|</span>
-          <span>CASE: {selected.kind === 'composer' ? 'wizard' : selected.id}</span>
-          <span className="text-outline">|</span>
           <span className="text-cadmium-amber">GOOGLE CLOUD AI BUILDER CUP 2026</span>
         </div>
         <div className="flex items-center gap-4">
@@ -268,7 +319,7 @@ export function App() {
               VIEW PROVENANCE DAG
             </button>
           )}
-          <span>{selected.kind === 'showcase' ? 'SYNTHETIC REPLAY FIXTURE' : selected.kind === 'composer' ? 'COMPOSER' : IS_MOCK ? 'MOCK DATA (SYNTHETIC)' : 'SERVICE-BACKED'}</span>
+          <span>{selected.kind === 'showcase' ? 'SYNTHETIC REPLAY FIXTURE' : IS_MOCK ? 'MOCK DATA (SYNTHETIC)' : 'Scores come from fixed rules, never from the AI'}</span>
         </div>
       </footer>
 
@@ -289,6 +340,7 @@ export function App() {
         </>
       )}
       <StitchModal isOpen={isStitchOpen} onClose={() => setIsStitchOpen(false)} />
+      <GuideModal isOpen={guideOpen} onClose={() => setGuideOpen(false)} />
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </div>
   );

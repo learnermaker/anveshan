@@ -14,7 +14,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
-          python-version: "3.12"
+          python-version: "3.13"
 
       - name: Install Python test dependencies
         run: python -m pip install -r requirements-dev.txt
@@ -59,3 +59,21 @@ jobs:
       - name: Build frontend
         working-directory: app
         run: npm install --no-audit --no-fund && npm run build
+
+  docker-image:
+    # Proves the Cloud Run image builds (multi-stage app build, pinned runtime deps, licensed media
+    # fetch with sha256 checks) and that the container serves /api/health, before anyone deploys it.
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Build the container image
+        run: docker build -t anveshan:ci .
+      - name: Smoke-test the container
+        run: |
+          docker run -d --name anv -p 8080:8080 -e K_SERVICE=ci anveshan:ci
+          for i in $(seq 1 30); do curl -fsS http://localhost:8080/api/health && break; sleep 2; done
+          curl -fsS http://localhost:8080/api/health | grep -q '"ok":true'
+          curl -fsS http://localhost:8080/api/cases | grep -q '"kolam"'
+          curl -fsS -o /dev/null http://localhost:8080/
+          docker logs anv | tail -20

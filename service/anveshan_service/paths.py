@@ -15,6 +15,7 @@ from fastapi import UploadFile
 
 from anveshan_service.errors import ServiceError, invalid, not_found
 from anveshan_service.settings import Settings
+from anveshan_service.visitors import visible
 
 CASE_ID_RE = re.compile(r"^[a-z0-9-]+(~[0-9a-f]{12})?$")
 SESSION_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
@@ -53,6 +54,8 @@ def case_dir(settings: Settings, case_id: str) -> Path:
     root = settings.data_dir / "cases" if "~" in case_id else settings.cases_root
     d = root / case_id
     if not within(d, root) or not d.is_dir():
+        raise not_found(f"unknown case {case_id}", case_id=case_id)
+    if "~" in case_id and settings.isolate_visitors and not visible(d):
         raise not_found(f"unknown case {case_id}", case_id=case_id)
     return d
 

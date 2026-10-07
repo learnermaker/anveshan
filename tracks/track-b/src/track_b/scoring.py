@@ -37,6 +37,22 @@ class ScoredCriterion:
     evidence: Optional[EvidenceRef]
     position: Optional[float]
     uncertain_reason: Optional[str] = None
+    target: Optional[str] = None  # human-readable SATISFIED band, e.g. ">= 0.9" (from the observer binding)
+
+
+def satisfied_target(binding: ObserverBinding) -> Optional[str]:
+    """The first SATISFIED band as plain text, so feedback can say what the target was."""
+    for band in binding.bands:
+        if str(getattr(band.status, "value", band.status)) != CriterionStatus.SATISFIED.value:
+            continue
+        lo, hi = band.min, band.max
+        if lo is not None and hi is not None:
+            return f"between {lo:g} and {hi:g}"
+        if lo is not None:
+            return f"at least {lo:g}"
+        if hi is not None:
+            return f"at most {hi:g}"
+    return None
 
 
 def band_status(binding: ObserverBinding, value: float) -> CriterionStatus:
@@ -97,6 +113,7 @@ def score_criterion(
         evidence=evidence,
         position=position,
         uncertain_reason=reason,
+        target=satisfied_target(binding),
     )
 
 

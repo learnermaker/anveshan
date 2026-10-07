@@ -30,7 +30,7 @@ from tracks.common.schemas import (
     ParticipantRef,
 )
 
-from track_b import evaluators
+from track_b import coach, evaluators
 from track_b.clock import Clock, IdFactory, RandomIdFactory, SystemClock
 from track_b.compare import compare_attempts
 from track_b.divergence import find_first_divergence
@@ -180,14 +180,25 @@ def submit_attempt(session: Session, media: AttemptMedia, ctx: RunContext) -> At
     first = find_first_divergence(handoff, evaluation, scored, trajectory)
 
     feedback = drill = None
+    coaching: Optional[Dict[str, Any]] = None
     if attempt_type == AttemptType.BASELINE or not evaluation.passed:
-        feedback = build_feedback(
+        fb_args = dict(
             feedback_id=f"fb.{stem}.{n}",
             handoff=handoff,
             evaluation=evaluation,
             first_divergence=first,
             attempt_kind=media.kind,
         )
+        feedback = build_feedback(**fb_args)
+        if coach.enabled(ctx):
+            # AI wording of the advice only; the guard keeps ids, evidence and numbers, else the template.
+            wording = coach.CoachWording(ctx, handoff.package.title, {c.criterion_id: c.name for c in handoff.rubric.criteria})
+            worded = build_feedback(**fb_args, wording=wording)
+            accepted = worded != feedback
+            coaching = wording.view(accepted)
+            if accepted:
+                coaching["template_advice"] = {it.criterion_id: it.corrective_advice for it in feedback.items}
+                feedback = worded
         drill = build_drill(handoff, evaluation, first, media.kind)
 
     warnings = [*handoff.warnings, *trajectory.warnings, *eval_warnings]
@@ -200,6 +211,7 @@ def submit_attempt(session: Session, media: AttemptMedia, ctx: RunContext) -> At
             "first_divergence": first,
             "feedback": feedback.model_dump(mode="json") if feedback else None,
             "drill": drill,
+            "coaching": coaching,
             "runtime_class": runtime_class(ctx, trajectory),
             "warnings": warnings,
             "run_keys": list(trajectory.run_keys),

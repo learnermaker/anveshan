@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 export type LifecycleStage = 'source' | 'knowledge' | 'practice' | 'transmission';
 import type { TransmissionTelemetry } from '../data/adapter';
+import { useEscape } from '../hero/useEscape';
 
 interface LifecycleInspectorModalProps {
   stage: LifecycleStage | null;
@@ -25,6 +26,7 @@ export const LifecycleInspectorModal: React.FC<LifecycleInspectorModalProps> = (
   onClose,
   telemetry,
 }) => {
+  useEscape(Boolean(stage), onClose);
   if (!stage || stage === 'transmission') return null;
 
   const kp = telemetry.knowledgePackage;
@@ -51,11 +53,11 @@ export const LifecycleInspectorModal: React.FC<LifecycleInspectorModalProps> = (
             </div>
           </div>
 
-          <button
+          <button aria-label="Close" title="Close (Esc)"
             onClick={onClose}
-            className="p-1.5 rounded bg-surface-container-highest hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors"
+            className="flex items-center gap-1 px-2 py-1 rounded bg-surface-container-highest hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5" aria-hidden="true" /><span className="text-xs font-mono">Close</span>
           </button>
         </div>
 

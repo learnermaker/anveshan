@@ -21,9 +21,10 @@ def test_health_shape_and_no_secrets(client, monkeypatch):
     r = client.get("/api/health")
     assert r.status_code == 200
     body = r.json()
-    assert body == {"ok": True, "mode": "recorded",
-                    "models": {"text_image": body["models"]["text_image"], "video_frames": body["models"]["video_frames"],
-                               "audio_enabled": False}}
+    m = body["models"]
+    assert body == {"ok": True, "mode": "recorded", "mode_override": True, "curated_review_open": True,
+                    "models": {"text_image": m["text_image"], "video_frames": m["video_frames"],
+                               "vision_fast": m["vision_fast"], "embedding": m["embedding"], "audio_enabled": False}}
     assert "AIzaTESTSECRETVALUE123" not in r.text
 
 

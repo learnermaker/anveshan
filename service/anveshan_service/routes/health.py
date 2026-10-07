@@ -18,9 +18,13 @@ def health(settings: Settings = Depends(get_settings)) -> dict:
     return {
         "ok": True,
         "mode": settings.mode,
+        "mode_override": settings.allow_mode_override,
+        "curated_review_open": settings.curated_review_open or bool(settings.review_token),
         "models": {
             "text_image": registry.model_id("text_image"),
             "video_frames": registry.model_id("video_frames"),
+            "vision_fast": registry.model_id("vision_fast"),
+            "embedding": registry.model_id("embedding"),
             "audio_enabled": registry.enabled("audio"),
         },
     }

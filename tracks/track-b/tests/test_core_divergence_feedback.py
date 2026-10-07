@@ -109,7 +109,7 @@ def test_feedback_items_order_and_expert_evidence_mapping(tmp_path):
     assert "canvas" in by["CRIT-A"].corrective_advice
     assert "CLM-02" in by["CRIT-B"].corrective_advice
     assert fb.summary.startswith("0 of 3 criteria met (1 / 6).")
-    assert "First divergence: Continuity at time 1 [CLM-03]." in fb.summary
+    assert "First divergence: Continuity at 1.0 s [CLM-03]." in fb.summary
     assert validate_feedback_against_evaluation(fb, ev) == []
 
     drill = build_drill(h, ev, first, "trace")

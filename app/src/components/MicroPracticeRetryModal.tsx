@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CheckCircle2, RotateCcw, Sparkles, TrendingUp, X, ArrowRight, ShieldCheck } from 'lucide-react';
 import type { CapabilityCase } from '../types/workspace';
+import { useEscape } from '../hero/useEscape';
 
 interface MicroPracticeRetryModalProps {
   capCase: CapabilityCase;
@@ -15,6 +16,7 @@ export function MicroPracticeRetryModal({
   onClose,
   onCompleteRetry,
 }: MicroPracticeRetryModalProps) {
+  useEscape(isOpen, onClose);
   if (!isOpen) return null;
 
   const challenge = capCase.microPractice;
@@ -369,11 +371,11 @@ export function MicroPracticeRetryModal({
               </h2>
             </div>
           </div>
-          <button
+          <button aria-label="Close" title="Close (Esc)"
             onClick={onClose}
-            className="p-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-bright transition-colors"
+            className="flex items-center gap-1 px-2 py-1 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-bright transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5" aria-hidden="true" /><span className="text-xs font-mono">Close</span>
           </button>
         </div>
 

@@ -24,19 +24,21 @@ export function AttemptResultView({ view, result, media }: Props) {
   const maxScore = view.rubric.criteria.reduce((s, c) => s + c.weight, 0);
   const universal = isUniversalView(view);
   const metricIds = universal ? criterionMetricIds(view) : {};
-  const label = result.attempt.attempt_type === 'baseline' ? 'Baseline' : `Retry #${result.attempt.attempt_number - 1}`;
+  const label = result.attempt.attempt_type === 'baseline' ? 'Attempt 1 (baseline)' : 'Attempt 2 (retry)';
+  const [showTemplate, setShowTemplate] = useState(false);
+  const aiWorded = result.coaching?.status === 'ai_worded';
   const [allEvents, setAllEvents] = useState(false);
   const shownEvents = allEvents ? t.events : t.events.slice(0, EVENTS_SHOWN);
 
   return (
     <div className="space-y-5">
       <Panel
-        kicker={`${label} · progress toward the goal`}
-        title={t.process_observable ? 'Trajectory against the goal model' : 'Final state only — process not observable'}
+        kicker={`${label} · result`}
+        title={t.process_observable ? 'How your attempt progressed toward the goal' : 'Final result only (the process was not visible)'}
         right={
           <>
             <RuntimeClassBadge value={result.runtime_class} />
-            <Badge tone={ev.passed ? 'emerald' : 'amber'}>{ev.passed ? 'required criteria met' : 'required criteria not all met'}</Badge>
+            <Badge tone={ev.passed ? 'emerald' : 'amber'}>{ev.passed ? 'all required checks met' : 'some required checks not met yet'}</Badge>
             <span className="text-[11px] font-mono text-on-surface">
               {ev.total_score.toFixed(1)} / {maxScore.toFixed(1)}
             </span>
@@ -80,12 +82,12 @@ export function AttemptResultView({ view, result, media }: Props) {
 
       <FirstDivergenceCard view={view} result={result} media={media} />
 
-      <Panel kicker="Deterministic score policy" title="Criteria">
+      <Panel kicker="Checked by fixed rules" title="Each check, and what was measured">
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
               <tr className="text-[9px] font-mono uppercase text-on-surface-variant text-left border-b border-outline">
-                <th className="py-1.5 pr-3">Criterion</th>
+                <th className="py-1.5 pr-3">Check</th>
                 <th className="py-1.5 pr-3">Status</th>
                 <th className="py-1.5 pr-3 text-right">Score</th>
                 <th className="py-1.5">Finding</th>
@@ -121,7 +123,24 @@ export function AttemptResultView({ view, result, media }: Props) {
       </Panel>
 
       {result.feedback && (
-        <Panel kicker="Feedback" title={<span className="flex items-center gap-2"><MessageSquareText className="w-4 h-4 text-cadmium-amber" />{result.feedback.summary}</span>}>
+        <Panel
+          kicker="Feedback: what to change next time"
+          title={<span className="flex items-center gap-2"><MessageSquareText className="w-4 h-4 text-cadmium-amber" aria-hidden="true" />{result.feedback.summary}</span>}
+          right={
+            aiWorded ? (
+              <span className="flex items-center gap-2">
+                <Badge tone="cyan" title={`Advice worded by ${result.coaching?.model_id ?? 'the AI'} from the measured findings and cited claims; a guard rejects new numbers or missing claim ids. Scores are not affected.`}>
+                  AI-WORDED ADVICE
+                </Badge>
+                <button type="button" className="text-xs text-caliper-cyan hover:underline" onClick={() => setShowTemplate((v) => !v)}>
+                  {showTemplate ? 'Show AI wording' : 'Show fixed wording'}
+                </button>
+              </span>
+            ) : result.coaching?.reason ? (
+              <span className="text-xs text-on-surface-variant" title={result.coaching.reason}>fixed wording</span>
+            ) : undefined
+          }
+        >
           <ul className="space-y-3">
             {result.feedback.items.map((it, i) => {
               const map = view.criterion_map?.criteria[it.criterion_id];
@@ -135,9 +154,9 @@ export function AttemptResultView({ view, result, media }: Props) {
                       </span>
                     ))}
                   </div>
-                  <p><span className="text-[9px] font-mono uppercase text-on-surface-variant mr-1">Observed</span>{it.what_was_observed}</p>
-                  <p><span className="text-[9px] font-mono uppercase text-on-surface-variant mr-1">Differed</span>{it.what_differed}</p>
-                  <p className="text-cadmium-amber"><span className="text-[9px] font-mono uppercase text-on-surface-variant mr-1">Try</span>{it.corrective_advice}</p>
+                  <p><span className="text-[11px] font-mono uppercase text-on-surface-variant mr-1">Observed</span>{it.what_was_observed}</p>
+                  <p><span className="text-[11px] font-mono uppercase text-on-surface-variant mr-1">Gap</span>{it.what_differed}</p>
+                  <p className="text-cadmium-amber"><span className="text-[11px] font-mono uppercase text-on-surface-variant mr-1">Try</span>{showTemplate ? result.coaching?.template_advice?.[it.criterion_id] ?? it.corrective_advice : it.corrective_advice}</p>
                 </li>
               );
             })}
@@ -157,8 +176,14 @@ function DrillCard({ view, drill }: { view: CaseView; drill: NonNullable<Attempt
       title={<span className="flex items-center gap-2"><Dumbbell className="w-4 h-4 text-caliper-cyan" />{drill.title ?? 'Focused drill'}</span>}
       right={<Badge tone="muted">UNSCORED · guidance only</Badge>}
     >
-      <div className="space-y-2 text-xs">
-        <p className="text-on-surface leading-relaxed">{drill.instructions ?? drill.drill_hint}</p>
+      <div className="space-y-2 text-sm">
+        <p className="text-on-surface leading-relaxed">{drill.instruction ?? drill.instructions ?? drill.drill_hint ?? 'Repeat the step where you first went off track, slowly, before the retry.'}</p>
+        {drill.success_hint && (
+          <p className="text-on-surface-variant">
+            <span className="text-[11px] font-mono uppercase mr-1">You have it when</span>
+            {drill.success_hint}
+          </p>
+        )}
         {drill.source_claim_ids && drill.source_claim_ids.length > 0 && (
           <p className="text-[10px] font-mono text-on-surface-variant">
             Grounded in {drill.source_claim_ids.map((id) => (

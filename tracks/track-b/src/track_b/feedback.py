@@ -39,6 +39,26 @@ def _fmt(x: float) -> str:
     return f"{x:g}"
 
 
+def _differed(indicator: str, deviation: Optional[str]) -> str:
+    """One sentence on the gap. The deviation analysis usually restates the indicator, so it is
+    used alone when it already contains it (no "Expected: X. Does not meet: X." repetition)."""
+    indicator = indicator.rstrip(".")
+    deviation = (deviation or "").strip()
+    if deviation and indicator.lower() in deviation.lower():
+        return deviation
+    return f"Expected: {indicator}. {deviation}".strip()
+
+
+def _where(first: Dict[str, Any]) -> str:
+    pos = first.get("position")
+    if pos is None:
+        return ""
+    kind = first.get("position_kind") or ""
+    if kind == "time":
+        return f" at {float(pos):.1f} s"
+    return f" at {kind} {_fmt(float(pos))}"
+
+
 def _claims(handoff: TrackBHandoff, cid: str) -> str:
     return ", ".join(handoff.criterion_map.criteria[cid].source_claim_ids)
 
@@ -72,7 +92,7 @@ def _item(handoff: TrackBHandoff, evaluation: Evaluation, cid: str, attempt_kind
     return FeedbackItem(
         criterion_id=cid,
         what_was_observed=result.observed_finding,
-        what_differed=f"Expected: {crit.observable_indicator.rstrip('.')}. {result.deviation_analysis or ''}".strip(),
+        what_differed=_differed(crit.observable_indicator, result.deviation_analysis),
         corrective_advice=f"{entry.drill_hint.rstrip('.')}. Why it matters: {entry.why_it_matters}",
         expert_evidence_ref=expert,
         learner_evidence_ref=result.evidence_ref,
@@ -87,9 +107,7 @@ def _summary(handoff: TrackBHandoff, evaluation: Evaluation, first: Optional[Dic
         f"({_fmt(evaluation.total_score)} / {_fmt(handoff.rubric.max_possible_score)})."
     ]
     if first is not None:
-        where = ""
-        if first.get("position") is not None:
-            where = f" at {first['position_kind']} {_fmt(float(first['position']))}"
+        where = _where(first)
         parts.append(f"First divergence: {first['criterion_name']}{where} [{', '.join(first['source_claim_ids'])}].")
     if evaluation.uncertainty_flags:
         parts.append(f"Not assessable from this attempt: {', '.join(evaluation.uncertainty_flags)}.")

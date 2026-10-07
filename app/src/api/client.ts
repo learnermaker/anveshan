@@ -35,6 +35,8 @@ export interface CallOptions {
   /** Override the mode for this call (otherwise the runtime panel selection). */
   mode?: 'live' | 'recorded';
   signal?: AbortSignal;
+  /** Invitation token for expert review of curated cases on the public demo (X-Review-Token). */
+  reviewToken?: string;
 }
 
 function withMode(path: string, mode?: 'live' | 'recorded'): string {
@@ -56,7 +58,10 @@ async function request<T>(method: 'GET' | 'POST', path: string, body?: unknown, 
   try {
     res = await fetch(withMode(path, opts.mode), {
       method,
-      headers: body !== undefined ? { 'Content-Type': 'application/json' } : undefined,
+      headers: {
+        ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
+        ...(opts.reviewToken ? { 'X-Review-Token': opts.reviewToken } : {}),
+      },
       body: body !== undefined ? JSON.stringify(body) : undefined,
       signal: opts.signal,
     });

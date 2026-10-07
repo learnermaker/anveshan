@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, Sparkles, ExternalLink, Download, Layers } from 'lucide-react';
+import { useEscape } from '../hero/useEscape';
 
 interface StitchModalProps {
   isOpen: boolean;
@@ -9,6 +10,7 @@ interface StitchModalProps {
 export const StitchModal: React.FC<StitchModalProps> = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = React.useState<'workbench' | 'discovery'>('workbench');
 
+  useEscape(isOpen, onClose);
   if (!isOpen) return null;
 
   return (
@@ -58,11 +60,11 @@ export const StitchModal: React.FC<StitchModalProps> = ({ isOpen, onClose }) => 
               </button>
             </div>
 
-            <button
+            <button aria-label="Close" title="Close (Esc)"
               onClick={onClose}
-              className="p-1.5 rounded bg-surface-container-highest hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors"
+              className="flex items-center gap-1 px-2 py-1 rounded bg-surface-container-highest hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors"
             >
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5" aria-hidden="true" /><span className="text-xs font-mono">Close</span>
             </button>
           </div>
         </div>

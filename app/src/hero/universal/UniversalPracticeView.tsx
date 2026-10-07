@@ -10,6 +10,7 @@ import { ArrowLeft, ArrowRight, FileUp, Play, RotateCcw, Send } from 'lucide-rea
 import type { AttemptKind, CaseView } from '../../api/types';
 import { api, type AttemptUpload } from '../../api/client';
 import { ApiError } from '../../api/errors';
+import { AttemptProgress, ReviewNote, TaskInstructions } from '../Guidance';
 import { AttemptResultView } from '../results/AttemptResultView';
 import type { HeroSession, LocalAttemptMedia } from '../session';
 import { Badge, btn, ErrorNote, MockBadge, Panel, ProgressBar, ReviewBadge, SourceLabelBadge, Spinner } from '../ui';
@@ -46,8 +47,9 @@ export function UniversalPracticeView({ view, session, onSessionChange, onComple
   const start = async () => {
     setErr(null);
     try {
-      const s = await api.createSession(view.case_id, learner.trim() || 'Learner');
-      onSessionChange({ caseId: view.case_id, sessionId: s.session_id, learnerName: learner.trim() || 'Learner', attempts: [], result: null });
+      const name = learner.trim() || 'Guest';
+      const s = await api.createSession(view.case_id, name);
+      onSessionChange({ caseId: view.case_id, sessionId: s.session_id, learnerName: name, attempts: [], result: null });
       setShowCapture(true);
     } catch (x) {
       setErr(x);
@@ -99,50 +101,57 @@ export function UniversalPracticeView({ view, session, onSessionChange, onComple
     <div className="flex flex-col gap-5 w-full animate-fade-in">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="space-y-1.5">
-          <button onClick={onBack} className={btn.ghost}><ArrowLeft className="w-3.5 h-3.5" /> Source</button>
-          <div className="text-[10px] font-mono uppercase tracking-widest text-cadmium-amber font-bold">02 // Practice · {view.task.title}</div>
+          <button onClick={onBack} className={btn.ghost}><ArrowLeft className="w-3.5 h-3.5" /> Back to Learn</button>
+          <div className="text-xs font-mono uppercase tracking-widest text-cadmium-amber font-bold">Step 2 of 3 · Practise · {view.task.title}</div>
           <h1 className="font-serif text-2xl text-on-surface">{view.title}</h1>
           <div className="flex flex-wrap gap-1.5">
             <SourceLabelBadge label={view.runtime_label} />
             <ReviewBadge status={view.review_status} />
-            {session && <Badge tone="muted">session {session.sessionId}</Badge>}
+            {session && <Badge tone="muted" title={`Session ${session.sessionId}`}>Learner: {session.learnerName}</Badge>}
             <MockBadge />
           </div>
         </div>
         {session && (
           <div className="flex flex-wrap gap-2">
-            <button onClick={() => onSessionChange(null)} className={btn.secondary}>New session</button>
+            <button onClick={() => onSessionChange(null)} className={btn.secondary} title="Discard these attempts and start again">Start over</button>
             {n >= 2 && (
               <button onClick={complete} disabled={completing} className={btn.primary}>
-                {completing ? 'Recording…' : 'Complete transmission'} <ArrowRight className="w-3.5 h-3.5" />
+                {completing ? 'Saving the record…' : 'See what changed'} <ArrowRight className="w-3.5 h-3.5" />
               </button>
             )}
           </div>
         )}
       </div>
 
+      <ReviewNote status={view.review_status} />
+
+      <AttemptProgress attempts={n} started={Boolean(session)} completing={completing} retryOpen={canSubmit && showCapture} onRetry={() => setShowCapture(true)} onComplete={() => void complete()} />
+
       <ErrorNote error={err} />
 
       {/* Relevance refusal — shown inline, not counted as an attempt */}
       {relevanceRefusal && (
-        <div className="p-3 rounded-lg border border-cadmium-amber/40 bg-cadmium-amber/10 text-[11px] font-mono text-cadmium-amber">
-          ⚠ This upload doesn't look like a valid attempt: {relevanceRefusal}. Please try a different file.
+        <div role="alert" className="p-3 rounded-lg border border-cadmium-amber/40 bg-cadmium-amber/10 text-sm text-on-surface">
+          <span className="font-semibold text-cadmium-amber">Not counted as an attempt.</span> {relevanceRefusal}. Please upload an attempt at this skill.
         </div>
       )}
 
       {!session ? (
         <Panel kicker="Start" title="Start a practice session">
           <div className="flex flex-col sm:flex-row gap-2 max-w-lg">
-            <input value={learner} onChange={(e) => setLearner(e.target.value)} placeholder="Learner name" className="flex-1 bg-surface-dim border border-outline rounded-lg px-3 py-2 text-xs outline-none focus:border-caliper-cyan" aria-label="Learner name" />
+            <input value={learner} onChange={(e) => setLearner(e.target.value)} placeholder="Your name (optional, shown in the record)" className="flex-1 bg-surface-dim border border-outline rounded-lg px-3 py-2 text-sm outline-none focus:border-caliper-cyan" aria-label="Your name (optional)" />
             <button onClick={() => void start()} className={btn.primary}><Play className="w-3.5 h-3.5" /> Start session</button>
           </div>
-          <p className="mt-3 text-xs text-on-surface-variant leading-relaxed">{view.task.instructions}</p>
+          <div className="mt-4"><TaskInstructions text={view.task.instructions} claims={view.package.claims} /></div>
         </Panel>
       ) : (
         <>
           {canSubmit && showCapture && (
             <Panel kicker={n === 0 ? 'Attempt 1 · baseline' : 'Attempt 2 · retry'} title={view.task.title}>
-              <p className="text-xs text-on-surface-variant leading-relaxed mb-4">{view.task.instructions}</p>
+              <details className="mb-4" open={n === 0}>
+                <summary className="cursor-pointer text-sm font-semibold text-on-surface">Task steps</summary>
+                <div className="mt-2"><TaskInstructions text={view.task.instructions} claims={view.package.claims} /></div>
+              </details>
               <UniversalCapture view={view} allowedKinds={allowedKinds} busy={phase.kind !== 'idle'} onSubmit={submit} />
               <div className="mt-4">
                 {phase.kind === 'uploading' && <ProgressBar value={phase.progress} label="Uploading attempt" />}
@@ -159,12 +168,16 @@ export function UniversalPracticeView({ view, session, onSessionChange, onComple
                 </button>
               ))}
               {canSubmit && !showCapture && (
-                <button onClick={() => setShowCapture(true)} className={btn.primary}><RotateCcw className="w-3.5 h-3.5" /> Retry</button>
+                <button onClick={() => setShowCapture(true)} className={btn.primary}><RotateCcw className="w-3.5 h-3.5" /> Retry the whole task</button>
               )}
             </div>
           )}
 
           {shown && <AttemptResultView view={view} result={shown.result} media={shown.media} />}
+
+          {n > 0 && (
+            <AttemptProgress attempts={n} started completing={completing} retryOpen={canSubmit && showCapture} onRetry={() => setShowCapture(true)} onComplete={() => void complete()} />
+          )}
         </>
       )}
     </div>

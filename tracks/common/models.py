@@ -15,6 +15,7 @@ import hashlib
 import json
 import os
 import re
+import threading
 import time
 import uuid
 from dataclasses import dataclass, field
@@ -260,6 +261,51 @@ def _sleep(seconds: float) -> None:   # indirection so tests can patch the wait
     time.sleep(seconds)
 
 
+class DailyBudget:
+    """Process-wide cap on live provider calls per UTC day (``ANVESHAN_DAILY_CALL_BUDGET``; 0/unset = off).
+
+    Protects a public demo from draining the API quota. Recorded and cached calls never count."""
+
+    def __init__(self) -> None:
+        self._lock = threading.Lock()
+        self._day = ""
+        self.used = 0
+
+    @staticmethod
+    def limit() -> int:
+        try:
+            return max(0, int(os.environ.get("ANVESHAN_DAILY_CALL_BUDGET", "0") or 0))
+        except ValueError:
+            return 0
+
+    def take(self) -> None:
+        limit = self.limit()
+        if not limit:
+            return
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        with self._lock:
+            if today != self._day:
+                self._day, self.used = today, 0
+            if self.used >= limit:
+                raise ModelError(
+                    FailureCategory.MODEL_FAILURE,
+                    "Today's live AI budget for this demo is used up. Recorded examples and samples still work; "
+                    "please try again tomorrow (UTC).",
+                    {"reason": "daily_budget", "limit": limit},
+                )
+            self.used += 1
+
+
+DAILY_BUDGET = DailyBudget()
+
+
+def live_cache_enabled() -> bool:
+    """Live mode reuses an identical earlier call (same model, prompt version, system text and inputs)
+    from the run store. Identical uploads then get identical results at no cost. Variance studies set
+    ``ANVESHAN_LIVE_CACHE=0``."""
+    return os.environ.get("ANVESHAN_LIVE_CACHE", "1").strip().lower() not in ("0", "false", "no", "off")
+
+
 class ModelGateway:
     def __init__(
         self,
@@ -322,10 +368,25 @@ class ModelGateway:
             meta = RunMetadata(**meta_d)
             return GenerationResult(self._validate(raw_text, schema, prompt_id), raw_text, meta)
 
+        if live_cache_enabled():
+            hit = self.store.find(key)
+            if hit is not None:
+                raw_text = hit["raw"].get("text", "")
+                try:
+                    parsed = self._validate(raw_text, schema, prompt_id)
+                except ModelError:
+                    parsed = None  # a cached response that no longer validates: call the model again
+                if parsed is not None:
+                    meta_d = dict(hit["metadata"])
+                    meta_d["runtime_class"] = "RECORDED_LIVE"
+                    meta_d["notes"] = list(meta_d.get("notes") or []) + ["live_cache_hit"]
+                    return GenerationResult(parsed, raw_text, RunMetadata(**meta_d))
+
         model_id = self.registry.model_id(model_key)
         if not model_id:
             raise ModelError(FailureCategory.MODEL_FAILURE, f"model key {model_key!r} is disabled (no model id configured)")
         client = self._get_client()
+        DAILY_BUDGET.take()
         from google.genai import types
 
         contents: List[Any] = []
@@ -422,19 +483,24 @@ class ModelGateway:
         if not items:
             raise ModelError(FailureCategory.INVALID_INPUT, "embed() needs at least one item")
         key = replay_key(model_key, f"embed:{purpose}", f"d{dims}", "", items)
-        if self.mode == "recorded":
+        if self.mode == "recorded" or live_cache_enabled():
             hit = self.store.find(key)
             arr_path = None
             for root in self.store.roots:
                 if (root / key / "vectors.npy").exists():
                     arr_path = root / key / "vectors.npy"
                     break
-            if hit is None or arr_path is None:
+            if self.mode == "live" and (hit is None or arr_path is None):
+                pass  # live cache miss: embed below
+            elif hit is None or arr_path is None:
                 raise ModelError(FailureCategory.REPLAY_MISMATCH, f"no recorded embeddings for {purpose} (key {key})", {"replay_key": key})
-            meta_d = dict(hit["metadata"])
-            meta_d["runtime_class"] = "RECORDED_LIVE"
-            vecs = np.load(arr_path).astype(np.float32)
-            return EmbeddingResult(vectors=vecs, metadata=RunMetadata(**meta_d))
+            else:
+                meta_d = dict(hit["metadata"])
+                meta_d["runtime_class"] = "RECORDED_LIVE"
+                if self.mode == "live":
+                    meta_d["notes"] = list(meta_d.get("notes") or []) + ["live_cache_hit"]
+                vecs = np.load(arr_path).astype(np.float32)
+                return EmbeddingResult(vectors=vecs, metadata=RunMetadata(**meta_d))
 
         model_id = self.registry.model_id(model_key)
         if not model_id:
@@ -453,6 +519,7 @@ class ModelGateway:
         try:
             for i in range(0, len(items), batch_size):
                 chunk = items[i : i + batch_size]
+                DAILY_BUDGET.take()
                 for wait in (*RATE_LIMIT_BACKOFF_S, None):
                     try:
                         resp = client.models.embed_content(

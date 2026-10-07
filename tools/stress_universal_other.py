@@ -13,6 +13,7 @@ Verdicts come from real Track B sessions (evaluation.passed + criterion statuses
 """
 from __future__ import annotations
 
+import os
 import argparse
 import json
 import math
@@ -28,6 +29,8 @@ from stress_universal_video import attempt, compose  # noqa: E402  (also sets up
 
 import numpy as np  # noqa: E402
 from PIL import Image, ImageDraw  # noqa: E402
+
+os.environ.setdefault("ANVESHAN_LIVE_CACHE", "0")  # variance study: never reuse an earlier live call
 
 BLOCKS = [((60, 160, 140, 240), (220, 60, 50)), ((140, 160, 220, 240), (50, 120, 220)),
           ((100, 80, 180, 160), (240, 190, 40)), ((220, 160, 300, 240), (60, 170, 90)),

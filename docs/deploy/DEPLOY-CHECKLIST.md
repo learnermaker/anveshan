@@ -1,10 +1,9 @@
 # Anveshan — Cloud Run Deploy Checklist
 
-**Date:** 2026-10-06  
+**Date:** 2026-10-07 (updated for the public-demo protections, `docs/plans/technical-panel-plan-2026-10-07.md` WS1)  
 **Audience:** Jim (manual deployment via GCP web console)  
 **Reference:** `docs/kiro/cloud-run-console-guide.md` for step-by-step console instructions  
-**Deployment branch:** `m1/hero-cases`  
-**Note:** Do NOT deploy `main` until the PR is reviewed and merged.
+**Deployment branch:** `main` (CI job `docker-image` must be green for the commit you deploy)
 
 ---
 
@@ -13,7 +12,7 @@
 ```powershell
 # 1. Tests green (all non-live)
 & ".venv\Scripts\python.exe" -m pytest -q tracks/common/tests tracks/track-a/tests tracks/track-b/tests service/tests -m "not live"
-# Expected: ~423 passed
+# Expected: 470+ passed
 
 # 2. Governance checks
 & ".venv\Scripts\python.exe" .github/scripts/check_governance.py
@@ -38,9 +37,10 @@ npm --prefix app run build
 | **Memory** | **2 GiB** (required: av PyAV + numpy + PIL + Flash-Lite audio buffer) |
 | **CPU** | 2 vCPU |
 | **Min instances** | 0 (scale to zero between demos) |
-| **Max instances** | **1** (prevents concurrent mutation of case packs in /tmp) |
-| **Request timeout** | **300 s** (long origami goal builds with 25+ model calls) |
-| **Concurrency** | 1 per instance (case-pack writes are not concurrent-safe) |
+| **Max instances** | **1** (composed skills live on the instance disk; a second instance would not see them) |
+| **Request timeout** | **300 s** (a 5-minute video composes in about 50 s locally) |
+| **Concurrency** | **8** per instance (writes are locked per draft/case/session, so judges can work in parallel) |
+| **Min instances (judging window only)** | **1** from submission (Oct 17) until judging ends; back to 0 afterwards (decision D6) |
 | **Execution environment** | 2nd gen |
 
 ---
@@ -63,7 +63,7 @@ Set these as plain (non-secret) environment variables in the Cloud Run console:
 
 | Variable | Value | Notes |
 |---|---|---|
-| `ANVESHAN_MODE` | `live` | Set to `recorded` first to test without API calls |
+| `ANVESHAN_MODE` | `live` | Image default. Composer and "Ask the source" need live mode |
 | `ANVESHAN_CASES_ROOT` | `/app/tracks/cases` | Baked into image |
 | `ANVESHAN_DATA_DIR` | `/tmp/anveshan` | Ephemeral; reset on cold start |
 | `ANVESHAN_MAX_UPLOAD_MB` | `30` | Limit learner uploads |
@@ -75,7 +75,21 @@ Set these as plain (non-secret) environment variables in the Cloud Run console:
 | `ANVESHAN_AUDIO_MODEL` | `gemini-3.5-flash-lite` | Tabla bol labels (INFERRED) |
 | `ANVESHAN_TEXT_IMAGE_MODEL` | `gemini-3.5-flash-lite` | Wording/propose model |
 | `ANVESHAN_VIDEO_FRAMES_MODEL` | `gemini-3.5-flash-lite` | Origami goal build |
-| `ANVESHAN_MODEL_TIMEOUT_MS` | `300000` | Already listed above |
+| `ANVESHAN_DAILY_CALL_BUDGET` | `2000` | Image default. Live model calls per UTC day; cached and recorded calls are free |
+| `ANVESHAN_REVIEW_TOKEN` | a long random string | Optional. Only the invited expert reviewer gets it (sent as `X-Review-Token`) |
+
+Defaults that switch on automatically on Cloud Run (`K_SERVICE` is set by the platform), override only if needed:
+
+| Variable | Cloud Run default | Meaning |
+|---|---|---|
+| `ANVESHAN_ALLOW_MODE_OVERRIDE` | `false` | `?mode=live|recorded` from browsers is ignored |
+| `ANVESHAN_ISOLATE_VISITORS` | `true` | Each browser (anonymous `anv_vid` cookie) sees only its own uploads and composed skills |
+| `ANVESHAN_CURATED_REVIEW_OPEN` | `false` | Review of the curated cases needs `ANVESHAN_REVIEW_TOKEN` |
+| `ANVESHAN_RATE_COMPOSE_PER_HOUR` / `_ATTEMPT_` / `_QUERY_` / `_COMPOSE_STEP_` | 6 / 30 / 30 / 30 | Per client IP; over the limit returns 429 with a readable message |
+| `ANVESHAN_DATA_TTL_H` / `ANVESHAN_DATA_CAP_MB` | 6 / 600 | `/tmp` is RAM on Cloud Run: older uploads, drafts and sessions are deleted, then oldest-first to the cap |
+| `ANVESHAN_LIVE_CACHE` | `1` | An identical earlier live call is reused (same result, no cost) |
+
+Also set a **budget alert** on the billing account of the Gemini key's project (e.g. US$20) and, in AI Studio, check the key's quota tier.
 
 ---
 
