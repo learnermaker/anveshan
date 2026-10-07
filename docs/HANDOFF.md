@@ -3,7 +3,7 @@
 **Written:** 2026-10-06 (updated 2026-10-07) by the Claude Code session (Opus 5.5) that did planning, foundation, integration and orchestration.
 **Read this first in any new session**, then `CLAUDE.md` → `AGENTS.md` → the docs it points to. The repo is the durable record; this file summarises everything that was only in chat.
 
-> **2026-10-08, K9 product roles: shipped (branch `k9/integration`, pending merge to `main`).**
+> **2026-10-07, K9 product roles: merged to `main` (b5ea925; includes finalize 7137604).** Later on main: token economy (`docs/architecture/token-economy.md`), single-copy rule for files and text (`AGENTS.md`), physical-world positioning (`docs/product/novelty-boundary.md`), own-key prompt next to AI uploads.
 >
 > **What shipped:** three product roles (learner plain-language, creator "My Skills", steward console with review queue + insights + usage), sample attempts for Kolam/Origami-crane/Tabla, Origami rebuilt via the universal pipeline, plain-language scan (`check:plain`), role walk (`check:roles`), smoke test (`tools/smoke_deployed.py`), accessibility sweep, evidence page, stability numbers (E10), Apache-2.0 LICENSE, README rewrite.
 >
@@ -17,7 +17,6 @@
 > - `ANVESHAN_STEWARD_OPEN` — leave **unset** (defaults to 0); set to 1 only for an open-access demo
 >
 > **Remaining human tasks:**
-> - Merge `k9/integration` to `main` (Claude Code reviews; Jim merges via GitHub Desktop)
 > - Deploy to Cloud Run
 > - Register team by 2026-10-11 at https://hack2skill.com/event/aibuildercup2026/registration
 > - Run mini pilot E8 and get one real expert review (WI-5.1, WI-5.2 — still OPEN)
