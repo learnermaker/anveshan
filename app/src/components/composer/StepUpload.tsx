@@ -3,9 +3,11 @@
  * Client-side guards: ≤ 30 MB; video 8–600 s; audio 3–60 s; image short side ≥ 64 px.
  */
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FileUp, Upload } from 'lucide-react';
-import { ErrorNote } from '../../hero/ui';
+import type { SampleSource } from '../../api/types';
+import { api } from '../../api/client';
+import { ErrorNote, Spinner } from '../../hero/ui';
 
 export interface UploadPayload {
   file: File;
@@ -16,6 +18,7 @@ export interface UploadPayload {
 
 interface Props {
   onSubmit: (payload: UploadPayload) => void;
+  onAnalyzeSample: (sampleId: string) => void;
   onCancel: () => void;
   error: unknown;
 }
@@ -34,7 +37,7 @@ function fileIcon(mime: string) {
   return '🖼';
 }
 
-export function StepUpload({ onSubmit, onCancel, error }: Props) {
+export function StepUpload({ onSubmit, onAnalyzeSample, onCancel, error }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -42,6 +45,17 @@ export function StepUpload({ onSubmit, onCancel, error }: Props) {
   const [guardError, setGuardError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Sample sources
+  const [samples, setSamples] = useState<SampleSource[] | null>(null);
+  const [samplesError, setSamplesError] = useState<unknown>(null);
+  const [sampleBusy, setSampleBusy] = useState<string | null>(null);
+
+  useEffect(() => {
+    api.listSampleSources()
+      .then(setSamples)
+      .catch(setSamplesError);
+  }, []);
 
   const validateAndSet = async (f: File) => {
     setGuardError(null);
@@ -108,7 +122,7 @@ export function StepUpload({ onSubmit, onCancel, error }: Props) {
       <div className="space-y-1">
         <div className="text-[10px] font-mono uppercase tracking-widest text-cadmium-amber font-bold">Composer · Step 1</div>
         <h2 className="text-2xl font-serif text-on-surface">Upload your source</h2>
-        <p className="text-sm text-on-surface-variant">Drop an image, video, or audio file to begin. The AI will analyse it to propose a teachable skill structure (AI-perceived elements will be labelled INFERRED).</p>
+        <p className="text-sm text-on-surface-variant">Upload a photo, video or audio of something you know how to do. The AI looks at it and proposes a practice task. You check everything before anyone else sees it.</p>
       </div>
 
       <div
@@ -146,6 +160,38 @@ export function StepUpload({ onSubmit, onCancel, error }: Props) {
       </div>
 
       {guardError && <p className="text-[11px] font-mono text-divergence-crimson">{guardError}</p>}
+
+      {/* No file to hand? Try with an example (§4a) */}
+      {samples === null && !samplesError && <Spinner label="Loading examples…" />}
+      {samplesError != null && <ErrorNote error={samplesError} />}
+      {samples && samples.length > 0 && (
+        <div className="space-y-3">
+          <div className="text-[10px] font-mono uppercase tracking-widest text-on-surface-variant font-bold">
+            No file to hand? Try with an example
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {samples.map((s) => (
+              <div key={s.sample_id} className="rounded-lg border border-outline bg-surface-dim p-3 space-y-2">
+                <div className="font-semibold text-sm text-on-surface">{s.label}</div>
+                <p className="text-[11px] text-on-surface-variant">{s.description}</p>
+                <p data-plain-exempt className="text-[10px] font-mono text-on-surface-variant">
+                  Example provided with Anveshan ({s.licence})
+                </p>
+                <button
+                  onClick={() => {
+                    setSampleBusy(s.sample_id);
+                    onAnalyzeSample(s.sample_id);
+                  }}
+                  disabled={sampleBusy !== null}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-outline bg-surface-container hover:border-cadmium-amber text-on-surface font-mono text-[11px] uppercase tracking-wider transition-colors disabled:opacity-40"
+                >
+                  {sampleBusy === s.sample_id ? 'Loading…' : 'Use this example'}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="space-y-3">
         <div>
@@ -204,7 +250,7 @@ export function StepUpload({ onSubmit, onCancel, error }: Props) {
           Cancel
         </button>
       </div>
-      <p className="text-[10px] text-on-surface-variant">Analysis usually takes 10–30 s for images and audio, and up to about 90 s for videos. The AI will perceive the skill structure; all inferences will be labelled INFERRED and require your review.</p>
+      <p className="text-[10px] text-on-surface-variant">This usually takes 10–30 seconds for photos and audio, and up to about 90 seconds for videos.</p>
     </div>
   );
 }
