@@ -35,11 +35,11 @@ function AvailabilityRow({ label, available, reason }: { label: string; availabl
 }
 
 function InferredBadge() {
-  return <span className="inline-flex items-center px-1 py-0 rounded text-[8px] font-mono font-bold uppercase bg-cadmium-amber/10 text-cadmium-amber border border-cadmium-amber/30">INFERRED</span>;
+  return <span className="inline-flex items-center px-1 py-0 rounded text-[8px] font-mono font-bold uppercase bg-cadmium-amber/10 text-cadmium-amber border border-cadmium-amber/30">AI's reading</span>;
 }
 
 function ObservedBadge() {
-  return <span className="inline-flex items-center px-1 py-0 rounded text-[8px] font-mono font-bold uppercase bg-transmission-emerald/10 text-transmission-emerald border border-transmission-emerald/30">OBSERVED</span>;
+  return <span className="inline-flex items-center px-1 py-0 rounded text-[8px] font-mono font-bold uppercase bg-transmission-emerald/10 text-transmission-emerald border border-transmission-emerald/30">Measured</span>;
 }
 
 function MethodBadge({ method }: { method: string }) {
@@ -58,8 +58,7 @@ function ColObserved({ draft }: { draft: DraftView }) {
   return (
     <div className="space-y-4">
       <div>
-        <div className="text-[9px] font-mono uppercase tracking-wider text-transmission-emerald font-bold mb-2">What we measured</div>
-        <table className="w-full text-[11px] border-collapse">
+        <div className="text-[9px] font-mono uppercase tracking-wider text-transmission-emerald font-bold mb-2">What we measured</div>        <table className="w-full text-[11px] border-collapse">
           <tbody>
             <tr className="border-b border-outline/30"><td className="py-1 text-on-surface-variant pr-2">Type</td><td className="py-1 font-mono text-on-surface">{probe.mime_type}</td></tr>
             <tr className="border-b border-outline/30"><td className="py-1 text-on-surface-variant pr-2">Size</td><td className="py-1 font-mono text-on-surface">{(probe.bytes / 1e6).toFixed(2)} MB</td></tr>
@@ -117,7 +116,7 @@ function ColInferred({ draft, sourceUrl }: { draft: DraftView; sourceUrl?: strin
     const props = sm.goal_state ?? [];
     return (
       <div className="space-y-4">
-        <div className="text-[9px] font-mono uppercase tracking-wider text-cadmium-amber font-bold mb-2">What the AI perceived <InferredBadge /></div>
+        <div className="text-[9px] font-mono uppercase tracking-wider text-cadmium-amber font-bold mb-2">What the AI understood <InferredBadge /></div>
         <div className="relative border border-outline rounded-lg overflow-hidden bg-surface-dim" style={{ minHeight: '140px' }}>
           {sourceUrl ? (
             <img src={sourceUrl} alt="Uploaded source" className="block w-full h-auto" />
@@ -147,7 +146,7 @@ function ColInferred({ draft, sourceUrl }: { draft: DraftView; sourceUrl?: strin
     const segs = draft.perception.segments.filter((s) => s.kind === 'time' && s.keyframe_asset);
     return (
       <div className="space-y-4">
-        <div className="text-[9px] font-mono uppercase tracking-wider text-cadmium-amber font-bold mb-2">What the AI perceived <InferredBadge /></div>
+        <div className="text-[9px] font-mono uppercase tracking-wider text-cadmium-amber font-bold mb-2">What the AI understood <InferredBadge /></div>
         <div className="flex gap-2 overflow-x-auto pb-1">
           {segs.map((seg, i) => (
             <div key={seg.segment_id} className="shrink-0 w-20">
@@ -181,10 +180,10 @@ function ColInferred({ draft, sourceUrl }: { draft: DraftView; sourceUrl?: strin
     const speechObs = obs.find((o) => o.kind === 'speech');
     return (
       <div className="space-y-4">
-        <div className="text-[9px] font-mono uppercase tracking-wider text-cadmium-amber font-bold mb-2">What the AI perceived <InferredBadge /></div>
+        <div className="text-[9px] font-mono uppercase tracking-wider text-cadmium-amber font-bold mb-2">What the AI understood <InferredBadge /></div>
         {transcript && (
           <div className="p-3 rounded-lg border border-outline bg-surface-dim">
-            <div className="text-[9px] font-mono uppercase text-on-surface-variant mb-1">Transcript (INFERRED)</div>
+            <div className="text-[9px] font-mono uppercase text-on-surface-variant mb-1">What was said (AI transcript)</div>
             <p className="text-sm text-on-surface font-mono">"{transcript}"</p>
           </div>
         )}
@@ -460,13 +459,13 @@ export function StepProposal({ draft, sourceUrl, onCreate, onStartOver, error }:
       </div>
 
       {draft.warnings.map((w, i) => <p key={i} className="text-[11px] font-mono text-cadmium-amber">⚠ {w}</p>)}
-      <p className="text-[11px] font-mono text-cadmium-amber">Composed skill · AI-perceived elements are INFERRED until reviewed by an expert.</p>
+      <p className="text-[11px] font-mono text-cadmium-amber">Next you'll check these steps. Nothing is shared until you publish.</p>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <Panel kicker="Observed" className="min-w-0">
+        <Panel kicker="What we measured" className="min-w-0">
           <ColObserved draft={draft} />
         </Panel>
-        <Panel kicker="Inferred (AI-perceived)" className="min-w-0">
+        <Panel kicker="What the AI understood" className="min-w-0">
           <ColInferred draft={draft} sourceUrl={sourceUrl} />
         </Panel>
         <Panel kicker="How we'll teach and check it" className="min-w-0">
