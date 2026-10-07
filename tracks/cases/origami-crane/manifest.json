@@ -1,0 +1,18 @@
+{
+  "case_id": "origami-crane",
+  "title": "Fold a paper crane: the first folds",
+  "archetype": "universal:procedure",
+  "workspace_type": "spatial_sequence",
+  "transmission_mode": "forward",
+  "source_mode": "composed",
+  "source_media": {
+    "type": "url",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/b/bb/OrigamiCrane.ogv",
+    "mime_type": "video/ogg",
+    "attribution": "OrigamiCrane.ogv by Tavin, CC BY 3.0 (Wikimedia Commons)"
+  },
+  "learner_input_kinds": [
+    "video",
+    "image"
+  ]
+}

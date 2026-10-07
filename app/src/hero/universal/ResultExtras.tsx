@@ -1,7 +1,8 @@
-/** Universal-case result extras: MEASURED vs AI-JUDGED criterion badges and a video step strip. */
+﻿/** Universal-case result extras: MEASURED vs AI-JUDGED criterion badges and a video step strip (DEBUG only). */
 import React from 'react';
 import type { AttemptResult, CaseView, UniversalUiView } from '../../api/types';
 import { Badge } from '../ui';
+import { DEBUG } from '../../api/debug';
 
 const MEASURED_MARKERS = ['u.step_', 'u.off_path', 'u.final_similarity', 'rhythm:', 'line_art'];
 const JUDGED_MARKERS = ['u.final_property.', 'u.final_state_match', 'u.step_quality.'];
@@ -30,6 +31,7 @@ export function criterionMetricIds(view: CaseView): Record<string, string> {
 }
 
 export function OriginBadge({ metricId }: { metricId: string | undefined }) {
+  if (!DEBUG) return null;
   const o = metricOrigin(metricId);
   if (o === 'measured') return <Badge tone="emerald" title={`Computed deterministically (${metricId})`}>MEASURED</Badge>;
   if (o === 'judged') return <Badge tone="amber" title={`Judged by a model (${metricId})`}>AI-JUDGED</Badge>;
@@ -52,12 +54,12 @@ export function StepStrip({ view, result }: { view: CaseView; result: AttemptRes
 
   return (
     <div className="space-y-2" aria-label="Step strip">
-      <div className="text-[9px] font-mono uppercase text-on-surface-variant">Steps in your attempt</div>
+      <div className="text-[11px] font-mono uppercase text-on-surface-variant">Steps in your attempt</div>
       <div className="flex gap-1.5 overflow-x-auto pb-1">
         {steps.map((s, i) => {
           const miss = missing.has(i);
           return (
-            <div key={s.step_id} className={`shrink-0 w-24 p-1.5 rounded border text-[9px] font-mono leading-tight ${miss ? 'border-divergence-crimson/50 bg-divergence-crimson/10 text-divergence-crimson' : 'border-transmission-emerald/40 bg-transmission-emerald/10 text-on-surface'}`}>
+            <div key={s.step_id} className={`shrink-0 w-24 p-1.5 rounded border text-[11px] font-mono leading-tight ${miss ? 'border-divergence-crimson/50 bg-divergence-crimson/10 text-divergence-crimson' : 'border-transmission-emerald/40 bg-transmission-emerald/10 text-on-surface'}`}>
               <div className="font-bold">{i + 1}. {miss ? 'MISSING' : 'seen'}</div>
               <div className="truncate" title={s.name}>{s.name}</div>
             </div>

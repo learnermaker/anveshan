@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import {
   AlertTriangle,
   ArrowRight,
@@ -101,11 +101,11 @@ export function SpatialSequenceWorkspace({
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-cadmium-amber font-bold">
+              <span className="text-[11px] font-mono uppercase tracking-widest text-cadmium-amber font-bold">
                 SPATIAL SEQUENCE WORKSPACE
               </span>
               <span className="text-outline text-xs">//</span>
-              <span className="text-[10px] font-mono text-transmission-emerald bg-transmission-emerald/10 px-2 py-0.5 rounded border border-transmission-emerald/30 font-semibold">
+              <span className="text-[11px] font-mono text-transmission-emerald bg-transmission-emerald/10 px-2 py-0.5 rounded border border-transmission-emerald/30 font-semibold">
                 ORDERED FOLD TIMELINE
               </span>
             </div>
@@ -139,7 +139,7 @@ export function SpatialSequenceWorkspace({
                   <Video className="w-4 h-4 text-caliper-cyan" />
                   <span>SOURCE DEMONSTRATION // File:OrigamiCrane.ogv</span>
                 </div>
-                <span className="text-[9px] font-mono text-caliper-cyan bg-caliper-cyan/10 px-2 py-0.5 rounded border border-caliper-cyan/25 font-bold">
+                <span className="text-[11px] font-mono text-caliper-cyan bg-caliper-cyan/10 px-2 py-0.5 rounded border border-caliper-cyan/25 font-bold">
                   EXTERNAL EVIDENCE
                 </span>
               </div>
@@ -158,7 +158,7 @@ export function SpatialSequenceWorkspace({
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
 
                 {/* Video Info Overlay */}
-                <div className="absolute top-2.5 left-2.5 z-10 flex items-center gap-1.5 font-mono text-[10px]">
+                <div className="absolute top-2.5 left-2.5 z-10 flex items-center gap-1.5 font-mono text-[11px]">
                   <span className="bg-black/75 text-zinc-300 px-2 py-0.5 rounded border border-zinc-700 flex items-center gap-1">
                     <Clock className="w-3 h-3 text-cadmium-amber" />
                     <span>5m 35s</span>
@@ -173,14 +173,14 @@ export function SpatialSequenceWorkspace({
                   href="https://commons.wikimedia.org/wiki/File:OrigamiCrane.ogv"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="absolute bottom-2.5 right-2.5 z-10 px-3 py-1 rounded bg-black/80 hover:bg-black text-caliper-cyan border border-caliper-cyan/40 text-[10px] font-mono flex items-center gap-1.5 transition-colors shadow-lg"
+                  className="absolute bottom-2.5 right-2.5 z-10 px-3 py-1 rounded bg-black/80 hover:bg-black text-caliper-cyan border border-caliper-cyan/40 text-[11px] font-mono flex items-center gap-1.5 transition-colors shadow-lg"
                   title="Open source video on Wikimedia Commons"
                 >
                   <span>COMMONS SOURCE PAGE</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
 
-                <div className="absolute bottom-2.5 left-2.5 z-10 text-[10px] font-mono text-zinc-300">
+                <div className="absolute bottom-2.5 left-2.5 z-10 text-[11px] font-mono text-zinc-300">
                   CREATOR: Tavin • CC BY 3.0
                 </div>
               </div>
@@ -194,10 +194,10 @@ export function SpatialSequenceWorkspace({
                   </span>
                   <span className="text-cadmium-amber font-bold">UNVERIFIED TIMESTAMPS</span>
                 </div>
-                <p className="text-[10px] text-on-surface-variant leading-relaxed">
+                <p className="text-[11px] text-on-surface-variant leading-relaxed">
                   The external demonstration records the complete origami sequence. Step-level alignment to millisecond video timestamps remains unverified until frame-by-frame temporal inspection. Replay executes on deterministic step order.
                 </p>
-                <div className="text-[9px] text-zinc-400 pt-0.5">
+                <div className="text-[11px] text-zinc-400 pt-0.5">
                   MEDIA PLAYBACK NOT REQUIRED FOR DETERMINISTIC REPLAY
                 </div>
               </div>
@@ -210,14 +210,14 @@ export function SpatialSequenceWorkspace({
                   <Layers className="w-4 h-4 text-cadmium-amber" />
                   <span>CASE PROGRESSION</span>
                 </div>
-                <span className="text-[9px] font-mono text-on-surface-variant bg-surface-dim px-2 py-0.5 rounded border border-outline">
+                <span className="text-[11px] font-mono text-on-surface-variant bg-surface-dim px-2 py-0.5 rounded border border-outline">
                   5 ORDERED STEPS
                 </span>
               </div>
 
               {/* Sequential Transformation Chain */}
               <div className="space-y-2 font-mono text-xs">
-                <div className="text-[10px] text-on-surface-variant uppercase tracking-wider font-bold">
+                <div className="text-[11px] text-on-surface-variant uppercase tracking-wider font-bold">
                   Ordered Fold-State Sequence:
                 </div>
                 <div className="p-2.5 bg-surface-dim rounded-lg border border-outline/40 space-y-2 text-[11px]">
@@ -245,7 +245,7 @@ export function SpatialSequenceWorkspace({
               </div>
 
               {/* Rationale Note */}
-              <div className="p-2.5 bg-cadmium-amber/10 border border-cadmium-amber/25 rounded-lg text-[10px] font-mono text-cadmium-amber leading-relaxed">
+              <div className="p-2.5 bg-cadmium-amber/10 border border-cadmium-amber/25 rounded-lg text-[11px] font-mono text-cadmium-amber leading-relaxed">
                 <strong>MECHANICAL CAUSALITY:</strong> Step 4 crease failure forces paper against fiber grain, buckling the spine and mechanically blocking Step 5 completion.
               </div>
             </div>
@@ -258,7 +258,7 @@ export function SpatialSequenceWorkspace({
                 <Layers className="w-4 h-4 text-caliper-cyan" />
                 <span>ORDERED FOLD TIMELINE // SELECT STEP TO INSPECT REASONING</span>
               </div>
-              <div className="text-[10px] font-mono text-cadmium-amber">
+              <div className="text-[11px] font-mono text-cadmium-amber">
                 ACTIVE STEP: 0{activeStep}
               </div>
             </div>
@@ -277,10 +277,10 @@ export function SpatialSequenceWorkspace({
                       : 'border-outline bg-surface-dim hover:border-outline-variant hover:bg-surface-dim/80'
                   }`}
                 >
-                  <div className="flex items-center justify-between text-[9px] text-on-surface-variant">
+                  <div className="flex items-center justify-between text-[11px] text-on-surface-variant">
                     <span>STEP 0{s.num}</span>
                     <span
-                      className={`px-1 py-0.2 rounded text-[8px] font-bold ${
+                      className={`px-1 py-0.2 rounded text-[11px] font-bold ${
                         s.certainty === 'OBSERVED'
                           ? 'bg-caliper-cyan/20 text-caliper-cyan'
                           : 'bg-cadmium-amber/20 text-cadmium-amber'
@@ -293,7 +293,7 @@ export function SpatialSequenceWorkspace({
                     {s.title}
                   </div>
                   <div
-                    className={`text-[9px] font-semibold mt-1.5 ${
+                    className={`text-[11px] font-semibold mt-1.5 ${
                       s.status === 'DIVERGENT'
                         ? 'text-divergence-crimson font-bold'
                         : s.status === 'PASS'
@@ -337,7 +337,7 @@ export function SpatialSequenceWorkspace({
                       <CheckCircle2 className="w-3.5 h-3.5" />
                       <span>REFERENCE FOLD STATE</span>
                     </span>
-                    <span className="text-[10px] text-transmission-emerald bg-transmission-emerald/10 px-1.5 py-0.5 rounded border border-transmission-emerald/30 font-bold">
+                    <span className="text-[11px] text-transmission-emerald bg-transmission-emerald/10 px-1.5 py-0.5 rounded border border-transmission-emerald/30 font-bold">
                       -180° CONCAVE
                     </span>
                   </div>
@@ -354,7 +354,7 @@ export function SpatialSequenceWorkspace({
                       {/* Inward pop vector arrow */}
                       <path d="M 50,15 L 50,35" stroke="#06b6d4" strokeWidth="1.5" strokeDasharray="none" markerEnd="url(#arrow)" />
                     </svg>
-                    <span className="absolute bottom-1.5 text-[10px] font-mono text-transmission-emerald font-semibold">
+                    <span className="absolute bottom-1.5 text-[11px] font-mono text-transmission-emerald font-semibold">
                       INWARD VALLEY TROUGH (CONCAVE)
                     </span>
                   </div>
@@ -362,7 +362,7 @@ export function SpatialSequenceWorkspace({
                   <p className="text-[11px] font-mono text-on-surface-variant leading-relaxed">
                     Paper popped inside-out cleanly along central symmetry axis. Valley trough vector allows lateral wings to collapse without tearing fiber grain.
                   </p>
-                  <div className="text-[9px] font-mono text-transmission-emerald flex items-center justify-between border-t border-outline/30 pt-1.5">
+                  <div className="text-[11px] font-mono text-transmission-emerald flex items-center justify-between border-t border-outline/30 pt-1.5">
                     <span>STATE: DERIVED SPECIFICATION</span>
                     <span>CERTAINTY: SOURCE_DERIVED_FACT</span>
                   </div>
@@ -375,7 +375,7 @@ export function SpatialSequenceWorkspace({
                       <AlertTriangle className="w-3.5 h-3.5" />
                       <span>LEARNER REPLAY ATTEMPT</span>
                     </span>
-                    <span className="text-[10px] text-divergence-crimson bg-divergence-crimson/10 px-1.5 py-0.5 rounded border border-divergence-crimson/30 font-bold">
+                    <span className="text-[11px] text-divergence-crimson bg-divergence-crimson/10 px-1.5 py-0.5 rounded border border-divergence-crimson/30 font-bold">
                       +180° MOUNTAIN (UNREVERSED)
                     </span>
                   </div>
@@ -391,7 +391,7 @@ export function SpatialSequenceWorkspace({
                       <line x1="50" y1="5" x2="50" y2="55" stroke="#ef4444" strokeWidth="1" strokeDasharray="2,2" opacity="0.6" />
                       <circle cx="50" cy="12" r="3" fill="#ef4444" />
                     </svg>
-                    <span className="absolute bottom-1.5 text-[10px] font-mono text-divergence-crimson font-semibold">
+                    <span className="absolute bottom-1.5 text-[11px] font-mono text-divergence-crimson font-semibold">
                       OUTWARD MOUNTAIN RIDGE (SPINE BUNCHING)
                     </span>
                   </div>
@@ -399,7 +399,7 @@ export function SpatialSequenceWorkspace({
                   <p className="text-[11px] font-mono text-on-surface-variant leading-relaxed">
                     Top flap pulled upward without pushing lateral creases inward. Paper fought the fiber grain (+180° convex ridge), crushing central apex.
                   </p>
-                  <div className="text-[9px] font-mono text-divergence-crimson flex items-center justify-between border-t border-outline/30 pt-1.5">
+                  <div className="text-[11px] font-mono text-divergence-crimson flex items-center justify-between border-t border-outline/30 pt-1.5">
                     <span>STATE: REPLAY FIXTURE ATTEMPT</span>
                     <span>CERTAINTY: OBSERVED DIVERGENCE</span>
                   </div>
@@ -414,22 +414,22 @@ export function SpatialSequenceWorkspace({
                   <Sparkles className="w-4 h-4" />
                   <span>TARGETED INTERVENTION // CRIT-VALLEY-FOLD</span>
                 </span>
-                <span className="text-[10px] font-mono text-on-surface-variant">
+                <span className="text-[11px] font-mono text-on-surface-variant">
                   EVALUATOR: DETERMINISTIC RUBRIC
                 </span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-[11px] font-mono">
                 <div className="p-2.5 bg-surface-elevated rounded border border-outline/40">
-                  <div className="text-caliper-cyan font-bold text-[10px]">OBSERVED FINDING</div>
+                  <div className="text-caliper-cyan font-bold text-[11px]">OBSERVED FINDING</div>
                   <div className="text-on-surface mt-1">Left wing crease maintained as mountain fold (+180° convex).</div>
                 </div>
                 <div className="p-2.5 bg-surface-elevated rounded border border-outline/40">
-                  <div className="text-cadmium-amber font-bold text-[10px]">MECHANICAL INFERENCE</div>
+                  <div className="text-cadmium-amber font-bold text-[11px]">MECHANICAL INFERENCE</div>
                   <div className="text-on-surface mt-1">Fiber grain stressed against fold line; apex crinkled 18° off-plane.</div>
                 </div>
                 <div className="p-2.5 bg-surface-elevated rounded border border-outline/40">
-                  <div className="text-zinc-400 font-bold text-[10px]">CORRECTIVE INSTRUCTION</div>
+                  <div className="text-zinc-400 font-bold text-[11px]">CORRECTIVE INSTRUCTION</div>
                   <div className="text-on-surface mt-1">Pinch edges inward while pressing finger behind flap to pop crease inward.</div>
                 </div>
               </div>

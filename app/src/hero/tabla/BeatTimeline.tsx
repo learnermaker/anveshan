@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Tabla beat timeline (SVG). Goal mode: source beats with bass / no-bass markers.
  * Alignment mode: learner strokes against goal beats with late / missing / extra / bass-mismatch.
  */
@@ -106,7 +106,7 @@ export function BeatTimeline({ ui, alignment, playhead, highlight, focusBeat, on
         )}
         {playhead != null && <line x1={x(playhead)} y1={0} x2={x(playhead)} y2={H} stroke="#00e5ff" strokeWidth={1.5} />}
       </svg>
-      <div className="flex flex-wrap gap-3 text-[9px] font-mono text-on-surface-variant">
+      <div className="flex flex-wrap gap-3 text-[11px] font-mono text-on-surface-variant">
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-cadmium-amber" /> bass (bayan)</span>
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full border border-on-surface-variant" /> no bass</span>
         {alignment && (

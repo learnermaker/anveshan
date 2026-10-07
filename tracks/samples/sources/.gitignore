@@ -1,0 +1,3 @@
+# Allow committed WAV and PNG source files in this directory (K9-P4)
+!*.wav
+!*.png

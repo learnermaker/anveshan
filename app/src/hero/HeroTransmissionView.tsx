@@ -5,7 +5,10 @@ import { ArrowLeft, ArrowRight, Compass, GitBranch, Layers, RotateCcw, Target } 
 import type { CaseView } from '../api/types';
 import type { HeroSession } from './session';
 import { ProgressCurve } from './results/ProgressCurve';
-import { Badge, btn, MockBadge, Panel, RuntimeClassBadge, SourceLabelBadge, StatusBadge } from './ui';
+import { Badge, btn, Panel, StatusBadge } from './ui';
+import { TrustLine } from './TrustLine';
+import { DEBUG } from '../api/debug';
+import { attemptLabel } from '../copy/plain';
 
 interface Props {
   view: CaseView;
@@ -38,20 +41,20 @@ export function HeroTransmissionView({ view, session, onBackToPractice, onPracti
       n === 0
         ? 'You have not submitted an attempt yet.'
         : n === 1
-          ? 'You have done attempt 1 (the baseline). Read its feedback, then retry the whole task once.'
-          : 'Both attempts are done. Press "See what changed" in Practise to save the record.';
+          ? 'You have done your first try. Read its feedback, then do the whole task once more.'
+          : 'Both tries are done. Press "See what changed" in Practise to save the record.';
     return (
       <div className="max-w-xl mx-auto w-full p-6 text-center space-y-3 animate-fade-in">
         <div className="text-xs font-mono uppercase tracking-widest text-cadmium-amber font-bold">Step 3 of 3 · Results</div>
-        <h1 className="font-serif text-2xl">Results appear after two attempts</h1>
-        <p className="text-sm text-on-surface-variant">Results compare your first attempt (the baseline) with one full retry, criterion by criterion. {status}</p>
-        <div className="flex justify-center gap-1 text-sm" aria-label={`${Math.min(n, 2)} of 2 attempts done`}>
+        <h1 className="font-serif text-2xl">Results appear after two tries</h1>
+        <p className="text-sm text-on-surface-variant">Results compare your first try with one full retry, check by check. {status}</p>
+        <div className="flex justify-center gap-1 text-sm" aria-label={`${Math.min(n, 2)} of 2 tries done`}>
           {[0, 1].map((i) => (
             <span
               key={i}
               className={`px-2 py-0.5 rounded-full border ${i < n ? 'border-transmission-emerald/50 text-transmission-emerald' : 'border-outline text-on-surface-variant'}`}
             >
-              Attempt {i + 1} {i < n ? '✓' : ''}
+              {attemptLabel(i + 1)} {i < n ? '✓' : ''}
             </span>
           ))}
         </div>
@@ -74,7 +77,6 @@ export function HeroTransmissionView({ view, session, onBackToPractice, onPracti
   const tcBefore = tc.before ?? tc.baseline_status;
   const tcAfter = tc.after ?? tc.retry_status;
   const tcKind = tc.improved !== undefined ? (tc.improved ? 'improved' : 'unchanged') : tc.kind ?? 'changed';
-  const internet = view.runtime_label === 'INTERNET_REFERENCE';
 
   return (
     <div className="flex flex-col gap-5 w-full animate-fade-in">
@@ -84,15 +86,17 @@ export function HeroTransmissionView({ view, session, onBackToPractice, onPracti
             <ArrowLeft className="w-3.5 h-3.5" /> Back to Practise
           </button>
           <div className="text-xs font-mono uppercase tracking-widest text-transmission-emerald font-bold">Step 3 of 3 · Results recorded</div>
-          <h1 className="font-serif text-2xl sm:text-3xl">{view.title}</h1>
-          <div className="flex flex-wrap gap-1.5 items-center">
-            <SourceLabelBadge label={view.runtime_label} />
-            {baseline && <span className="text-xs font-mono text-on-surface-variant">attempt 1</span>}
-            {baseline && <RuntimeClassBadge value={baseline.runtime_class} />}
-            {retry && <span className="text-xs font-mono text-on-surface-variant">attempt 2</span>}
-            {retry && <RuntimeClassBadge value={retry.runtime_class} />}
-            <MockBadge />
-          </div>
+          <h1 className="font-serif text-2xl sm:text-3xl" data-plain-exempt>{view.title}</h1>
+          {!DEBUG ? (
+            <TrustLine view={view} />
+          ) : (
+            <div className="flex flex-wrap gap-1.5 items-center">
+              {baseline && <span className="text-xs font-mono text-on-surface-variant">attempt 1</span>}
+              {baseline && <Badge tone="muted">{baseline.runtime_class}</Badge>}
+              {retry && <span className="text-xs font-mono text-on-surface-variant">attempt 2</span>}
+              {retry && <Badge tone="muted">{retry.runtime_class}</Badge>}
+            </div>
+          )}
         </div>
         <button onClick={onExploreMore} className={btn.secondary}>
           All skills <ArrowRight className="w-3.5 h-3.5" />
@@ -132,31 +136,41 @@ export function HeroTransmissionView({ view, session, onBackToPractice, onPracti
               <div className="text-xs text-on-surface-variant mt-1">{tc.changed ? `Changed on the retry (${tcKind}).` : 'Not fixed on the retry yet.'}</div>
             </>
           ) : (
-            <div className="text-sm text-on-surface-variant mt-1">Attempt 1 never clearly left the path, so no single fix is claimed.</div>
+            <div className="text-sm text-on-surface-variant mt-1">Your first try never clearly went off track, so there was no single thing to fix.</div>
           )}
         </div>
         <div className="p-5 rounded-xl border border-outline bg-surface-container-low">
-          <div className="text-xs font-mono uppercase text-on-surface-variant">Change on criteria checked both times</div>
+          <div className="text-xs font-mono uppercase text-on-surface-variant">Change on checks we could judge both times</div>
           <div className={`text-4xl font-mono font-bold ${scoreTone(cmp.skill_gain_excluding_observability)}`}>{signed(cmp.skill_gain_excluding_observability)}</div>
-          <div className="text-xs text-on-surface-variant">Leaves out criteria that were UNCERTAIN in one attempt, so better evidence alone does not count as improvement.</div>
+          <div className="text-xs text-on-surface-variant">Leaves out checks we couldn't judge in one of the tries, so clearer recordings alone don't count as improvement.</div>
         </div>
       </div>
 
-      <Panel kicker="Attempt 1 vs attempt 2" title="Progress toward the goal">
+      <Panel kicker="First try vs second try" title="Progress toward the goal">
         <ProgressCurve
           kind={kind}
           height={260}
           series={[
-            { id: 'b', label: 'Attempt 1 (baseline)', points: cmp.curves.baseline, color: '#e67e22', dashed: true, events: baseline?.trajectory.events },
-            { id: 'r', label: 'Attempt 2 (retry)', points: cmp.curves.retry, color: '#10b981', events: retry?.trajectory.events },
+            { id: 'b', label: attemptLabel(1), points: cmp.curves.baseline, color: '#e67e22', dashed: true, events: baseline?.trajectory.events },
+            { id: 'r', label: attemptLabel(2), points: cmp.curves.retry, color: '#10b981', events: retry?.trajectory.events },
           ]}
           firstDivergence={baseline?.first_divergence?.position ?? null}
         />
       </Panel>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <Panel kicker="Criterion by criterion" title="What changed between attempts">
+        <Panel kicker="Check by check" title="What changed between your first and second try">
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
+            <thead>
+              <tr className="text-[11px] font-mono uppercase text-on-surface-variant text-left border-b border-outline">
+                <th className="py-1.5 pr-2">Check</th>
+                <th className="py-1.5 pr-2">First try</th>
+                <th className="py-1.5 pr-2" aria-hidden="true"></th>
+                <th className="py-1.5 pr-2">Second try</th>
+                <th className="py-1.5"></th>
+              </tr>
+            </thead>
             <tbody>
               {view.rubric.criteria.map((c) => {
                 const b = baseline?.evaluation.criterion_results.find((x) => x.criterion_id === c.criterion_id);
@@ -166,12 +180,10 @@ export function HeroTransmissionView({ view, session, onBackToPractice, onPracti
                   <tr key={c.criterion_id} className="border-b border-outline/40">
                     <td className="py-2 pr-2">
                       <div>{c.name}</div>
-                      <div className="text-[11px] font-mono text-on-surface-variant">{c.criterion_id}</div>
+                      {DEBUG && <div className="text-[11px] font-mono text-on-surface-variant">{c.criterion_id}</div>}
                     </td>
                     <td className="py-2 pr-2 whitespace-nowrap">{b && <StatusBadge status={b.status} />}</td>
-                    <td className="py-2 pr-2 text-on-surface-variant" aria-hidden="true">
-                      →
-                    </td>
+                    <td className="py-2 pr-2 text-on-surface-variant" aria-hidden="true">→</td>
                     <td className="py-2 pr-2 whitespace-nowrap">{r && <StatusBadge status={r.status} />}</td>
                     <td className="py-2 text-right">
                       <Badge tone={TRANSITION_TONE[k] ?? 'muted'}>{k.replace(/_/g, ' ')}</Badge>
@@ -181,45 +193,48 @@ export function HeroTransmissionView({ view, session, onBackToPractice, onPracti
               })}
             </tbody>
           </table>
-          <p className="mt-2 text-xs text-on-surface-variant">Criteria improved: {rec.criteria_improved.length ? rec.criteria_improved.join(', ') : 'none yet'}</p>
+          </div>
+          <p className="mt-2 text-xs text-on-surface-variant">Checks improved: {rec.criteria_improved.length ? rec.criteria_improved.map(id => view.rubric.criteria.find(c => c.criterion_id === id)?.name ?? id).join(', ') : 'none yet'}</p>
         </Panel>
 
-        <Panel
-          kicker="Record (for audit)"
-          title={
-            <span className="flex items-center gap-2">
-              <GitBranch className="w-4 h-4 text-caliper-cyan" aria-hidden="true" />
-              Transmission record
-            </span>
-          }
-        >
-          <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1 text-xs font-mono">
-            {(
-              [
-                ['transmission_id', rec.transmission_id],
-                ['skill_id', rec.skill_id],
-                ['package_id', rec.package_id],
-                ['rubric_id', rec.rubric_id],
-                internet ? ['source author', `${rec.expert_id} (internet reference, not a verified expert)`] : ['expert_id', rec.expert_id],
-                ['learner_id', rec.learner_id],
-                ['baseline_attempt', rec.baseline_attempt_id],
-                ['retry_attempt', rec.retry_attempt_id],
-                ['recorded_at', rec.lineage.recorded_at],
-                ['parent', rec.lineage.parent_transmission_id ?? '—'],
-                ['provenance_hash', rec.lineage.provenance_hash ?? '—'],
-              ] as [string, string][]
-            ).map(([k, v]) => (
-              <React.Fragment key={k}>
-                <dt className="text-on-surface-variant">{k}</dt>
-                <dd className="text-on-surface break-all">{v}</dd>
-              </React.Fragment>
-            ))}
-          </dl>
-          {rec.lineage.adaptation_notes && <p className="mt-2 text-xs text-cadmium-amber">{rec.lineage.adaptation_notes}</p>}
-          <p className="mt-2 text-xs text-on-surface-variant">
-            The hash identifies this record’s inputs. It records that a baseline and a retry were evaluated against this skill; it is not a certification of skill.
-          </p>
-        </Panel>
+        {DEBUG && (
+          <Panel
+            kicker="Record (for audit)"
+            title={
+              <span className="flex items-center gap-2">
+                <GitBranch className="w-4 h-4 text-caliper-cyan" aria-hidden="true" />
+                Transmission record
+              </span>
+            }
+          >
+            <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1 text-xs font-mono">
+              {(
+                [
+                  ['transmission_id', rec.transmission_id],
+                  ['skill_id', rec.skill_id],
+                  ['package_id', rec.package_id],
+                  ['rubric_id', rec.rubric_id],
+                  ['expert_id', rec.expert_id],
+                  ['learner_id', rec.learner_id],
+                  ['baseline_attempt', rec.baseline_attempt_id],
+                  ['retry_attempt', rec.retry_attempt_id],
+                  ['recorded_at', rec.lineage.recorded_at],
+                  ['parent', rec.lineage.parent_transmission_id ?? '—'],
+                  ['provenance_hash', rec.lineage.provenance_hash ?? '—'],
+                ] as [string, string][]
+              ).map(([k, v]) => (
+                <React.Fragment key={k}>
+                  <dt className="text-on-surface-variant">{k}</dt>
+                  <dd className="text-on-surface break-all">{v}</dd>
+                </React.Fragment>
+              ))}
+            </dl>
+            {rec.lineage.adaptation_notes && <p className="mt-2 text-xs text-cadmium-amber">{rec.lineage.adaptation_notes}</p>}
+            <p className="mt-2 text-xs text-on-surface-variant">
+              The hash identifies this record's inputs. It records that a baseline and a retry were evaluated against this skill; it is not a certification of skill.
+            </p>
+          </Panel>
+        )}
       </div>
     </div>
   );
@@ -256,8 +271,8 @@ function WhatNext({
   } else {
     headline = 'No change yet. That is normal on a first try.';
     body = targetName
-      ? `Focus on "${targetName}", where you first went off track. Study that step in the source, then practise again with a fresh baseline and retry.`
-      : 'Study the steps in the source, then practise again with a fresh baseline and retry.';
+      ? `Focus on "${targetName}", where you first went off track. Study that step in the source, then practise again with a fresh first and second try.`
+      : 'Study the steps in the source, then practise again with a fresh first and second try.';
   }
   return (
     <section className="rounded-xl border border-cadmium-amber/40 bg-cadmium-amber/5 p-4 space-y-3" aria-live="polite">

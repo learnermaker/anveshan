@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { ArrowRight, Award, CheckCircle2, GitBranch, Layers, RotateCcw, ShieldCheck, Sparkles, TrendingUp } from 'lucide-react';
 import type { CapabilityCase } from '../types/workspace';
 
@@ -44,7 +44,7 @@ export function TransmissionCompleteView({
         {/* Transmission Gain Metric Box */}
         <div className="p-6 bg-surface-dim rounded-xl border border-outline/50 max-w-md mx-auto flex items-center justify-between gap-6">
           <div className="text-left space-y-1">
-            <div className="text-[10px] font-mono uppercase text-on-surface-variant">BASELINE ATTEMPT</div>
+            <div className="text-[11px] font-mono uppercase text-on-surface-variant">BASELINE ATTEMPT</div>
             <div className="text-xl font-mono font-bold text-on-surface-variant">
               {metrics.baselineScore.toFixed(1)} / {metrics.maxPossibleScore.toFixed(1)}
             </div>
@@ -58,13 +58,13 @@ export function TransmissionCompleteView({
             <div className="text-3xl font-mono font-bold text-transmission-emerald">
               +{metrics.gainPoints.toFixed(1)}
             </div>
-            <span className="text-[10px] font-mono text-transmission-emerald">
+            <span className="text-[11px] font-mono text-transmission-emerald">
               (+{metrics.gainPercentage}%)
             </span>
           </div>
 
           <div className="text-right space-y-1">
-            <div className="text-[10px] font-mono uppercase text-on-surface-variant">RETRY (REPLAY)</div>
+            <div className="text-[11px] font-mono uppercase text-on-surface-variant">RETRY (REPLAY)</div>
             <div className="text-xl font-mono font-bold text-transmission-emerald">
               {metrics.retryScore.toFixed(1)} / {metrics.maxPossibleScore.toFixed(1)}
             </div>

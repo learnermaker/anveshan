@@ -90,4 +90,20 @@ declare module 'lucide-react' {
   export const KeyRound: LucideIcon;
   export const X: LucideIcon;
   export const Zap: LucideIcon;
+  // K9 (product roles): declared once here so parallel tasks never edit this file
+  export const Lightbulb: LucideIcon;
+  export const Users: LucideIcon;
+  export const BarChart3: LucideIcon;
+  export const Inbox: LucideIcon;
+  export const Library: LucideIcon;
+  export const FileDown: LucideIcon;
+  export const LogOut: LucideIcon;
+  export const Trash2: LucideIcon;
+  export const BookOpen: LucideIcon;
+  export const Share2: LucideIcon;
+  export const Gauge: LucideIcon;
+  export const HardDrive: LucideIcon;
+  export const ListChecks: LucideIcon;
+  export const Hourglass: LucideIcon;
+  export const Globe: LucideIcon;
 }

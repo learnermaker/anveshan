@@ -12,7 +12,7 @@ from tracks.common.models import load_dotenv
 from anveshan_service import REPO_ROOT
 
 MODES = ("live", "recorded")
-CLOUD_RATE_LIMITS = {"compose": 6, "compose_step": 30, "attempt": 30, "query": 30}
+CLOUD_RATE_LIMITS = {"compose": 6, "compose_step": 30, "attempt": 30, "query": 30, "auth": 10}
 
 
 def _flag(env, name: str, default: bool) -> bool:
@@ -53,6 +53,9 @@ class Settings:
     data_ttl_hours: float = 0.0             # housekeeping TTL for data_dir entries (0 = off)
     data_cap_mb: float = 0.0                # housekeeping size cap for data_dir (0 = off)
     secure_cookies: bool = False
+    steward_token: Optional[str] = None     # ANVESHAN_STEWARD_TOKEN (falls back to ANVESHAN_REVIEW_TOKEN)
+    steward_open: bool = False              # no code needed (local development only)
+    insights_max_events: int = 5000         # per-skill event log cap
 
     def __post_init__(self) -> None:
         if self.mode not in MODES:
@@ -63,6 +66,10 @@ class Settings:
     @property
     def max_upload_bytes(self) -> int:
         return int(self.max_upload_mb * 1024 * 1024)
+
+    @property
+    def steward_enabled(self) -> bool:
+        return self.steward_open or bool(self.steward_token)
 
     @classmethod
     def from_env(cls, env_file: Optional[Path] = REPO_ROOT / ".env") -> "Settings":
@@ -76,6 +83,7 @@ class Settings:
         for name in CLOUD_RATE_LIMITS:
             limits[name] = int(_num(env, f"ANVESHAN_RATE_{name.upper()}_PER_HOUR", limits.get(name, 0)))
         token = (env.get("ANVESHAN_REVIEW_TOKEN") or "").strip() or None
+        steward = (env.get("ANVESHAN_STEWARD_TOKEN") or "").strip() or token
         return cls(
             mode=env.get("ANVESHAN_MODE", "recorded").strip() or "recorded",
             cases_root=_path(env.get("ANVESHAN_CASES_ROOT", "tracks/cases")),
@@ -91,4 +99,7 @@ class Settings:
             data_ttl_hours=_num(env, "ANVESHAN_DATA_TTL_H", 6.0 if cloud else 0.0),
             data_cap_mb=_num(env, "ANVESHAN_DATA_CAP_MB", 600.0 if cloud else 0.0),
             secure_cookies=cloud,
+            steward_token=steward,
+            steward_open=_flag(env, "ANVESHAN_STEWARD_OPEN", (not cloud) and steward is None),
+            insights_max_events=int(_num(env, "ANVESHAN_INSIGHTS_MAX_EVENTS", 5000)),
         )

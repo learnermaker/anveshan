@@ -3,6 +3,28 @@
 **Written:** 2026-10-06 (updated 2026-10-07) by the Claude Code session (Opus 5.5) that did planning, foundation, integration and orchestration.
 **Read this first in any new session**, then `CLAUDE.md` → `AGENTS.md` → the docs it points to. The repo is the durable record; this file summarises everything that was only in chat.
 
+> **2026-10-08, K9 product roles: shipped (branch `k9/integration`, pending merge to `main`).**
+>
+> **What shipped:** three product roles (learner plain-language, creator "My Skills", steward console with review queue + insights + usage), sample attempts for Kolam/Origami-crane/Tabla, Origami rebuilt via the universal pipeline, plain-language scan (`check:plain`), role walk (`check:roles`), smoke test (`tools/smoke_deployed.py`), accessibility sweep, evidence page, stability numbers (E10), Apache-2.0 LICENSE, README rewrite.
+>
+> **How to run the tooling:**
+> - `npm --prefix app run check:plain` (needs a running service on 8080; reads `ANVESHAN_STEWARD_CODE` env var for steward views)
+> - `npm --prefix app run check:roles` (same service; reads `ANVESHAN_STEWARD_CODE`)
+> - `python tools/smoke_deployed.py http://localhost:8080 --insecure` (reads `ANVESHAN_SMOKE_STEWARD_CODE`)
+>
+> **Steward env vars on Cloud Run:**
+> - `ANVESHAN_STEWARD_TOKEN` — set as a **Cloud Run secret** (not a plain env var); long random string; steward POSTs it as `X-Steward-Token`
+> - `ANVESHAN_STEWARD_OPEN` — leave **unset** (defaults to 0); set to 1 only for an open-access demo
+>
+> **Remaining human tasks:**
+> - Merge `k9/integration` to `main` (Claude Code reviews; Jim merges via GitHub Desktop)
+> - Deploy to Cloud Run
+> - Register team by 2026-10-11 at https://hack2skill.com/event/aibuildercup2026/registration
+> - Run mini pilot E8 and get one real expert review (WI-5.1, WI-5.2 — still OPEN)
+> - Make repo public after merge (WI-8.4; Jim)
+> - Submit by 2026-10-18
+> - Delete remote `kiro/k9-*` branches after merge
+>
 > **2026-10-07, latest: three product roles (DECIDED by Jim).**
 > - **Roles:** learner (plain language, no audit tooling), creator (check what the AI understood, publish, insights), steward (review queue, library, consent and licences, insights, usage). No admin console or accounts (NEXT).
 > - **Docs:** `docs/product/product-vision.md` §9A, `docs/product/user-journeys.md` Journeys 7–8, `docs/status/DECISIONS.md`.

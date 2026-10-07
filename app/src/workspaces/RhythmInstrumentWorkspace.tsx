@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { AlertTriangle, ArrowRight, Music, Radio, Volume2, Sparkles, ShieldCheck } from 'lucide-react';
 import type { CapabilityCase } from '../types/workspace';
 import { RubricHUD } from '../components/RubricHUD';
@@ -35,7 +35,7 @@ export function RhythmInstrumentWorkspace({
                   <Music className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-[10px] font-mono uppercase tracking-widest text-transmission-emerald font-bold">
+                  <div className="text-[11px] font-mono uppercase tracking-widest text-transmission-emerald font-bold">
                     RHYTHM PRACTICE INSTRUMENT // ACOUSTIC ONSET ENGINE
                   </div>
                   <h3 className="text-base font-semibold text-on-surface">
@@ -58,7 +58,7 @@ export function RhythmInstrumentWorkspace({
                   <div className="w-32 h-32 rounded-full bg-zinc-800 border-4 border-zinc-600 flex items-center justify-center relative shadow-inner">
                     {/* Bayan Syahi spot (black iron paste off-center) */}
                     <div className="w-16 h-16 rounded-full bg-zinc-950 border border-zinc-700 absolute top-4 left-6 flex items-center justify-center">
-                      <span className="text-[9px] font-mono text-zinc-400">SYAHI</span>
+                      <span className="text-[11px] font-mono text-zinc-400">SYAHI</span>
                     </div>
                   </div>
                   <span className="mt-3 font-mono text-xs font-bold text-on-surface">
@@ -74,7 +74,7 @@ export function RhythmInstrumentWorkspace({
                   <div className="w-28 h-28 rounded-full bg-amber-950/40 border-4 border-amber-800 flex items-center justify-center relative shadow-inner">
                     {/* Dayan concentric Syahi */}
                     <div className="w-14 h-14 rounded-full bg-zinc-950 border border-zinc-700 flex items-center justify-center">
-                      <span className="text-[9px] font-mono text-zinc-400">KINAR</span>
+                      <span className="text-[11px] font-mono text-zinc-400">KINAR</span>
                     </div>
                   </div>
                   <span className="mt-3 font-mono text-xs font-bold text-on-surface">
@@ -108,7 +108,7 @@ export function RhythmInstrumentWorkspace({
                   </div>
 
                   {/* Dayan Peak (Right Hand - early at 0ms) */}
-                  <div className="text-[10px] font-mono text-caliper-cyan mb-1 flex items-center gap-2">
+                  <div className="text-[11px] font-mono text-caliper-cyan mb-1 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-caliper-cyan" />
                     DAYAN (TREBLE RIM) ONSET PEAK: 0.000s
                   </div>
@@ -118,7 +118,7 @@ export function RhythmInstrumentWorkspace({
                   </div>
 
                   {/* Bayan Peak (Left Hand - lagging by 48ms) */}
-                  <div className="text-[10px] font-mono text-divergence-crimson mb-1 flex items-center gap-2">
+                  <div className="text-[11px] font-mono text-divergence-crimson mb-1 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-divergence-crimson" />
                     BAYAN (BASS HEEL) ONSET PEAK: +0.048s (LAGGING)
                   </div>

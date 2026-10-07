@@ -24,13 +24,33 @@ import {
   selectDraft,
   storeDraft,
 } from './mock/composer';
+import {
+  MOCK_STEWARD_CODE,
+  accessFor,
+  mockConsent,
+  mockDecide,
+  mockInsights,
+  mockOverview,
+  mockQueue,
+  mockStewardLibrary,
+  mockSubmit,
+  mockUsage,
+  mockWithdraw,
+  recordFor,
+  requireMockSteward,
+} from './mock/library';
+import { getStewardToken } from './steward';
+import type { ConsentRow, InsightsView, LibraryRecord, SampleAttempt, SampleSource, StewardDecision, StewardLibraryRow, StewardOverview, StewardQueueItem, SubmitBody, UsageView } from './types';
+import { mockAnalyzeSampleFile, mockSampleSources, mockSamplesFor, mockSampleUpload } from './mock/samples';
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const clone = <T,>(v: T): T => JSON.parse(JSON.stringify(v)) as T;
 
 const cases = new Map<string, CaseView>([
   ['kolam', kolamCaseView()],
-  ['origami', origamiCaseView()],
+  // origami-crane is the universal-pipeline replacement for the experimental 'origami' case.
+  // In mock mode we reuse origamiCaseView with the new case_id so the learner flow works.
+  ['origami-crane', origamiCaseView('origami-crane')],
   ['tabla', tablaCaseView()],
 ]);
 /** object URLs for uploaded derived-case sources: key = `${caseId}/${sourceId}` */
@@ -78,7 +98,7 @@ async function sha12(file: Blob): Promise<string> {
 export const mockApi: Api = {
   async health(_o?: CallOptions): Promise<HealthResponse> {
     await delay(120);
-    return { ok: true, mode: 'recorded', models: { text_image: 'gemma-4-26b-a4b-it (mock)', video_frames: 'gemma-4-26b-a4b-it (mock)', audio_enabled: false } };
+    return { ok: true, mode: 'recorded', own_key_supported: true, server_key_configured: false, steward_enabled: true, steward_open: false, data_ttl_hours: 6, models: { text_image: 'gemma-4-26b-a4b-it (mock)', video_frames: 'gemma-4-26b-a4b-it (mock)', audio_enabled: false } };
   },
 
   async checkKey(_o?: CallOptions): Promise<{ ok: boolean; model: string }> {
@@ -98,12 +118,13 @@ export const mockApi: Api = {
       derived_from: v.derived_from ?? null,
       composed: v.modality === 'universal',
       structures: v.modality === 'universal' ? ((v.goal.ui_view as { structures?: string[] }).structures ?? []) : undefined,
+      access: accessFor(v),
     }));
   },
 
   async getCase(caseId: string): Promise<CaseView> {
     await delay(150);
-    return clone(getView(caseId));
+    return { ...clone(getView(caseId)), access: accessFor(getView(caseId)) };
   },
 
   async uploadSource(caseId: string, file: File, onProgress?: ProgressFn): Promise<{ case_id: string }> {
@@ -113,7 +134,7 @@ export const mockApi: Api = {
     const id = `${base}~${await sha12(file)}`;
     const sourceId = `upload.${id.split('~')[1]}`;
     uploadedMedia.set(`${id}/${sourceId}`, URL.createObjectURL(file));
-    const make = base === 'kolam' ? kolamCaseView : base === 'origami' ? origamiCaseView : tablaCaseView;
+    const make = base === 'kolam' ? kolamCaseView : base === 'origami-crane' ? origamiCaseView : tablaCaseView;
     const v = make(id, {
       title: `${baseView.title.split(' — ')[0]} — your upload (${file.name})`,
       runtime_label: 'UPLOAD',
@@ -199,7 +220,7 @@ export const mockApi: Api = {
     if (s.attempts.length >= 2) throw new ApiError('INVALID_INPUT', 'baseline and retry already submitted; complete the session', 400);
     const v = getView(s.caseId);
     const base = baseOf(s.caseId);
-    const allowed: Record<string, string[]> = { kolam: ['trace', 'image'], origami: ['video'], tabla: ['audio'] };
+    const allowed: Record<string, string[]> = { kolam: ['trace', 'image'], 'origami-crane': ['video'], tabla: ['audio'] };
     if (v.modality === 'universal') {
       const profile = v.profile;
       const allowedKinds = profile?.learner_input_kinds ?? ['image', 'audio', 'video', 'trace'];
@@ -222,7 +243,7 @@ export const mockApi: Api = {
     } else if (base === 'kolam') {
       await delay(1500);
       result = evaluateKolamImage(v, sid, s.learner, n);
-    } else if (base === 'origami') {
+    } else if (base === 'origami-crane') {
       await delay(3000);
       result = evaluateOrigami(v, sid, s.learner, n);
     } else {
@@ -255,7 +276,7 @@ export const mockApi: Api = {
   },
 
   goalAssetUrl(caseId: string, asset: string): string {
-    if (baseOf(caseId) === 'origami') return origamiGoalAsset(asset);
+    if (baseOf(caseId) === 'origami-crane') return origamiGoalAsset(asset);
     // Universal composed cases use synthetic keyframe SVGs
     const v = cases.get(caseId);
     if (v?.modality === 'universal') return keyframeAssetUrl(caseId, asset);
@@ -313,5 +334,77 @@ export const mockApi: Api = {
     const view = composedCaseView(profile, null);
     cases.set(view.case_id, view);
     return clone(view);
+  },
+
+  // ---- K9: library, insights and steward console (SYNTHETIC mock state) ----
+  async getLibraryRecord(caseId: string): Promise<LibraryRecord> {
+    await delay(100);
+    return clone(recordFor(getView(caseId)));
+  },
+  async submitToLibrary(caseId: string, body: SubmitBody): Promise<LibraryRecord> {
+    await delay(400);
+    return clone(mockSubmit(getView(caseId), body));
+  },
+  async withdrawFromLibrary(caseId: string): Promise<LibraryRecord> {
+    await delay(300);
+    return clone(mockWithdraw(getView(caseId)));
+  },
+  async getInsights(caseId: string): Promise<InsightsView> {
+    await delay(200);
+    return mockInsights(getView(caseId));
+  },
+  async stewardCheck(): Promise<{ ok: boolean }> {
+    await delay(300);
+    if (getStewardToken() !== MOCK_STEWARD_CODE) throw new ApiError('STEWARD_REQUIRED', 'That access code is not right.', 401);
+    return { ok: true };
+  },
+  async stewardOverview(): Promise<StewardOverview> {
+    await delay(200);
+    return mockOverview([...cases.values()]);
+  },
+  async stewardQueue(): Promise<StewardQueueItem[]> {
+    await delay(200);
+    return mockQueue([...cases.values()]);
+  },
+  async stewardLibrary(): Promise<StewardLibraryRow[]> {
+    await delay(200);
+    return mockStewardLibrary([...cases.values()]);
+  },
+  async stewardDecide(caseId: string, d: StewardDecision): Promise<LibraryRecord> {
+    await delay(300);
+    return clone(mockDecide(getView(caseId), d));
+  },
+  async stewardConsent(): Promise<ConsentRow[]> {
+    await delay(200);
+    return mockConsent([...cases.values()]);
+  },
+  async stewardUsage(): Promise<UsageView> {
+    await delay(200);
+    return mockUsage();
+  },
+  async stewardConsentExport(): Promise<Blob> {
+    const rows = mockConsent([...cases.values()]);
+    return new Blob([JSON.stringify({ exported_at: new Date().toISOString(), synthetic_mock: true, skills: rows }, null, 2)], { type: 'application/json' });
+  },
+  async listSamples(caseId: string): Promise<SampleAttempt[]> {
+    await delay(120);
+    return mockSamplesFor(getView(caseId));
+  },
+  async submitSampleAttempt(sid: string, sampleId: string): Promise<AttemptResult> {
+    const s = sessions.get(sid);
+    if (!s) throw new ApiError('MISSING_EVIDENCE', `session ${sid} not found`, 404);
+    return mockApi.submitAttempt(sid, mockSampleUpload(getView(s.caseId), sampleId));
+  },
+  async listSampleSources(): Promise<SampleSource[]> {
+    await delay(120);
+    return mockSampleSources();
+  },
+  async analyzeSampleSource(sampleId: string): Promise<DraftView> {
+    return mockApi.analyzeSource(mockAnalyzeSampleFile(sampleId), { rightsConfirmed: true });
+  },
+  async stewardReviewExport(caseId: string): Promise<Blob> {
+    requireMockSteward();
+    const v = getView(caseId);
+    return new Blob([JSON.stringify({ case_id: caseId, synthetic_mock: true, review_status: v.review_status, knowledge_package: v.package }, null, 2)], { type: 'application/json' });
   },
 };

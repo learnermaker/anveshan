@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import {
   FileCheck2,
   AlertTriangle,
@@ -44,7 +44,7 @@ export const RubricHUD: React.FC<RubricHUDProps> = ({
             <div className="font-mono text-xs font-bold text-on-surface uppercase tracking-wider">
               RUBRIC HUD // 8-CONTRACT SEAM
             </div>
-            <div className="text-[10px] font-sans text-on-surface-variant">
+            <div className="text-[11px] font-sans text-on-surface-variant">
               RUBRIC-OPT-001 • REPLAY FIXTURE STANDARD
             </div>
           </div>
@@ -56,7 +56,7 @@ export const RubricHUD: React.FC<RubricHUDProps> = ({
             <Award className="w-3.5 h-3.5" />
             <span>{metrics.retryScore.toFixed(1)} / {metrics.maxPossibleScore.toFixed(1)} PTS</span>
           </div>
-          <div className="text-[9px] font-mono text-on-surface-variant">
+          <div className="text-[11px] font-mono text-on-surface-variant">
             PASSING: 4.9 PTS (70%)
           </div>
         </div>
@@ -91,12 +91,12 @@ export const RubricHUD: React.FC<RubricHUDProps> = ({
                       {c.criterionId}
                     </span>
                     {c.isFirstDivergence && (
-                      <span className="font-mono text-[9px] bg-cadmium-amber/20 text-cadmium-amber border border-cadmium-amber/40 px-1.5 py-0.2 rounded font-bold">
+                      <span className="font-mono text-[11px] bg-cadmium-amber/20 text-cadmium-amber border border-cadmium-amber/40 px-1.5 py-0.2 rounded font-bold">
                         FIRST DIVERGENCE
                       </span>
                     )}
                     {c.required && (
-                      <span className="font-mono text-[9px] text-on-surface-variant border border-outline px-1 rounded">
+                      <span className="font-mono text-[11px] text-on-surface-variant border border-outline px-1 rounded">
                         REQ
                       </span>
                     )}
@@ -132,9 +132,9 @@ export const RubricHUD: React.FC<RubricHUDProps> = ({
                 {/* Status Badges Row */}
                 <div className="flex items-center justify-between pt-1 border-t border-outline/50 mt-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-[9px] text-on-surface-variant">BASELINE:</span>
+                    <span className="font-mono text-[11px] text-on-surface-variant">BASELINE:</span>
                     <span
-                      className={`font-mono text-[9px] px-1.5 py-0.5 rounded font-bold ${
+                      className={`font-mono text-[11px] px-1.5 py-0.5 rounded font-bold ${
                         c.baselineStatus === 'satisfied'
                           ? 'bg-transmission-emerald/10 text-transmission-emerald border border-transmission-emerald/30'
                           : c.baselineStatus === 'partially_satisfied'
@@ -147,8 +147,8 @@ export const RubricHUD: React.FC<RubricHUDProps> = ({
                       {c.baselineStatus.toUpperCase()}
                     </span>
 
-                    <span className="font-mono text-[9px] text-on-surface-variant ml-1">RETRY:</span>
-                    <span className="font-mono text-[9px] px-1.5 py-0.5 rounded font-bold bg-transmission-emerald/10 text-transmission-emerald border border-transmission-emerald/30 flex items-center gap-0.5">
+                    <span className="font-mono text-[11px] text-on-surface-variant ml-1">RETRY:</span>
+                    <span className="font-mono text-[11px] px-1.5 py-0.5 rounded font-bold bg-transmission-emerald/10 text-transmission-emerald border border-transmission-emerald/30 flex items-center gap-0.5">
                       <CheckCircle2 className="w-2.5 h-2.5" />
                       SATISFIED
                     </span>
@@ -162,7 +162,7 @@ export const RubricHUD: React.FC<RubricHUDProps> = ({
                         onTimeChange(c.expertEvidenceSec);
                       }
                     }}
-                    className="flex items-center gap-1 font-mono text-[10px] text-cadmium-amber hover:underline"
+                    className="flex items-center gap-1 font-mono text-[11px] text-cadmium-amber hover:underline"
                   >
                     <span>EVIDENCE</span>
                     <ExternalLink className="w-2.5 h-2.5" />
@@ -176,7 +176,7 @@ export const RubricHUD: React.FC<RubricHUDProps> = ({
                   {/* Divergence Observed */}
                   {c.feedback && (
                     <div className="bg-surface-container p-2 rounded border border-outline">
-                      <div className="font-mono text-[10px] text-divergence-crimson font-bold flex items-center gap-1 mb-1">
+                      <div className="font-mono text-[11px] text-divergence-crimson font-bold flex items-center gap-1 mb-1">
                         <AlertTriangle className="w-3 h-3" />
                         DIVERGENCE OBSERVED:
                       </div>
@@ -189,7 +189,7 @@ export const RubricHUD: React.FC<RubricHUDProps> = ({
                   {/* Corrective Instruction */}
                   {c.feedback && (
                     <div className="bg-cadmium-amber/5 p-2 rounded border border-cadmium-amber/20">
-                      <div className="font-mono text-[10px] text-cadmium-amber font-bold flex items-center gap-1 mb-1">
+                      <div className="font-mono text-[11px] text-cadmium-amber font-bold flex items-center gap-1 mb-1">
                         <ShieldCheck className="w-3 h-3" />
                         CORRECTIVE INSTRUCTION:
                       </div>
@@ -202,7 +202,7 @@ export const RubricHUD: React.FC<RubricHUDProps> = ({
                   {/* Verified Retry Observation */}
                   {c.retryNotes && (
                     <div className="bg-transmission-emerald/5 p-2 rounded border border-transmission-emerald/20">
-                      <div className="font-mono text-[10px] text-transmission-emerald font-bold flex items-center gap-1 mb-1">
+                      <div className="font-mono text-[11px] text-transmission-emerald font-bold flex items-center gap-1 mb-1">
                         <CheckCircle2 className="w-3 h-3" />
                         REPLAY RETRY OBSERVATION:
                       </div>

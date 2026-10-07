@@ -1,0 +1,24 @@
+{
+  "expected_behavior": "one entry per keyframe with a non-decreasing stage grouping",
+  "input_digests": [
+    "ImagePart:7de136f2fcd60601d59755e71c727811df47d01d38a2185e37458903186713c9",
+    "ImagePart:bdab26a309c7119c952254fc21fd3129f7de6cd4972a6ef64fb18eecd496e794",
+    "ImagePart:5fb53a555b6f2cf595b1e83992dcb2e4373b412887a215dbf5f541c08ad9f04e",
+    "ImagePart:15806487e074e9d232d69157581176cf29c1d2b57410b1cb7c96aa7641886ffb",
+    "ImagePart:fc773fd478a60f8abf5af5b2f9df07df3ea62f2cdddceca17b31329920991aef",
+    "ImagePart:ba6d6745a4392bcb1309913baf4b584044f5a5c19590778e8265d3e3ab87d2cd",
+    "text:63199f925202fc64cf919a82d3c6f2d4f238d917fde113d3adbe3044543a9e80"
+  ],
+  "latency_ms": 5389,
+  "model_id": "gemini-3.5-flash-lite",
+  "model_key": "vision_fast",
+  "notes": [],
+  "prompt_id": "perceive_frames",
+  "prompt_sha256": "63199f925202fc64cf919a82d3c6f2d4f238d917fde113d3adbe3044543a9e80",
+  "prompt_version": "v2",
+  "provider": "google-genai",
+  "replay_key": "f638d8f1af6b825df9f361e6f3d7a2be",
+  "run_id": "run.perceive_frames.20261007T080405.d983e5",
+  "runtime_class": "LIVE",
+  "started_at": "2026-10-07T08:04:00.319859+00:00"
+}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { AlertTriangle, ArrowRight, CheckCircle2, ShieldAlert, ShieldCheck, Sparkles, Sliders } from 'lucide-react';
 import type { CapabilityCase } from '../types/workspace';
 import { RubricHUD } from '../components/RubricHUD';
@@ -37,7 +37,7 @@ export function FirstDivergenceWorkspace({
                   <AlertTriangle className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-[10px] font-mono uppercase tracking-widest text-divergence-crimson font-bold">
+                  <div className="text-[11px] font-mono uppercase tracking-widest text-divergence-crimson font-bold">
                     FIRST-DIVERGENCE WORKSPACE // TOPOLOGICAL CHIRALITY
                   </div>
                   <h3 className="text-base font-semibold text-on-surface">
@@ -60,7 +60,7 @@ export function FirstDivergenceWorkspace({
                     <CheckCircle2 className="w-4 h-4" />
                     TRUE SQUARE KNOT (REEF)
                   </span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-transmission-emerald/15 text-transmission-emerald">
+                  <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-transmission-emerald/15 text-transmission-emerald">
                     R-OVER-L → L-OVER-R
                   </span>
                 </div>
@@ -72,7 +72,7 @@ export function FirstDivergenceWorkspace({
                     {/* Gold cord loop interlocking parallel */}
                     <path d="M 20,50 Q 50,70 70,40 Q 90,10 140,30" stroke="#fbbf24" />
                   </svg>
-                  <span className="absolute bottom-2 font-mono text-[10px] text-transmission-emerald">
+                  <span className="absolute bottom-2 font-mono text-[11px] text-transmission-emerald">
                     PARALLEL BIGHTS // LOCKS SOLID
                   </span>
                 </div>
@@ -89,7 +89,7 @@ export function FirstDivergenceWorkspace({
                     <AlertTriangle className="w-4 h-4" />
                     GRANNY KNOT (LEARNER ERROR)
                   </span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-divergence-crimson/15 text-divergence-crimson">
+                  <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-divergence-crimson/15 text-divergence-crimson">
                     R-OVER-L → R-OVER-L
                   </span>
                 </div>
@@ -101,7 +101,7 @@ export function FirstDivergenceWorkspace({
                     <path d="M 20,55 Q 80,20 140,55" stroke="#fbbf24" />
                     <line x1="80" y1="10" x2="80" y2="70" stroke="#ef4444" strokeWidth="2" strokeDasharray="3 3" />
                   </svg>
-                  <span className="absolute bottom-2 font-mono text-[10px] text-divergence-crimson">
+                  <span className="absolute bottom-2 font-mono text-[11px] text-divergence-crimson">
                     PERPENDICULAR TAILS // CAPSIZES
                   </span>
                 </div>

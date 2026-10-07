@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Depends, File, Form, UploadFile
@@ -30,6 +31,15 @@ def _load(api: Any, session_id: str, settings: Settings) -> Any:
             return api.load_session(session_id, settings.data_dir)
     except (FileNotFoundError, KeyError) as exc:
         raise not_found(f"unknown session {session_id}") from exc
+
+
+def _rubric_facts(session: Any):
+    """Return (rubric_names, max_score) from session, tolerating any errors."""
+    try:
+        crit = session.handoff().rubric.criteria
+        return {c.criterion_id: c.name for c in crit}, float(sum(c.weight for c in crit))
+    except Exception:
+        return {}, None
 
 
 @router.post("")
@@ -80,7 +90,26 @@ def submit_attempt(
             media = adapters.make_attempt_media(kind, primary, extras, session=session, api=api)
             result = api.submit_attempt(session, media, ctx)
             api.save_session(session, settings.data_dir)
-    return adapters.to_json(result)
+        result_json = adapters.to_json(result)
+
+    # Record insights (best-effort)
+    try:
+        from anveshan_service import insights as _ins
+        case_id = getattr(session, "case_id", None)
+        if case_id:
+            rubric_names, max_score = _rubric_facts(session)
+            _ins.record_attempt(settings, str(case_id), session_id, result_json, rubric_names, max_score)
+    except Exception:
+        pass
+
+    # Record daily metrics
+    try:
+        from anveshan_service.metrics import METRICS
+        METRICS.inc("attempts_day", datetime.now(timezone.utc).strftime("%Y-%m-%d"))
+    except Exception:
+        pass
+
+    return result_json
 
 
 @router.post("/{session_id}/complete")
@@ -92,4 +121,15 @@ def complete_session(session_id: str, settings: Settings = Depends(get_settings)
         with adapters.translated():
             result = api.complete_session(session)
             api.save_session(session, settings.data_dir)
-    return adapters.to_json(result)
+        result_json = adapters.to_json(result)
+
+    # Record insights completion (best-effort)
+    try:
+        from anveshan_service import insights as _ins
+        case_id = getattr(session, "case_id", None)
+        if case_id:
+            _ins.record_completion(settings, str(case_id), session_id, result_json)
+    except Exception:
+        pass
+
+    return result_json

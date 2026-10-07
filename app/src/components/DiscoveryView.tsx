@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Activity, ArrowRight, Compass, FileUp, HelpCircle, Layers, Music, PlusCircle, RefreshCw, Scissors, Shield, Sparkles, Wrench } from 'lucide-react';
+import { Activity, ArrowRight, Compass, HelpCircle, Layers, Music, PlusCircle, RefreshCw, Scissors, Shield, Sparkles, Wrench } from 'lucide-react';
 import { CAPABILITY_CASES, SHOWCASE_CASE_IDS } from '../data/cases/registry';
 import type { CaseSummary } from '../api/types';
 import { api } from '../api/client';
 import { IS_MOCK, API_BASE } from '../api/runtime';
-import { Badge, ErrorNote, MockBadge, ProgressBar, ReviewBadge, SourceLabelBadge, Spinner } from '../hero/ui';
+import { Badge, ErrorNote, Panel, ReviewBadge, SourceLabelBadge, Spinner } from '../hero/ui';
 import { AiRoleNote, HowItWorksSteps } from './HowItWorks';
+import { MODALITY_PHRASE, SOURCE_LABEL } from '../copy/plain';
 
 export type CaseKey = { kind: 'hero'; id: string } | { kind: 'showcase'; id: string } | { kind: 'composer' };
 
@@ -17,49 +18,15 @@ interface DiscoveryViewProps {
   onSelect: (key: CaseKey) => void;
   selected: CaseKey;
   onOpenGuide?: () => void;
+  /** K9: open My skills (App.tsx, P3) */
+  onOpenMine?: () => void;
 }
 
-interface ModalityMeta {
-  icon: React.ReactNode;
-  accept: string;
-  /** label of the "build from your own source" action ('' = not offered) */
-  uploadLabel: string;
-  /** what the learner does, in plain words */
-  doText: string;
-  /** what the learner needs */
-  need: string;
-}
-
-const MODALITY_META: Record<string, ModalityMeta> = {
-  kolam_image: {
-    icon: <Compass className="w-5 h-5 text-transmission-emerald" />,
-    accept: 'image/*',
-    uploadLabel: 'Use your own kolam photo as the source',
-    doText:
-      'Redraw a traditional South Indian line drawing on its dot grid. Checks that every line is drawn, nothing strays, each dot keeps its place and the line stays continuous.',
-    need: 'Nothing: draw with a mouse, finger or stylus',
-  },
-  origami_video: {
-    icon: <Scissors className="w-5 h-5 text-cadmium-amber" />,
-    accept: 'video/*',
-    uploadLabel: 'Use your own folding video as the source',
-    doText: 'Fold paper through the states shown in a real demonstration video. Checks that each paper state is reached, in order.',
-    need: 'A short video of your folding, or a sample attempt',
-  },
-  tabla_audio: {
-    icon: <Music className="w-5 h-5 text-caliper-cyan" />,
-    accept: 'audio/*,video/*',
-    uploadLabel: 'Use your own tabla recording as the source',
-    doText: 'Play the Dha stroke pattern from a real tabla recording. Checks tempo, timing against the beat and the bass stroke.',
-    need: 'A short audio recording, or a sample attempt',
-  },
-  universal: {
-    icon: <Sparkles className="w-5 h-5 text-caliper-cyan" />,
-    accept: '*/*',
-    uploadLabel: '',
-    doText: 'A skill built from a real source video by the universal pipeline. Checks each step, the order and the final result.',
-    need: 'A video of your attempt, or a sample attempt',
-  },
+const MODALITY_ICON: Record<string, React.ReactNode> = {
+  kolam_image: <Compass className="w-5 h-5 text-transmission-emerald" />,
+  origami_video: <Scissors className="w-5 h-5 text-cadmium-amber" />,
+  tabla_audio: <Music className="w-5 h-5 text-caliper-cyan" />,
+  universal: <Sparkles className="w-5 h-5 text-caliper-cyan" />,
 };
 
 const SHOWCASE_ICON: Record<string, React.ReactNode> = {
@@ -69,38 +36,51 @@ const SHOWCASE_ICON: Record<string, React.ReactNode> = {
   square_knot: <Shield className="w-5 h-5 text-divergence-crimson" />,
 };
 
-export function DiscoveryView({ heroCases, heroError, heroLoading, onRefreshHero, onSelect, selected, onOpenGuide }: DiscoveryViewProps) {
-  const heroes = (heroCases ?? []).filter((c) => c.hero);
-  const derived = (heroCases ?? []).filter((c) => !c.hero && c.derived_from && !c.composed);
-  const composed = (heroCases ?? []).filter((c) => c.composed === true);
+export function DiscoveryView({ heroCases, heroError, heroLoading, onRefreshHero, onSelect, selected, onOpenGuide, onOpenMine }: DiscoveryViewProps) {
+  const allCases = heroCases ?? [];
+
+  // Featured skills: curated, published (or no access field = legacy)
+  const featured = allCases.filter((c) => c.hero && ((c.access?.library_status ?? 'published') === 'published'));
+
+  // Shared by community: composed, published, not owned by the visitor
+  const community = allCases.filter((c) => c.composed && c.access?.library_status === 'published' && !c.access?.owner);
+
+  // Owned skills count
+  const ownedSkills = allCases.filter((c) => c.access?.owner);
 
   return (
     <div className="flex flex-col gap-10 max-w-6xl w-full mx-auto p-2 lg:p-6 animate-fade-in text-on-surface">
+      {/* Hero */}
       <section className="text-center max-w-3xl mx-auto space-y-4 pt-4">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cadmium-amber/10 border border-cadmium-amber/30 text-cadmium-amber font-mono text-[11px] font-semibold uppercase tracking-widest">
           Google Cloud AI Builder Cup 2026 · Prototype
         </div>
         <h1 className="font-serif text-4xl sm:text-5xl font-normal tracking-tight leading-[1.15]">Learn a hands-on skill from a real source, and see whether it transferred.</h1>
         <p className="text-base text-on-surface-variant max-w-2xl mx-auto leading-relaxed">
-          Anveshan turns a demonstration (a photo, a video or a recording) into steps and checks you can trust, because each one points back to the source. You try the
-          skill, it shows exactly where you first went off track, you retry once, and it records what changed.
+          Anveshan turns a demonstration into steps and checks you can trust, because each one points back to the source. You try the skill, it shows where you first went off track, you retry once, and it records what changed.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
           <button
             onClick={() => onSelect({ kind: 'hero', id: 'kolam' })}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-cadmium-amber hover:bg-cadmium-amber/90 text-background font-semibold text-sm"
           >
-            New here? Start with the Kolam drawing <ArrowRight className="w-4 h-4" aria-hidden="true" />
+            Start with the Kolam drawing (about 2 minutes) <ArrowRight className="w-4 h-4" aria-hidden="true" />
           </button>
-          {onOpenGuide && (
-            <button onClick={onOpenGuide} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-outline hover:border-cadmium-amber text-sm text-on-surface">
-              <HelpCircle className="w-4 h-4 text-cadmium-amber" aria-hidden="true" /> What the labels mean
-            </button>
-          )}
+          <button
+            onClick={() => onSelect({ kind: 'composer' })}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-outline hover:border-caliper-cyan text-sm text-on-surface"
+          >
+            Share a skill you know
+          </button>
         </div>
-        <p className="text-sm text-on-surface-variant">No sign-in. The Kolam drawing needs no files: you draw in the browser. About 3 minutes.</p>
+        {onOpenGuide && (
+          <button onClick={onOpenGuide} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-outline hover:border-cadmium-amber text-sm text-on-surface">
+            <HelpCircle className="w-4 h-4 text-cadmium-amber" aria-hidden="true" /> What the labels mean
+          </button>
+        )}
       </section>
 
+      {/* How it works */}
       <section aria-labelledby="how-title" className="space-y-3">
         <h2 id="how-title" className="text-xs font-mono uppercase tracking-widest text-on-surface-variant font-bold">
           How it works
@@ -109,12 +89,11 @@ export function DiscoveryView({ heroCases, heroError, heroLoading, onRefreshHero
         <AiRoleNote />
       </section>
 
+      {/* Featured skills */}
       <section className="space-y-4">
         <div className="flex flex-wrap items-end justify-between gap-3 border-b border-outline pb-3">
           <div>
-            <div className="text-xs font-mono uppercase tracking-widest text-cadmium-amber font-bold flex items-center gap-2">
-              Ready-made skills <MockBadge />
-            </div>
+            <div className="text-xs font-mono uppercase tracking-widest text-cadmium-amber font-bold">Featured skills</div>
             <h2 className="text-xl font-semibold font-serif">Practise a skill built from a real source</h2>
           </div>
           <button onClick={onRefreshHero} className="text-xs font-mono text-on-surface-variant hover:text-on-surface flex items-center gap-1">
@@ -131,36 +110,56 @@ export function DiscoveryView({ heroCases, heroError, heroLoading, onRefreshHero
           </div>
         )}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {heroes.map((c) => (
+          {featured.map((c) => (
             <HeroCard key={c.case_id} c={c} active={selected.kind === 'hero' && selected.id === c.case_id} onOpen={(id) => onSelect({ kind: 'hero', id })} />
           ))}
         </div>
-        {derived.length > 0 && (
-          <div className="space-y-2">
-            <div className="text-xs font-mono uppercase text-on-surface-variant">Your uploaded sources (only you can see these)</div>
-            <div className="flex flex-wrap gap-2">
-              {derived.map((c) => (
+      </section>
+
+      {/* Shared by the community */}
+      <section className="space-y-4">
+        <div className="border-b border-outline pb-3">
+          <div className="text-xs font-mono uppercase tracking-widest text-caliper-cyan font-bold">Shared by the community</div>
+          <h2 className="text-xl font-semibold font-serif">Skills shared by other learners</h2>
+        </div>
+        {community.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {community.map((c) => (
+              <div key={c.case_id} className="p-5 rounded-xl border border-outline bg-surface-container-low flex flex-col gap-3">
+                <div>
+                  <h3 className="font-semibold text-base" data-plain-exempt>{c.title}</h3>
+                  <p className="text-sm text-on-surface-variant mt-0.5">
+                    Shared by {c.access?.credit_name ?? 'a creator'}
+                  </p>
+                </div>
+                <ReviewBadge status={c.review_status} />
                 <button
-                  key={c.case_id}
                   onClick={() => onSelect({ kind: 'hero', id: c.case_id })}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg border border-outline bg-surface-container-low hover:border-cadmium-amber text-left"
+                  className="mt-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-cadmium-amber hover:bg-cadmium-amber/90 text-background font-semibold text-sm"
                 >
-                  <span className="text-sm">{c.title}</span>
-                  <SourceLabelBadge label={c.runtime_label} />
-                  <ReviewBadge status={c.review_status} />
+                  Start <ArrowRight className="w-4 h-4" aria-hidden="true" />
                 </button>
-              ))}
-            </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="p-5 rounded-xl border border-dashed border-outline bg-surface-container-low text-center space-y-3">
+            <p className="text-sm text-on-surface-variant">No community skills yet. Share one you know.</p>
+            <button
+              onClick={() => onSelect({ kind: 'composer' })}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-cadmium-amber hover:bg-cadmium-amber/90 text-background font-semibold text-sm"
+            >
+              Share a skill you know
+            </button>
           </div>
         )}
       </section>
 
+      {/* Your skills + composer teaser */}
       <section className="space-y-4">
         <div className="border-b border-outline pb-3">
-          <div className="text-xs font-mono uppercase tracking-widest text-caliper-cyan font-bold flex items-center gap-2">
-            Your own skill <MockBadge />
-          </div>
-          <h2 className="text-xl font-semibold font-serif">Create a new skill from any demonstration</h2>
+          <div className="text-xs font-mono uppercase tracking-widest text-caliper-cyan font-bold">Share a skill</div>
+          <h2 className="text-xl font-semibold font-serif">Upload a demonstration, get a practice task</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <button
@@ -174,47 +173,33 @@ export function DiscoveryView({ heroCases, heroError, heroLoading, onRefreshHero
               <div className="w-10 h-10 rounded-lg bg-surface-dim border border-outline flex items-center justify-center">
                 <PlusCircle className="w-5 h-5 text-caliper-cyan" aria-hidden="true" />
               </div>
-              <Badge tone="cyan">IMAGE · VIDEO · AUDIO</Badge>
             </div>
             <div>
-              <h3 className="font-semibold text-base">Upload a demonstration, get a practice task</h3>
+              <h3 className="font-semibold text-base">Share a skill you know</h3>
             </div>
             <p className="text-sm text-on-surface-variant leading-relaxed">
               Upload something you have the right to use: a photo of a finished piece, a short video of a process, or an audio recording. The AI proposes the steps and
-              checks, and you review them before the skill is created. Anything the AI read rather than measured is labelled INFERRED. There is a sample video if you have
-              nothing to hand.
+              checks, and you review them before the skill is created.
             </p>
             <div className="mt-auto inline-flex items-center gap-1.5 text-sm font-semibold text-caliper-cyan">
               <Sparkles className="w-4 h-4" aria-hidden="true" /> Open the composer
             </div>
           </button>
 
-          {composed.length > 0 && (
-            <div className="space-y-2">
-              <div className="text-xs font-mono uppercase text-on-surface-variant">Your skills (only you can see these)</div>
-              <div className="flex flex-col gap-2">
-                {composed.map((c) => (
-                  <button
-                    key={c.case_id}
-                    onClick={() => onSelect({ kind: 'hero', id: c.case_id })}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg border border-outline bg-surface-container-low hover:border-caliper-cyan text-left"
-                  >
-                    <Badge tone="cyan">UPLOAD</Badge>
-                    {(c.structures ?? []).map((s) => (
-                      <Badge key={s} tone="muted">
-                        {s}
-                      </Badge>
-                    ))}
-                    <span className="text-sm flex-1 truncate">{c.title}</span>
-                    <ReviewBadge status={c.review_status} />
-                  </button>
-                ))}
-              </div>
+          {ownedSkills.length > 0 && onOpenMine && (
+            <div className="p-5 rounded-xl border border-outline bg-surface-container-low flex flex-col justify-center gap-3">
+              <p className="text-sm text-on-surface">
+                You have {ownedSkills.length} skill{ownedSkills.length !== 1 ? 's' : ''} in{' '}
+                <button onClick={onOpenMine} className="text-caliper-cyan underline font-semibold">
+                  My skills
+                </button>.
+              </p>
             </div>
           )}
         </div>
       </section>
 
+      {/* Synthetic examples (collapsed) */}
       <details className="group space-y-4 border-t border-outline pt-4">
         <summary className="cursor-pointer list-none flex flex-wrap items-center justify-between gap-3">
           <span>
@@ -242,8 +227,8 @@ export function DiscoveryView({ heroCases, heroError, heroLoading, onRefreshHero
                   <div className="w-9 h-9 rounded-lg bg-surface-dim border border-outline flex items-center justify-center">{SHOWCASE_ICON[id]}</div>
                   <Badge tone="crimson">SYNTHETIC</Badge>
                 </div>
-                <div className="font-semibold text-sm">{c.title}</div>
-                <div className="text-xs font-mono text-on-surface-variant">{c.archetype}</div>
+                <div className="font-semibold text-sm" data-plain-exempt>{c.title}</div>
+                <div className="text-xs font-mono text-on-surface-variant" data-plain-exempt>{c.archetype}</div>
               </button>
             );
           })}
@@ -254,74 +239,29 @@ export function DiscoveryView({ heroCases, heroError, heroLoading, onRefreshHero
 }
 
 function HeroCard({ c, active, onOpen }: { c: CaseSummary; active: boolean; onOpen: (id: string) => void }) {
-  const meta: ModalityMeta = MODALITY_META[c.modality] ?? MODALITY_META.universal;
-  const [stage, setStage] = useState<'idle' | 'uploading' | 'building'>('idle');
-  const [progress, setProgress] = useState(0);
-  const [err, setErr] = useState<unknown>(null);
-
-  const upload = async (file: File) => {
-    setErr(null);
-    setStage('uploading');
-    setProgress(0);
-    try {
-      const { case_id } = await api.uploadSource(c.case_id, file, setProgress);
-      setStage('building');
-      await api.buildCase(case_id);
-      onOpen(case_id);
-    } catch (e) {
-      setErr(e);
-    } finally {
-      setStage('idle');
-    }
-  };
+  const icon = MODALITY_ICON[c.modality] ?? <Sparkles className="w-5 h-5 text-caliper-cyan" />;
+  const modalityPhrase = MODALITY_PHRASE[c.modality] ?? 'Practise and upload your attempt';
+  const sourceLabel = SOURCE_LABEL[c.runtime_label] ?? c.runtime_label;
 
   return (
     <div className={`p-5 rounded-xl border flex flex-col gap-3 transition-colors ${active ? 'border-cadmium-amber bg-surface-container shadow-lg shadow-cadmium-amber/10' : 'border-outline bg-surface-container-low'}`}>
       <div className="flex items-start justify-between gap-2">
-        <div className="w-10 h-10 rounded-lg bg-surface-dim border border-outline flex items-center justify-center">{meta.icon}</div>
-        <div className="flex flex-wrap gap-1 justify-end">
-          <SourceLabelBadge label={c.runtime_label} />
-          <ReviewBadge status={c.review_status} />
-        </div>
+        <div className="w-10 h-10 rounded-lg bg-surface-dim border border-outline flex items-center justify-center">{icon}</div>
+        <ReviewBadge status={c.review_status} />
       </div>
       <div>
-        <h3 className="font-semibold text-base">{c.title}</h3>
-        <p className="text-sm text-on-surface-variant mt-1 leading-relaxed">{meta.doText}</p>
-        <p className="text-sm text-on-surface mt-2">
-          <span className="text-on-surface-variant">You need: </span>
-          {meta.need}
+        <h3 className="font-semibold text-base" data-plain-exempt>{c.title}</h3>
+        <p className="text-sm text-on-surface-variant mt-1 leading-relaxed">
+          What you'll do: {modalityPhrase}
         </p>
+        <p className="text-xs text-on-surface-variant mt-1">{sourceLabel}</p>
       </div>
       <button
         onClick={() => onOpen(c.case_id)}
         className="mt-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-cadmium-amber hover:bg-cadmium-amber/90 text-background font-semibold text-sm"
       >
-        Open this skill <ArrowRight className="w-4 h-4" aria-hidden="true" />
+        Start <ArrowRight className="w-4 h-4" aria-hidden="true" />
       </button>
-      {meta.uploadLabel && (
-        <label
-          className={`inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg border border-outline text-xs text-on-surface ${
-            stage === 'idle' ? 'hover:border-cadmium-amber cursor-pointer' : 'opacity-60'
-          }`}
-          title="Builds a new, private version of this skill from your own image, video or recording"
-        >
-          <FileUp className="w-3.5 h-3.5" aria-hidden="true" /> {meta.uploadLabel}
-          <input
-            type="file"
-            accept={meta.accept}
-            className="sr-only"
-            disabled={stage !== 'idle'}
-            onChange={(e) => {
-              const f = e.target.files?.[0];
-              e.target.value = '';
-              if (f) void upload(f);
-            }}
-          />
-        </label>
-      )}
-      {stage === 'uploading' && <ProgressBar value={progress} label="Uploading source" />}
-      {stage === 'building' && <Spinner label="Building the skill from your source…" />}
-      <ErrorNote error={err} />
     </div>
   );
 }

@@ -24,6 +24,9 @@ def health(settings: Settings = Depends(get_settings)) -> dict:
         "own_key_supported": True,
         "server_key_configured": bool(os.environ.get("GEMINI_API_KEY")),
         "curated_review_open": settings.curated_review_open or bool(settings.review_token),
+        "steward_enabled": settings.steward_enabled,
+        "steward_open": settings.steward_open,
+        "data_ttl_hours": settings.data_ttl_hours,
         "models": {
             "text_image": registry.model_id("text_image"),
             "video_frames": registry.model_id("video_frames"),

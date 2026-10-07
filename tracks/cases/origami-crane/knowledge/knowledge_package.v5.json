@@ -1,0 +1,237 @@
+{
+  "claims": [
+    {
+      "claim_id": "CLM-01",
+      "claim_type": "condition",
+      "evidence_refs": [
+        {
+          "confidence": 1.0,
+          "cue_excerpt": "The demonstration has 16 segments over 335.0s",
+          "end_sec": 335.0,
+          "evidence_id": "ev.universal.clm-01",
+          "modality": "video",
+          "source_id": "src.origami-crane.demo.v1",
+          "start_sec": 0.0,
+          "verification_state": "observed"
+        }
+      ],
+      "is_observed": true,
+      "statement": "The demonstration has 16 segments over 335.0s"
+    },
+    {
+      "claim_id": "CLM-02",
+      "claim_type": "condition",
+      "evidence_refs": [
+        {
+          "confidence": 0.5,
+          "cue_excerpt": "fully formed golden origami crane held up by hands",
+          "end_sec": 335.0,
+          "evidence_id": "ev.universal.clm-02",
+          "modality": "video",
+          "source_id": "src.origami-crane.demo.v1",
+          "start_sec": 0.0,
+          "verification_state": "inferred"
+        }
+      ],
+      "is_observed": false,
+      "statement": "fully formed golden origami crane held up by hands"
+    },
+    {
+      "claim_id": "CLM-03",
+      "claim_type": "condition",
+      "evidence_refs": [
+        {
+          "confidence": 0.5,
+          "cue_excerpt": "final origami crane product",
+          "end_sec": 335.0,
+          "evidence_id": "ev.universal.clm-03",
+          "modality": "video",
+          "source_id": "src.origami-crane.demo.v1",
+          "start_sec": 0.0,
+          "verification_state": "inferred"
+        }
+      ],
+      "is_observed": false,
+      "statement": "final origami crane product"
+    },
+    {
+      "claim_id": "CLM-04",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 0.5,
+          "cue_excerpt": "Demonstrated step 1: flat sheet of paper",
+          "end_sec": 2.803,
+          "evidence_id": "ev.universal.clm-04",
+          "modality": "video",
+          "source_id": "src.origami-crane.demo.v1",
+          "start_sec": 0.0,
+          "verification_state": "inferred"
+        }
+      ],
+      "is_observed": false,
+      "statement": "Demonstrated step 1: flat sheet of paper"
+    },
+    {
+      "claim_id": "CLM-05",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 0.5,
+          "cue_excerpt": "Demonstrated step 2: folded rectangular paper",
+          "end_sec": 33.5,
+          "evidence_id": "ev.universal.clm-05",
+          "modality": "video",
+          "source_id": "src.origami-crane.demo.v1",
+          "start_sec": 5.606,
+          "verification_state": "inferred"
+        }
+      ],
+      "is_observed": false,
+      "statement": "Demonstrated step 2: folded rectangular paper"
+    },
+    {
+      "claim_id": "CLM-06",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 0.5,
+          "cue_excerpt": "Demonstrated step 3: partially folded fan-like pattern",
+          "end_sec": 69.803,
+          "evidence_id": "ev.universal.clm-06",
+          "modality": "video",
+          "source_id": "src.origami-crane.demo.v1",
+          "start_sec": 36.303,
+          "verification_state": "inferred"
+        }
+      ],
+      "is_observed": false,
+      "statement": "Demonstrated step 3: partially folded fan-like pattern"
+    },
+    {
+      "claim_id": "CLM-07",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 0.5,
+          "cue_excerpt": "Demonstrated step 4: diamond base shape",
+          "end_sec": 120.053,
+          "evidence_id": "ev.universal.clm-07",
+          "modality": "video",
+          "source_id": "src.origami-crane.demo.v1",
+          "start_sec": 72.606,
+          "verification_state": "inferred"
+        }
+      ],
+      "is_observed": false,
+      "statement": "Demonstrated step 4: diamond base shape"
+    },
+    {
+      "claim_id": "CLM-08",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 0.5,
+          "cue_excerpt": "Demonstrated step 5: flattened complex folded base",
+          "end_sec": 164.731,
+          "evidence_id": "ev.universal.clm-08",
+          "modality": "video",
+          "source_id": "src.origami-crane.demo.v1",
+          "start_sec": 128.428,
+          "verification_state": "inferred"
+        }
+      ],
+      "is_observed": false,
+      "statement": "Demonstrated step 5: flattened complex folded base"
+    },
+    {
+      "claim_id": "CLM-09",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 0.5,
+          "cue_excerpt": "Demonstrated step 6: elongated diamond structure with pockets",
+          "end_sec": 214.981,
+          "evidence_id": "ev.universal.clm-09",
+          "modality": "video",
+          "source_id": "src.origami-crane.demo.v1",
+          "start_sec": 167.501,
+          "verification_state": "inferred"
+        }
+      ],
+      "is_observed": false,
+      "statement": "Demonstrated step 6: elongated diamond structure with pockets"
+    },
+    {
+      "claim_id": "CLM-10",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 0.5,
+          "cue_excerpt": "Demonstrated step 7: narrow flattened strip shape",
+          "end_sec": 268.001,
+          "evidence_id": "ev.universal.clm-10",
+          "modality": "video",
+          "source_id": "src.origami-crane.demo.v1",
+          "start_sec": 217.751,
+          "verification_state": "inferred"
+        }
+      ],
+      "is_observed": false,
+      "statement": "Demonstrated step 7: narrow flattened strip shape"
+    },
+    {
+      "claim_id": "CLM-11",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 0.5,
+          "cue_excerpt": "Demonstrated step 8: forming head and tail sections",
+          "end_sec": 323.857,
+          "evidence_id": "ev.universal.clm-11",
+          "modality": "video",
+          "source_id": "src.origami-crane.demo.v1",
+          "start_sec": 270.804,
+          "verification_state": "inferred"
+        }
+      ],
+      "is_observed": false,
+      "statement": "Demonstrated step 8: forming head and tail sections"
+    },
+    {
+      "claim_id": "CLM-12",
+      "claim_type": "step",
+      "evidence_refs": [
+        {
+          "confidence": 0.5,
+          "cue_excerpt": "Demonstrated step 9: completed origami crane",
+          "end_sec": 332.232,
+          "evidence_id": "ev.universal.clm-12",
+          "modality": "video",
+          "source_id": "src.origami-crane.demo.v1",
+          "start_sec": 326.626,
+          "verification_state": "inferred"
+        }
+      ],
+      "is_observed": false,
+      "statement": "Demonstrated step 9: completed origami crane"
+    }
+  ],
+  "consent": {
+    "consent_scope": "public licence: CC BY 3.0",
+    "contributor_name": "Tavin",
+    "granted_at": null,
+    "notes": "OrigamiCrane.ogv by Tavin, CC BY 3.0, via Wikimedia Commons",
+    "revocable": false
+  },
+  "expert_review": {
+    "notes": null,
+    "reviewed_at": null,
+    "reviewer_name": "unassigned",
+    "status": "pending"
+  },
+  "package_id": "kp.origami-crane.5",
+  "skill_id": "skill.origami-crane",
+  "summary": "Fold a square piece of paper into a paper crane by following the step-by-step demonstration.",
+  "title": "Fold a Paper Crane"
+}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import {
   Play,
   Pause,
@@ -74,7 +74,7 @@ export const DualDeckPlayer: React.FC<DualDeckPlayerProps> = ({
             PHASE: <span className="text-on-surface font-semibold">{phase.name}</span>
           </span>
           {phase.crit && (
-            <span className="font-mono text-[10px] bg-cadmium-amber/20 text-cadmium-amber border border-cadmium-amber/40 px-1.5 py-0.2 rounded font-bold">
+            <span className="font-mono text-[11px] bg-cadmium-amber/20 text-cadmium-amber border border-cadmium-amber/40 px-1.5 py-0.2 rounded font-bold">
               {phase.crit}
             </span>
           )}
@@ -119,7 +119,7 @@ export const DualDeckPlayer: React.FC<DualDeckPlayerProps> = ({
                 Reference Expert (Synthetic Fixture)
               </span>
             </div>
-            <div className="font-mono text-[10px] text-transmission-emerald bg-transmission-emerald/10 border border-transmission-emerald/30 px-2 py-0.5 rounded">
+            <div className="font-mono text-[11px] text-transmission-emerald bg-transmission-emerald/10 border border-transmission-emerald/30 px-2 py-0.5 rounded">
               REPLAY REFERENCE
             </div>
           </div>
@@ -225,7 +225,7 @@ export const DualDeckPlayer: React.FC<DualDeckPlayerProps> = ({
               </svg>
 
               {/* Angle Caliper Telemetry Badge */}
-              <div className="absolute top-2 left-2 bg-surface-container-highest/90 border border-outline px-2 py-1 rounded text-[10px] font-mono flex flex-col gap-0.5">
+              <div className="absolute top-2 left-2 bg-surface-container-highest/90 border border-outline px-2 py-1 rounded text-[11px] font-mono flex flex-col gap-0.5">
                 <span className="text-caliper-cyan">APPROACH ANGLE: 45.2° [CALIBRATED]</span>
                 <span className="text-on-surface-variant">TORQUE FORCE: 5.0N STABLE</span>
               </div>
@@ -239,7 +239,7 @@ export const DualDeckPlayer: React.FC<DualDeckPlayerProps> = ({
 
           {/* Expert Observation Note */}
           <div className="mt-2 text-xs font-sans text-on-surface-variant bg-surface-container p-2 rounded border border-outline flex items-start gap-2">
-            <span className="font-mono text-[10px] text-cadmium-amber uppercase font-bold shrink-0 mt-0.5">
+            <span className="font-mono text-[11px] text-cadmium-amber uppercase font-bold shrink-0 mt-0.5">
               CANONICAL EVIDENCE:
             </span>
             <span>
@@ -265,7 +265,7 @@ export const DualDeckPlayer: React.FC<DualDeckPlayerProps> = ({
             <div className="flex items-center bg-surface-container-highest p-0.5 rounded border border-outline">
               <button
                 onClick={() => setLearnerMode('baseline')}
-                className={`px-2 py-0.5 rounded text-[10px] font-mono transition-colors ${
+                className={`px-2 py-0.5 rounded text-[11px] font-mono transition-colors ${
                   learnerMode === 'baseline'
                     ? 'bg-divergence-crimson text-surface-container-lowest font-bold'
                     : 'text-on-surface-variant hover:text-on-surface'
@@ -275,7 +275,7 @@ export const DualDeckPlayer: React.FC<DualDeckPlayerProps> = ({
               </button>
               <button
                 onClick={() => setLearnerMode('retry')}
-                className={`px-2 py-0.5 rounded text-[10px] font-mono transition-colors ${
+                className={`px-2 py-0.5 rounded text-[11px] font-mono transition-colors ${
                   learnerMode === 'retry'
                     ? 'bg-transmission-emerald text-surface-container-lowest font-bold'
                     : 'text-on-surface-variant hover:text-on-surface'
@@ -413,7 +413,7 @@ export const DualDeckPlayer: React.FC<DualDeckPlayerProps> = ({
               </svg>
 
               {/* Status Badge in canvas */}
-              <div className="absolute top-2 left-2 bg-surface-container-highest/90 border border-outline px-2 py-1 rounded text-[10px] font-mono flex flex-col gap-0.5">
+              <div className="absolute top-2 left-2 bg-surface-container-highest/90 border border-outline px-2 py-1 rounded text-[11px] font-mono flex flex-col gap-0.5">
                 {learnerMode === 'baseline' ? (
                   <>
                     <span className="text-divergence-crimson flex items-center gap-1 font-bold">
@@ -442,7 +442,7 @@ export const DualDeckPlayer: React.FC<DualDeckPlayerProps> = ({
 
           {/* Diagnostic Note */}
           <div className="mt-2 text-xs font-sans bg-surface-container p-2 rounded border border-outline flex items-start gap-2">
-            <span className={`font-mono text-[10px] uppercase font-bold shrink-0 mt-0.5 ${learnerMode === 'baseline' ? 'text-divergence-crimson' : 'text-transmission-emerald'}`}>
+            <span className={`font-mono text-[11px] uppercase font-bold shrink-0 mt-0.5 ${learnerMode === 'baseline' ? 'text-divergence-crimson' : 'text-transmission-emerald'}`}>
               {learnerMode === 'baseline' ? 'DIAGNOSTIC FAULT:' : 'REPLAY RETRY:'}
             </span>
             <span className="text-on-surface-variant">
@@ -529,12 +529,12 @@ export const DualDeckPlayer: React.FC<DualDeckPlayerProps> = ({
 
         {/* Speed & Sync Indicators */}
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[10px] text-on-surface-variant uppercase">SPEED:</span>
+          <span className="font-mono text-[11px] text-on-surface-variant uppercase">SPEED:</span>
           {[0.5, 1.0].map((spd) => (
             <button
               key={spd}
               onClick={() => setPlaybackSpeed(spd)}
-              className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${
+              className={`px-1.5 py-0.5 rounded text-[11px] font-mono ${
                 playbackSpeed === spd
                   ? 'bg-cadmium-amber text-surface-container-lowest font-bold'
                   : 'bg-surface-container-highest text-on-surface-variant hover:text-on-surface'

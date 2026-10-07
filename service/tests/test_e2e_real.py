@@ -84,7 +84,9 @@ def test_list_cases_has_hero_cases(real_client):
     case_ids = {c["case_id"] for c in r.json()}
     assert "kolam" in case_ids, f"expected kolam in {case_ids}"
     assert "tabla" in case_ids
-    assert "origami" in case_ids
+    # origami is EXPERIMENTAL (hidden from library); origami-crane is the universal-pipeline replacement
+    assert "origami" not in case_ids, f"origami should be hidden (EXPERIMENTAL) but found in {case_ids}"
+    assert "origami-crane" in case_ids, f"expected origami-crane in {case_ids}"
 
 
 def test_get_kolam_case_has_goal(real_client):

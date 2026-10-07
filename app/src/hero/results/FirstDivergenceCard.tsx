@@ -10,6 +10,8 @@ import { KolamFigure } from '../kolam/KolamFigure';
 import { BeatTimeline } from '../tabla/BeatTimeline';
 import { evidenceTime, fmtPosition, fmtTime, parseLocator } from '../locators';
 import { Badge, Panel, StatusBadge } from '../ui';
+import { DEBUG } from '../../api/debug';
+import { WhyThisFeedback } from '../WhyThisFeedback';
 
 interface Props {
   view: CaseView;
@@ -24,7 +26,7 @@ function Side({ label, tone, children, caption }: { label: string; tone: 'crimso
         <Badge tone={tone}>{label}</Badge>
       </div>
       {children}
-      {caption && <div className="text-[10px] font-mono text-on-surface-variant">{caption}</div>}
+      {caption && <div className="text-[11px] font-mono text-on-surface-variant">{caption}</div>}
     </div>
   );
 }
@@ -44,7 +46,7 @@ function SeekVideo({ url, time, className = '' }: { url?: string; time: number |
     if (el.readyState >= 1) go();
     else el.addEventListener('loadedmetadata', go, { once: true });
   }, [url, time]);
-  if (!url) return <div className={`aspect-video rounded-lg border border-outline bg-surface-dim flex items-center justify-center text-[10px] font-mono text-on-surface-variant ${className}`}>media not available</div>;
+  if (!url) return <div className={`aspect-video rounded-lg border border-outline bg-surface-dim flex items-center justify-center text-[11px] font-mono text-on-surface-variant ${className}`}>media not available</div>;
   return <video ref={ref} src={url} controls muted className={`w-full rounded-lg border border-outline bg-black ${className}`} preload="metadata" />;
 }
 
@@ -56,11 +58,11 @@ export function FirstDivergenceCard({ view, result, media }: Props) {
   const fd = result.first_divergence;
   if (!fd) {
     return (
-      <Panel kicker="First divergence" title="No divergence established">
+      <Panel kicker="Where you first went off track" title="No clear point off track">
         <p className="text-xs text-on-surface-variant">
           {result.evaluation.criterion_results.some((r) => r.status === 'uncertain')
-            ? 'No material divergence found, but some criteria are UNCERTAIN — the evidence cannot establish everything.'
-            : 'The trajectory stayed on a path to the goal for every scored criterion.'}
+            ? "No clear point where you went off track, but some checks couldn't be judged — the evidence was unclear."
+            : "You stayed on track for every scored check."}
         </p>
       </Panel>
     );
@@ -87,7 +89,7 @@ export function FirstDivergenceCard({ view, result, media }: Props) {
               )}
             </div>
           ) : (
-            <div className="text-[10px] font-mono text-on-surface-variant">learner media not kept locally</div>
+            <div className="text-[11px] font-mono text-on-surface-variant">learner media not kept locally</div>
           )}
         </Side>
         <Side label="Target (goal)" tone="emerald" caption={fd.expert_evidence?.cue_excerpt}>
@@ -106,14 +108,14 @@ export function FirstDivergenceCard({ view, result, media }: Props) {
         <Side label="Learner" tone="crimson" caption={`learner video at ${fmtTime(t)}`}>
           <SeekVideo url={media.url} time={t} />
         </Side>
-        <Side label="Expert keyframe" tone="emerald" caption={state ? `R${state.index} “${state.name}” · source ${fmtTime(state.start_sec)}–${fmtTime(state.end_sec)}` : fd.expert_evidence?.cue_excerpt}>
+        <Side label="Expert keyframe" tone="emerald" caption={state ? `R${state.index} "${state.name}" · source ${fmtTime(state.start_sec)}–${fmtTime(state.end_sec)}` : fd.expert_evidence?.cue_excerpt}>
           {state?.keyframe_asset ? (
             <img src={api.goalAssetUrl(view.case_id, state.keyframe_asset)} alt={state.name} className="w-full max-h-64 object-contain rounded-lg border border-outline bg-surface-dim" />
           ) : (
             <div className="aspect-video rounded-lg border border-outline bg-surface-dim" />
           )}
           {state?.properties && (
-            <ul className="text-[10px] text-on-surface-variant list-disc pl-4">
+            <ul className="text-xs text-on-surface-variant list-disc pl-4">
               {state.properties.map((p) => <li key={p}>{p}</li>)}
             </ul>
           )}
@@ -128,10 +130,10 @@ export function FirstDivergenceCard({ view, result, media }: Props) {
         <BeatTimeline ui={ui} alignment={result.trajectory.artifacts.alignment} focusBeat={beat} highlight={fd.expert_evidence && typeof fd.expert_evidence.start_sec === 'number' ? [fd.expert_evidence.start_sec, fd.expert_evidence.end_sec ?? fd.expert_evidence.start_sec + 0.3] : null} />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Side label="Learner audio" tone="crimson" caption={`stroke at ${fmtTime(evidenceTime(fd.learner_evidence))}`}>
-            {media.url ? <audio src={media.url} controls className="w-full" /> : <div className="text-[10px] font-mono text-on-surface-variant">not kept locally</div>}
+            {media.url ? <audio src={media.url} controls className="w-full" /> : <div className="text-[11px] font-mono text-on-surface-variant">not kept locally</div>}
           </Side>
           <Side label="Source audio" tone="emerald" caption={fd.expert_evidence?.cue_excerpt}>
-            <audio src={api.mediaUrl(view.case_id, ui.source_id ?? view.goal.source_ids[0])} controls className="w-full" />
+            <audio src={api.mediaUrl(view.case_id, (view.goal.ui_view as TablaUiView).source_id ?? view.goal.source_ids[0])} controls className="w-full" />
           </Side>
         </div>
         {media.extraVideoUrl && (
@@ -145,11 +147,11 @@ export function FirstDivergenceCard({ view, result, media }: Props) {
 
   return (
     <Panel
-      kicker="First divergence"
+      kicker="Where you first went off track"
       title={<span className="flex items-center gap-2"><Crosshair className="w-4 h-4 text-divergence-crimson" />{fd.criterion_name}</span>}
       right={
         <>
-          <code className="text-[10px] font-mono text-caliper-cyan">{fd.criterion_id}</code>
+          {DEBUG && <code className="text-[11px] font-mono text-caliper-cyan">{fd.criterion_id}</code>}
           <StatusBadge status={fd.status} />
           <Badge tone="crimson">{fmtPosition(fd.position, fd.position_kind)}</Badge>
         </>
@@ -160,18 +162,18 @@ export function FirstDivergenceCard({ view, result, media }: Props) {
         {comparison}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
           <div className="p-3 rounded-lg bg-surface-dim border border-outline/60">
-            <div className="text-[9px] font-mono uppercase text-divergence-crimson font-bold mb-1">Observed</div>
-            <p className="text-on-surface leading-relaxed">{fd.observed_finding}</p>
+            <div className="text-[11px] font-mono uppercase text-divergence-crimson font-bold mb-1">What we saw</div>
+            <p className="text-on-surface leading-relaxed" data-plain-exempt>{fd.observed_finding}</p>
           </div>
           <div className="p-3 rounded-lg bg-surface-dim border border-outline/60">
-            <div className="text-[9px] font-mono uppercase text-transmission-emerald font-bold mb-1">Why it matters (source)</div>
+            <div className="text-[11px] font-mono uppercase text-transmission-emerald font-bold mb-1">Why it matters</div>
             <p className="text-on-surface leading-relaxed">{fd.why_it_matters || '—'}</p>
-            {fd.source_claim_ids.length > 0 && (
+            {DEBUG && fd.source_claim_ids.length > 0 && (
               <div className="mt-1.5 flex flex-wrap gap-1">
                 {fd.source_claim_ids.map((id) => {
                   const c = view.package.claims.find((x) => x.claim_id === id);
                   return (
-                    <span key={id} title={c?.statement} className="text-[10px] font-mono text-caliper-cyan">
+                    <span key={id} title={c?.statement} className="text-[11px] font-mono text-caliper-cyan">
                       {id}
                     </span>
                   );
@@ -180,6 +182,7 @@ export function FirstDivergenceCard({ view, result, media }: Props) {
             )}
           </div>
         </div>
+        <WhyThisFeedback view={view} claimIds={fd.source_claim_ids} measured={fd.observed_finding} />
       </div>
     </Panel>
   );

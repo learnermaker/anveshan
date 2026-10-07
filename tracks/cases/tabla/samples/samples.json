@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "samples": [
+    {
+      "sample_id": "good",
+      "label": "A steady attempt",
+      "quality": "good",
+      "attempt_kind": "audio",
+      "file": "good.wav",
+      "raster": null,
+      "description": "Plays the pattern at the source's tempo. Expect most checks to be met.",
+      "preview": null,
+      "synthetic": true,
+      "credit": null,
+      "licence": "CC0-1.0",
+      "expected": {
+        "passed": true
+      }
+    },
+    {
+      "sample_id": "flawed",
+      "label": "An attempt that rushes",
+      "quality": "flawed",
+      "attempt_kind": "audio",
+      "file": "flawed.wav",
+      "raster": null,
+      "description": "Speeds up halfway and drops a stroke. See where the feedback says it first went off track.",
+      "preview": null,
+      "synthetic": true,
+      "credit": null,
+      "licence": "CC0-1.0",
+      "expected": {
+        "passed": false,
+        "first_off_track": "CRIT-TABLA-COMPLETE"
+      }
+    },
+    {
+      "sample_id": "unrelated",
+      "label": "Something unrelated",
+      "quality": "unrelated",
+      "attempt_kind": "audio",
+      "file": "unrelated.wav",
+      "raster": null,
+      "description": "A hum, not tabla. Anveshan should say it does not match instead of scoring it.",
+      "preview": null,
+      "synthetic": true,
+      "credit": null,
+      "licence": "CC0-1.0",
+      "expected": {
+        "refused": true
+      }
+    }
+  ]
+}

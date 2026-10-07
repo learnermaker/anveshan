@@ -19,7 +19,12 @@ import { ErrorNote, Spinner } from './hero/ui';
 import { GuideModal } from './components/HowItWorks';
 import { ApiKeyModal } from './components/ApiKeyModal';
 import { getUserKey, subscribeUserKey } from './api/userKey';
+import { getStewardToken, subscribeStewardToken } from './api/steward';
 import type { StepState } from './components/Header';
+import { MySkillsView } from './components/creator/MySkillsView';
+import { CreatorPanel } from './components/creator/CreatorPanel';
+import { StewardConsole } from './components/steward/StewardConsole';
+import { EvidencePage } from './components/EvidencePage';
 
 import { CAPABILITY_CASES, SHOWCASE_CASE_IDS, getCapabilityCase } from './data/cases/registry';
 import { api } from './api/client';
@@ -34,7 +39,7 @@ function readUrl(): { view: AppView; key: CaseKey } {
   if (typeof window === 'undefined') return { view: 'discovery', key: DEFAULT_KEY };
   const p = new URLSearchParams(window.location.search);
   const v = p.get('view') as AppView;
-  const view: AppView = v && ['discovery', 'source', 'practice', 'transmission', 'composer'].includes(v) ? v : 'discovery';
+  const view: AppView = v && ['discovery', 'source', 'practice', 'transmission', 'composer', 'mine', 'steward', 'evidence'].includes(v) ? v : 'discovery';
   const c = p.get('case');
   const key: CaseKey = !c ? DEFAULT_KEY : SHOWCASE_CASE_IDS.includes(c) ? { kind: 'showcase', id: c } : { kind: 'hero', id: c };
   return { view, key };
@@ -63,11 +68,24 @@ export function App() {
     window.addEventListener('anveshan:open-key-dialog', open);
     return () => window.removeEventListener('anveshan:open-key-dialog', open);
   }, []);
+  useEffect(() => {
+    const goEvidence = () => setCurrentView('evidence');
+    window.addEventListener('anveshan:go-evidence', goEvidence);
+    return () => window.removeEventListener('anveshan:go-evidence', goEvidence);
+  }, []);
+
+  // Steward token (for nav visibility)
+  const [stewardToken, setStewardTokenState] = useState<string | null>(getStewardToken());
+  useEffect(() => subscribeStewardToken(setStewardTokenState), []);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     params.set('view', currentView);
-    if (selected.kind !== 'composer') params.set('case', selected.id);
+    if (currentView === 'mine' || currentView === 'steward') {
+      params.delete('case');
+    } else if (selected.kind !== 'composer') {
+      params.set('case', selected.id);
+    }
     window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
   }, [currentView, selected]);
 
@@ -167,6 +185,14 @@ export function App() {
     if (key.kind === 'hero' && heroCases && !heroCases.some((c) => c.case_id === key.id)) void loadCases();
   };
 
+  // Derived header props
+  const ownedCount = (heroCases ?? []).filter((c) => c.access?.owner).length;
+  const stewardVisible = Boolean(stewardToken) || health?.steward_open === true;
+  const skillTitle: string | null =
+    selected.kind === 'hero' && caseView ? caseView.title :
+    selected.kind === 'showcase' ? (capCase.title ?? null) :
+    null;
+
   const caseOptions: CaseOption[] = [
     // Synthetic case packs from the API are listed once, below, as the replay showcase.
     ...(heroCases ?? []).filter((c) => c.hero || c.composed || c.derived_from)
@@ -226,6 +252,9 @@ export function App() {
         onOpenGuide={() => setGuideOpen(true)}
         onOpenKey={() => setKeyOpen(true)}
         hasUserKey={hasKey}
+        ownedCount={ownedCount}
+        stewardVisible={stewardVisible}
+        skillTitle={skillTitle}
       />
 
       <main className="flex-1 max-w-workbench w-full mx-auto p-3 sm:p-4 lg:p-6 flex flex-col gap-6">
@@ -238,12 +267,14 @@ export function App() {
             onSelect={(k) => select(k)}
             selected={selected}
             onOpenGuide={() => setGuideOpen(true)}
+            onOpenMine={() => setCurrentView('mine')}
           />
         )}
 
         {(currentView === 'composer' || selected.kind === 'composer') && (
           <div className="flex flex-col gap-4 w-full animate-fade-in">
-            <div className="text-[10px] font-mono uppercase tracking-widest text-caliper-cyan font-bold">Composer — Create a new skill</div>
+            <h1 className="font-serif text-2xl">Share a skill you know</h1>
+            <p className="text-sm text-on-surface-variant">Upload a photo, video or audio of something you know how to do. Anveshan proposes a practice task; you check it before anyone else sees it.</p>
             <ComposerWizard
               onDone={(view) => {
                 void loadCases();
@@ -267,6 +298,13 @@ export function App() {
               onReload={() => loadCase(selected.id)}
               onEnterPractice={() => setCurrentView('practice')}
               onBack={() => setCurrentView('discovery')}
+              ownerSlot={v.access?.owner ? (
+                <CreatorPanel
+                  view={v}
+                  onViewChange={(nv) => { setCaseView(nv); void loadCases(); }}
+                  onPractise={() => setCurrentView('practice')}
+                />
+              ) : null}
             />
           ))}
         {selected.kind === 'hero' && currentView === 'practice' &&
@@ -314,6 +352,29 @@ export function App() {
             onExploreMore={() => setCurrentView('discovery')}
           />
         )}
+
+        {currentView === 'mine' && (
+          <MySkillsView
+            cases={heroCases}
+            loading={heroLoading}
+            error={heroError}
+            health={health}
+            onRefresh={loadCases}
+            onOpen={(id) => select({ kind: 'hero', id }, 'source')}
+            onCreate={() => select({ kind: 'composer' })}
+          />
+        )}
+
+        {currentView === 'steward' && (
+          <StewardConsole
+            health={health}
+            onOpenSkill={(id) => select({ kind: 'hero', id }, 'source')}
+            onLibraryChanged={loadCases}
+          />
+        )}
+        {currentView === 'evidence' && (
+          <EvidencePage onBack={() => setCurrentView('discovery')} />
+        )}
       </main>
 
       <footer className="border-t border-outline bg-surface-dim px-4 sm:px-6 py-3 text-[11px] font-mono text-on-surface-variant flex flex-wrap items-center justify-between gap-3">
@@ -326,12 +387,26 @@ export function App() {
           <span className="text-cadmium-amber">GOOGLE CLOUD AI BUILDER CUP 2026</span>
         </div>
         <div className="flex items-center gap-4">
-          {selected.kind === 'showcase' && (
+          {selected.kind === 'showcase' && debug && (
             <button onClick={() => setIsLineageOpen(true)} className="hover:text-caliper-cyan underline decoration-caliper-cyan/50 transition-colors">
               VIEW PROVENANCE DAG
             </button>
           )}
-          <span>{selected.kind === 'showcase' ? 'SYNTHETIC REPLAY FIXTURE' : IS_MOCK ? 'MOCK DATA (SYNTHETIC)' : 'Scores come from fixed rules, never from the AI'}</span>
+          <span data-plain-exempt>{selected.kind === 'showcase' ? 'SYNTHETIC REPLAY FIXTURE' : IS_MOCK ? 'MOCK DATA (SYNTHETIC)' : 'Scores come from fixed rules, never from the AI'}</span>
+          {health?.steward_enabled !== false && currentView !== 'steward' && (
+            <button
+              onClick={() => setCurrentView('steward')}
+              className="hover:text-caliper-cyan transition-colors"
+            >
+              Steward sign-in
+            </button>
+          )}
+          <button
+            onClick={() => setCurrentView('evidence')}
+            className="hover:text-caliper-cyan transition-colors"
+          >
+            How we check results
+          </button>
         </div>
       </footer>
 

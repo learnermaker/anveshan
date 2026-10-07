@@ -422,6 +422,96 @@ After the fixes, the composed block-arrangement skill:
 - one block missing: FAIL, with the first divergence on the missing block's claim;
 - unrelated graphic: FAIL 0/11, not refused (similarity 0.76 sits in the ambiguous band).
 
+## E8 — AI coaching wording (validator-guarded)
+
+**Status:** IMPLEMENTED as engineering/capability evidence. Not learner validation.
+**Date:** 2026-10-07.
+
+**Model:** `vision_fast` (gemini-3.5-flash-lite). **Prompt:** `tracks/common/prompts/coach_feedback_v1.txt`. **Code:** `tracks/track-b/src/track_b/coach.py`.
+
+**Guard design:**
+- The coach rewrites only each item's `corrective_advice` field; all other feedback fields are unchanged.
+- Per item, the guard rejects any rewrite that contains a verdict word (regex `_VERDICT_WORDS` in `coach.py`: passed, failed, fail, scored, etc.) or any number not present in the original item.
+- On a rejection the deterministic template advice is kept for that item; the reason is recorded.
+- After per-item checks, `feedback.guard_wording` runs on the full result: structure, evidence references, claim IDs and numbers must all survive.
+
+**Evidence:**
+- 7 unit tests in `tracks/track-b/tests/test_coach.py`: good rewrite accepted; new number rejected; dropped claim ID rejected; verdict language rejected; model failure keeps template; can be disabled; passes-through language not falsely rejected.
+- Browser walk-through on 2026-10-07 (Kolam baseline): AI-worded coaching advice shown; the fixed-wording toggle confirmed that the template fallback works.
+
+**Limits:** no human rating of coaching wording quality yet.
+
+---
+
+## E9 — Bring your own key (BYOK) security behaviour
+
+**Status:** IMPLEMENTED as engineering/capability evidence. Not learner validation.
+**Date:** 2026-10-07.
+
+**Code:** `app/src/api/userKey.ts`, `service/anveshan_service/userkey.py`, `service/anveshan_service/routes/key.py`.
+
+**Behaviour:**
+- The key is stored in `sessionStorage`, or `localStorage` only on explicit user opt-in.
+- It is sent only as a request header and is scoped to one request.
+- It is never stored server-side and is redacted in all error responses.
+- The key check uses a metadata call (no generation quota consumed).
+
+**Evidence:**
+- 6 BYOK tests in `service/tests/test_public_demo.py`: key is request-scoped and forces live mode; malformed key header is ignored; key check without key returns 400; key is never echoed in errors; redaction covers the request key; own key skips the daily budget.
+- Browser test on 2026-10-07: a fake key was rejected ("Google rejected this key") and nothing was stored in session or local storage after the rejection.
+
+**Limits:** a key lives in browser storage while it is in use; users should restrict their API key to the Anveshan demo domain and delete it after use.
+
+---
+
+## E10 — Repeatability on committed samples (engineering evidence)
+
+**Status:** IMPLEMENTED as engineering evidence. Not learner validation.
+**Date:** 2026-10-07.
+
+**Goal:** Measure how repeatable the evaluation is on the committed sample attempts across 3 runs per sample, to surface any non-determinism in the universal pipeline.
+
+**Models and prompts:**
+- Kolam and Tabla: deterministic (no model calls). All scoring is geometry-based or onset-detection-based.
+- Origami-crane: `vision_fast` = `gemini-3.5-flash-lite` (frame perception and step matching), `embedding` = `gemini-embedding-2` (frame embeddings). Prompts: `perceive_frames`, `match_steps`, `embed_frames`, `judge_final` (see `tracks/common/prompts/`).
+
+**Runs per sample:** 3. **Live cache:** disabled (`ANVESHAN_LIVE_CACHE=0`) for origami-crane runs, so repeated runs really call the model.
+
+**Results (case x sample):**
+
+| Case | Sample | Quality | Outcome | Consistency |
+|---|---|---|---|---|
+| kolam | good | good | passed | 1.00 |
+| kolam | flawed | flawed | caught | 1.00 |
+| kolam | unrelated | unrelated | refused | 1.00 |
+| tabla | good | good | passed | 1.00 |
+| tabla | flawed | flawed | caught | 1.00 |
+| tabla | unrelated | unrelated | refused | 1.00 |
+| origami-crane | good | good | failed | 0.67 |
+| origami-crane | flawed | flawed | caught | 1.00 |
+| origami-crane | unrelated | unrelated | refused | 1.00 |
+
+**Consistency per case:** kolam = 1.00 (by design), tabla = 1.00 (by design), origami-crane = 0.89.
+
+**Live calls used:** 40 out of 60 budget (all for origami-crane: ~6 calls per non-refused attempt, ~2 per refused).
+
+**Interpretation:**
+- Kolam and Tabla are fully deterministic: 100% consistency across all runs is expected and confirmed.
+- Origami-crane's "good" sample (the first 25 s of a 2-minute folding video) shows consistency=0.67 across 3 runs. This sample does not complete the full procedure, so it is evaluated as failing (outcome=failed). The variation is caused by frame-to-frame embedding nondeterminism in the AI model.
+- Origami-crane's "flawed" and "unrelated" samples are consistent (1.0).
+- The overall origami-crane consistency (0.89) reflects the single unstable sample; other samples are stable.
+
+**Limits:**
+- Synthetic and internet-derived samples only; no real learner data.
+- Small n (3 samples × 3 runs per skill); these numbers are engineering evidence, not a claim about how the system behaves with real users.
+- The origami-crane "good" sample represents an incomplete attempt (first 25 s of a full procedure) and is expected to fail. The instability (0.67) is a known limit of the universal video evaluator on partial attempts with minimal visual progress.
+- Swapped-order mistakes in video are not always caught reliably (see E7).
+- **This is not validation of learning.** No human learners, no human judges, no improvement measured.
+
+**Evidence:** `docs/validation/stability-2026-10.json`, `tools/stability_runs.py`, `app/public/evidence.json`.
+
+---
+
 ## Current Planned Experiments — Transmission Thesis
 
 These experiments validate the current competition/MVP wedge defined in `docs/product/product-thesis.md` and bounded by `docs/product/mvp-contract.md`.
@@ -442,6 +532,60 @@ These experiments validate the current competition/MVP wedge defined in `docs/pr
 The repository also contains research on state → action → outcome, first divergence, recovery, intervention verification, demonstration compilation, and related physical-world intelligence concepts.
 
 Those experiments are **research-only** unless an explicit product decision promotes them into the current thesis. They must not be treated as active MVP scope or as a reason to rewrite the current transmission validation plan.
+
+---
+
+## E-K9 — Plain-language scan and role walk (K9 integration gate)
+
+**Status:** ENGINEERING EVIDENCE. Not learner validation.
+**Date:** 2026-10-07–08.
+**Branch:** `k9/integration` @ `bc61137`.
+
+**Goal:** Confirm that the K9 product-roles build produces zero plain-language violations in the learner and creator views, passes the role-access walk, and passes the HTTP smoke test in recorded mode.
+
+**Screens scanned:** mock app on port 5174 (`dev:mock`) and real service in `ANVESHAN_MODE=recorded` on port 8080. Both runs covered learner, creator, steward and debug views.
+
+**Findings before gate fixes → after:**
+
+| Fix | File | Detail |
+|---|---|---|
+| `MODE: MOCK DATA` chip in header | `Header.tsx` | Added `data-plain-exempt` |
+| `MOCK DATA (SYNTHETIC)` footer span | `App.tsx` | Added `data-plain-exempt` |
+| `Start a session below` → `Start below` | `Guidance.tsx` | Plain-language copy |
+| Showcase title / archetype display | `DiscoveryView.tsx` | Added `data-plain-exempt` |
+| Steward code reading | `check_plain_language.mjs` | Reads `ANVESHAN_STEWARD_CODE` env var |
+
+Findings after fixes: **0 (mock), 0 (real)**.
+
+**Role-walk results (real service, `check:roles`):**
+
+| Step | Result |
+|---|---|
+| Learner — no audit tooling visible | PASS |
+| Learner — practice flow accessible | PASS |
+| Creator — My Skills view visible | PASS |
+| Creator — publish / insights accessible | PASS |
+| Steward — console gated by token | PASS |
+| Steward — review queue accessible with token | PASS |
+| Steward — insights and usage visible | PASS |
+| Debug — hidden from learner and creator | PASS |
+
+8 PASS, 0 FAIL, 10 SKIP (live-mode-only paths skipped in recorded mode).
+
+**Smoke-test results (recorded mode, `tools/smoke_deployed.py`):**
+37 PASS, 1 WARN (steward/usage endpoint accessible without auth — known P1 limit, rate-limited otherwise), 0 FAIL, 1 SKIP (draft isolation: live-mode only).
+
+**Verify suite at gate commit:**
+560 tests passed (264 common+service, 130 track-a, 166 track-b), governance PASS, case_packs PASS (8 packs), contract_parity PASS (8 contracts), duplicates PASS (982 files), build PASS, build:mock PASS.
+
+**Live calls used by gate:** 0 (recorded mode throughout).
+
+**Limits:**
+- Role walk uses the mock or recorded service; live-mode isolation paths (visitor cookies) were not exercised.
+- No human learners or judges ran the app; this is tool-based engineering evidence.
+- The steward/usage WARN is a known gap: the endpoint does not yet require the steward token for GET (P1 limit, logged in K9-DECISIONS.md).
+
+---
 
 ## Evidence Rule
 

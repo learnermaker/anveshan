@@ -1,0 +1,3 @@
+{
+  "text": "{\n  \"items\": [\n    {\n      \"criterion_id\": \"CRIT-U-CHK-PR-COV\",\n      \"coaching\": \"Practice each step separately before combining them. Why it matters: All folding steps from the flat sheet to the finished crane are performed. (CLM-04)\"\n    },\n    {\n      \"criterion_id\": \"CRIT-U-CHK-PR-Q01\",\n      \"coaching\": \"Compare your execution of this critical step with the reference. Why it matters: Each intermediate shape, from the rectangular fold to the diamond base, is formed accurately. (CLM-12)\"\n    }\n  ]\n}"
+}

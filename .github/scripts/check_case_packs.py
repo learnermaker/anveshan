@@ -7,6 +7,7 @@ and the presence of an atomic replay bundle.
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -42,6 +43,76 @@ REQUIRED_BUNDLE = {
     "retry_evaluation",
     "transmission_record",
 }
+
+_SAMPLE_ID_RE = re.compile(r"^[a-z0-9-]{1,40}$")
+_VALID_QUALITY = {"good", "flawed", "unrelated"}
+_VALID_KINDS = {"trace", "image", "audio", "video"}
+_MAX_FILE_BYTES = 2 * 1024 * 1024  # 2 MB
+
+
+def validate_samples_dir(case_id: str, pack: Path) -> list[str]:
+    """Validate the optional samples/ directory if present."""
+    failures: list[str] = []
+    samples_dir = pack / "samples"
+    if not samples_dir.is_dir():
+        return []  # optional; absence is fine
+
+    manifest_path = samples_dir / "samples.json"
+    if not manifest_path.exists():
+        failures.append(f"{case_id}: samples/ exists but is missing samples.json")
+        return failures
+
+    try:
+        data = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        failures.append(f"{case_id}: samples/samples.json is not valid JSON: {exc}")
+        return failures
+
+    if not isinstance(data, dict):
+        failures.append(f"{case_id}: samples/samples.json must be a JSON object")
+        return failures
+    if data.get("schema_version") != 1:
+        failures.append(f"{case_id}: samples/samples.json schema_version must be 1")
+    samples = data.get("samples")
+    if not isinstance(samples, list):
+        failures.append(f"{case_id}: samples/samples.json 'samples' must be a list")
+        return failures
+
+    seen_ids: set[str] = set()
+    for i, entry in enumerate(samples):
+        if not isinstance(entry, dict):
+            failures.append(f"{case_id}: samples.json entry {i} is not an object")
+            continue
+        sid = entry.get("sample_id", "")
+        if not _SAMPLE_ID_RE.fullmatch(str(sid)):
+            failures.append(f"{case_id}: sample[{i}].sample_id {sid!r} does not match ^[a-z0-9-]{{1,40}}$")
+        if sid in seen_ids:
+            failures.append(f"{case_id}: duplicate sample_id {sid!r}")
+        seen_ids.add(sid)
+
+        quality = entry.get("quality", "")
+        if quality not in _VALID_QUALITY:
+            failures.append(f"{case_id}: sample {sid!r} quality {quality!r} must be one of {sorted(_VALID_QUALITY)}")
+
+        kind = entry.get("attempt_kind", "")
+        if kind not in _VALID_KINDS:
+            failures.append(f"{case_id}: sample {sid!r} attempt_kind {kind!r} must be one of {sorted(_VALID_KINDS)}")
+
+        file_rel = entry.get("file", "")
+        if not file_rel:
+            failures.append(f"{case_id}: sample {sid!r} missing 'file' field")
+        else:
+            file_path = samples_dir / file_rel
+            if not file_path.is_file():
+                failures.append(f"{case_id}: sample {sid!r} file {file_rel!r} not found")
+            else:
+                sz = file_path.stat().st_size
+                if sz > _MAX_FILE_BYTES:
+                    failures.append(
+                        f"{case_id}: sample {sid!r} file {file_rel!r} is {sz} bytes (limit 2 MB)"
+                    )
+
+    return failures
 
 
 def validate_manifest(manifest: dict[str, Any], case_id: str, schema: dict[str, Any]) -> list[str]:
@@ -122,6 +193,32 @@ def validate_manifest(manifest: dict[str, Any], case_id: str, schema: dict[str, 
     return failures
 
 
+def _is_composed_pack(manifest: dict[str, Any]) -> bool:
+    """Return True for a curated universal pipeline pack (source_mode=composed).
+
+    Composed packs are built via the universal pipeline and do not have a
+    replay/bundle.json, schema_version, bundle_case_id or the hero-case
+    status fields. They are validated with a lighter set of rules.
+    K9-P5 Requests for PC items 1-3; K9-PC-INTEGRATION.md §1.
+    """
+    return str(manifest.get("source_mode", "")).lower() == "composed"
+
+
+def validate_composed_manifest(manifest: dict[str, Any], case_id: str) -> list[str]:
+    """Validate the minimal required fields for a composed pack manifest."""
+    failures: list[str] = []
+    required_fields = {"case_id", "title", "archetype", "workspace_type", "transmission_mode", "source_mode"}
+    missing = sorted(required_fields - set(manifest))
+    if missing:
+        failures.append(f"{case_id}: composed manifest missing required fields {missing}")
+    if manifest.get("case_id") != case_id:
+        failures.append(f"{case_id}: composed manifest.case_id mismatch")
+    title = manifest.get("title", "")
+    if not isinstance(title, str) or not title.strip():
+        failures.append(f"{case_id}: composed manifest.title must be a non-empty string")
+    return failures
+
+
 def main() -> int:
     failures: list[str] = []
     if not INDEX.exists():
@@ -150,6 +247,21 @@ def main() -> int:
             continue
 
         manifest_path = pack / "manifest.json"
+        if not manifest_path.exists():
+            failures.append(f"{case_id}: missing manifest.json")
+            continue
+
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+        if _is_composed_pack(manifest):
+            # Composed (universal pipeline) packs: lighter validation.
+            # They have no replay/bundle.json and a different manifest shape.
+            # K9-P5 Requests for PC items 1-3.
+            failures.extend(validate_composed_manifest(manifest, case_id))
+            failures.extend(validate_samples_dir(case_id, pack))
+            continue
+
+        # Hero-case (REPLAY/AUTHENTIC) packs: full validation.
         bundle_path = pack / "replay" / "bundle.json"
         for required in (
             pack / "source" / "README.md",
@@ -160,11 +272,6 @@ def main() -> int:
             if not required.exists():
                 failures.append(f"{case_id}: missing {required.relative_to(pack)}")
 
-        if not manifest_path.exists():
-            failures.append(f"{case_id}: missing manifest.json")
-            continue
-
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         failures.extend(validate_manifest(manifest, case_id, schema))
 
         if not bundle_path.exists():
@@ -196,6 +303,9 @@ def main() -> int:
                 model.model_validate(bundle[field_name])
             except Exception as exc:
                 failures.append(f"{case_id}: {field_name} fails canonical validation: {exc}")
+
+        # Validate optional samples/ directory (K9-P4 extension)
+        failures.extend(validate_samples_dir(case_id, pack))
 
     if failures:
         print("CASE PACKS: FAIL")

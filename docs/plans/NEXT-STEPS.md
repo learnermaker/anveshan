@@ -18,6 +18,22 @@ Judging weights: Technical and Gen AI 40 %, Problem and Impact 25 %, Innovation 
 - Not yet done: the Cloud Run deployment, a public repo, the demo video, the deck and team registration.
 - **Update (2026-10-07, later):** the whole engineering backlog in §4 is done, except the live smoke test on the deployed URL (it needs the URL) and the deliberately deferred crop. An end-to-end browser walk-through found and fixed real bugs (E7 in `docs/validation/experiments.md`). 449 non-live tests pass.
 
+- **Update (2026-10-08, K9 build):** DONE (K9) — README rewritten, LICENSE added, mojibake fixed, AI coaching wording (E8), BYOK evidence (E9), sample attempts for hero cases (K9-P4), Origami via universal pipeline (K9-P5), plain language and role navigation (K9-P2/P3), accessibility sweep (K9-B1), stability numbers and evidence page (K9-B2). 480 non-live tests pass. The `k9/integration` branch is pushed and ready to merge to `main`.
+
+## After K9 (2026-10-08)
+
+Jim's remaining actions before submission:
+
+1. **Merge `k9/integration` to `main`** — ask Claude Code to review and merge the K9 integration branch.
+2. **Register the team** on Hack2skill by **Oct 11** (roster closes); ask the helpdesk for the deadline time zone.
+3. **Deploy to Cloud Run** via the console using `docs/deploy/DEPLOY-CHECKLIST.md`; set `ANVESHAN_STEWARD_TOKEN` as a Cloud Run secret before deploying.
+4. **Run `tools/smoke_deployed.py`** against the deployed URL to confirm all three modalities work end-to-end.
+5. **Pilot with 3-5 colleagues and one expert review** (WI-5.1, WI-5.2) — this is the strongest remaining impact evidence.
+6. **Make the repository public** — history secret scan is clean (no key patterns; only `.env.example` was ever committed); choose a code licence (Apache-2.0 is added by K9-P6); switch the repo to public.
+7. **Record the 3-minute demo video** on the live URL; keep a backup recording of each segment.
+8. **Deck** — architecture, Gen AI use, business case, evidence and honest limits.
+9. **Submit by Oct 17** (one day of buffer before the Oct 18 deadline).
+
 - **Judges-panel review (2026-10-07):** findings J-01…J-21 in `docs/research/judges-panel-review-2026-10-07.md`; the detailed update plan (WS1–WS8, schedule, decisions D4–D8) is `docs/plans/technical-panel-plan-2026-10-07.md` (PROPOSED). It supersedes the schedule in §1 for steps 2–7 where they differ.
 
 ## 1. Critical path (blocking; owner = Jim unless noted)
@@ -27,8 +43,8 @@ Judging weights: Technical and Gen AI 40 %, Problem and Impact 25 %, Innovation 
 | 1 | **Register the team (2–4 members) on Hack2skill**; ask the helpdesk for the deadline time zone | **Oct 9** (roster closes Oct 11) | Confirmation email received | Disqualification |
 | 2 | **Deploy to Cloud Run** via the console using `docs/deploy/DEPLOY-CHECKLIST.md`: secret `gemini-api-key` in Secret Manager, 2 GiB, 2 vCPU, max-instances 1, concurrency 1, timeout 300 s | Oct 10 | `/healthz` is OK; the HTTP smoke test in the checklist passes on the live URL | No live URL means no valid submission |
 | 3 | **Live smoke test of the universal path on the deployed URL** (Claude, with Jim's URL): compose one new image, one short video (≤ 60 s) and one audio skill, plus one attempt each; record latency | Oct 10 | Each compose finishes under the 300 s timeout; numbers recorded in `docs/validation/experiments.md` | Low risk. Measured locally: the 335 s Origami video composes in about 50 s; attempts take 25–62 s; images and audio under 10 s. Cloud Run CPUs may be slower. If needed, raise the timeout to 900 s |
-| 4 | **Make the repository public.** Already done by Claude: the history secret scan is clean (no key pattern; only `.env.example` files were ever committed), and the media licences are checked and attributed in `docs/MEDIA-ATTRIBUTION.md`. Jim's part: (a) choose a code licence (there is no LICENSE file; MIT or Apache-2.0 are common), (b) delete the merged remote branches `kiro/*` (Claude was not permitted to), (c) switch the repo to public | Oct 12 | Repo public, with a LICENSE | Required item |
-| 5 | **Lock the demo storyline and decide the Origami presentation** (see §3, D1) | Oct 12 | Decision recorded in `docs/plans/DECISION-LOG.md` | Demo shows a failing engine |
+| 4 | **Make the repository public.** ~~(a) choose a code licence (there is no LICENSE file; MIT or Apache-2.0 are common)~~ DONE (K9): Apache-2.0 LICENSE added by K9-P6. Jim's remaining part: (b) delete the merged remote branches `kiro/*` after the merge, (c) switch the repo to public | Oct 12 | Repo public, with a LICENSE | Required item |
+| 5 | **Lock the demo storyline and decide the Origami presentation** (see §3, D1) — DONE (K9): Origami rebuilt via universal pipeline (K9-P5); present as a composed case | Oct 12 | Decision recorded | Demo shows a failing engine |
 | 6 | **Record the 3-minute demo video** on the live URL; keep a backup recording of each segment | Oct 15 | Public link, under 3:00 | Required item |
 | 7 | **Deck** (architecture, Gen AI use, business case, evidence and honest limits) | Oct 16 | PDF or Slides link | Required item |
 | 8 | **Submit** on the Hack2skill portal | **Oct 17** (one day of buffer) | Confirmation received | — |
@@ -54,9 +70,7 @@ Pre-record each segment as a backup. Live model variance exists (see the known l
 
 ## 3. Decisions needed (Jim)
 
-- **D1 — Origami.** The dedicated engine fails its own "perfect" attempt (5 of 7 states; `tracks/track-b/eval/origami/RESULTS.md`). The full OrigamiCrane video through the universal path passes its positive control (11/11).
-  - **Recommendation:** present Origami through the universal composer as a composed case, and label the dedicated engine "experimental".
-  - **Alternative:** remove Origami from the hero list and use any clean new video for the demo.
+- **D1 — Origami.** DONE (K9): Origami rebuilt via the universal pipeline (K9-P5). Present as a composed case; the dedicated engine is labelled "experimental". The original finding: the dedicated engine fails its own "perfect" attempt (5 of 7 states; `tracks/track-b/eval/origami/RESULTS.md`). The full OrigamiCrane video through the universal path passes its positive control (11/11).
 - **D2 — Demo video source for the live compose.** Use a short (30–90 s), well-lit, top-down video with clearly distinct stages, where you hold the rights or the licence is open. Claude can pre-test candidates with `tools/stress_universal_video.py`.
 - **D3 — Merge discipline.** This push went to `main` directly, at Jim's explicit instruction, without a PR. For the remaining changes, use small branches and PRs again (AGENTS.md lifecycle) or continue direct pushes during the final week. Recommendation: PRs for code, direct pushes allowed for docs only.
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Step 4: Building — creating the skill from the confirmed draft.
  */
 
@@ -14,9 +14,9 @@ export function StepBuilding({ progress }: Props) {
     <div className="flex flex-col items-center gap-6 py-16 animate-fade-in">
       <Loader2 className="w-8 h-8 text-cadmium-amber animate-spin" />
       <div className="space-y-2 text-center">
-        <div className="text-[10px] font-mono uppercase tracking-widest text-cadmium-amber font-bold">Composer · Building</div>
+        <div className="text-[11px] font-mono uppercase tracking-widest text-cadmium-amber font-bold">Composer · Building</div>
         <p className="text-lg font-serif text-on-surface">Creating your skill…</p>
-        <p className="text-sm text-on-surface-variant">Generating rubric, knowledge package and goal model.</p>
+        <p className="text-sm text-on-surface-variant">Building the practice task and its checks…</p>
       </div>
       <div className="w-full max-w-sm h-1.5 rounded bg-surface-dim border border-outline overflow-hidden">
         <div

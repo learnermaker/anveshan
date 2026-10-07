@@ -5,18 +5,23 @@
  * Relevance refusals (INVALID_INPUT "doesn't look like an attempt") are shown inline.
  */
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, FileUp, Play, RotateCcw, Send } from 'lucide-react';
-import type { AttemptKind, CaseView } from '../../api/types';
+import type { AttemptKind, AttemptResult, CaseView } from '../../api/types';
 import { api, type AttemptUpload } from '../../api/client';
+import { API_BASE } from '../../api/runtime';
 import { ApiError } from '../../api/errors';
 import { AttemptProgress, ReviewNote, TaskInstructions } from '../Guidance';
 import { AttemptResultView } from '../results/AttemptResultView';
 import type { HeroSession, LocalAttemptMedia } from '../session';
-import { Badge, btn, ErrorNote, MockBadge, Panel, ProgressBar, ReviewBadge, SourceLabelBadge, Spinner } from '../ui';
+import { Badge, btn, ErrorNote, Panel, ProgressBar, ReviewBadge, SourceLabelBadge, Spinner } from '../ui';
+import { TrustLine } from '../TrustLine';
 import { KolamCanvas, buildRasterPng, buildTraceJson, type Stroke } from '../kolam/KolamCanvas';
 import type { UniversalUiView } from '../../api/types';
 import { lineArtToKolamUi } from './lineArt';
+import { DEBUG } from '../../api/debug';
+import { attemptLabel } from '../../copy/plain';
+import type { SampleAttempt } from '../../api/types-product';
 
 interface Props {
   view: CaseView;
@@ -43,6 +48,7 @@ export function UniversalPracticeView({ view, session, onSessionChange, onComple
   const n = attempts.length;
   const shown = attempts[selected >= 0 && selected < n ? selected : n - 1];
   const canSubmit = n < 2;
+  const tryLabel = n === 0 ? attemptLabel(1) : attemptLabel(2);
 
   const start = async () => {
     setErr(null);
@@ -83,6 +89,37 @@ export function UniversalPracticeView({ view, session, onSessionChange, onComple
     }
   };
 
+  const submitSample = async (sampleId: string) => {
+    let sid = session?.sessionId;
+    let currentSession = session;
+    if (!currentSession) {
+      setErr(null);
+      try {
+        const name = 'Guest';
+        const s = await api.createSession(view.case_id, name);
+        currentSession = { caseId: view.case_id, sessionId: s.session_id, learnerName: name, attempts: [], result: null };
+        onSessionChange(currentSession);
+        sid = s.session_id;
+      } catch (x) {
+        setErr(x);
+        return;
+      }
+    }
+    if (!sid) return;
+    setErr(null);
+    setRelevanceRefusal(null);
+    setPhase({ kind: 'evaluating', since: Date.now() });
+    try {
+      const result = await api.submitSampleAttempt(sid, sampleId);
+      onSessionChange({ ...currentSession!, attempts: [...(currentSession!.attempts), { result, media: { kind: 'image' } }] });
+      setShowCapture(false);
+    } catch (x) {
+      setErr(x);
+    } finally {
+      setPhase({ kind: 'idle' });
+    }
+  };
+
   const complete = async () => {
     if (!session) return;
     setCompleting(true);
@@ -103,13 +140,21 @@ export function UniversalPracticeView({ view, session, onSessionChange, onComple
         <div className="space-y-1.5">
           <button onClick={onBack} className={btn.ghost}><ArrowLeft className="w-3.5 h-3.5" /> Back to Learn</button>
           <div className="text-xs font-mono uppercase tracking-widest text-cadmium-amber font-bold">Step 2 of 3 · Practise · {view.task.title}</div>
-          <h1 className="font-serif text-2xl text-on-surface">{view.title}</h1>
-          <div className="flex flex-wrap gap-1.5">
-            <SourceLabelBadge label={view.runtime_label} />
-            <ReviewBadge status={view.review_status} />
-            {session && <Badge tone="muted" title={`Session ${session.sessionId}`}>Learner: {session.learnerName}</Badge>}
-            <MockBadge />
-          </div>
+          <h1 className="font-serif text-2xl text-on-surface" data-plain-exempt>{view.title}</h1>
+          {!DEBUG ? (
+            <TrustLine view={view} />
+          ) : (
+            <div className="flex flex-wrap gap-1.5">
+              <SourceLabelBadge label={view.runtime_label} />
+              <ReviewBadge status={view.review_status} />
+              {session && <Badge tone="muted" title={`Session ${session.sessionId}`}>Learner: {session.learnerName}</Badge>}
+            </div>
+          )}
+          {!DEBUG && session && (
+            <Badge tone="muted" title="Your name for this practice">
+              Learner: {session.learnerName}
+            </Badge>
+          )}
         </div>
         {session && (
           <div className="flex flex-wrap gap-2">
@@ -137,17 +182,17 @@ export function UniversalPracticeView({ view, session, onSessionChange, onComple
       )}
 
       {!session ? (
-        <Panel kicker="Start" title="Start a practice session">
+        <Panel kicker="Start" title="Start practising">
           <div className="flex flex-col sm:flex-row gap-2 max-w-lg">
             <input value={learner} onChange={(e) => setLearner(e.target.value)} placeholder="Your name (optional, shown in the record)" className="flex-1 bg-surface-dim border border-outline rounded-lg px-3 py-2 text-sm outline-none focus:border-caliper-cyan" aria-label="Your name (optional)" />
-            <button onClick={() => void start()} className={btn.primary}><Play className="w-3.5 h-3.5" /> Start session</button>
+            <button onClick={() => void start()} className={btn.primary}><Play className="w-3.5 h-3.5" /> Start practising</button>
           </div>
           <div className="mt-4"><TaskInstructions text={view.task.instructions} claims={view.package.claims} /></div>
         </Panel>
       ) : (
         <>
           {canSubmit && showCapture && (
-            <Panel kicker={n === 0 ? 'Attempt 1 · baseline' : 'Attempt 2 · retry'} title={view.task.title}>
+            <Panel kicker={n === 0 ? 'First try' : 'Second try'} title={view.task.title}>
               <details className="mb-4" open={n === 0}>
                 <summary className="cursor-pointer text-sm font-semibold text-on-surface">Task steps</summary>
                 <div className="mt-2"><TaskInstructions text={view.task.instructions} claims={view.package.claims} /></div>
@@ -157,6 +202,8 @@ export function UniversalPracticeView({ view, session, onSessionChange, onComple
                 {phase.kind === 'uploading' && <ProgressBar value={phase.progress} label="Uploading attempt" />}
                 {phase.kind === 'evaluating' && <Spinner label={`Evaluating… ${((Date.now() - phase.since) / 1000).toFixed(0)} s elapsed · videos usually take 20–70 s, images and audio 5–20 s`} />}
               </div>
+              {/* Sample picker (WI-3.1) */}
+              <SamplePicker caseId={view.case_id} tryLabel={tryLabel} noSubmitsYet={n === 0} onUseSample={submitSample} busy={phase.kind !== 'idle'} />
             </Panel>
           )}
 
@@ -164,7 +211,7 @@ export function UniversalPracticeView({ view, session, onSessionChange, onComple
             <div className="flex flex-wrap items-center gap-2">
               {attempts.map((a, i) => (
                 <button key={i} onClick={() => setSelected(i)} className={`px-3 py-1 rounded-md border text-[11px] font-mono ${a === shown ? 'border-cadmium-amber text-cadmium-amber bg-cadmium-amber/10' : 'border-outline text-on-surface-variant'}`}>
-                  {a.result.attempt.attempt_type.toUpperCase()} · {a.result.evaluation.total_score.toFixed(1)}
+                  {attemptLabel(i + 1)} · {a.result.evaluation.total_score.toFixed(1)}
                 </button>
               ))}
               {canSubmit && !showCapture && (
@@ -184,13 +231,72 @@ export function UniversalPracticeView({ view, session, onSessionChange, onComple
   );
 }
 
+/** Sample attempt picker: "No materials? Try a sample attempt" */
+function SamplePicker({ caseId, tryLabel, noSubmitsYet, onUseSample, busy }: { caseId: string; tryLabel: string; noSubmitsYet: boolean; onUseSample: (sampleId: string) => void; busy: boolean }) {
+  const [samples, setSamples] = useState<SampleAttempt[] | null>(null);
+  const [err, setErr] = useState<unknown>(null);
+
+  useEffect(() => {
+    api.listSamples(caseId).then(setSamples).catch(setErr);
+  }, [caseId]);
+
+  if (!samples || samples.length === 0) return null;
+
+  return (
+    <details className="mt-4" open={noSubmitsYet}>
+      <summary className="cursor-pointer text-sm text-on-surface-variant font-semibold select-none">
+        No materials? Try a sample attempt
+      </summary>
+      <div className="mt-3 space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {samples.map((s) => (
+            <div key={s.sample_id} className="p-3 rounded-lg border border-outline bg-surface-dim space-y-2">
+              <div className="flex flex-wrap items-start gap-2">
+                <span className="font-semibold text-sm text-on-surface flex-1">{s.label}</span>
+                {s.synthetic && <Badge tone="crimson">Synthetic sample</Badge>}
+              </div>
+              <p className="text-xs text-on-surface-variant" data-plain-exempt>{s.description}</p>
+              {s.credit && <p className="text-xs text-on-surface-variant" data-plain-exempt>{s.credit}</p>}
+              {s.preview_url && (
+                <div className="mt-1">
+                  {s.attempt_kind === 'image' && (
+                    <img src={`${API_BASE}${s.preview_url}`} alt={s.label} className="max-h-32 rounded border border-outline" />
+                  )}
+                  {s.attempt_kind === 'audio' && (
+                    <audio controls src={`${API_BASE}${s.preview_url}`} className="w-full" aria-label={s.label} />
+                  )}
+                  {s.attempt_kind === 'video' && (
+                    <video controls src={`${API_BASE}${s.preview_url}`} className="w-full max-h-32 rounded border border-outline bg-black" aria-label={s.label} />
+                  )}
+                </div>
+              )}
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => onUseSample(s.sample_id)}
+                className={btn.secondary}
+              >
+                Use this as my {tryLabel}
+              </button>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs text-on-surface-variant">
+          Samples let you see the feedback without your own materials. Your real practice counts more.
+        </p>
+        <ErrorNote error={err} />
+      </div>
+    </details>
+  );
+}
+
 function FilePick({ accept, label, file, onFile, disabled }: { accept: string; label: string; file: File | null; onFile: (f: File | null) => void; disabled?: boolean }) {
   return (
     <label className={`flex items-center gap-3 p-3 rounded-lg border border-dashed ${disabled ? 'opacity-50' : 'hover:border-cadmium-amber cursor-pointer'} border-outline bg-surface-dim`}>
       <FileUp className="w-5 h-5 text-cadmium-amber shrink-0" />
       <div className="min-w-0">
         <div className="text-[11px] font-mono text-on-surface">{label}</div>
-        <div className="text-[10px] text-on-surface-variant truncate">{file ? `${file.name} · ${(file.size / 1e6).toFixed(2)} MB` : 'choose a file'}</div>
+        <div className="text-xs text-on-surface-variant truncate">{file ? `${file.name} · ${(file.size / 1e6).toFixed(2)} MB` : 'choose a file'}</div>
       </div>
       <input type="file" accept={accept} className="hidden" disabled={disabled} onChange={(e) => onFile(e.target.files?.[0] ?? null)} />
     </label>

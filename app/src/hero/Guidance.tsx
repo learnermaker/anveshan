@@ -4,6 +4,8 @@ import React from 'react';
 import { ArrowRight, Check, RotateCcw } from 'lucide-react';
 import type { KnowledgeClaim as Claim } from '../types/contracts';
 import { btn } from './ui';
+import { trustLine } from '../copy/plain';
+import { DEBUG } from '../api/debug';
 
 const CLAIM_REF = /\[((?:CLM-[A-Za-z0-9-]+)(?:\s*,\s*CLM-[A-Za-z0-9-]+)*)\]/g;
 
@@ -16,8 +18,14 @@ export function splitNumbered(text: string): string[] {
   return parts.length ? parts : [text];
 }
 
-/** Render text with [CLM-01, CLM-02] references as small chips that show the claim on hover. */
+/** In learner mode: strip [CLM-..] references from text (no double spaces remain).
+ *  In DEBUG mode: render as small chips with hover tooltip. */
 export function WithClaimRefs({ text, claims }: { text: string; claims: Claim[] }) {
+  if (!DEBUG) {
+    // Strip [CLM-...] references and clean up extra whitespace
+    const stripped = text.replace(CLAIM_REF, '').replace(/\s{2,}/g, ' ').trim();
+    return <>{stripped}</>;
+  }
   const out: React.ReactNode[] = [];
   let last = 0;
   for (const m of text.matchAll(CLAIM_REF)) {
@@ -48,11 +56,15 @@ export function TaskInstructions({ text, claims }: { text: string; claims: Claim
       <ol className="list-decimal pl-5 space-y-1 text-sm text-on-surface leading-relaxed marker:text-on-surface-variant">
         {items.map((it, i) => (
           <li key={i}>
-            <WithClaimRefs text={it} claims={claims} />
+            <span data-plain-exempt>
+              <WithClaimRefs text={it} claims={claims} />
+            </span>
           </li>
         ))}
       </ol>
-      <p className="text-xs text-on-surface-variant">Blue tags such as CLM-01 point to the source claim behind a step. Hover or tap to read it.</p>
+      {DEBUG && (
+        <p className="text-xs text-on-surface-variant">Blue tags such as CLM-01 point to the source claim behind a step. Hover or tap to read it.</p>
+      )}
     </div>
   );
 }
@@ -68,16 +80,16 @@ interface ProgressProps {
   retryOpen?: boolean;
 }
 
-/** Three-step tracker (baseline, retry, results) with the one next action spelled out. */
+/** Three-step tracker (first try, second try, results) with the one next action spelled out. */
 export function AttemptProgress({ attempts, started, completing, onRetry, onComplete, retryOpen }: ProgressProps) {
-  const steps = ['Attempt 1 (baseline)', 'Attempt 2 (retry)', 'See what changed'];
+  const steps = ['First try', 'Second try', 'See what changed'];
   const doneCount = Math.min(attempts, 2);
   let next: React.ReactNode;
-  if (!started) next = 'Start a session below. Your name is optional.';
-  else if (attempts === 0) next = 'Do the task once, as well as you can, and submit it. This is your baseline.';
+  if (!started) next = 'Start below. Your name is optional.';
+  else if (attempts === 0) next = 'Do the task once, as well as you can, and submit it.';
   else if (attempts === 1)
     next = retryOpen ? (
-      'Do the whole task again below, using the feedback from attempt 1.'
+      'Do the whole task again below, using the feedback from your first try.'
     ) : (
       <span className="flex flex-wrap items-center gap-2">
         Read the feedback and the drill below, then retry the whole task once.
@@ -91,7 +103,7 @@ export function AttemptProgress({ attempts, started, completing, onRetry, onComp
   else
     next = (
       <span className="flex flex-wrap items-center gap-2">
-        Both attempts are done.
+        Both tries are done.
         {onComplete && (
           <button onClick={onComplete} disabled={completing} className={btn.primary}>
             {completing ? 'Saving the record…' : 'See what changed'} <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
@@ -132,13 +144,14 @@ export function AttemptProgress({ attempts, started, completing, onRetry, onComp
   );
 }
 
-/** The honest status line for packages no expert has reviewed (replaces the old refusal warning). */
-export function ReviewNote({ status }: { status: string }) {
+/** The honest status line for packages no expert has reviewed. */
+export function ReviewNote({ status, runtimeLabel = 'INTERNET_REFERENCE' }: { status: string; runtimeLabel?: string }) {
   if (status === 'approved' || status === 'revised') return null;
+  const line = trustLine({ runtime_label: runtimeLabel, review_status: status });
   return (
     <p className="text-sm text-on-surface-variant">
-      <span className="text-cadmium-amber font-semibold">Not yet reviewed by an expert.</span> You can practise normally. The steps come from an openly licensed source
-      and the AI, so treat results as engineering evidence, not certification. Experts review skills by invitation in this demo.
+      <span className="text-cadmium-amber font-semibold">Not yet checked by an expert.</span>{' '}
+      You can practise normally. {line} Treat results as practice feedback, not a certificate.
     </p>
   );
 }

@@ -66,6 +66,27 @@ export function ComposerWizard({ onDone, onCancel }: Props) {
     }
   }, []);
 
+  // ---------- Step 1b: Analyze a sample source ----------
+
+  const handleAnalyzeSample = useCallback(async (sampleId: string) => {
+    setError(null);
+    setState({ step: 'perceiving', since: Date.now() });
+    setSourceUrl((old) => { if (old) URL.revokeObjectURL(old); return null; });
+    try {
+      const draft = await api.analyzeSampleSource(sampleId);
+      if (draft.refused) {
+        setState({ step: 'refused', draft });
+      } else if (draft.proposal === null) {
+        setState({ step: 'needs_input', draft });
+      } else {
+        setState({ step: 'proposal', draft, edits: {} });
+      }
+    } catch (e) {
+      setError(e);
+      setState({ step: 'upload' });
+    }
+  }, []);
+
   // ---------- Step 3b: Needs input → refine ----------
 
   const handleRefine = useCallback(async (draft: DraftView, title: string, description: string) => {
@@ -127,7 +148,7 @@ export function ComposerWizard({ onDone, onCancel }: Props) {
 
   // ---------- Render ----------
 
-  if (state.step === 'upload') return <StepUpload onSubmit={handleUpload} onCancel={onCancel} error={error} />;
+  if (state.step === 'upload') return <StepUpload onSubmit={handleUpload} onAnalyzeSample={handleAnalyzeSample} onCancel={onCancel} error={error} />;
   if (state.step === 'perceiving') return <StepPerceiving since={state.since} mime={state.mime} />;
   if (state.step === 'refused') return <StepRefused draft={state.draft} onStartOver={reset} />;
   if (state.step === 'needs_input') return <StepNeedsInput draft={state.draft} onRefine={handleRefine} onStartOver={reset} error={error} />;

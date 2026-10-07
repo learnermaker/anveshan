@@ -89,7 +89,7 @@ class CaseHandoff:
             "case_id": self.case_id,
             "title": self.manifest.get("title", self.case_id),
             "modality": self.modality,
-            "hero": self.case_id in config.HERO_CASES,
+            "hero": self.case_id in config.HERO_CASES or self.case_id in config.FEATURED_COMPOSED,
             "derived_from": config.base_case_id(self.case_id) if config.is_derived(self.case_id) else None,
             "manifest": self.manifest,
             "sources": public_sources(self.case_id, self.sources),
@@ -442,6 +442,20 @@ def _summary_composed(case_dir: Path) -> dict:
         except Exception:
             pass
 
+    # Fix: compute the real review_status from the knowledge package (like _summary does)
+    try:
+        version, _ = select_package_version(case_dir)
+        if version is not None:
+            pkg = load_versioned(
+                authoring.artifact_dir(case_dir, "knowledge_package"),
+                "knowledge_package",
+                KnowledgePackage,
+                version,
+            )
+            review_status = _status(pkg)
+    except Exception:
+        pass
+
     return {
         "case_id": case_id,
         "title": title,
@@ -456,27 +470,69 @@ def _summary_composed(case_dir: Path) -> dict:
 
 
 def list_cases(cases_root: Path, data_dir: Path) -> List[dict]:
-    """Hero cases, then derived upload cases (hero-derived + composed), then SYNTHETIC showcase cases."""
+    """Hero cases (except EXPERIMENTAL), then FEATURED_COMPOSED packs, then derived uploads, then SYNTHETIC showcase.
+
+    Order of featured cards: kolam, origami-crane, tabla (spec §3 K9-P5).
+    EXPERIMENTAL_CASES (e.g. origami) are hidden from the list but still accessible via direct URL.
+    """
     cases_root, data_dir = Path(cases_root), Path(data_dir)
     out: List[dict] = []
-    for cid in config.HERO_CASES:
-        if (cases_root / cid / "manifest.json").exists():
-            out.append(_summary(cases_root / cid, hero=True))
+
+    # 1. Featured cards in explicit order: kolam, origami-crane, tabla
+    # Hero cases and FEATURED_COMPOSED are merged into a single ordered list.
+    FEATURED_ORDER = ["kolam", "origami-crane", "tabla"]
+    for cid in FEATURED_ORDER:
+        if cid in config.EXPERIMENTAL_CASES:
+            continue
+        case_d = cases_root / cid
+        if not (case_d / "manifest.json").exists():
+            continue
+        if cid in config.HERO_CASES:
+            out.append(_summary(case_d, hero=True))
+        elif cid in config.FEATURED_COMPOSED:
+            composed = _summary_composed(case_d)
+            composed["hero"] = True
+            composed["composed"] = True
+            sources = _sources_or_empty(case_d, cid)
+            try:
+                composed["runtime_label"] = sources.primary().runtime_label
+            except KeyError:
+                pass
+            out.append(composed)
+
+    # Also add any FEATURED_COMPOSED cases not in FEATURED_ORDER
+    for cid in config.FEATURED_COMPOSED:
+        if cid in FEATURED_ORDER:
+            continue
+        case_d = cases_root / cid
+        if (case_d / "manifest.json").exists() and list(case_d.glob("knowledge/case_profile.v*.json")):
+            composed = _summary_composed(case_d)
+            composed["hero"] = True
+            composed["composed"] = True
+            sources = _sources_or_empty(case_d, cid)
+            try:
+                composed["runtime_label"] = sources.primary().runtime_label
+            except KeyError:
+                pass
+            out.append(composed)
+
+    # 2. Derived upload cases (hero-derived + user-composed)
     up = upload_cases_root(data_dir)
     if up.exists():
         for d in sorted(p for p in up.iterdir() if p.is_dir() and config.DERIVED_SEP in p.name):
             if (d / "manifest.json").exists():
-                # Hero-derived (e.g. kolam~sha12)
                 if config.modality_for(d.name):
                     out.append(_summary(d, hero=False, derived_from=config.base_case_id(d.name)))
-                # Composed universal cases (have a case_profile)
                 elif list(d.glob("knowledge/case_profile.v*.json")):
                     out.append(_summary_composed(d))
+
+    # 3. Showcase (SYNTHETIC replay bundles)
     index_path = cases_root / "index.json"
     indexed = json.loads(index_path.read_text(encoding="utf-8")).get("cases", []) if index_path.exists() else []
     for cid in indexed:
         if cid in config.SHOWCASE_CASES and (cases_root / cid / "manifest.json").exists():
             out.append(_summary(cases_root / cid, hero=False))
+
     return out
 
 

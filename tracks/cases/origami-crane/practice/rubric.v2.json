@@ -1,0 +1,49 @@
+{
+  "criteria": [
+    {
+      "criterion_id": "CRIT-U-CHK-PR-COV",
+      "description": "All folding steps from the flat sheet to the finished crane are performed.",
+      "name": "Complete All Folding Steps",
+      "observable_indicator": "All folding steps from the flat sheet to the finished crane are performed.",
+      "required": true,
+      "weight": 3.0
+    },
+    {
+      "criterion_id": "CRIT-U-CHK-PR-ORD",
+      "description": "The steps are performed in the correct sequence, starting with the flat sheet and ending with the completed crane.",
+      "name": "Follow Correct Folding Order",
+      "observable_indicator": "The steps are performed in the correct sequence, starting with the flat sheet and ending with the completed crane.",
+      "required": true,
+      "weight": 2.0
+    },
+    {
+      "criterion_id": "CRIT-U-CHK-PR-OFF",
+      "description": "Only actions relevant to folding the paper crane are performed, without unnecessary movements.",
+      "name": "Avoid Extraneous Actions",
+      "observable_indicator": "Only actions relevant to folding the paper crane are performed, without unnecessary movements.",
+      "required": false,
+      "weight": 1.0
+    },
+    {
+      "criterion_id": "CRIT-U-CHK-PR-FIN",
+      "description": "The procedure concludes with the fully formed origami crane.",
+      "name": "Reach Final Crane Shape",
+      "observable_indicator": "The procedure concludes with the fully formed origami crane.",
+      "required": true,
+      "weight": 3.0
+    },
+    {
+      "criterion_id": "CRIT-U-CHK-PR-Q01",
+      "description": "Each intermediate shape, from the rectangular fold to the diamond base, is formed accurately.",
+      "name": "Maintain Proper Paper Shapes",
+      "observable_indicator": "Each intermediate shape, from the rectangular fold to the diamond base, is formed accurately.",
+      "required": false,
+      "weight": 2.0
+    }
+  ],
+  "description": "Criteria authored from goal model v2 (universal). Metric bands live in practice/observers.v2.json; scores come only from the deterministic band policy.",
+  "passing_score": 7.7,
+  "rubric_id": "rubric.origami-crane.2",
+  "skill_id": "skill.fold-a-paper-crane-the-first-fol",
+  "title": "Fold a Paper Crane — rubric"
+}

@@ -31,6 +31,8 @@ The technical panel (architect, Gen AI engineer, SRE, frontend/UX engineer, QA) 
 
 ### WS1 — Deployment safety (P0). Closes J-02, J-03, J-05, J-06, J-07.
 
+**Status: DONE** (WI-1.1–1.6 on `main` before K9; WI-1.5 smoke gate added by K9-P7).
+
 **WI-1.1 Cost and abuse guard.** Owner: Claude. Effort: M (½ day).
 
 Files:
@@ -149,6 +151,8 @@ Ops (Jim, D6): min-instances 1 only during the judging window, about Oct 18–25
 
 ### WS2 — Demo integrity and copy (P0/P1). Closes J-01, J-04, J-13, J-14, J-15.
 
+**Status: DONE** (WI-2.1 K9-P5; WI-2.2/2.3 K9-P2/P3; WI-2.4 K9-P6).
+
 **WI-2.1 Origami decision D1.** Owner: Claude after Jim decides. Effort: M.
 
 Approach (recommended option):
@@ -212,6 +216,8 @@ Acceptance:
 
 ### WS3 — Judge-tryable flows (P1). Closes J-11, J-12.
 
+**Status: DONE** (WI-3.1 K9-P4/P2/P3/P5; WI-3.2 on `main` before K9).
+
 **WI-3.1 Sample attempts with recorded results.** Owner: Claude. Effort: M–L (1 day).
 
 Files:
@@ -254,6 +260,8 @@ Acceptance: re-uploading the same attempt returns a byte-identical evaluation, w
 ---
 
 ### WS4 — Gen AI where the learner feels it (P1; needs D4 and D5). Closes J-09, J-10.
+
+**Status: DONE** (WI-4.1 on `main` before K9 + E8/E9 by K9-P6; WI-4.2/4.3 on `main` before K9).
 
 **WI-4.1 Grounded coach wording (AI-worded, never scored).** Owner: Claude. Effort: M (1 day).
 
@@ -306,6 +314,8 @@ Acceptance: a first-time user can follow Kolam stage 1 without reading any coord
 
 ### WS5 — Evidence and impact (P1; humans). Closes J-08, J-17.
 
+**Status: PARTIAL** (WI-5.1 pilot HUMAN — Jim to run; WI-5.2 expert review HUMAN — Jim to arrange; WI-5.3 evidence page DONE K9-B1; WI-5.4 stability numbers DONE K9-B2).
+
 **WI-5.1 Mini pilot (E8).** Owner: Jim runs it, Claude prepares. Effort: about 2 h of people time.
 
 - Participants: 3–5 adult colleagues (21 or over) who are not on the team. Written consent: a one-paragraph form in `docs/validation/pilot-consent.md`.
@@ -341,12 +351,16 @@ Acceptance: E8 is recorded, with the raw records committed under `docs/validatio
 
 ### WS6 — Universal-path robustness (P2, optional). Closes part of J-12.
 
+**Status: NEXT** (deferred to post-submission per decision 2026-10-07).
+
 - **WI-6.1 Ambiguous-band relevance.** For similarity between 0.70 and 0.80, add a side-by-side yes/no check of the expert image and the attempt (`relevance_v2.txt`). Target: the look-alike unrelated image is REFUSED; recorded test plus 3 live runs.
 - **WI-6.2 Novel-state check for swapped order.** Compare each attempt keyframe with *all* expert keyframes in one call. If the answer is "none of these", mark it off-path. Target: swapped order FAILs 3/3 with no new false FAIL on perfect runs (E-series).
 
 Do these only if WS1–WS5 are done by Oct 13.
 
 ### WS7 — Accessibility (P2). Closes J-16.
+
+**Status: DONE** (WI-7.1 K9-B1 + K9-P2/P3 in their own files).
 
 **WI-7.1** Owner: Claude. Effort: S–M.
 - Minimum 12 px for body and table text, and 11 px for labels: replace `text-[8px]`, `text-[9px]` and `text-[10px]` with tokens.
@@ -358,12 +372,16 @@ Check: the axe-core browser console scan on 5 key views has no serious or critic
 
 ### WS8 — Public-repo hygiene (P2). Closes J-18, J-19, J-20, J-21.
 
+**Status: PARTIAL** (WI-8.1 screenshots HUMAN/NEXT — Jim's decision D8; WI-8.2 showcase kept collapsed; WI-8.3 NEXT — deferred; WI-8.4 LICENSE DONE K9-P6; make-public HUMAN — Jim after merge).
+
 - **WI-8.1** `git rm -r screenshots/runs` (keep `screenshots/latest` and the README). It stays in history and needs D8.
 - **WI-8.2** If WI-2.3 removes the showcase, delete the legacy synthetic UI (`StitchModal`, `DualDeckPlayer`, `workspaces/*`, `data/cases/registry.ts` synthetic entries). Otherwise leave it.
 - **WI-8.3** Split `track_b/evaluators/universal.py` into `relevance.py`, `matcher.py`, `judges.py` and `assemble.py`, with no behaviour change. **Deferred until after submission**: too risky in the final week for no judge-visible gain.
 - **WI-8.4** LICENSE (Jim, D-licence), then make the repo public.
 
 ### WS9 — Three product roles, end-user-centric surfaces (P0, DECIDED by Jim 2026-10-07). Closes the rest of J-14, J-15 and J-16 (wording).
+
+**Status: DONE** (K9-P1/P2/P3/P7 + PC gate; `k9/integration` pending merge to `main`).
 
 **Problem.** The learner's path showed evaluation tooling:
 - "Expert review · Approve, revise or reject claims";

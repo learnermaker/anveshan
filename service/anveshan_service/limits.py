@@ -22,6 +22,9 @@ _ROUTES = (
     ("POST", re.compile(r"^/api/sessions/[^/]+/attempts(/sample/[^/]+)?$"), "attempt"),
     ("POST", re.compile(r"^/api/cases/[^/]+/query$"), "query"),
     ("POST", re.compile(r"^/api/key/check$"), "query"),
+    ("POST", re.compile(r"^/api/steward/check$"), "auth"),
+    ("POST", re.compile(r"^/api/library/[^/]+/(submit|withdraw)$"), "compose_step"),
+    ("POST", re.compile(r"^/api/compose/sample/[^/]+$"), "compose"),
 )
 
 _MESSAGES = {
@@ -29,6 +32,7 @@ _MESSAGES = {
     "compose_step": "Too many skill edits in the last hour. Please wait a little.",
     "attempt": "You have submitted a lot of attempts in the last hour. Please wait a little, or try a sample.",
     "query": "Too many questions in the last hour. Please wait a little.",
+    "auth": "Too many sign-in attempts. Please wait a little.",
 }
 
 
@@ -76,10 +80,23 @@ class RateLimitMiddleware:
     async def __call__(self, scope, receive, send):
         if scope["type"] == "http":
             name = route_class(scope.get("method", ""), scope.get("path", ""))
+            # Count requests even when no bucket is configured for this class
+            if name:
+                try:
+                    from anveshan_service.metrics import METRICS
+                    METRICS.inc("requests", name)
+                except Exception:
+                    pass
             bucket = self.buckets.get(name) if name else None
             if bucket is not None:
                 ok, wait = bucket.take(client_key(scope))
                 if not ok:
+                    # Count rate-limited events
+                    try:
+                        from anveshan_service.metrics import METRICS
+                        METRICS.inc("rate_limited", name)
+                    except Exception:
+                        pass
                     resp = error_response(429, "RATE_LIMITED", _MESSAGES[name], {"retry_after_s": int(wait) + 1, "limit": name})
                     resp.headers["Retry-After"] = str(int(wait) + 1)
                     await resp(scope, receive, send)

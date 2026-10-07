@@ -298,9 +298,31 @@ class DailyBudget:
                 )
             self.used += 1
 
+    def today_used(self) -> int:
+        """Return the number of live calls made today (UTC), 0 if no calls yet today."""
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        with self._lock:
+            return self.used if self._day == today else 0
+
 
 DAILY_BUDGET = DailyBudget()
 
+
+class UsageCounters:
+    """Process-wide counts for the steward usage view (never affects behaviour)."""
+
+    def __init__(self) -> None:
+        self._lock = threading.Lock()
+        self.cache_hits = 0
+        self.own_key_calls = 0
+        self.live_calls = 0
+
+    def inc(self, name: str) -> None:
+        with self._lock:
+            setattr(self, name, getattr(self, name) + 1)
+
+
+USAGE = UsageCounters()
 
 # ---------------------------------------------------------------------------
 # Token economy (docs/architecture/token-economy.md)
@@ -439,6 +461,7 @@ class ModelGateway:
                     meta_d = dict(hit["metadata"])
                     meta_d["runtime_class"] = "RECORDED_LIVE"
                     meta_d["notes"] = list(meta_d.get("notes") or []) + ["live_cache_hit"]
+                    USAGE.inc("cache_hits")
                     return GenerationResult(parsed, raw_text, RunMetadata(**meta_d))
 
         model_id = self.registry.model_id(model_key)
@@ -447,6 +470,9 @@ class ModelGateway:
         client = self._get_client()
         if not self.own_key:
             DAILY_BUDGET.take()
+            USAGE.inc("live_calls")
+        else:
+            USAGE.inc("own_key_calls")
         from google.genai import types
 
         def build_contents(with_resolution: bool) -> List[Any]:
@@ -586,6 +612,7 @@ class ModelGateway:
                 meta_d["runtime_class"] = "RECORDED_LIVE"
                 if self.mode == "live":
                     meta_d["notes"] = list(meta_d.get("notes") or []) + ["live_cache_hit"]
+                    USAGE.inc("cache_hits")
                 vecs = np.load(arr_path).astype(np.float32)
                 return EmbeddingResult(vectors=vecs, metadata=RunMetadata(**meta_d))
 
@@ -608,6 +635,9 @@ class ModelGateway:
                 chunk = items[i : i + batch_size]
                 if not self.own_key:
                     DAILY_BUDGET.take()
+                    USAGE.inc("live_calls")
+                else:
+                    USAGE.inc("own_key_calls")
                 for wait in (*RATE_LIMIT_BACKOFF_S, None):
                     try:
                         resp = client.models.embed_content(

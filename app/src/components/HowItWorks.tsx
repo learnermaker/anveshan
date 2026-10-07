@@ -8,17 +8,17 @@ const STEPS: { icon: React.ReactNode; title: string; text: string }[] = [
   {
     icon: <FileUp className="w-5 h-5 text-cadmium-amber" aria-hidden="true" />,
     title: 'Pick a skill',
-    text: 'Start with the Kolam drawing: you draw in the browser, no files needed. Or upload your own source (an image, a video or a recording) to create a new skill.',
+    text: 'Start with the Kolam drawing: you draw in the browser, no files needed. Or upload your own source to share a new skill.',
   },
   {
     icon: <Compass className="w-5 h-5 text-caliper-cyan" aria-hidden="true" />,
     title: '1 · Learn',
-    text: 'See what the source teaches. Every step and check is a claim linked to evidence in the source, so you can see where it came from.',
+    text: 'See what the source teaches. Every step links back to the source, so you can see where it came from.',
   },
   {
     icon: <Play className="w-5 h-5 text-transmission-emerald" aria-hidden="true" />,
     title: '2 · Practise',
-    text: 'Do the task once. Anveshan compares your attempt with the goal, shows where you first went off track, and suggests one focused drill.',
+    text: 'Do the task once. Anveshan shows where you first went off track and suggests one focused exercise.',
   },
   {
     icon: <RotateCcw className="w-5 h-5 text-cadmium-amber" aria-hidden="true" />,
@@ -28,19 +28,19 @@ const STEPS: { icon: React.ReactNode; title: string; text: string }[] = [
   {
     icon: <Award className="w-5 h-5 text-transmission-emerald" aria-hidden="true" />,
     title: '3 · Results',
-    text: 'See what changed between your two attempts, criterion by criterion, saved as a record you can check later.',
+    text: 'See what changed between your two tries, check by check, saved as a record.',
   },
 ];
 
 const LABELS: [string, string][] = [
-  ['OBSERVED', 'Measured or seen directly in the source.'],
-  ['INFERRED', "The AI's reading of the source. Useful, but it may be wrong."],
-  ['MEASURED', 'Your attempt was checked with fixed geometry, timing or audio measurements.'],
-  ['AI-JUDGED', 'An AI model looked at your attempt and answered a yes/no check. Fixed rules then turn the answers into a score.'],
-  ['UNCERTAIN', 'Not enough evidence to decide. It scores zero and is shown, not hidden.'],
-  ['INTERNET REFERENCE', 'The source is openly licensed media from the internet, not a verified expert.'],
-  ['REVIEW: PENDING', 'No expert has reviewed this skill yet. Results are engineering evidence, not certification.'],
-  ['SYNTHETIC', 'Made-up data used to demonstrate the interface. Nothing is evaluated.'],
+  ['Checked by an expert', 'A person reviewed the steps and confirmed or corrected them.'],
+  ['Not yet checked by an expert', 'The steps come from an openly licensed source and the AI. No expert has reviewed them yet.'],
+  ["AI's reading", 'The AI perceived this from the source. Useful, but it may be wrong.'],
+  ['Synthetic example (made up for the demo)', 'Made-up data used to demonstrate the interface. Nothing is evaluated.'],
+  ['Advice worded by AI', 'The advice text was written by the AI from the measured findings. Scores are never set by AI.'],
+  ['Not scored', 'This exercise is for practice only. Only your second full try is checked.'],
+  ['Met / Partly met / Not met / Couldn\'t tell', 'Result of each check. "Couldn\'t tell" means there wasn\'t enough evidence to decide; it scores zero.'],
+  ['From an openly licensed internet source', 'The source is openly licensed media from the internet, not a verified expert.'],
 ];
 
 export function HowItWorksSteps({ compact = false }: { compact?: boolean }) {
@@ -62,9 +62,8 @@ export function HowItWorksSteps({ compact = false }: { compact?: boolean }) {
 export function AiRoleNote() {
   return (
     <p className="text-sm text-on-surface-variant leading-relaxed">
-      <strong className="text-on-surface">What the AI does:</strong> Google Gemini reads the source and your attempt, describes what it sees, and words the
-      coaching. <strong className="text-on-surface">What it never does:</strong> decide your score. Scores come from fixed rules over measurements, and every
-      piece of feedback cites the source claim it is based on.
+      <strong className="text-on-surface">What the AI does:</strong> reads the source and your attempt, describes what it sees, and words the coaching.{' '}
+      <strong className="text-on-surface">What it never does:</strong> decide your score. Scores come from fixed rules over measurements, and every piece of feedback cites the source step it is based on.
     </p>
   );
 }
@@ -91,16 +90,48 @@ export function GuideModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
         <div className="p-5 space-y-5">
           <HowItWorksSteps />
           <AiRoleNote />
+
+          {/* Three ways to use Anveshan */}
+          <div>
+            <h3 className="text-sm font-semibold text-on-surface mb-2">Three ways to use Anveshan</h3>
+            <ul className="space-y-2 text-sm">
+              <li className="flex gap-3">
+                <span className="font-semibold text-cadmium-amber shrink-0 w-16">Learn:</span>
+                <span className="text-on-surface-variant">Practise a skill and get feedback.</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="font-semibold text-caliper-cyan shrink-0 w-16">Share:</span>
+                <span className="text-on-surface-variant">Turn something you know into a practice task.</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="font-semibold text-transmission-emerald shrink-0 w-16">Steward:</span>
+                <span className="text-on-surface-variant">Look after a library of skills, with an access code.</span>
+              </li>
+            </ul>
+          </div>
+
           <div>
             <h3 className="text-sm font-semibold text-on-surface mb-2">What the labels mean</h3>
             <dl className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 text-sm">
               {LABELS.map(([k, v]) => (
                 <div key={k} className="flex gap-3">
-                  <dt className="shrink-0 w-40 font-mono text-xs font-bold text-cadmium-amber pt-0.5">{k}</dt>
+                  <dt className="shrink-0 w-48 font-semibold text-xs text-cadmium-amber pt-0.5">{k}</dt>
                   <dd className="text-on-surface-variant">{v}</dd>
                 </div>
               ))}
             </dl>
+          </div>
+          <div className="border-t border-outline pt-4">
+            <button
+              type="button"
+              className="text-sm text-caliper-cyan hover:underline"
+              onClick={() => {
+                onClose();
+                window.dispatchEvent(new CustomEvent('anveshan:go-evidence'));
+              }}
+            >
+              How we check results →
+            </button>
           </div>
         </div>
       </div>

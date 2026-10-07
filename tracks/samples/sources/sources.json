@@ -1,0 +1,22 @@
+{
+  "sources": [
+    {
+      "sample_id": "kolam-photo",
+      "label": "A kolam drawing (photo)",
+      "description": "A finished line drawing of the kolam pattern, rendered from the goal curve.",
+      "file": "kolam_photo.png",
+      "mime_type": "image/png",
+      "credit": "Rendered for the demo from the Anveshan kolam goal",
+      "licence": "CC0-1.0"
+    },
+    {
+      "sample_id": "tabla-rhythm",
+      "label": "A short tabla rhythm (audio)",
+      "description": "A synthetic tabla rhythm matching the goal pattern.",
+      "canonical_path": "tracks/cases/tabla/samples/good.wav",
+      "mime_type": "audio/wav",
+      "credit": "Synthesized for the demo",
+      "licence": "CC0-1.0"
+    }
+  ]
+}

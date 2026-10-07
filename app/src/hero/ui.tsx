@@ -6,8 +6,12 @@ import type { CriterionStatus, VerificationState } from '../types/contracts';
 import type { RuntimeClass } from '../api/types';
 import { friendlyError } from '../api/errors';
 import { requestKeyDialog } from '../api/userKey';
+import { DEBUG } from '../api/debug';
+import { SOURCE_LABEL, REVIEW_LABEL, OWN_REVIEW_LABEL, STATUS_PLAIN } from '../copy/plain';
 
-const base = 'inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-wider border whitespace-nowrap';
+export { STATUS_PLAIN };
+
+const base = 'inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-mono font-bold uppercase tracking-wider border whitespace-nowrap';
 
 export function Badge({ tone, children, title }: { tone: 'amber' | 'emerald' | 'cyan' | 'crimson' | 'muted'; children: React.ReactNode; title?: string }) {
   const cls = {
@@ -30,6 +34,12 @@ export function MockBadge(): React.ReactElement | null {
 }
 
 export function SourceLabelBadge({ label }: { label: string }) {
+  if (!DEBUG) {
+    const text = SOURCE_LABEL[label] ?? label;
+    const tone: 'amber' | 'emerald' | 'cyan' | 'crimson' | 'muted' =
+      label === 'SYNTHETIC' ? 'crimson' : label === 'INTERNET_REFERENCE' ? 'cyan' : 'muted';
+    return <Badge tone={tone}>{text}</Badge>;
+  }
   const map: Record<string, { tone: 'amber' | 'emerald' | 'cyan' | 'crimson' | 'muted'; text: string }> = {
     INTERNET_REFERENCE: { tone: 'cyan', text: 'INTERNET REFERENCE' },
     UPLOAD: { tone: 'amber', text: 'UPLOAD' },
@@ -40,12 +50,24 @@ export function SourceLabelBadge({ label }: { label: string }) {
   return <Badge tone={m.tone}>{m.text}</Badge>;
 }
 
-export function ReviewBadge({ status }: { status: string }) {
+export function ReviewBadge({ status, own }: { status: string; own?: boolean }) {
+  if (!DEBUG) {
+    const labelMap = own ? OWN_REVIEW_LABEL : REVIEW_LABEL;
+    const text = labelMap[status] ?? status;
+    const tone: 'emerald' | 'amber' | 'crimson' =
+      status === 'approved' || status === 'revised' ? 'emerald' : status === 'rejected' ? 'crimson' : 'amber';
+    return <Badge tone={tone}>{text}</Badge>;
+  }
   const tone = status === 'approved' ? 'emerald' : status === 'rejected' ? 'crimson' : status === 'revised' ? 'cyan' : 'amber';
   return <Badge tone={tone}>REVIEW: {status}</Badge>;
 }
 
 export function VerificationBadge({ state }: { state: VerificationState }) {
+  if (!DEBUG) {
+    if (state === 'observed') return null;
+    if (state === 'inferred') return <Badge tone="amber">AI's reading</Badge>;
+    return <Badge tone="muted">Not checked</Badge>;
+  }
   const tone = state === 'observed' ? 'emerald' : state === 'inferred' ? 'amber' : 'muted';
   return <Badge tone={tone}>{state}</Badge>;
 }
@@ -59,10 +81,14 @@ export const STATUS_LABEL: Record<CriterionStatus, string> = {
 
 export function StatusBadge({ status }: { status: CriterionStatus | string }) {
   const tone = status === 'satisfied' ? 'emerald' : status === 'partially_satisfied' ? 'amber' : status === 'not_satisfied' ? 'crimson' : 'muted';
+  if (!DEBUG) {
+    return <Badge tone={tone}>{STATUS_PLAIN[status] ?? status}</Badge>;
+  }
   return <Badge tone={tone}>{STATUS_LABEL[status as CriterionStatus] ?? status}</Badge>;
 }
 
 export function RuntimeClassBadge({ value }: { value: RuntimeClass | string }) {
+  if (!DEBUG) return null;
   const map: Record<string, { tone: 'cyan' | 'amber' | 'emerald'; text: string; title: string }> = {
     LIVE: { tone: 'cyan', text: 'LIVE', title: 'Model calls made during this request' },
     RECORDED_LIVE: { tone: 'amber', text: 'RECORDED LIVE', title: 'Replayed from a recorded live model run' },
@@ -82,7 +108,7 @@ export function Panel({ title, kicker, right, children, className = '' }: { titl
       {(title || kicker || right) && (
         <header className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 border-b border-outline/60">
           <div>
-            {kicker && <div className="text-[9px] font-mono uppercase tracking-widest text-cadmium-amber font-bold">{kicker}</div>}
+            {kicker && <div className="text-[11px] font-mono uppercase tracking-widest text-cadmium-amber font-bold">{kicker}</div>}
             {title && <h3 className="text-sm font-semibold text-on-surface">{title}</h3>}
           </div>
           {right && <div className="flex items-center gap-2 flex-wrap">{right}</div>}
@@ -129,7 +155,7 @@ export function ProgressBar({ value, label }: { value: number; label?: string })
   return (
     <div className="space-y-1">
       {label && (
-        <div className="flex justify-between text-[10px] font-mono text-on-surface-variant">
+        <div className="flex justify-between text-[11px] font-mono text-on-surface-variant">
           <span>{label}</span>
           <span>{Math.round(value * 100)}%</span>
         </div>

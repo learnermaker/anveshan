@@ -1,0 +1,27 @@
+{
+  "case_id": "origami-crane",
+  "sources": [
+    {
+      "access_level": "public",
+      "attribution": "OrigamiCrane.ogv by Tavin, CC BY 3.0, via Wikimedia Commons",
+      "bytes": 25026185,
+      "creator": "Tavin",
+      "dimensions": [
+        400,
+        226
+      ],
+      "duration_sec": 335.0,
+      "license": "CC BY 3.0",
+      "mime_type": "video/ogg",
+      "notes": "Universal pipeline case built from the origami demo video. Same source as tracks/cases/origami/source/source.json (sha256 matches). Full 335 s video; universal pipeline segments it automatically.",
+      "path": "media/cache/src.origami.crane.demo.v1.ogv",
+      "role": "expert_video",
+      "runtime_label": "INTERNET_REFERENCE",
+      "sha256": "4489d37966da1be348742b9cb8f0e99abda7553078bfce2e7abe94062f32b485",
+      "source_id": "src.origami-crane.demo.v1",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/b/bb/OrigamiCrane.ogv",
+      "used_by_system": true,
+      "window_sec": null
+    }
+  ]
+}

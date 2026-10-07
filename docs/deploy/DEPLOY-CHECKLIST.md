@@ -77,6 +77,8 @@ Set these as plain (non-secret) environment variables in the Cloud Run console:
 | `ANVESHAN_VIDEO_FRAMES_MODEL` | `gemini-3.5-flash-lite` | Origami goal build |
 | `ANVESHAN_DAILY_CALL_BUDGET` | `2000` | Image default. Live model calls per UTC day; cached and recorded calls are free |
 | `ANVESHAN_REVIEW_TOKEN` | a long random string | Optional. Only the invited expert reviewer gets it (sent as `X-Review-Token`) |
+| `ANVESHAN_STEWARD_TOKEN` | a long random string | **Secret** (Cloud Run secret, not plain env var). Steward console access code. |
+| `ANVESHAN_INSIGHTS_MAX_EVENTS` | `5000` | Per-skill event log cap (increase for high-traffic demos) |
 
 Defaults that switch on automatically on Cloud Run (`K_SERVICE` is set by the platform), override only if needed:
 
@@ -84,12 +86,26 @@ Defaults that switch on automatically on Cloud Run (`K_SERVICE` is set by the pl
 |---|---|---|
 | `ANVESHAN_ALLOW_MODE_OVERRIDE` | `false` | `?mode=live|recorded` from browsers is ignored |
 | `ANVESHAN_ISOLATE_VISITORS` | `true` | Each browser (anonymous `anv_vid` cookie) sees only its own uploads and composed skills |
+| `ANVESHAN_STEWARD_OPEN` | `false` (0) | Steward console is **closed** by default; requires `ANVESHAN_STEWARD_TOKEN` header. Do **not** set to 1 in production unless you want open steward access. |
 | `ANVESHAN_CURATED_REVIEW_OPEN` | `false` | Review of the curated cases needs `ANVESHAN_REVIEW_TOKEN` |
 | `ANVESHAN_RATE_COMPOSE_PER_HOUR` / `_ATTEMPT_` / `_QUERY_` / `_COMPOSE_STEP_` | 6 / 30 / 30 / 30 | Per client IP; over the limit returns 429 with a readable message |
 | `ANVESHAN_DATA_TTL_H` / `ANVESHAN_DATA_CAP_MB` | 6 / 600 | `/tmp` is RAM on Cloud Run: older uploads, drafts and sessions are deleted, then oldest-first to the cap |
 | `ANVESHAN_LIVE_CACHE` | `1` | An identical earlier live call is reused (same result, no cost) |
 
 Also set a **budget alert** on the billing account of the Gemini key's project (e.g. US$20) and, in AI Studio, check the key's quota tier.
+
+---
+
+## Bring your own key (BYOK)
+
+Visitors may send their own Gemini API key in `X-Gemini-Api-Key`. The key:
+- travels only in that header for one request;
+- is never stored, logged or committed;
+- makes calls in live mode and skips the shared daily budget;
+- the per-visitor rate limits still apply.
+
+Set `ANVESHAN_STEWARD_TOKEN` as a **Cloud Run secret** (not a plain environment variable). Never
+embed it in the Dockerfile or commit it to git.
 
 ---
 
