@@ -357,3 +357,214 @@ class RubricSynthesizer:
             ],
             target_criteria_ids=[c.criterion_id for c in rubric.criteria],
         )
+
+
+# ---------------------------------------------------------------------------
+# GeminiRubricSynthesizer  (v2 — requires GOOGLE_API_KEY)
+# ---------------------------------------------------------------------------
+
+class GeminiRubricSynthesizer:
+    """
+    LLM-driven rubric synthesizer.  v2 of RubricSynthesizer.
+
+    Uses Gemini to produce richer, more context-specific observable_indicator
+    text for each of the 5 CRIT-HYB-N criteria, informed by the full fold
+    sequence geometry.
+
+    Falls back to v1 heuristic criteria if the LLM response is malformed.
+
+    Parameters
+    ----------
+    model_id : str
+        Gemini model (default: gemini-3.8-flash).
+    api_key : str | None
+        GOOGLE_API_KEY — falls back to environment / .env.
+    prompt_path : Path | None
+        Override the default prompt file.
+    passing_score_fraction : float
+        Passed through to RubricDefinition (default 0.7).
+    """
+
+    DEFAULT_MODEL = "gemini-3.8-flash"
+    PROMPT_FILE = Path(__file__).parent / "prompts" / "rubric_synth_v1.txt"
+
+    def __init__(
+        self,
+        model_id: str | None = None,
+        api_key: str | None = None,
+        prompt_path: Path | None = None,
+        passing_score_fraction: float = 0.7,
+    ) -> None:
+        self.model_id = model_id or self.DEFAULT_MODEL
+        self._api_key = api_key
+        self._prompt_path = prompt_path or self.PROMPT_FILE
+        self.passing_score_fraction = passing_score_fraction
+        self._client: Any = None
+
+    # ------------------------------------------------------------------
+    # Public API
+    # ------------------------------------------------------------------
+
+    def synthesize(
+        self,
+        checkpoints: list[FoldCheckpoint],
+        rubric_id: str | None = None,
+        skill_id: str = "skill-origami-hybrid",
+        title: str = "Hybrid Origami Fold Sequence Rubric (LLM-enriched)",
+    ) -> RubricDefinition:
+        """
+        Synthesize a RubricDefinition using Gemini for richer criteria text.
+
+        Falls back to v1 heuristic synthesizer if LLM output is invalid.
+        """
+        import json as _json
+
+        rid = rubric_id or "rubric.origami-hybrid.llm.1"
+
+        # Build summary inputs for the prompt
+        fold_summary = self._fold_summary(checkpoints)
+        mv_summary = self._mv_summary(checkpoints)
+        final_desc = self._final_desc(checkpoints)
+        total_ops = sum(len(cp.operations) for cp in checkpoints)
+        final_layers = len(checkpoints[-1].raw_representation.get("layers", [])) if checkpoints else 0
+
+        prompt_template = self._prompt_path.read_text(encoding="utf-8")
+        prompt = prompt_template.format(
+            skill_id=skill_id,
+            fold_sequence_summary=fold_summary,
+            mountain_valley_summary=mv_summary,
+            final_state_description=final_desc,
+            total_operations=total_ops,
+            layer_count_at_final=final_layers,
+        )
+
+        client = self._ensure_client()
+        raw_response = self._call_gemini(client, prompt)
+
+        # Parse JSON response; fall back to v1 on any parse/validation error
+        try:
+            criteria_dicts = _json.loads(raw_response)
+            criteria = [
+                RubricCriterion(
+                    criterion_id=c["criterion_id"],
+                    name=c["name"],
+                    description=c["description"],
+                    observable_indicator=c["observable_indicator"],
+                    weight=float(c["weight"]),
+                    required=bool(c["required"]),
+                )
+                for c in criteria_dicts
+            ]
+            if len(criteria) != 5:
+                raise ValueError(f"Expected 5 criteria, got {len(criteria)}")
+        except Exception:
+            # Fall back to v1 heuristic
+            fallback = RubricSynthesizer(self.passing_score_fraction)
+            return fallback.synthesize(checkpoints, rubric_id=rid, skill_id=skill_id, title=title)
+
+        max_score = sum(c.weight for c in criteria)
+        passing_score = round(max_score * self.passing_score_fraction, 1)
+
+        return RubricDefinition(
+            rubric_id=rid,
+            skill_id=skill_id,
+            title=title,
+            description=(
+                "LLM-enriched rubric synthesized by GeminiRubricSynthesizer v2 "
+                "from FoldingAgent geometric reconstruction. "
+                "Criterion IDs: CRIT-HYB-1 through CRIT-HYB-5."
+            ),
+            criteria=criteria,
+            passing_score=passing_score,
+        )
+
+    # ------------------------------------------------------------------
+    # Private helpers
+    # ------------------------------------------------------------------
+
+    def _fold_summary(self, checkpoints: list[FoldCheckpoint]) -> str:
+        parts = []
+        for cp in checkpoints:
+            ops = [op.get("function", "?") for op in cp.operations if op.get("function")]
+            if ops:
+                parts.append(f"frame {cp.frame_index}: {', '.join(ops)}")
+        return "; ".join(parts) if parts else "no operations recorded"
+
+    def _mv_summary(self, checkpoints: list[FoldCheckpoint]) -> str:
+        lines = []
+        for cp in checkpoints:
+            edges = cp.raw_representation.get("edges", [])
+            m = [[e[0], e[1]] for e in edges if len(e) >= 3 and str(e[2]).upper() == "M"]
+            v = [[e[0], e[1]] for e in edges if len(e) >= 3 and str(e[2]).upper() == "V"]
+            if m or v:
+                lines.append(f"frame {cp.frame_index}: M={m}, V={v}")
+        return "; ".join(lines) if lines else "no mountain/valley edges detected"
+
+    def _final_desc(self, checkpoints: list[FoldCheckpoint]) -> str:
+        if not checkpoints:
+            return "no final state"
+        cp = checkpoints[-1]
+        raw = cp.raw_representation
+        return (
+            f"frame {cp.frame_index}, verdict={cp.critic_verdict}, "
+            f"faces={len(raw.get('faces', {}))}, "
+            f"layers={len(raw.get('layers', []))}, "
+            f"analysis: {(cp.critic_analysis or '')[:150]}"
+        )
+
+    def _ensure_client(self) -> Any:
+        if self._client is not None:
+            return self._client
+        key = self._api_key or self._load_env_key()
+        if not key:
+            raise RuntimeError(
+                "GOOGLE_API_KEY not set. Add it to research/origami_hybrid/.env."
+            )
+        from google import genai
+        from google.genai import types
+        self._client = genai.Client(
+            api_key=key,
+            http_options=types.HttpOptions(timeout=60_000),
+        )
+        return self._client
+
+    @staticmethod
+    def _load_env_key() -> str:
+        import os
+        try:
+            from dotenv import load_dotenv
+            load_dotenv(Path(__file__).parent / ".env", override=False)
+        except ImportError:
+            pass
+        return os.environ.get("GOOGLE_API_KEY", "")
+
+    def _call_gemini(self, client: Any, prompt: str) -> str:
+        """Call Gemini with fixed-interval retry on 429 and 5xx."""
+        import time
+        from google.genai import types
+        from google.genai.errors import ClientError, ServerError
+
+        max_retries = 3
+        retry_wait = 60.0
+
+        for attempt in range(max_retries + 1):
+            try:
+                response = client.models.generate_content(
+                    model=self.model_id,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        temperature=0.1,
+                        max_output_tokens=1024,
+                        response_mime_type="application/json",
+                    ),
+                )
+                return (response.text or "").strip()
+            except (ClientError, ServerError) as exc:
+                retryable = (
+                    (isinstance(exc, ClientError) and exc.code == 429) or
+                    isinstance(exc, ServerError)
+                )
+                if retryable and attempt < max_retries:
+                    time.sleep(retry_wait)
+                    continue
+                raise
