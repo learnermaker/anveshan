@@ -18,7 +18,7 @@ import { StepBuilding } from './StepBuilding';
 
 type WizardState =
   | { step: 'upload' }
-  | { step: 'perceiving'; since: number }
+  | { step: 'perceiving'; since: number; mime?: string }
   | { step: 'refused'; draft: DraftView }
   | { step: 'needs_input'; draft: DraftView }
   | { step: 'proposal'; draft: DraftView; edits: Partial<SkillModel> }
@@ -40,7 +40,7 @@ export function ComposerWizard({ onDone, onCancel }: Props) {
 
   const handleUpload = useCallback(async (payload: UploadPayload) => {
     setError(null);
-    setState({ step: 'perceiving', since: Date.now() });
+    setState({ step: 'perceiving', since: Date.now(), mime: payload.file.type });
     try {
       const draft = await api.analyzeSource(
         payload.file,
@@ -118,7 +118,7 @@ export function ComposerWizard({ onDone, onCancel }: Props) {
   // ---------- Render ----------
 
   if (state.step === 'upload') return <StepUpload onSubmit={handleUpload} onCancel={onCancel} error={error} />;
-  if (state.step === 'perceiving') return <StepPerceiving since={state.since} />;
+  if (state.step === 'perceiving') return <StepPerceiving since={state.since} mime={state.mime} />;
   if (state.step === 'refused') return <StepRefused draft={state.draft} onStartOver={reset} />;
   if (state.step === 'needs_input') return <StepNeedsInput draft={state.draft} onRefine={handleRefine} onStartOver={reset} error={error} />;
   if (state.step === 'proposal') return <StepProposal draft={state.draft} onCreate={handleCreate} onStartOver={reset} error={error} />;

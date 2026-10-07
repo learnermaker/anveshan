@@ -146,7 +146,7 @@ export function UniversalPracticeView({ view, session, onSessionChange, onComple
               <UniversalCapture view={view} allowedKinds={allowedKinds} busy={phase.kind !== 'idle'} onSubmit={submit} />
               <div className="mt-4">
                 {phase.kind === 'uploading' && <ProgressBar value={phase.progress} label="Uploading attempt" />}
-                {phase.kind === 'evaluating' && <Spinner label={`Evaluating… ${((Date.now() - phase.since) / 1000).toFixed(0)} s`} />}
+                {phase.kind === 'evaluating' && <Spinner label={`Evaluating… ${((Date.now() - phase.since) / 1000).toFixed(0)} s elapsed · videos usually take 20–70 s, images and audio 5–20 s`} />}
               </div>
             </Panel>
           )}
