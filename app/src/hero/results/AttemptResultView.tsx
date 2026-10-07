@@ -1,6 +1,6 @@
 /** Attempt results: progress curve (hero), first divergence, criteria, feedback, unscored drill. */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Dumbbell, MessageSquareText, RotateCcw } from 'lucide-react';
 import type { AttemptResult, CaseView } from '../../api/types';
 import type { LocalAttemptMedia } from '../session';
@@ -16,6 +16,8 @@ interface Props {
   media: LocalAttemptMedia;
 }
 
+const EVENTS_SHOWN = 6;
+
 export function AttemptResultView({ view, result, media }: Props) {
   const t = result.trajectory;
   const ev = result.evaluation;
@@ -23,6 +25,8 @@ export function AttemptResultView({ view, result, media }: Props) {
   const universal = isUniversalView(view);
   const metricIds = universal ? criterionMetricIds(view) : {};
   const label = result.attempt.attempt_type === 'baseline' ? 'Baseline' : `Retry #${result.attempt.attempt_number - 1}`;
+  const [allEvents, setAllEvents] = useState(false);
+  const shownEvents = allEvents ? t.events : t.events.slice(0, EVENTS_SHOWN);
 
   return (
     <div className="space-y-5">
@@ -47,13 +51,20 @@ export function AttemptResultView({ view, result, media }: Props) {
         />
         {t.events.length > 0 && (
           <ul className="mt-3 space-y-1 text-[11px]">
-            {t.events.map((e, i) => (
+            {shownEvents.map((e, i) => (
               <li key={i} className="flex flex-wrap gap-2 items-baseline">
                 <span className={`font-mono ${e.severity === 'material' ? 'text-divergence-crimson' : 'text-[#f39c12]'}`}>▼ {fmtPosition(e.position, e.position_kind)}</span>
                 <code className="font-mono text-on-surface-variant">{e.kind}</code>
                 <span className="text-on-surface">{e.detail}</span>
               </li>
             ))}
+            {t.events.length > EVENTS_SHOWN && (
+              <li>
+                <button type="button" className="text-[10px] font-mono uppercase tracking-wider text-caliper-cyan hover:underline" onClick={() => setAllEvents((v) => !v)}>
+                  {allEvents ? 'Show fewer events' : `Show all ${t.events.length} events`}
+                </button>
+              </li>
+            )}
           </ul>
         )}
         {result.warnings.length > 0 && (

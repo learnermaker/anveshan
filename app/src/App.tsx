@@ -144,7 +144,9 @@ export function App() {
   };
 
   const caseOptions: CaseOption[] = [
-    ...(heroCases ?? []).map((c) => ({ value: `hero:${c.case_id}`, label: c.title, group: c.hero ? 'Live hero cases' : c.composed ? 'Your composed skills' : 'Your uploads' })),
+    // Synthetic case packs from the API are listed once, below, as the replay showcase.
+    ...(heroCases ?? []).filter((c) => c.hero || c.composed || c.derived_from)
+      .map((c) => ({ value: `hero:${c.case_id}`, label: c.title, group: c.hero ? 'Live hero cases' : c.composed ? 'Your composed skills' : 'Your uploads' })),
     ...(selected.kind === 'hero' && !(heroCases ?? []).some((c) => c.case_id === selected.id) ? [{ value: keyStr(selected), label: selected.id, group: 'Live hero cases' }] : []),
     ...SHOWCASE_CASE_IDS.map((id) => ({ value: `showcase:${id}`, label: `${CAPABILITY_CASES[id]?.title ?? id} (synthetic)`, group: 'Synthetic replay showcase' })),
   ];
