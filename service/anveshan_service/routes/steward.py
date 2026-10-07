@@ -120,7 +120,7 @@ def steward_overview(settings: Settings = Depends(get_settings)) -> Any:
 
     # live_calls_today
     budget = DAILY_BUDGET.limit()
-    used = DAILY_BUDGET.used if DAILY_BUDGET._day == today else 0
+    used = DAILY_BUDGET.today_used()
 
     storage = _storage_bytes(settings)
     cap = int(settings.data_cap_mb * 1024 * 1024)
@@ -342,7 +342,7 @@ def steward_usage(settings: Settings = Depends(get_settings)) -> Any:
 
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     budget = DAILY_BUDGET.limit()
-    used = DAILY_BUDGET.used if DAILY_BUDGET._day == today else 0
+    used = DAILY_BUDGET.today_used()
     storage = _storage_bytes(settings)
     cap = int(settings.data_cap_mb * 1024 * 1024)
 

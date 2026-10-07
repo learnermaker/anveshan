@@ -349,3 +349,50 @@ def test_apply_expert_review_dry_run(tmp_path, monkeypatch):
 
     # The dry-run should NOT have called apply_review (no actual modifications)
     assert recorded_actions == []
+
+
+def test_apply_expert_review_non_dry_run(tmp_path, monkeypatch):
+    """Non-dry-run: apply_review IS called for each action in the review file."""
+    from types import SimpleNamespace
+    from unittest.mock import patch
+
+    recorded_actions = []
+
+    def fake_apply_review(case_dir, action):
+        recorded_actions.append(dict(action))
+        result = SimpleNamespace()
+        result.to_view = lambda: {"case_id": "kolam", "review_status": "revised", "package": {}}
+        return result
+
+    import importlib.util
+    tool_path = Path(__file__).parent.parent.parent / "tools" / "apply_expert_review.py"
+    spec = importlib.util.spec_from_file_location("apply_expert_review_live", tool_path)
+    assert spec is not None, f"Cannot find tool at {tool_path}"
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    review_file = tmp_path / "review.json"
+    review_file.write_text(json.dumps({
+        "reviewer": "Expert Name",
+        "actions": [
+            {"action": "revise_claim", "claim_id": "CLM-1", "new_statement": "new statement"},
+            {"action": "approve", "note": "looks good"},
+        ],
+    }), encoding="utf-8")
+
+    case_dir_path = tmp_path / "cases" / "kolam"
+    case_dir_path.mkdir(parents=True, exist_ok=True)
+
+    monkeypatch.setattr("sys.argv", ["apply_expert_review.py", "kolam", str(review_file),
+                                      "--cases-root", str(tmp_path / "cases")])
+
+    with patch("track_a.api.apply_review", side_effect=fake_apply_review):
+        try:
+            mod.main()
+        except SystemExit:
+            pass
+
+    # apply_review must have been called once for each action
+    assert len(recorded_actions) == 2
+    assert any(a.get("action") == "revise_claim" for a in recorded_actions)
+    assert any(a.get("action") == "approve" for a in recorded_actions)

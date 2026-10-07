@@ -43,6 +43,14 @@ def list_cases(settings: Settings = Depends(get_settings)) -> Any:
         for c in cases:
             cid = str(c.get("case_id", ""))
             cdir_path = (settings.data_dir / "cases" / cid) if "~" in cid else (settings.cases_root / cid)
+            # Drop unlisted curated cases from non-steward views (same rule as isolate_visitors=True)
+            if "~" not in cid:
+                from anveshan_service.library import kind_of, load
+                k = kind_of(settings, cid)
+                if k == "curated" and not current_steward.get():
+                    rec = load(settings, cid, cdir_path)
+                    if rec.status == "unlisted":
+                        continue
             rv = c.get("review_status", "pending")
             c = dict(c)
             c["access"] = access_module.access_view(settings, cid, cdir_path, rv)

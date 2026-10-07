@@ -1,6 +1,6 @@
-# Interfaces for Parallel Build — Track A API, Track B API, HTTP API
+﻿# Interfaces for Parallel Build â€” Track A API, Track B API, HTTP API
 
-**Date:** 2026-10-06 · **Status:** DECIDED interface freeze for the hackathon build. Change it only by editing this file in the same commit as the code.
+**Date:** 2026-10-06 Â· **Status:** DECIDED interface freeze for the hackathon build. Change it only by editing this file in the same commit as the code.
 
 Shared foundation (already on the branch):
 
@@ -30,13 +30,13 @@ def build(source_path: Path, source: SourceRecord, ctx: RunContext, *, case_id: 
 def evaluate(goal: GoalModel, attempt: AttemptMedia, ctx: RunContext) -> TrajectoryResult
 ```
 
-`m ∈ {kolam, origami, tabla}`; modality ids are `kolam_image | origami_video | tabla_audio`.
+`m âˆˆ {kolam, origami, tabla}`; modality ids are `kolam_image | origami_video | tabla_audio`.
 
 Accepted `AttemptMedia.kind`:
 
 | Modality | kinds |
 |---|---|
-| kolam | `trace` (canvas JSON, §4) or `image` (photo/raster) |
+| kolam | `trace` (canvas JSON, Â§4) or `image` (photo/raster) |
 | origami | `video` |
 | tabla | `audio` (an optional `extra["video"]` is ignored for scoring) |
 
@@ -118,29 +118,29 @@ Optional `?mode=live|recorded`; the default is `ANVESHAN_MODE`.
 
 | Method | Path | Body | Returns |
 |---|---|---|---|
-| GET | `/api/health` | — | `{ok, mode, models: {text_image, video_frames, audio_enabled}}` |
-| GET | `/api/cases` | — | `[ {case_id, title, modality, hero, runtime_label, review_status, derived_from?} ]` |
-| GET | `/api/cases/{case_id}` | — | `CaseHandoff.to_view()` |
+| GET | `/api/health` | â€” | `{ok, mode, models: {text_image, video_frames, audio_enabled}}` |
+| GET | `/api/cases` | â€” | `[ {case_id, title, modality, hero, runtime_label, review_status, derived_from?} ]` |
+| GET | `/api/cases/{case_id}` | â€” | `CaseHandoff.to_view()` |
 | POST | `/api/cases/{case_id}/sources` | multipart `file` | `{case_id: "<base>~<sha12>"}` (new derived case; then build) |
 | POST | `/api/cases/{case_id}/build` | `{source_id?}` | `CaseHandoff.to_view()` |
 | POST | `/api/cases/{case_id}/query` | `{question}` | answer dict |
 | POST | `/api/cases/{case_id}/review` | review action | `CaseHandoff.to_view()` |
 | POST | `/api/sessions` | `{case_id, learner_name}` | `{session_id, state}` |
-| GET | `/api/sessions/{sid}` | — | session JSON (attempt results so far) |
+| GET | `/api/sessions/{sid}` | â€” | session JSON (attempt results so far) |
 | POST | `/api/sessions/{sid}/attempts` | multipart `kind`, `file`, optional `raster`, optional `video` | `AttemptResult.to_json()` |
-| POST | `/api/sessions/{sid}/complete` | — | `SessionResult.to_json()` |
-| GET | `/api/media/{case_id}/{source_id}` | — | media bytes (committed/cached source; uploads under the derived case) |
-| GET | `/api/media/{case_id}/goal/{asset}` | — | goal assets (e.g. origami keyframe JPEGs) |
-| GET | `/` | — | built React app (`app/dist`) |
+| POST | `/api/sessions/{sid}/complete` | â€” | `SessionResult.to_json()` |
+| GET | `/api/media/{case_id}/{source_id}` | â€” | media bytes (committed/cached source; uploads under the derived case) |
+| GET | `/api/media/{case_id}/goal/{asset}` | â€” | goal assets (e.g. origami keyframe JPEGs) |
+| GET | `/` | â€” | built React app (`app/dist`) |
 
 ## 6. Compose endpoints (`/api/compose`, WP1)
 
-These routes handle the universal pipeline: upload → analyze (Layer 1 perception + intake) → draft → confirm → case.
+These routes handle the universal pipeline: upload â†’ analyze (Layer 1 perception + intake) â†’ draft â†’ confirm â†’ case.
 
 | Method | Path | Body | Returns |
 |---|---|---|---|
-| POST | `/api/compose/analyze` | multipart `file`, form `title?`, `description?`, `rights_confirmed` | `Draft.to_view()` — HTTP 200 even for refused drafts (check `refused` field) |
-| GET | `/api/compose/{draft_id}` | — | `Draft.to_view()` or 404 |
+| POST | `/api/compose/analyze` | multipart `file`, form `title?`, `description?`, `rights_confirmed` | `Draft.to_view()` â€” HTTP 200 even for refused drafts (check `refused` field) |
+| GET | `/api/compose/{draft_id}` | â€” | `Draft.to_view()` or 404 |
 | POST | `/api/compose/{draft_id}/refine` | `{title, description}` | `Draft.to_view()` (re-proposes with new hints, no new perception) |
 | POST | `/api/compose/{draft_id}/create` | `{title?, skill_summary?, domain?, transmission_mode?, learner_input_kinds?, goal_hint?, skill_model?}` | `CaseHandoff.to_view()` |
 
@@ -200,7 +200,7 @@ request when `ANVESHAN_STEWARD_OPEN=true` (local dev only).
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `ANVESHAN_STEWARD_TOKEN` | — | Steward access code. Falls back to `ANVESHAN_REVIEW_TOKEN`. Set as Cloud Run secret. |
+| `ANVESHAN_STEWARD_TOKEN` | â€” | Steward access code. Falls back to `ANVESHAN_REVIEW_TOKEN`. Set as Cloud Run secret. |
 | `ANVESHAN_STEWARD_OPEN` | `true` locally, `false` on Cloud Run | Skip token check (dev only) |
 | `ANVESHAN_INSIGHTS_MAX_EVENTS` | `5000` | Per-skill event log cap |
 | `ANVESHAN_RATE_AUTH_PER_HOUR` | `10` (Cloud Run) | Rate limit for `POST /api/steward/check` |
@@ -218,56 +218,4 @@ request when `ANVESHAN_STEWARD_OPEN=true` (local dev only).
 The visitor's Gemini key travels only in the `X-Gemini-Api-Key` header. It is never stored,
 logged, or echoed in responses. Calls made with a visitor key skip the shared daily budget; the
 per-visitor rate limits still apply. Set `ANVESHAN_STEWARD_TOKEN` as a Cloud Run secret; never
-put it in the Dockerfile.
-
-
-## 7. Product roles (K9)
-
-### Endpoints
-
-All response types are defined in pp/src/api/types-product.ts.
-
-| Method | Path | Auth | Response type |
-|---|---|---|---|
-| GET | /api/cases (updated) | public | adds ccess: CaseAccess to every summary |
-| GET | /api/cases/{id} (updated) | public | adds ccess: CaseAccess to the view |
-| GET | /api/library/{case_id} | owner or steward (others get 404) | LibraryRecord |
-| POST | /api/library/{case_id}/submit | owner only | LibraryRecord |
-| POST | /api/library/{case_id}/withdraw | owner only | LibraryRecord |
-| GET | /api/insights/{case_id} | owner or steward | InsightsView |
-| POST | /api/steward/check | steward | {ok: true} |
-| GET | /api/steward/overview | steward | StewardOverview |
-| GET | /api/steward/queue | steward | StewardQueueItem[] |
-| GET | /api/steward/library | steward | StewardLibraryRow[] |
-| POST | /api/steward/library/{case_id}/decide | steward | LibraryRecord |
-| GET | /api/steward/consent | steward | ConsentRow[] |
-| GET | /api/steward/consent/export | steward | JSON attachment |
-| GET | /api/steward/usage | steward | UsageView |
-| GET | /api/steward/review-export/{case_id} | steward | JSON attachment |
-
-A **steward request** sends X-Steward-Token: <token> matching ANVESHAN_STEWARD_TOKEN, or is any
-request when ANVESHAN_STEWARD_OPEN=true (local dev only).
-
-### Settings and environment variables
-
-| Variable | Default | Meaning |
-|---|---|---|
-| ANVESHAN_STEWARD_TOKEN | — | Steward access code. Falls back to ANVESHAN_REVIEW_TOKEN. Set as Cloud Run secret. |
-| ANVESHAN_STEWARD_OPEN | 	rue locally, alse on Cloud Run | Skip token check (dev only) |
-| ANVESHAN_INSIGHTS_MAX_EVENTS | 5000 | Per-skill event log cap |
-| ANVESHAN_RATE_AUTH_PER_HOUR | 10 (Cloud Run) | Rate limit for POST /api/steward/check |
-
-### File locations
-
-| Path | Contents |
-|---|---|
-| <data_dir>/library/<case_id>.json | Library overlay for curated cases (absence = published) |
-| <case_dir>/.library.json | Library record for community/derived cases |
-| <data_dir>/insights/<case_id>.jsonl | Per-skill attempt and completion event log (hashed session ids, no names) |
-
-### Bring your own key note
-
-The visitor's Gemini key travels only in the X-Gemini-Api-Key header. It is never stored,
-logged, or echoed in responses. Calls made with a visitor key skip the shared daily budget; the
-per-visitor rate limits still apply. Set ANVESHAN_STEWARD_TOKEN as a Cloud Run secret; never
 put it in the Dockerfile.

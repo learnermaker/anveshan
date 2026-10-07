@@ -77,7 +77,6 @@ Set these as plain (non-secret) environment variables in the Cloud Run console:
 | `ANVESHAN_VIDEO_FRAMES_MODEL` | `gemini-3.5-flash-lite` | Origami goal build |
 | `ANVESHAN_DAILY_CALL_BUDGET` | `2000` | Image default. Live model calls per UTC day; cached and recorded calls are free |
 | `ANVESHAN_REVIEW_TOKEN` | a long random string | Optional. Only the invited expert reviewer gets it (sent as `X-Review-Token`) |
-
 | `ANVESHAN_STEWARD_TOKEN` | a long random string | **Secret** (Cloud Run secret, not plain env var). Steward console access code. |
 | `ANVESHAN_INSIGHTS_MAX_EVENTS` | `5000` | Per-skill event log cap (increase for high-traffic demos) |
 

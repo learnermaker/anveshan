@@ -201,6 +201,9 @@ def submit(
         raise ServiceError(400, "INVALID_INPUT", f"Licence must be one of {list(LICENCES)}.",
                            {"blockers": [f"Licence must be one of {list(LICENCES)}."]})
 
+    if not body.get("rights_confirmed", False):
+        extra_bl.append("Confirm that you have the right to publish this skill.")
+
     if body.get("people_visible") and not body.get("people_consented"):
         extra_bl.append("Confirm that people shown have given consent.")
 
@@ -235,9 +238,9 @@ def submit(
 def withdraw(settings: Settings, case_id: str, case_dir: Path) -> LibraryRecord:
     """Creator withdraws a skill back to private."""
     rec = load(settings, case_id, case_dir)
-    # Any status can be withdrawn to private per spec
-    if rec.status == "private":
-        raise ServiceError(409, "INVALID_INPUT", "This skill is already private.")
+    WITHDRAWABLE = {"submitted", "returned", "published", "rejected"}
+    if rec.status not in WITHDRAWABLE:
+        raise ServiceError(409, "INVALID_INPUT", f"Cannot withdraw a skill that is {rec.status}.")
     now = datetime.now(timezone.utc).isoformat()
     new_history = list(rec.history) + [HistoryEntry(at=now, actor="creator", action="withdrawn")]
     rec = LibraryRecord.model_validate({

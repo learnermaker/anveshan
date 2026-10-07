@@ -295,6 +295,12 @@ class DailyBudget:
                 )
             self.used += 1
 
+    def today_used(self) -> int:
+        """Return the number of live calls made today (UTC), 0 if no calls yet today."""
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        with self._lock:
+            return self.used if self._day == today else 0
+
 
 DAILY_BUDGET = DailyBudget()
 
