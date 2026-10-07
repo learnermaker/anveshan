@@ -1,0 +1,98 @@
+{
+  "criteria": {
+    "CRIT-U-CHK-PR-COV": {
+      "bands": [
+        {
+          "max": null,
+          "min": 0.9,
+          "status": "satisfied"
+        },
+        {
+          "max": null,
+          "min": 0.6,
+          "status": "partially_satisfied"
+        }
+      ],
+      "direction": "higher_is_better",
+      "metric": "u.step_coverage",
+      "otherwise": "not_satisfied",
+      "process": true
+    },
+    "CRIT-U-CHK-PR-FIN": {
+      "bands": [
+        {
+          "max": null,
+          "min": 1.0,
+          "status": "satisfied"
+        },
+        {
+          "max": null,
+          "min": 0.5,
+          "status": "partially_satisfied"
+        }
+      ],
+      "direction": "higher_is_better",
+      "metric": "u.final_state_match",
+      "otherwise": "not_satisfied",
+      "process": false
+    },
+    "CRIT-U-CHK-PR-OFF": {
+      "bands": [
+        {
+          "max": 0.0,
+          "min": null,
+          "status": "satisfied"
+        },
+        {
+          "max": 1.0,
+          "min": null,
+          "status": "partially_satisfied"
+        }
+      ],
+      "direction": "lower_is_better",
+      "metric": "u.off_path",
+      "otherwise": "not_satisfied",
+      "process": true
+    },
+    "CRIT-U-CHK-PR-ORD": {
+      "bands": [
+        {
+          "max": 0.0,
+          "min": null,
+          "status": "satisfied"
+        },
+        {
+          "max": 1.0,
+          "min": null,
+          "status": "partially_satisfied"
+        }
+      ],
+      "direction": "lower_is_better",
+      "metric": "u.step_order",
+      "otherwise": "not_satisfied",
+      "process": true
+    },
+    "CRIT-U-CHK-PR-Q01": {
+      "bands": [
+        {
+          "max": null,
+          "min": 1.0,
+          "status": "satisfied"
+        },
+        {
+          "max": null,
+          "min": 0.5,
+          "status": "partially_satisfied"
+        }
+      ],
+      "direction": "higher_is_better",
+      "metric": "u.step_quality.step-09",
+      "otherwise": "not_satisfied",
+      "process": true
+    }
+  },
+  "modality": "universal",
+  "rubric_id": "rubric.origami-crane.5",
+  "score_policy": "score_policy_v1",
+  "version": 5
+}

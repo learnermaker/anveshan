@@ -1,0 +1,3 @@
+{
+  "text": "{\n  \"items\": [\n    {\n      \"criterion_id\": \"CRIT-U-CHK-PR-COV\",\n      \"coaching\": \"Practice each folding step one by one until you can do them all in order. Why it matters: All folding steps from the flat sheet to the finished crane are performed. (CLM-04)\"\n    },\n    {\n      \"criterion_id\": \"CRIT-U-CHK-PR-Q01\",\n      \"coaching\": \"Pause and check your intermediate folds against the guide to keep your shapes accurate. Why it matters: Each intermediate shape, from the rectangular fold to the diamond base, is formed accurately. (CLM-12)\"\n    }\n  ]\n}"
+}

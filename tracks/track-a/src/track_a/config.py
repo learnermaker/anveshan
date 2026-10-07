@@ -27,6 +27,14 @@ HERO_CASES: Dict[str, str] = {
 # Showcase cases: SYNTHETIC replay bundles only (no goal model, no builder).
 SHOWCASE_CASES: Tuple[str, ...] = ("micrometer", "bicycle-repair", "handloom-weaving", "square-knot")
 
+# Featured composed cases: built by the universal pipeline from licensed media; hero=True.
+# Listed after hero cases and before derived uploads.
+FEATURED_COMPOSED: Tuple[str, ...] = ("origami-crane",)
+
+# Experimental cases: hero-registered but hidden from the library list.
+# Direct URL access (/api/cases/<id>) still works.
+EXPERIMENTAL_CASES: Tuple[str, ...] = ("origami",)
+
 # Goal-conditioned modalities (final state only; no source-established process).
 GOAL_CONDITIONED_MODALITIES = frozenset({"kolam_image"})
 

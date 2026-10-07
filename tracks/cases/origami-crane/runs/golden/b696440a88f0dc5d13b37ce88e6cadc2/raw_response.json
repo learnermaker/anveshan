@@ -1,0 +1,3 @@
+{
+  "text": "{\n  \"results\": [\n    {\n      \"check_id\": \"CHK-PR-FIN\",\n      \"status\": \"not_met\",\n      \"finding\": \"The video ends while the paper is still being folded/flattened on the table, failing to reach the final origami crane shape shown in the expert reference.\",\n      \"region\": [\n        25,\n        22,\n        53,\n        59\n      ]\n    }\n  ]\n}"
+}

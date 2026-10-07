@@ -1,0 +1,21 @@
+{
+  "constraints": [
+    {
+      "constraint_type": "upload_spec",
+      "description": "Upload your attempt as video, image.",
+      "value": "video,image"
+    }
+  ],
+  "instructions": "Follow these steps:\n1. flat sheet of paper [CLM-04]\n2. folded rectangular paper [CLM-05]\n3. partially folded fan-like pattern [CLM-06]\n4. diamond base shape [CLM-07]\n5. flattened complex folded base [CLM-08]\n6. elongated diamond structure with pockets [CLM-09]\n7. narrow flattened strip shape [CLM-10]\n8. forming head and tail sections [CLM-11]\n9. completed origami crane [CLM-12]\n10. Upload your attempt as: video, image.",
+  "package_id": "kp.origami-crane.5",
+  "rubric_id": "rubric.origami-crane.5",
+  "target_criteria_ids": [
+    "CRIT-U-CHK-PR-COV",
+    "CRIT-U-CHK-PR-ORD",
+    "CRIT-U-CHK-PR-OFF",
+    "CRIT-U-CHK-PR-FIN",
+    "CRIT-U-CHK-PR-Q01"
+  ],
+  "task_id": "task.origami-crane.5",
+  "title": "Practice: Fold a Paper Crane"
+}
