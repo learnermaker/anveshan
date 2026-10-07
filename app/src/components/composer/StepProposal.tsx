@@ -16,6 +16,7 @@ import { Badge, ErrorNote, Panel } from '../../hero/ui';
 
 interface Props {
   draft: DraftView;
+  sourceUrl?: string | null;
   onCreate: (draft: DraftView, skillModel: SkillModel) => void;
   onStartOver: () => void;
   error: unknown;
@@ -106,7 +107,7 @@ function ColObserved({ draft }: { draft: DraftView }) {
 
 // ---------- column 2: inferred (perceptual) ----------
 
-function ColInferred({ draft }: { draft: DraftView }) {
+function ColInferred({ draft, sourceUrl }: { draft: DraftView; sourceUrl?: string | null }) {
   const probe = draft.probe;
   const proposal = draft.proposal;
   const obs = draft.perception.observations;
@@ -118,9 +119,11 @@ function ColInferred({ draft }: { draft: DraftView }) {
       <div className="space-y-4">
         <div className="text-[9px] font-mono uppercase tracking-wider text-cadmium-amber font-bold mb-2">What the AI perceived <InferredBadge /></div>
         <div className="relative border border-outline rounded-lg overflow-hidden bg-surface-dim" style={{ minHeight: '140px' }}>
-          <div className="p-4 text-[11px] font-mono text-on-surface-variant text-center">
-            [Source image — not available in mock]
-          </div>
+          {sourceUrl ? (
+            <img src={sourceUrl} alt="Uploaded source" className="block w-full h-auto" />
+          ) : (
+            <div className="p-4 text-[11px] font-mono text-on-surface-variant text-center">[Source image preview unavailable]</div>
+          )}
           {/* Overlay property region boxes */}
           {props.filter((p) => p.region).map((p) => (
             <div key={p.prop_id} className="absolute border-2 border-cadmium-amber/70 rounded" style={{ left: `${p.region![0]}%`, top: `${p.region![1]}%`, width: `${p.region![2]}%`, height: `${p.region![3]}%` }} title={p.statement} />
@@ -416,7 +419,7 @@ function SkillModelEditor({ proposal: _proposal, model, onChange, validationErro
 
 // ---------- main component ----------
 
-export function StepProposal({ draft, onCreate, onStartOver, error }: Props) {
+export function StepProposal({ draft, sourceUrl, onCreate, onStartOver, error }: Props) {
   const proposal = draft.proposal!;
   const [model, setModel] = useState<SkillModel>({ ...proposal.skill_model });
   const [validErr, setValidErr] = useState<string | null>(null);
@@ -464,7 +467,7 @@ export function StepProposal({ draft, onCreate, onStartOver, error }: Props) {
           <ColObserved draft={draft} />
         </Panel>
         <Panel kicker="Inferred (AI-perceived)" className="min-w-0">
-          <ColInferred draft={draft} />
+          <ColInferred draft={draft} sourceUrl={sourceUrl} />
         </Panel>
         <Panel kicker="How we'll teach and check it" className="min-w-0">
           <SkillModelEditor proposal={proposal} model={model} onChange={setModel} validationError={validErr} />

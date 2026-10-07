@@ -204,7 +204,7 @@ export function StepUpload({ onSubmit, onCancel, error }: Props) {
           Cancel
         </button>
       </div>
-      <p className="text-[10px] text-on-surface-variant">Analysis usually takes 10–40 s. The AI will perceive the skill structure; all inferences will be labelled INFERRED and require your review.</p>
+      <p className="text-[10px] text-on-surface-variant">Analysis usually takes 10–30 s for images and audio, and up to about 90 s for videos. The AI will perceive the skill structure; all inferences will be labelled INFERRED and require your review.</p>
     </div>
   );
 }

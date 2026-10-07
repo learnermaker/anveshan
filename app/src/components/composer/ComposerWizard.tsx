@@ -35,12 +35,18 @@ interface Props {
 export function ComposerWizard({ onDone, onCancel }: Props) {
   const [state, setState] = useState<WizardState>({ step: 'upload' });
   const [error, setError] = useState<unknown>(null);
+  // Local preview of the uploaded source image (never sent anywhere; revoked on start over).
+  const [sourceUrl, setSourceUrl] = useState<string | null>(null);
 
   // ---------- Step 1: Upload → analyze ----------
 
   const handleUpload = useCallback(async (payload: UploadPayload) => {
     setError(null);
     setState({ step: 'perceiving', since: Date.now(), mime: payload.file.type });
+    setSourceUrl((old) => {
+      if (old) URL.revokeObjectURL(old);
+      return payload.file.type.startsWith('image/') ? URL.createObjectURL(payload.file) : null;
+    });
     try {
       const draft = await api.analyzeSource(
         payload.file,
@@ -113,6 +119,10 @@ export function ComposerWizard({ onDone, onCancel }: Props) {
   const reset = useCallback(() => {
     setError(null);
     setState({ step: 'upload' });
+    setSourceUrl((old) => {
+      if (old) URL.revokeObjectURL(old);
+      return null;
+    });
   }, []);
 
   // ---------- Render ----------
@@ -121,7 +131,7 @@ export function ComposerWizard({ onDone, onCancel }: Props) {
   if (state.step === 'perceiving') return <StepPerceiving since={state.since} mime={state.mime} />;
   if (state.step === 'refused') return <StepRefused draft={state.draft} onStartOver={reset} />;
   if (state.step === 'needs_input') return <StepNeedsInput draft={state.draft} onRefine={handleRefine} onStartOver={reset} error={error} />;
-  if (state.step === 'proposal') return <StepProposal draft={state.draft} onCreate={handleCreate} onStartOver={reset} error={error} />;
+  if (state.step === 'proposal') return <StepProposal draft={state.draft} sourceUrl={sourceUrl} onCreate={handleCreate} onStartOver={reset} error={error} />;
   if (state.step === 'building') return <StepBuilding progress={state.progress} />;
   if (state.step === 'done') return (
     <div className="flex flex-col items-center gap-4 py-12 text-center animate-fade-in">

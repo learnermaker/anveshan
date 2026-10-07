@@ -208,7 +208,7 @@ export function UniversalSourceView({ view, onViewChange, onReload, onEnterPract
         </div>
       </div>
 
-      {[...(view.warnings ?? []), ...(view.goal.warnings ?? [])].map((w, i) => (
+      {[...new Set([...(view.warnings ?? []), ...(view.goal.warnings ?? [])])].map((w, i) => (
         <p key={i} className="text-[11px] font-mono text-cadmium-amber">⚠ {w}</p>
       ))}
 

@@ -54,9 +54,9 @@ function HeroSourceViewInner({ view, onViewChange, onReload, onEnterPractice, on
         </div>
       </div>
 
-      {[...(view.warnings ?? []), ...(view.goal.warnings ?? [])].length > 0 && (
+      {[...new Set([...(view.warnings ?? []), ...(view.goal.warnings ?? [])])].length > 0 && (
         <ul className="text-[11px] font-mono text-cadmium-amber space-y-0.5">
-          {[...(view.warnings ?? []), ...(view.goal.warnings ?? [])].map((w, i) => (
+          {[...new Set([...(view.warnings ?? []), ...(view.goal.warnings ?? [])])].map((w, i) => (
             <li key={i}>⚠ {w}</li>
           ))}
         </ul>
