@@ -24,6 +24,7 @@ import type { StepState } from './components/Header';
 import { MySkillsView } from './components/creator/MySkillsView';
 import { CreatorPanel } from './components/creator/CreatorPanel';
 import { StewardConsole } from './components/steward/StewardConsole';
+import { EvidencePage } from './components/EvidencePage';
 
 import { CAPABILITY_CASES, SHOWCASE_CASE_IDS, getCapabilityCase } from './data/cases/registry';
 import { api } from './api/client';
@@ -38,7 +39,7 @@ function readUrl(): { view: AppView; key: CaseKey } {
   if (typeof window === 'undefined') return { view: 'discovery', key: DEFAULT_KEY };
   const p = new URLSearchParams(window.location.search);
   const v = p.get('view') as AppView;
-  const view: AppView = v && ['discovery', 'source', 'practice', 'transmission', 'composer', 'mine', 'steward'].includes(v) ? v : 'discovery';
+  const view: AppView = v && ['discovery', 'source', 'practice', 'transmission', 'composer', 'mine', 'steward', 'evidence'].includes(v) ? v : 'discovery';
   const c = p.get('case');
   const key: CaseKey = !c ? DEFAULT_KEY : SHOWCASE_CASE_IDS.includes(c) ? { kind: 'showcase', id: c } : { kind: 'hero', id: c };
   return { view, key };
@@ -66,6 +67,11 @@ export function App() {
     const open = () => setKeyOpen(true);
     window.addEventListener('anveshan:open-key-dialog', open);
     return () => window.removeEventListener('anveshan:open-key-dialog', open);
+  }, []);
+  useEffect(() => {
+    const goEvidence = () => setCurrentView('evidence');
+    window.addEventListener('anveshan:go-evidence', goEvidence);
+    return () => window.removeEventListener('anveshan:go-evidence', goEvidence);
   }, []);
 
   // Steward token (for nav visibility)
@@ -366,6 +372,9 @@ export function App() {
             onLibraryChanged={loadCases}
           />
         )}
+        {currentView === 'evidence' && (
+          <EvidencePage onBack={() => setCurrentView('discovery')} />
+        )}
       </main>
 
       <footer className="border-t border-outline bg-surface-dim px-4 sm:px-6 py-3 text-[11px] font-mono text-on-surface-variant flex flex-wrap items-center justify-between gap-3">
@@ -392,6 +401,12 @@ export function App() {
               Steward sign-in
             </button>
           )}
+          <button
+            onClick={() => setCurrentView('evidence')}
+            className="hover:text-caliper-cyan transition-colors"
+          >
+            How we check results
+          </button>
         </div>
       </footer>
 

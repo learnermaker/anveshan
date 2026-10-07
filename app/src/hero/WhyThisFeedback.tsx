@@ -81,6 +81,17 @@ export function WhyThisFeedback({ view, claimIds, measured, aiWorded, onShowSour
             <p className="text-on-surface-variant text-xs">The advice was worded by AI from these findings.</p>
           </div>
         )}
+
+        {/* Link to evidence page */}
+        <div className="border-t border-outline/40 pt-2">
+          <button
+            type="button"
+            className="text-[11px] font-mono text-caliper-cyan hover:underline"
+            onClick={() => window.dispatchEvent(new CustomEvent('anveshan:go-evidence'))}
+          >
+            How we check results →
+          </button>
+        </div>
       </div>
     </details>
   );

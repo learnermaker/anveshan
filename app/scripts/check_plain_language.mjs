@@ -1,4 +1,4 @@
-/**
+﻿/**
  * check_plain_language.mjs
  *
  * Plain-language scan: walk the mock app and report any banned learner terms visible
@@ -338,6 +338,12 @@ async function runWalk(matchers) {
     await page.waitForNetworkIdle({ timeout: STEP_TIMEOUT }).catch(() => {});
     allFindings.push(...await scan(page, '8-my-skills', matchers));
     await shot(page, '8-my-skills');
+    // -- Step 9: How we check results (evidence page) ---------------------
+    console.log('  Step 9: How we check results (evidence page)');
+    await page.goto(${BASE_URL}?view=evidence, { waitUntil: 'networkidle0', timeout: 30_000 });
+    await page.waitForNetworkIdle({ timeout: STEP_TIMEOUT }).catch(() => {});
+    allFindings.push(...await scan(page, '9-evidence', matchers));
+    await shot(page, '9-evidence');
 
     // ── Debug sanity check ────────────────────────────────────────────────────
     console.log('  Debug sanity check: ?debug=1&view=source&case=kolam');
@@ -491,6 +497,49 @@ async function main() {
   process.exit(0);
 }
 
+// ---------------------------------------------------------------------------
+// Mobile check (--mobile): asserts no horizontal overflow at 375 px viewport
+// ---------------------------------------------------------------------------
+const MOBILE_VIEWS = [
+  { url: '',                  label: 'library' },
+  { url: '?view=source&case=kolam', label: 'learn' },
+  { url: '?view=mine',        label: 'my-skills' },
+  { url: '?view=evidence',    label: 'evidence' },
+];
+async function runMobileCheck() {
+  const browser = await puppeteer.launch({
+    executablePath: CHROME_PATH,
+    headless: 'new',
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    defaultViewport: { width: 375, height: 812, isMobile: true, deviceScaleFactor: 2 },
+  });
+  const failures = [];
+  try {
+    const page = await browser.newPage();
+    page.setDefaultTimeout(STEP_TIMEOUT);
+    for (const { url, label } of MOBILE_VIEWS) {
+      await page.goto(`${BASE_URL}/${url}`, { waitUntil: 'networkidle0', timeout: 30_000 });
+      await page.waitForNetworkIdle({ timeout: STEP_TIMEOUT }).catch(() => {});
+      const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+      if (scrollWidth > 375) {
+        failures.push({ label, scrollWidth });
+        console.warn(`  FAIL 375px: ${label} — scrollWidth ${scrollWidth}px`);
+      } else {
+        console.log(`  OK  375px: ${label} — scrollWidth ${scrollWidth}px`);
+      }
+      fs.mkdirSync(SCREENSHOT_DIR, { recursive: true });
+      await page.screenshot({ path: path.join(SCREENSHOT_DIR, `mobile-${label}.png`), fullPage: true });
+    }
+  } finally {
+    await browser.close();
+  }
+  if (failures.length > 0) {
+    console.error(`\nMobile check FAILED: ${failures.length} view(s) overflow at 375 px`);
+    process.exit(1);
+  }
+  console.log(`\nMobile check PASSED: all ${MOBILE_VIEWS.length} views fit in 375 px`);
+  process.exit(0);
+}
 main().catch((err) => {
   console.error('Fatal error:', err);
   process.exit(1);

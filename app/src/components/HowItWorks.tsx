@@ -121,6 +121,18 @@ export function GuideModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
               ))}
             </dl>
           </div>
+          <div className="border-t border-outline pt-4">
+            <button
+              type="button"
+              className="text-sm text-caliper-cyan hover:underline"
+              onClick={() => {
+                onClose();
+                window.dispatchEvent(new CustomEvent('anveshan:go-evidence'));
+              }}
+            >
+              How we check results →
+            </button>
+          </div>
         </div>
       </div>
     </div>
