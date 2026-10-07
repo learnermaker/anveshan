@@ -13,7 +13,7 @@
       "sample_id": "tabla-rhythm",
       "label": "A short tabla rhythm (audio)",
       "description": "A synthetic tabla rhythm matching the goal pattern.",
-      "file": "tabla_rhythm.wav",
+      "canonical_path": "tracks/cases/tabla/samples/good.wav",
       "mime_type": "audio/wav",
       "credit": "Synthesized for the demo",
       "licence": "CC0-1.0"

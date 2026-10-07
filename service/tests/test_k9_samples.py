@@ -339,7 +339,13 @@ def test_source_files_exist():
     data = json.loads(sources_json.read_text(encoding="utf-8"))
     sources_dir = sources_json.parent
     for entry in data.get("sources", []):
+        # Support canonical_path (repo-root-relative pointer, single-copy rule)
+        canonical = entry.get("canonical_path", "")
+        if canonical:
+            assert (REPO_ROOT / canonical).is_file(), f"canonical_path missing: {canonical}"
+            continue
         fname = entry.get("file", "")
+        assert fname, f"source entry missing both 'file' and 'canonical_path': {entry.get('sample_id')}"
         assert (sources_dir / fname).is_file(), f"source file missing: {fname}"
 
 
