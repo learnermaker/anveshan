@@ -1,0 +1,2 @@
+# Allow committed WAV sample files in this directory (K9-P4)
+!*.wav
