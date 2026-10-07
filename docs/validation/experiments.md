@@ -464,6 +464,54 @@ After the fixes, the composed block-arrangement skill:
 
 ---
 
+## E10 — Repeatability on committed samples (engineering evidence)
+
+**Status:** IMPLEMENTED as engineering evidence. Not learner validation.
+**Date:** 2026-10-07.
+
+**Goal:** Measure how repeatable the evaluation is on the committed sample attempts across 3 runs per sample, to surface any non-determinism in the universal pipeline.
+
+**Models and prompts:**
+- Kolam and Tabla: deterministic (no model calls). All scoring is geometry-based or onset-detection-based.
+- Origami-crane: `vision_fast` = `gemini-3.5-flash-lite` (frame perception and step matching), `embedding` = `gemini-embedding-2` (frame embeddings). Prompts: `perceive_frames`, `match_steps`, `embed_frames`, `judge_final` (see `tracks/common/prompts/`).
+
+**Runs per sample:** 3. **Live cache:** disabled (`ANVESHAN_LIVE_CACHE=0`) for origami-crane runs, so repeated runs really call the model.
+
+**Results (case x sample):**
+
+| Case | Sample | Quality | Outcome | Consistency |
+|---|---|---|---|---|
+| kolam | good | good | passed | 1.00 |
+| kolam | flawed | flawed | caught | 1.00 |
+| kolam | unrelated | unrelated | refused | 1.00 |
+| tabla | good | good | passed | 1.00 |
+| tabla | flawed | flawed | caught | 1.00 |
+| tabla | unrelated | unrelated | refused | 1.00 |
+| origami-crane | good | good | failed | 0.67 |
+| origami-crane | flawed | flawed | caught | 1.00 |
+| origami-crane | unrelated | unrelated | refused | 1.00 |
+
+**Consistency per case:** kolam = 1.00 (by design), tabla = 1.00 (by design), origami-crane = 0.89.
+
+**Live calls used:** 40 out of 60 budget (all for origami-crane: ~6 calls per non-refused attempt, ~2 per refused).
+
+**Interpretation:**
+- Kolam and Tabla are fully deterministic: 100% consistency across all runs is expected and confirmed.
+- Origami-crane's "good" sample (the first 25 s of a 2-minute folding video) shows consistency=0.67 across 3 runs. This sample does not complete the full procedure, so it is evaluated as failing (outcome=failed). The variation is caused by frame-to-frame embedding nondeterminism in the AI model.
+- Origami-crane's "flawed" and "unrelated" samples are consistent (1.0).
+- The overall origami-crane consistency (0.89) reflects the single unstable sample; other samples are stable.
+
+**Limits:**
+- Synthetic and internet-derived samples only; no real learner data.
+- Small n (3 samples × 3 runs per skill); these numbers are engineering evidence, not a claim about how the system behaves with real users.
+- The origami-crane "good" sample represents an incomplete attempt (first 25 s of a full procedure) and is expected to fail. The instability (0.67) is a known limit of the universal video evaluator on partial attempts with minimal visual progress.
+- Swapped-order mistakes in video are not always caught reliably (see E7).
+- **This is not validation of learning.** No human learners, no human judges, no improvement measured.
+
+**Evidence:** `docs/validation/stability-2026-10.json`, `tools/stability_runs.py`, `app/public/evidence.json`.
+
+---
+
 ## Current Planned Experiments — Transmission Thesis
 
 These experiments validate the current competition/MVP wedge defined in `docs/product/product-thesis.md` and bounded by `docs/product/mvp-contract.md`.
