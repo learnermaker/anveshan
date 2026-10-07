@@ -22,6 +22,9 @@ jobs:
       - name: Check repository governance invariants
         run: python .github/scripts/check_governance.py
 
+      - name: Check for duplicate files (single-copy rule)
+        run: python .github/scripts/check_duplicates.py
+
       - name: Check capability case-pack structure
         run: python .github/scripts/check_case_packs.py
 

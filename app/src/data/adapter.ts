@@ -1,4 +1,5 @@
-import rawBundle from './fixtures/case_001/bundle.json';
+// Canonical shared fixture (single copy; see tracks/common/README.md). Vite allows ../tracks in app/vite.config.ts.
+import rawBundle from '../../../tracks/common/tests/fixtures/transmission_case_001/bundle.json';
 import type {
   TransmissionBundle,
   KnowledgePackage,

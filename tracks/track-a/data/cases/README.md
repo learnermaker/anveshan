@@ -1,5 +1,3 @@
-# Track-local Case Data
+# Track A case data
 
-Canonical case packs live in `tracks/cases/<case_id>/` and are shared across Track A and Track B.
-
-Use this directory only for track-specific implementation artifacts that cannot belong in the shared pack. Reference the canonical `case_id`; do not create a second manifest or duplicate canonical case content.
+Do not put case content here. Canonical case packs live in `tracks/cases/<case_id>/`; the rules for what may live in this folder are in [tracks/common/CASE-DATA-CONVENTIONS.md](../../../common/CASE-DATA-CONVENTIONS.md).

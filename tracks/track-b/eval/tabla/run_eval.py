@@ -63,7 +63,11 @@ def onset_f1(pred: List[float], true: List[float], tol: float = F1_TOL) -> Dict[
 
 
 def main() -> int:
-    goal = GoalModel.model_validate_json((LABELS / "goal_model.snapshot.json").read_text(encoding="utf-8"))
+    ref = json.loads((LABELS / "goal_model.ref.json").read_text(encoding="utf-8"))
+    goal_path = ROOT / ref["path"]
+    if sha256_file(goal_path) != ref["sha256"]:
+        raise SystemExit(f"{ref['path']} changed since the labels were made; re-run make_synthetic.py")
+    goal = GoalModel.model_validate_json(goal_path.read_text(encoding="utf-8"))
     steady = goal.built_with.get("bands", {}).get("steady", [0.08, 0.15])
     bands = dict(BANDS)
     bands["CRIT-TABLA-STEADY"] = ("tabla.ioi_cv", "lower", steady[0], steady[1])

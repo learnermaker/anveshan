@@ -1,0 +1,4 @@
+# Paths exempt from .github/scripts/check_duplicates.py (glob patterns, one per line, with a reason).
+# Add an entry only when a byte-identical copy is genuinely required; prefer linking to one canonical file.
+
+screenshots/*   # Decision D8 (docs/plans/technical-panel-plan-2026-10-07.md): Jim chose to keep screenshot history; latest/ mirrors the newest run by design

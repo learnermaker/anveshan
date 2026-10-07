@@ -2,7 +2,7 @@
  * MOCK DATA (SYNTHETIC) — Kolam hero case.
  *
  * The target image is the real public-domain source (Ithayakkamalam - 2.jpg, Mayooranathan,
- * via Wikimedia Commons), copied to app/public/mock/kolam_target.jpg for offline UI work.
+ * via Wikimedia Commons), imported straight from the case pack (single copy) for offline UI work.
  * The geometry below (dots, curves) is the REAL builder output from the Track A kolam goal
  * builder, dumped from GET /api/cases/kolam. It replaces the earlier hand-approximated geometry.
  *
@@ -15,9 +15,10 @@ import type { EvidenceRef } from '../../types/contracts';
 import type { AttemptResult, CaseView, DivergenceEvent, KolamCurveObj, KolamDot, KolamUiView, MetricView } from '../types';
 import { assembleResult, buildAttempt, buildEvaluation, buildFirstDivergence, evidence, type CriterionOutcome } from './builders';
 import REAL_UI_VIEW from './kolam-real-ui-view.json';
+import KOLAM_TARGET_IMG from '../../../../tracks/cases/kolam/source/ithayakkamalam_target.jpg?url';
 
 export const KOLAM_TARGET_SOURCE = 'src.kolam.target.v1';
-export const KOLAM_TARGET_URL = '/mock/kolam_target.jpg';
+export const KOLAM_TARGET_URL = KOLAM_TARGET_IMG;
 
 // Real builder geometry (from GET /api/cases/kolam — replaces hand-approximated loops)
 const W = REAL_UI_VIEW.canvas.width;

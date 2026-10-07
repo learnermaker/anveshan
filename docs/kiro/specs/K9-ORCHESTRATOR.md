@@ -8,7 +8,7 @@
 K9 builds that, plus **every remaining item of the technical-panel plan** that does not need humans (coverage in §6). The product definition is in `docs/product/product-vision.md` §9A and the decision in `docs/status/DECISIONS.md` (2026-10-07).
 
 **How it runs:**
-- **one** Kiro session, the parent chat, launches **one workflow**: `.kiro/workflows/k9-build.yaml`;
+- **one** Kiro session, the parent chat, launches **one workflow**: `.kiro/workflows/k9-build.workflow.yaml`;
 - the workflow runs Phase 0, then **7 parallel tasks** (Wave A), a merge, **2 parallel tasks** (Wave B), a merge, a verification gate and a finalize step;
 - each parallel task works in its **own git worktree** inside this repo (`.worktrees/…`), so tasks never touch the same files.
 
@@ -24,7 +24,7 @@ K9 builds that, plus **every remaining item of the technical-panel plan** that d
 4. Check the model is **Claude Sonnet 4.6** (the parent session's model is inherited by every step).
 5. In a **new** chat, paste this prompt:
 
-> Run the K9 build. First read `docs/kiro/specs/K9-ORCHESTRATOR.md` sections 0–4 and `.kiro/steering/k9-run-rules.md`. Validate the workflow `.kiro/workflows/k9-build.yaml` with validate_workflow. If validation reports an unknown agent name, replace it as described in K9-ORCHESTRATOR.md §5.6 and validate again. Then launch the `k9-build` workflow with no inputs. While it runs, stay in this chat as the orchestrator: every 20–30 minutes, and whenever a step reports, read `.kiro/k9-run/STATUS.md` and the `status/` files, relay any new `.kiro/k9-run/INBOX.md` entries to the affected steps, and answer the steps' questions using the defaults in §8 (never ask me unless a step is blocked by something only a human can do, such as a missing key or a failed push). If the workflow feature is unavailable, use the manual fallback in §10 instead. Finish with the final message from §9.
+> Run the K9 build. First read `docs/kiro/specs/K9-ORCHESTRATOR.md` sections 0–4 and `.kiro/steering/k9-run-rules.md`. Validate the workflow `.kiro/workflows/k9-build.workflow.yaml` with validate_workflow. If validation reports an unknown agent name, replace it as described in K9-ORCHESTRATOR.md §5.6 and validate again. Then launch the `k9-build` workflow with no inputs. While it runs, stay in this chat as the orchestrator: every 20–30 minutes, and whenever a step reports, read `.kiro/k9-run/STATUS.md` and the `status/` files, relay any new `.kiro/k9-run/INBOX.md` entries to the affected steps, and answer the steps' questions using the defaults in §8 (never ask me unless a step is blocked by something only a human can do, such as a missing key or a failed push). If the workflow feature is unavailable, use the manual fallback in §10 instead. Finish with the final message from §9.
 
 6. Watch progress:
    - in Kiro's **Workflows** panel;
