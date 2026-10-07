@@ -220,3 +220,173 @@ class EvidenceGrounder:
                             f"goal-conditioned INFERRED claim has confidence={ev.confidence} > 0.5"
                         ),
                     )
+
+
+# ---------------------------------------------------------------------------
+# GeminiEvidenceEnricher  (v2 — requires GOOGLE_API_KEY)
+# ---------------------------------------------------------------------------
+
+class GeminiEvidenceEnricher:
+    """
+    Enriches KnowledgeClaim cue_excerpts via a Gemini model call.
+
+    v2 of the EvidenceGrounder enrichment step.  For each claim, calls
+    Gemini with the geometric state summary + critic_analysis and replaces
+    the raw critic_analysis passthrough with a richer, grounded cue_excerpt.
+
+    Does NOT change verification_state or confidence — those are already
+    set deterministically by FoldingAgentAdapter based on critic_verdict.
+
+    Parameters
+    ----------
+    model_id : str
+        Gemini model to call (default: gemini-2.0-flash).
+    api_key : str | None
+        GOOGLE_API_KEY.  Falls back to environment / .env.
+    prompt_path : Path | None
+        Override the default prompt file location.
+    """
+
+    DEFAULT_MODEL = "gemini-3.8-flash"
+    PROMPT_FILE = Path(__file__).parent / "prompts" / "evidence_grounder_v1.txt"
+
+    def __init__(
+        self,
+        model_id: str | None = None,
+        api_key: str | None = None,
+        prompt_path: Path | None = None,
+    ) -> None:
+        self.model_id = model_id or self.DEFAULT_MODEL
+        self._api_key = api_key
+        self._prompt_path = prompt_path or self.PROMPT_FILE
+        self._client: Any = None
+
+    # ------------------------------------------------------------------
+    # Public API
+    # ------------------------------------------------------------------
+
+    def enrich(
+        self,
+        package: KnowledgePackage,
+        checkpoints: list[Any],  # list[FoldCheckpoint] — imported lazily
+    ) -> KnowledgePackage:
+        """
+        Replace cue_excerpt on each EvidenceRef with a Gemini-enriched
+        description.  All other fields are unchanged.
+
+        Returns the same package object (mutated in place).
+        """
+        client = self._ensure_client()
+        prompt_template = self._prompt_path.read_text(encoding="utf-8")
+
+        # Build checkpoint lookup by frame_index
+        cp_by_frame: dict[int, Any] = {cp.frame_index: cp for cp in checkpoints}
+
+        for claim in package.claims:
+            # Determine which checkpoint backs this claim
+            # CLM-01 → frame_index 1, CLM-02 → frame_index 2, etc.
+            try:
+                frame_n = int(claim.claim_id.split("-")[-1])
+            except (ValueError, IndexError):
+                continue
+
+            cp = cp_by_frame.get(frame_n)
+            if cp is None:
+                continue
+
+            raw = cp.raw_representation
+            edges = raw.get("edges", [])
+            mountain = [[e[0], e[1]] for e in edges if len(e) >= 3 and str(e[2]).upper() == "M"]
+            valley   = [[e[0], e[1]] for e in edges if len(e) >= 3 and str(e[2]).upper() == "V"]
+            layers   = raw.get("layers", [])
+            faces    = raw.get("faces", {})
+            orient   = raw.get("faces_orientations", {})
+            back_up  = [fid for fid, o in orient.items() if o == 1]
+
+            prompt = prompt_template.format(
+                claim_id=claim.claim_id,
+                claim_type=claim.claim_type.value,
+                critic_analysis=cp.critic_analysis or "",
+                critic_verdict=cp.critic_verdict,
+                operations_delta=cp.operations,
+                vertex_count=len(raw.get("vertices", {})),
+                face_count=len(faces),
+                mountain_edges=mountain,
+                valley_edges=valley,
+                layer_count=len(layers),
+                faces_back_up=back_up,
+            )
+
+            enriched_excerpt = self._call_gemini(client, prompt)
+
+            # Update cue_excerpt on ALL evidence refs for this claim (one call shared)
+            for ev in claim.evidence_refs:
+                ev.cue_excerpt = enriched_excerpt[:500]
+
+        return package
+
+    # ------------------------------------------------------------------
+    # Private helpers
+    # ------------------------------------------------------------------
+
+    def _ensure_client(self) -> Any:
+        if self._client is not None:
+            return self._client
+
+        key = self._api_key or self._load_env_key()
+        if not key:
+            raise RuntimeError(
+                "GOOGLE_API_KEY not set. "
+                "Add it to research/origami_hybrid/.env before running live enrichment."
+            )
+
+        from google import genai
+        from google.genai import types
+
+        self._client = genai.Client(
+            api_key=key,
+            http_options=types.HttpOptions(timeout=60_000),
+        )
+        return self._client
+
+    @staticmethod
+    def _load_env_key() -> str:
+        """Load GOOGLE_API_KEY from .env if python-dotenv is available."""
+        import os
+        # Try dotenv first
+        try:
+            from dotenv import load_dotenv
+            load_dotenv(Path(__file__).parent / ".env", override=False)
+        except ImportError:
+            pass
+        return os.environ.get("GOOGLE_API_KEY", "")
+
+    def _call_gemini(self, client: Any, prompt: str) -> str:
+        """Call Gemini with fixed-interval retry on 429 and 5xx."""
+        import time
+        from google.genai import types
+        from google.genai.errors import ClientError, ServerError
+
+        max_retries = 3
+        retry_wait = 60.0  # free-tier suggests ~45s; use 60s to be safe
+
+        for attempt in range(max_retries + 1):
+            try:
+                response = client.models.generate_content(
+                    model=self.model_id,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        temperature=0.1,
+                        max_output_tokens=256,
+                    ),
+                )
+                return (response.text or "").strip()
+            except (ClientError, ServerError) as exc:
+                retryable = (
+                    (isinstance(exc, ClientError) and exc.code == 429) or
+                    isinstance(exc, ServerError)
+                )
+                if retryable and attempt < max_retries:
+                    time.sleep(retry_wait)
+                    continue
+                raise
