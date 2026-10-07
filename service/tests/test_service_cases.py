@@ -24,6 +24,7 @@ def test_health_shape_and_no_secrets(client, monkeypatch):
     m = body["models"]
     assert body == {"ok": True, "mode": "recorded", "mode_override": True, "curated_review_open": True,
                     "own_key_supported": True, "server_key_configured": True,
+                    "steward_enabled": False, "steward_open": False, "data_ttl_hours": 0.0,
                     "models": {"text_image": m["text_image"], "video_frames": m["video_frames"],
                                "vision_fast": m["vision_fast"], "embedding": m["embedding"], "audio_enabled": False}}
     assert "AIzaTESTSECRETVALUE123" not in r.text

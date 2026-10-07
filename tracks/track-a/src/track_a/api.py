@@ -442,6 +442,20 @@ def _summary_composed(case_dir: Path) -> dict:
         except Exception:
             pass
 
+    # Fix: compute the real review_status from the knowledge package (like _summary does)
+    try:
+        version, _ = select_package_version(case_dir)
+        if version is not None:
+            pkg = load_versioned(
+                authoring.artifact_dir(case_dir, "knowledge_package"),
+                "knowledge_package",
+                KnowledgePackage,
+                version,
+            )
+            review_status = _status(pkg)
+    except Exception:
+        pass
+
     return {
         "case_id": case_id,
         "title": title,

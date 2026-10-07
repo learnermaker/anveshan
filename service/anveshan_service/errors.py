@@ -81,6 +81,12 @@ def _clean_details(details: Any) -> Any:
 
 
 def error_response(status: int, category: str, message: str, details: Any = None) -> JSONResponse:
+    # Count the error category in metrics (best-effort, import inside to avoid circular import)
+    try:
+        from anveshan_service.metrics import METRICS
+        METRICS.inc("errors", category)
+    except Exception:
+        pass
     body = {"error": {"category": category, "message": _redact(str(message)), "details": _clean_details(jsonable_encoder(details or {}))}}
     return JSONResponse(status_code=status, content=body)
 

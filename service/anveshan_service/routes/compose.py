@@ -100,6 +100,14 @@ def analyze_upload(
     view = draft.to_view()
     if isinstance(view, dict) and view.get("draft_id"):
         add_owner(settings.data_dir / "drafts" / str(view["draft_id"]))
+    # Record compose metric only for non-refused drafts
+    if not (isinstance(view, dict) and view.get("refused")):
+        try:
+            from datetime import datetime, timezone
+            from anveshan_service import metrics as _met
+            _met.METRICS.inc("compose_day", datetime.now(timezone.utc).strftime("%Y-%m-%d"))
+        except Exception:
+            pass
     return view
 
 
@@ -156,5 +164,8 @@ def create_case(
             edits,
         )
         add_owner(case_dir)
+        # Create the initial library record for the new community case
+        from anveshan_service import library as _lib
+        _lib.create_initial(settings, case_dir, case_dir.name)
         handoff = track_a.build_case(case_dir, ctx)
     return handoff.to_view()
