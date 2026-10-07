@@ -15,6 +15,7 @@ from anveshan_service.limits import RateLimitMiddleware
 from anveshan_service.paths import within
 from anveshan_service.routes import cases, compose, health, key, media, sessions
 from anveshan_service.settings import Settings
+from anveshan_service.steward import StewardMiddleware
 from anveshan_service.userkey import UserKeyMiddleware
 from anveshan_service.visitors import VisitorMiddleware
 
@@ -88,12 +89,24 @@ def create_app(settings: Optional[Settings] = None) -> FastAPI:
         sweeper.maybe()  # once at startup
         app.add_middleware(HousekeepingMiddleware, sweeper=sweeper)
     app.add_middleware(UserKeyMiddleware)
+    app.add_middleware(StewardMiddleware, settings=settings)
     app.add_middleware(VisitorMiddleware, secure=settings.secure_cookies)
     if settings.rate_limits:
         app.add_middleware(RateLimitMiddleware, limits=settings.rate_limits)
+    else:
+        # When rate limiting is off, still count requests for the usage view
+        from anveshan_service.metrics import RouteCountMiddleware
+        app.add_middleware(RouteCountMiddleware)
     app.add_middleware(BodyLimitMiddleware, limit_bytes=settings.max_upload_bytes * MAX_UPLOAD_FILES + (1 << 20))
     for module in (health, key, cases, sessions, media, compose):
         app.include_router(module.router)
+    # Import new K9 routers lazily to allow tests to patch them
+    try:
+        from anveshan_service.routes import library as _lib, steward as _swd, insights as _ins  # noqa: F401
+        for _m in (_lib, _swd, _ins):
+            app.include_router(_m.router)
+    except ImportError:
+        pass
     if settings.static_dir is not None and (settings.static_dir / "index.html").is_file():
         _mount_static(app, settings.static_dir)
     return app

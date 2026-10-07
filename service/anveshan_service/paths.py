@@ -55,8 +55,11 @@ def case_dir(settings: Settings, case_id: str) -> Path:
     d = root / case_id
     if not within(d, root) or not d.is_dir():
         raise not_found(f"unknown case {case_id}", case_id=case_id)
-    if "~" in case_id and settings.isolate_visitors and not visible(d):
-        raise not_found(f"unknown case {case_id}", case_id=case_id)
+    if "~" in case_id and settings.isolate_visitors:
+        # Import inside function to avoid circular import (access imports library imports settings)
+        from anveshan_service import access
+        if not access.can_view(settings, case_id, d):
+            raise not_found(f"unknown case {case_id}", case_id=case_id)
     return d
 
 
