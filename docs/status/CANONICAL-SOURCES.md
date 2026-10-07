@@ -10,19 +10,7 @@ Chat discussions, local notes, generated prompts, screenshots, PDFs, and researc
 
 ## Source-of-truth hierarchy
 
-When documents disagree, use this order:
-
-1. `AGENTS.md` — agent operating rules and source-of-truth hierarchy.
-2. `README.md` — repository orientation/current status.
-3. `docs/product/product-vision.md` — long-term product vision.
-4. `docs/product/product-thesis.md` — current competition/MVP thesis and differentiation hypothesis.
-5. `docs/product/mvp-contract.md` — minimum MVP behavior.
-6. `docs/validation/` — evidence about what has actually been validated.
-7. `docs/architecture/` — implementation architecture, subject to product and validation constraints.
-8. `docs/research/` and `EXPLORATION.md` — research, alternatives, and historical reasoning; not implementation authority unless explicitly promoted into a current decision.
-9. `docs/status/NOW.md` and `docs/status/project.yaml` — concise execution scope/state derived from the hierarchy above; they do not override product or validation truth.
-10. `docs/status/DECISIONS.md` — durable governance decisions where applicable.
-11. `docs/product/feature-universe.md` — exhaustive possibility inventory; never treat presence as commitment.
+When documents disagree, follow the single ordered list in [AGENTS.md, source-of-truth hierarchy](../../AGENTS.md#source-of-truth-hierarchy). It is kept only there so it cannot drift.
 
 Where two documents have different roles, both can remain true. For example, product vision can remain broad while the MVP contract is narrow.
 

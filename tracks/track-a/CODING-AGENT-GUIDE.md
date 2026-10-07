@@ -232,8 +232,7 @@ Before implementing a case, read:
 
 Use `tracks/cases/<case_id>/manifest.json` as the canonical shared case entry point. Keep Track-A-only derived fixtures under `tracks/track-a/data/`; do not duplicate the shared case definition.
 
-Every materially outcome-affecting model run must retain model/configuration, prompt ID/version, input fixture/artifact, runtime class, run ID, and expected behavior. Provider output remains quarantined until normalization and deterministic validation.
+Run metadata, versioning and the failure taxonomy are defined once in [CASE-DATA-CONVENTIONS.md §4–§6](../common/CASE-DATA-CONVENTIONS.md); follow them as written. Provider output remains quarantined until normalization and deterministic validation.
 
 Use the shared failure taxonomy for structured failures. Escalate to `HUMAN_REVIEW_REQUIRED` instead of guessing when evidence is materially insufficient/conflicting or expert review is required.
 
-Do not silently overwrite materially changed source, extraction, rubric, prompt/model configuration, or normalized knowledge. Version the artifact so prior replay/review remains reconstructable.

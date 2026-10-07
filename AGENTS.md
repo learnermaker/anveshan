@@ -199,7 +199,7 @@ The repository is the durable record. Chat, screenshots, PDFs, and generated pro
 
 ## Documentation rules
 
-- Prefer one canonical statement over duplicated statements.
+- State each rule, list or explanation once, in its canonical document, and link to it elsewhere. Copy text only when a tool needs it in place (for example the `description` frontmatter an Antigravity skill wrapper needs for discovery). `tools/find_repeated_text.py` lists paragraphs repeated across Markdown files; run it after large doc changes.
 - If a document is historical, label it historical/superseded rather than rewriting history.
 - Never describe an unvalidated hypothesis as a fact.
 - Never describe a feature in feature-universe.md as MVP scope unless the MVP contract says so.

@@ -1,5 +1,5 @@
 # tabla source
 
-Source posture: **synthetic replay fixture**.
+What this folder is for, and the rules shared by every case: [case packs, what belongs where](../../README.md#what-belongs-where).
 
-Record source identity, provenance, consent/review state, access/licensing notes, and references here when the case is promoted to authentic or externally sourced evidence.
+Source posture: **synthetic replay fixture**.

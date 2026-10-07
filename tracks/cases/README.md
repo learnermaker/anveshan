@@ -42,7 +42,9 @@ tracks/cases/<case-id>/
 - **knowledge/** — case knowledge authoring boundary. The current prototype keeps it co-located in the replay bundle; it can be promoted to its own JSON artifact when independently authored.
 - **practice/** — case-specific task and deterministic rubric authoring boundary. The current prototype keeps them co-located in the replay bundle.
 - **replay/** — the current atomic deterministic bundle containing knowledge, practice, baseline/retry attempts, evaluations, feedback, and transmission record.
-- **media/** — pointers/manifests for media objects. Large binaries do not belong in Git.
+- **media/** — pointers/manifests for media objects. Large binaries do not belong in Git. Use stable media/evidence IDs and resolve them to local replay assets during prototype execution or to Cloud Storage objects in a deployed runtime; preserve object generation/version information when media participates in evidence or lineage.
+
+Each folder's `README.md` states only what is specific to that case (for `source/`, its source posture) and links back here. Do not infer authenticity from the existence of a pack: replay data is engineering scaffolding and must remain visibly distinguished from live or authentic expert evidence. Knowledge, practice tasks and rubrics are case-specific data that must stay compatible with the frozen common contracts; they are not new shared contracts.
 
 ## Contract boundary
 
