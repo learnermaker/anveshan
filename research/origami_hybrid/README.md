@@ -82,24 +82,31 @@ Or add the key to `FoldingAgent/.env` (FoldingAgent also loads `.env` from its o
 ## Setup
 
 ```bash
-# 1. Clone the FoldingAgentSimulator (MIT) and install locally
-git clone https://github.com/maya-moriya/FoldingAgentSimulator.git
-cd FoldingAgentSimulator
-pip install -e .
-cd ..
+# Clone anveshan and initialise submodules in one go:
+git clone --recurse-submodules https://github.com/<your-org>/anveshan.git
 
-# 2. Install FoldingAgent (MIT, already cloned at ../../FoldingAgent/)
-cd ../../FoldingAgent
-pip install -e .
-cd ../anveshan
-
-# 3. Install hybrid pipeline dependencies
-pip install pyav pillow pydantic matplotlib
-
-# 4. Copy and fill .env
-cp research/origami_hybrid/.env.example research/origami_hybrid/.env
-# edit .env with your key(s)
+# Or if you already have a clone:
+git submodule update --init --recursive research/origami_hybrid/vendor/
 ```
+
+Then run the one-shot setup script — it installs both vendored packages and all dependencies:
+
+```powershell
+# Windows (PowerShell) — run from the anveshan repo root:
+.\research\origami_hybrid\setup.ps1
+```
+
+```bash
+# macOS / Linux — run from the anveshan repo root:
+bash research/origami_hybrid/setup.sh
+```
+
+The setup script installs:
+- `FoldingAgentSimulator` (editable, from `vendor/FoldingAgentSimulator/`)
+- `FoldingAgent` (editable, from `vendor/FoldingAgent/`, resolves simulator from above)
+- `av`, `pillow`, `numpy`, `pydantic`, `python-dotenv`, `google-genai`
+
+**For teammates:** `git clone --recurse-submodules` is all that's needed to get both vendored repos. No separate manual clone step.
 
 ---
 

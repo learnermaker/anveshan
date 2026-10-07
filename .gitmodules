@@ -1,0 +1,6 @@
+[submodule "research/origami_hybrid/vendor/FoldingAgent"]
+	path = research/origami_hybrid/vendor/FoldingAgent
+	url = https://github.com/maya-moriya/FoldingAgent.git
+[submodule "research/origami_hybrid/vendor/FoldingAgentSimulator"]
+	path = research/origami_hybrid/vendor/FoldingAgentSimulator
+	url = https://github.com/maya-moriya/FoldingAgentSimulator.git

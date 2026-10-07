@@ -4,6 +4,11 @@ Hybrid pipeline configuration — loaded from .env / environment variables.
 All model names and API keys are read here so nothing is hard-coded in
 the individual modules. Import this module instead of os.environ directly.
 
+Also manages vendor path injection: FoldingAgent and FoldingAgentSimulator
+are git submodules under research/origami_hybrid/vendor/. This module
+adds them to sys.path so imports work for any teammate after running
+setup.sh / setup.ps1 (or `git submodule update --init --recursive`).
+
 Usage
 -----
     from config import HybridConfig
@@ -18,6 +23,31 @@ import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
+
+
+# ---------------------------------------------------------------------------
+# Vendor path setup (git submodules)
+# ---------------------------------------------------------------------------
+
+_VENDOR_DIR = Path(__file__).parent / "vendor"
+_FA_SRC = _VENDOR_DIR / "FoldingAgent" / "src"
+_FAS_SRC = _VENDOR_DIR / "FoldingAgentSimulator" / "src"
+
+def _inject_vendor_paths() -> None:
+    """
+    Add FoldingAgent and FoldingAgentSimulator src/ directories to sys.path
+    so `import foldingagent` and `import origami` resolve to the submodule
+    copies rather than any system-installed version.
+
+    Safe to call multiple times (checks before inserting).
+    """
+    import sys
+    for p in [_FAS_SRC, _FA_SRC]:   # simulator first so FA picks it up
+        s = str(p)
+        if p.exists() and s not in sys.path:
+            sys.path.insert(0, s)
+
+_inject_vendor_paths()
 
 
 # ---------------------------------------------------------------------------
