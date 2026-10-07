@@ -185,10 +185,28 @@ def test_create_draft_idempotent(tmp_path):
     gw = FakeGateway()
     ctx = _make_ctx(tmp_path, gw)
     d1 = c.create_draft(tmp_path, img_path, "image/png", ctx, title_hint="T", rights_confirmed=True)
+    n_calls = len(gw.calls)
     d2 = c.create_draft(tmp_path, img_path, "image/png", ctx, title_hint="T", rights_confirmed=True)
     assert d1.draft_id == d2.draft_id
     # Second call should not make new perception calls
-    assert len(gw.calls) == len(gw.calls)  # calls from first create only
+    assert len(gw.calls) == n_calls
+
+
+def test_create_draft_degraded_is_reanalysed(tmp_path):
+    """A draft made while the model failed is not cached: the same upload is analysed again."""
+    c = _composer()
+    img_path = tmp_path / "upload.png"
+    _write_png(img_path)
+    failing = FakeGateway(vision_fail=True, embed_fail=True)
+    d1 = c.create_draft(tmp_path, img_path, "image/png", _make_ctx(tmp_path, failing), title_hint="T",
+                        rights_confirmed=True)
+    assert any("failed" in w for w in [*d1.warnings, *d1.perception.warnings])
+    healthy = FakeGateway()
+    d2 = c.create_draft(tmp_path, img_path, "image/png", _make_ctx(tmp_path, healthy), title_hint="T",
+                        rights_confirmed=True)
+    assert d2.draft_id == d1.draft_id
+    assert healthy.calls, "the healthy gateway should have been called"
+    assert not any("failed" in w for w in d2.perception.warnings)
 
 
 def test_create_draft_safety_refuse(tmp_path):
@@ -333,6 +351,25 @@ def test_create_case_from_draft_manifest_valid(tmp_path):
 
     assert (case_dir / "knowledge" / "case_profile.v1.json").exists()
     assert (case_dir / "source" / "source.json").exists()
+
+
+def test_composed_case_loads_as_built_universal_case(tmp_path):
+    """compose -> create -> build -> load_case returns the BUILT universal case (regression: load_case
+    ignored the case dir, so composed cases fell back to a missing replay bundle and the UI got 404)."""
+    from track_a import api
+
+    c = _composer()
+    img_path = tmp_path / "img.png"
+    _write_png(img_path)
+    ctx = _make_ctx(tmp_path, FakeGateway())
+    draft = c.create_draft(tmp_path, img_path, "image/png", ctx, title_hint="My Skill", rights_confirmed=True)
+    case_dir = c.create_case_from_draft(tmp_path / "cases", tmp_path, draft.draft_id, {"title": "My Skill"})
+    ctx_case = RunContext(mode="recorded", gateway=ctx.gateway, case_dir=case_dir, data_dir=tmp_path / "data")
+    api.build_case(case_dir, ctx_case)
+
+    view = api.load_case(case_dir).to_view()
+    assert view["goal"] is not None
+    assert view["goal"]["modality"] == "universal"
 
 
 def test_create_case_from_draft_idempotent(tmp_path):

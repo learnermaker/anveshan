@@ -254,6 +254,15 @@ class Draft:
         }
 
 
+_DEGRADED_MARKERS = ("failed", "unavailable", "REPLAY_MISMATCH", "no recorded")
+
+
+def _draft_degraded(draft: "Draft") -> bool:
+    """True when a model call failed while the draft was made (its analysis is incomplete)."""
+    texts = [*draft.warnings, *draft.perception.warnings]
+    return any(m in t for t in texts for m in _DEGRADED_MARKERS)
+
+
 def _load_draft(draft_dir: Path) -> Optional[Draft]:
     """Load a Draft from its saved draft.json. Returns None if not found."""
     draft_json = draft_dir / "draft.json"
@@ -445,10 +454,14 @@ def create_draft(
     draft_dir = data_dir / "drafts" / draft_id
     draft_dir.mkdir(parents=True, exist_ok=True)
 
-    # Idempotent: reload if already done
+    # Idempotent: reload if already done, unless a model call failed last time (quota, network,
+    # missing recording): then analyse again so one transient failure is not cached forever.
     existing = _load_draft(draft_dir)
     if existing is not None:
-        return existing
+        if not _draft_degraded(existing):
+            return existing
+        shutil.rmtree(draft_dir)
+        draft_dir.mkdir(parents=True, exist_ok=True)
 
     # Copy source file
     ext = _ext_for(file_path, mime)

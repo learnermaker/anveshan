@@ -365,7 +365,7 @@ def load_case(case_dir: Path) -> CaseHandoff:
     case_dir = Path(case_dir)
     manifest = _read_manifest(case_dir)
     case_id = manifest.get("case_id", case_dir.name)
-    if config.modality_for(case_id) is None:
+    if config.modality_for(case_id, case_dir) is None:
         return _load_bundle(case_dir, manifest, ["SYNTHETIC replay showcase: no goal model"])
     version, warnings = select_package_version(case_dir)
     if version is None:
@@ -381,7 +381,7 @@ def load_case(case_dir: Path) -> CaseHandoff:
 def _summary(case_dir: Path, *, hero: bool, derived_from: Optional[str] = None) -> dict:
     manifest = _read_manifest(case_dir)
     case_id = manifest.get("case_id", case_dir.name)
-    modality = config.modality_for(case_id)
+    modality = config.modality_for(case_id, case_dir)
     built = False
     review_status = "pending"
     runtime_label = "SYNTHETIC"
@@ -695,7 +695,7 @@ def apply_review(case_dir: Path, action: dict) -> CaseHandoff:
     case_dir = Path(case_dir)
     manifest = _read_manifest(case_dir)
     case_id = manifest.get("case_id", case_dir.name)
-    if config.modality_for(case_id) is None:
+    if config.modality_for(case_id, case_dir) is None:
         raise AnveshanFailure(FailureCategory.INVALID_INPUT, f"{case_id} is a SYNTHETIC showcase case; not reviewable")
     if not isinstance(action, dict):
         raise AnveshanFailure(FailureCategory.INVALID_INPUT, "review action must be an object")
