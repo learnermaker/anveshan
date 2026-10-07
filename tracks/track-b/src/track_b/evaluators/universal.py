@@ -34,7 +34,7 @@ from tracks.common.schemas.evidence import Modality, VerificationState
 from tracks.common.skill_model import SkillModel
 
 from track_b.trajectory import AttemptMedia, DivergenceEvent, MetricValue, TrajectoryResult
-from track_b.evaluators.universal_align import mode_filter, needleman_wunsch
+from track_b.evaluators.universal_align import mode_filter
 
 ABS_FLOOR = 0.60   # a frame less similar than this to every step is off-path (unrelated content)
 RELEVANCE_DROP = 0.15   # video attempt must match the source within 0.15 of the source's own frame-to-frame consistency
@@ -743,11 +743,6 @@ def _procedure_checks(
             j = int(np.argmax(z[i]))
             raw_labels.append(j if (n_steps == 1 or z[i, j] >= Z_OFF) else "transition")
     filt_labels = mode_filter(raw_labels, window=3)
-    obs_seq: List[int] = []
-    for lbl in filt_labels:
-        if isinstance(lbl, int) and (not obs_seq or obs_seq[-1] != lbl):
-            obs_seq.append(lbl)
-    nw = needleman_wunsch(obs_seq, list(range(n_steps)))
 
     n_matched = len(visited)
     coverage = n_matched / n_steps if n_steps > 0 else 0.0

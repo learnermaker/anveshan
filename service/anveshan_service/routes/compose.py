@@ -80,7 +80,6 @@ def analyze_upload(
     composer = _composer()
     stored = store_upload(file, settings, "file")
 
-    draft_dir = settings.data_dir / "drafts" / "tmp"  # ctx needs a case_dir; use data_dir
     ctx = adapters.run_context(settings, settings.data_dir, mode)
 
     with adapters.translated():

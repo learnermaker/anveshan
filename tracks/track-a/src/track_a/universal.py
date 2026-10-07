@@ -108,14 +108,11 @@ def _build_goal_state(
         if time_segs:
             last_seg = time_segs[-1]
             prop_obs = _obs_of_kind(record, last_seg.segment_id, "property")
-            base_seg_id = last_seg.segment_id
         else:
             prop_obs = _all_obs_of_kind(record, "property")
-            base_seg_id = "seg-000"
     else:
         # final_state or utterance: use whole-image segment
         prop_obs = _all_obs_of_kind(record, "property")
-        base_seg_id = "seg-000"
 
     # Add property observations (max MAX_PROPERTIES)
     for i, obs in enumerate(prop_obs[:MAX_PROPERTIES]):

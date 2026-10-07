@@ -115,9 +115,7 @@ def perceive_image(
     brightness = float(gray.mean())
     rms_contrast = float(gray.std())
 
-    # Blur: variance of Laplacian (3x3 kernel via numpy convolution)
-    kernel = np.array([[0, 1, 0], [1, -4, 1], [0, 1, 0]], dtype=np.float32)
-    # Manual convolution for Laplacian
+    # Blur: variance of the 3x3 Laplacian, computed with array shifts
     padded = np.pad(gray, 1, mode="reflect")
     lap = (
         padded[:-2, 1:-1] + padded[2:, 1:-1] + padded[1:-1, :-2] + padded[1:-1, 2:]
