@@ -13,7 +13,7 @@ from anveshan_service.errors import ServiceError, error_response, install_error_
 from anveshan_service.housekeeping import SweepEvery
 from anveshan_service.limits import RateLimitMiddleware
 from anveshan_service.paths import within
-from anveshan_service.routes import cases, compose, health, key, media, sessions
+from anveshan_service.routes import cases, compose, health, key, media, samples, sessions
 from anveshan_service.routes import library as library_routes
 from anveshan_service.routes import insights as insights_routes
 from anveshan_service.routes import steward as steward_routes
@@ -101,7 +101,7 @@ def create_app(settings: Optional[Settings] = None) -> FastAPI:
         from anveshan_service.metrics import RouteCountMiddleware
         app.add_middleware(RouteCountMiddleware)
     app.add_middleware(BodyLimitMiddleware, limit_bytes=settings.max_upload_bytes * MAX_UPLOAD_FILES + (1 << 20))
-    for module in (health, key, cases, sessions, media, compose):
+    for module in (health, key, cases, sessions, media, samples, compose):
         app.include_router(module.router)
     for _m in (library_routes, steward_routes, insights_routes):
         app.include_router(_m.router)

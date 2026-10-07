@@ -69,7 +69,7 @@ function SkillStatusCard({ c, isDerivedUpload, onOpen, onShowInsights }: CardPro
         </blockquote>
       )}
 
-      <ReviewBadge status={c.review_status} />
+      <ReviewBadge status={c.review_status} own />
 
       <div className="pt-1">
         {status === 'private' && (

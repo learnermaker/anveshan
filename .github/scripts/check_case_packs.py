@@ -193,6 +193,32 @@ def validate_manifest(manifest: dict[str, Any], case_id: str, schema: dict[str, 
     return failures
 
 
+def _is_composed_pack(manifest: dict[str, Any]) -> bool:
+    """Return True for a curated universal pipeline pack (source_mode=composed).
+
+    Composed packs are built via the universal pipeline and do not have a
+    replay/bundle.json, schema_version, bundle_case_id or the hero-case
+    status fields. They are validated with a lighter set of rules.
+    K9-P5 Requests for PC items 1-3; K9-PC-INTEGRATION.md §1.
+    """
+    return str(manifest.get("source_mode", "")).lower() == "composed"
+
+
+def validate_composed_manifest(manifest: dict[str, Any], case_id: str) -> list[str]:
+    """Validate the minimal required fields for a composed pack manifest."""
+    failures: list[str] = []
+    required_fields = {"case_id", "title", "archetype", "workspace_type", "transmission_mode", "source_mode"}
+    missing = sorted(required_fields - set(manifest))
+    if missing:
+        failures.append(f"{case_id}: composed manifest missing required fields {missing}")
+    if manifest.get("case_id") != case_id:
+        failures.append(f"{case_id}: composed manifest.case_id mismatch")
+    title = manifest.get("title", "")
+    if not isinstance(title, str) or not title.strip():
+        failures.append(f"{case_id}: composed manifest.title must be a non-empty string")
+    return failures
+
+
 def main() -> int:
     failures: list[str] = []
     if not INDEX.exists():
@@ -221,6 +247,21 @@ def main() -> int:
             continue
 
         manifest_path = pack / "manifest.json"
+        if not manifest_path.exists():
+            failures.append(f"{case_id}: missing manifest.json")
+            continue
+
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+        if _is_composed_pack(manifest):
+            # Composed (universal pipeline) packs: lighter validation.
+            # They have no replay/bundle.json and a different manifest shape.
+            # K9-P5 Requests for PC items 1-3.
+            failures.extend(validate_composed_manifest(manifest, case_id))
+            failures.extend(validate_samples_dir(case_id, pack))
+            continue
+
+        # Hero-case (REPLAY/AUTHENTIC) packs: full validation.
         bundle_path = pack / "replay" / "bundle.json"
         for required in (
             pack / "source" / "README.md",
@@ -231,11 +272,6 @@ def main() -> int:
             if not required.exists():
                 failures.append(f"{case_id}: missing {required.relative_to(pack)}")
 
-        if not manifest_path.exists():
-            failures.append(f"{case_id}: missing manifest.json")
-            continue
-
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         failures.extend(validate_manifest(manifest, case_id, schema))
 
         if not bundle_path.exists():

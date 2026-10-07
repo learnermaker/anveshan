@@ -1,6 +1,6 @@
 """Sample routes: ready-made attempts and example sources for the demo (K9-P4).
 
-Routes (no prefix; registering code must include this router into the app):
+Routes (registered in anveshan_service.main create_app; no separate include_router needed):
 
   GET  /api/cases/{case_id}/samples
   GET  /api/cases/{case_id}/samples/{sample_id}/preview
@@ -14,7 +14,6 @@ See docs/kiro/specs/K9-P4-SAMPLES.md §4.2 for the detailed behaviour contract.
 from __future__ import annotations
 
 import hashlib
-import importlib.util
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -171,9 +170,7 @@ def submit_sample_attempt(
 
 
 def _try_record_insights(session_id: str, sample_id: str) -> None:
-    """Record a sample attempt event in insights if P1's module is available."""
-    if importlib.util.find_spec("anveshan_service.insights") is None:
-        return
+    """Record a sample attempt event in insights (P1 is merged; guard removed at integration)."""
     try:
         from anveshan_service import insights  # noqa: PLC0415
         insights.record_attempt(session_id=session_id, sample_id=sample_id, source="sample")

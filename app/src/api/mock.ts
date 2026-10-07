@@ -48,7 +48,9 @@ const clone = <T,>(v: T): T => JSON.parse(JSON.stringify(v)) as T;
 
 const cases = new Map<string, CaseView>([
   ['kolam', kolamCaseView()],
-  ['origami', origamiCaseView()],
+  // origami-crane is the universal-pipeline replacement for the experimental 'origami' case.
+  // In mock mode we reuse origamiCaseView with the new case_id so the learner flow works.
+  ['origami-crane', origamiCaseView('origami-crane')],
   ['tabla', tablaCaseView()],
 ]);
 /** object URLs for uploaded derived-case sources: key = `${caseId}/${sourceId}` */
@@ -132,7 +134,7 @@ export const mockApi: Api = {
     const id = `${base}~${await sha12(file)}`;
     const sourceId = `upload.${id.split('~')[1]}`;
     uploadedMedia.set(`${id}/${sourceId}`, URL.createObjectURL(file));
-    const make = base === 'kolam' ? kolamCaseView : base === 'origami' ? origamiCaseView : tablaCaseView;
+    const make = base === 'kolam' ? kolamCaseView : base === 'origami-crane' ? origamiCaseView : tablaCaseView;
     const v = make(id, {
       title: `${baseView.title.split(' — ')[0]} — your upload (${file.name})`,
       runtime_label: 'UPLOAD',
@@ -218,7 +220,7 @@ export const mockApi: Api = {
     if (s.attempts.length >= 2) throw new ApiError('INVALID_INPUT', 'baseline and retry already submitted; complete the session', 400);
     const v = getView(s.caseId);
     const base = baseOf(s.caseId);
-    const allowed: Record<string, string[]> = { kolam: ['trace', 'image'], origami: ['video'], tabla: ['audio'] };
+    const allowed: Record<string, string[]> = { kolam: ['trace', 'image'], 'origami-crane': ['video'], tabla: ['audio'] };
     if (v.modality === 'universal') {
       const profile = v.profile;
       const allowedKinds = profile?.learner_input_kinds ?? ['image', 'audio', 'video', 'trace'];
@@ -241,7 +243,7 @@ export const mockApi: Api = {
     } else if (base === 'kolam') {
       await delay(1500);
       result = evaluateKolamImage(v, sid, s.learner, n);
-    } else if (base === 'origami') {
+    } else if (base === 'origami-crane') {
       await delay(3000);
       result = evaluateOrigami(v, sid, s.learner, n);
     } else {
@@ -274,7 +276,7 @@ export const mockApi: Api = {
   },
 
   goalAssetUrl(caseId: string, asset: string): string {
-    if (baseOf(caseId) === 'origami') return origamiGoalAsset(asset);
+    if (baseOf(caseId) === 'origami-crane') return origamiGoalAsset(asset);
     // Universal composed cases use synthetic keyframe SVGs
     const v = cases.get(caseId);
     if (v?.modality === 'universal') return keyframeAssetUrl(caseId, asset);

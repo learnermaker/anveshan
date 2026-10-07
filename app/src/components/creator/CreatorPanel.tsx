@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { CheckCircle2 } from 'lucide-react';
 import type { CaseView, LibraryRecord } from '../../api/types';
 import { api } from '../../api/client';
-import { Badge, ErrorNote, Panel, btn } from '../../hero/ui';
+import { Badge, ErrorNote, Panel, ReviewBadge, btn } from '../../hero/ui';
 import { LIBRARY_STATUS_HELP, LIBRARY_STATUS_LABEL } from '../../copy/plain';
 import { CheckStepsDialog } from './CheckStepsDialog';
 import { PublishDialog } from './PublishDialog';
@@ -74,6 +74,7 @@ export function CreatorPanel({ view, onViewChange, onPractise }: Props) {
               <Badge tone={STATUS_TONE[status] ?? 'muted'}>
                 {LIBRARY_STATUS_LABEL[status]}
               </Badge>
+              <ReviewBadge status={view.review_status} own />
             </div>
             <p className="text-[11px] text-on-surface-variant">{LIBRARY_STATUS_HELP[status]}</p>
           </div>

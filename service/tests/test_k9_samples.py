@@ -182,7 +182,7 @@ def _settings(tmp_path: Path, cases_root: Path) -> Settings:
 def _client_with_samples(settings: Settings, monkeypatch: pytest.MonkeyPatch) -> TestClient:
     _install_fakes(monkeypatch)
     app = create_app(settings)
-    app.include_router(samples_routes.router)
+    # samples router is now registered in create_app; no explicit include_router needed
     return TestClient(app, raise_server_exceptions=False)
 
 
@@ -451,7 +451,7 @@ class TestAnalyzeSampleSource:
 
         settings = _settings(tmp_path, tmp_path / "cases")
         app = create_app(settings)
-        app.include_router(samples_routes.router)
+        # samples router is now registered in create_app; no explicit include_router needed
         self.client = TestClient(app, raise_server_exceptions=False)
 
     def test_returns_200_and_add_owner_called(self):

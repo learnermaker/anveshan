@@ -7,7 +7,7 @@ import type { AttemptUpload } from '../client';
 import type { CaseView } from '../types';
 import type { SampleAttempt, SampleSource } from '../types-product';
 
-const KIND_BY_BASE: Record<string, string> = { kolam: 'image', tabla: 'audio', origami: 'video' };
+const KIND_BY_BASE: Record<string, string> = { kolam: 'image', tabla: 'audio', origami: 'video', 'origami-crane': 'video' };
 
 function kindFor(v: CaseView): string {
   if (v.modality === 'universal') return v.profile?.learner_input_kinds?.[0] ?? 'image';
