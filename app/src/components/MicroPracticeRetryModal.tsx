@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { CheckCircle2, RotateCcw, Sparkles, TrendingUp, X, ArrowRight, ShieldCheck } from 'lucide-react';
 import type { CapabilityCase } from '../types/workspace';
 import { useEscape } from '../hero/useEscape';
@@ -63,8 +63,8 @@ export function MicroPracticeRetryModal({
                   }`}
                 >
                   Click #{clickNum}
-                  {clickNum === 3 && <div className="text-[9px] uppercase mt-0.5 text-transmission-emerald">TARGET (5.0 N)</div>}
-                  {clickNum > 3 && <div className="text-[9px] uppercase mt-0.5 text-divergence-crimson">OVER-TORQUE</div>}
+                  {clickNum === 3 && <div className="text-[11px] uppercase mt-0.5 text-transmission-emerald">TARGET (5.0 N)</div>}
+                  {clickNum > 3 && <div className="text-[11px] uppercase mt-0.5 text-divergence-crimson">OVER-TORQUE</div>}
                 </button>
               ))}
             </div>
@@ -355,18 +355,22 @@ export function MicroPracticeRetryModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-fade-in">
-      <div className="bg-surface-elevated border border-transmission-emerald/50 rounded-xl shadow-2xl max-w-xl w-full overflow-hidden flex flex-col">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="micro-practice-title"
+        className="bg-surface-elevated border border-transmission-emerald/50 rounded-xl shadow-2xl max-w-xl w-full overflow-hidden flex flex-col">
         {/* Header */}
         <div className="px-6 py-4 bg-transmission-emerald/10 border-b border-transmission-emerald/30 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-transmission-emerald/20 flex items-center justify-center text-transmission-emerald">
-              <Sparkles className="w-4 h-4" />
+              <Sparkles className="w-4 h-4" aria-hidden="true" />
             </div>
             <div>
-              <div className="text-[10px] font-mono uppercase tracking-widest text-transmission-emerald font-bold">
+              <div className="text-[11px] font-mono uppercase tracking-widest text-transmission-emerald font-bold">
                 UNSCORED MICRO-DRILL // GUIDANCE ONLY
               </div>
-              <h2 className="text-base font-semibold text-on-surface">
+              <h2 id="micro-practice-title" className="text-base font-semibold text-on-surface">
                 {challenge.title}
               </h2>
             </div>
@@ -382,7 +386,7 @@ export function MicroPracticeRetryModal({
         {/* Challenge Instructions */}
         <div className="p-6 space-y-5">
           <div className="p-3.5 bg-surface-dim rounded-lg border border-outline/40">
-            <div className="text-[10px] font-mono uppercase text-on-surface-variant font-semibold">
+            <div className="text-[11px] font-mono uppercase text-on-surface-variant font-semibold">
               TASK INSTRUCTION
             </div>
             <p className="text-xs text-on-surface mt-1 leading-relaxed">

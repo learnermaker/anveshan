@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CheckStepsDialog: creator reviews, edits and removes AI-parsed steps (K9-P3 §2.3).
  */
 
@@ -135,7 +135,7 @@ export function CheckStepsDialog({ view, isOpen, onClose, onViewChange }: Props)
                 <li key={claim.claim_id} className="rounded-lg border border-outline bg-surface-dim p-3 space-y-2">
                   {rs.kind === 'editing' ? (
                     <div className="space-y-2">
-                      <label htmlFor={`edit-${claim.claim_id}`} className="text-[10px] font-mono text-on-surface-variant">
+                      <label htmlFor={`edit-${claim.claim_id}`} className="text-[11px] font-mono text-on-surface-variant">
                         Step {idx + 1}
                       </label>
                       <textarea
@@ -195,14 +195,14 @@ export function CheckStepsDialog({ view, isOpen, onClose, onViewChange }: Props)
                           {claim.statement}
                         </span>
                         {isAiReading && (
-                          <span className="shrink-0 inline-flex items-center px-1 py-0 rounded text-[8px] font-mono font-bold uppercase bg-cadmium-amber/10 text-cadmium-amber border border-cadmium-amber/30">
+                          <span className="shrink-0 inline-flex items-center px-1 py-0 rounded text-[11px] font-mono font-bold uppercase bg-cadmium-amber/10 text-cadmium-amber border border-cadmium-amber/30">
                             AI's reading
                           </span>
                         )}
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
                         {rs.kind === 'busy' ? (
-                          <span className="text-[10px] font-mono text-on-surface-variant">Saving…</span>
+                          <span className="text-[11px] font-mono text-on-surface-variant">Saving…</span>
                         ) : (
                           <>
                             <button

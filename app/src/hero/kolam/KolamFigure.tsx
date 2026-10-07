@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Kolam goal figure: target image + SVG overlays in goal-image pixel coordinates.
  * Curves are the INFERRED suggested decomposition; dots/symmetry are computed (OBSERVED).
  */
@@ -52,7 +52,7 @@ export function KolamFigure({
     <div className={`relative bg-black rounded-lg overflow-hidden border border-outline ${className}`} style={{ aspectRatio: `${W} / ${H}` }}>
       {showImage && imageUrl && <img src={imageUrl} alt="Kolam target" className="absolute inset-0 w-full h-full object-fill" draggable={false} />}
       {showImage && !imageUrl && (
-        <div className="absolute inset-0 flex items-center justify-center text-[10px] font-mono text-on-surface-variant">target image unavailable</div>
+        <div className="absolute inset-0 flex items-center justify-center text-[11px] font-mono text-on-surface-variant">target image unavailable</div>
       )}
       <svg viewBox={`0 0 ${W} ${H}`} className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
         <style>{`@keyframes kolamDraw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }`}</style>

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * LibraryTab: steward view of the full library (K9-P3 §3.5).
  */
 
@@ -116,7 +116,7 @@ export function LibraryTab({ onOpenSkill, onLibraryChanged }: Props) {
           <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr className="border-b border-outline text-[10px] font-mono uppercase text-on-surface-variant">
+                <tr className="border-b border-outline text-[11px] font-mono uppercase text-on-surface-variant">
                   <th className="text-left py-2 pr-3 font-normal">Skill</th>
                   <th className="text-left py-2 pr-3 font-normal">Collection</th>
                   <th className="text-left py-2 pr-3 font-normal">Status</th>

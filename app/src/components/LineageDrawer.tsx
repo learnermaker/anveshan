@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import {
   X,
   Fingerprint,
@@ -122,17 +122,21 @@ export const LineageDrawer: React.FC<LineageDrawerProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-surface-container-low border border-outline rounded-xl w-full max-w-5xl h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="lineage-drawer-title"
+        className="bg-surface-container-low border border-outline rounded-xl w-full max-w-5xl h-[85vh] flex flex-col shadow-2xl overflow-hidden">
         {/* Modal Header */}
         <div className="p-4 bg-surface-container border-b border-outline flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded bg-caliper-cyan/10 border border-caliper-cyan/40 flex items-center justify-center text-caliper-cyan">
-              <Fingerprint className="w-4 h-4" />
+              <Fingerprint className="w-4 h-4" aria-hidden="true" />
             </div>
             <div>
               <div className="font-mono text-sm font-bold text-on-surface uppercase tracking-wider flex items-center gap-2">
-                <span>CRYPTOGRAPHIC LINEAGE & PROVENANCE RECORD</span>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-transmission-emerald/10 text-transmission-emerald border border-transmission-emerald/30 font-bold">
+                <span id="lineage-drawer-title">CRYPTOGRAPHIC LINEAGE & PROVENANCE RECORD</span>
+                <span className="text-[11px] px-2 py-0.5 rounded bg-transmission-emerald/10 text-transmission-emerald border border-transmission-emerald/30 font-bold">
                   REPLAY SIGNATURE LABEL
                 </span>
               </div>
@@ -174,7 +178,7 @@ export const LineageDrawer: React.FC<LineageDrawerProps> = ({
                     <span className="font-mono text-xs font-bold text-caliper-cyan">
                       {node.artifact_id}
                     </span>
-                    <span className="font-mono text-[9px] text-on-surface-variant">
+                    <span className="font-mono text-[11px] text-on-surface-variant">
                       NODE 0{index + 1}
                     </span>
                   </div>
@@ -184,13 +188,13 @@ export const LineageDrawer: React.FC<LineageDrawerProps> = ({
                   </div>
 
                   {node.sha256 && (
-                    <div className="font-mono text-[9px] text-on-surface-variant truncate mt-1">
+                    <div className="font-mono text-[11px] text-on-surface-variant truncate mt-1">
                       SHA256: {node.sha256}
                     </div>
                   )}
 
                   {node.parents && node.parents.length > 0 && (
-                    <div className="font-mono text-[9px] text-cadmium-amber mt-1 flex items-center gap-1">
+                    <div className="font-mono text-[11px] text-cadmium-amber mt-1 flex items-center gap-1">
                       <GitBranch className="w-2.5 h-2.5" />
                       <span>PARENTS: {node.parents.join(', ')}</span>
                     </div>
@@ -234,7 +238,7 @@ export const LineageDrawer: React.FC<LineageDrawerProps> = ({
             </div>
 
             {/* Verification Footer */}
-            <div className="mt-3 pt-3 border-t border-outline flex items-center justify-between text-[10px] font-mono text-on-surface-variant">
+            <div className="mt-3 pt-3 border-t border-outline flex items-center justify-between text-[11px] font-mono text-on-surface-variant">
               <div className="flex items-center gap-1 text-transmission-emerald">
                 <ShieldCheck className="w-3.5 h-3.5" />
                 <span>CROSS-CONTRACT INVARIANTS: PASS</span>

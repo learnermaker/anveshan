@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Step 3b: Needs input — AI couldn't determine the skill type alone.
  * Title and description are required to refine the draft.
  */
@@ -34,7 +34,7 @@ export function StepNeedsInput({ draft, onRefine, onStartOver, error }: Props) {
   return (
     <div className="flex flex-col gap-6 max-w-xl mx-auto animate-fade-in">
       <div className="space-y-1">
-        <div className="text-[10px] font-mono uppercase tracking-widest text-cadmium-amber font-bold">Composer · Step 3b — More context needed</div>
+        <div className="text-[11px] font-mono uppercase tracking-widest text-cadmium-amber font-bold">Composer · Step 3b — More context needed</div>
         <h2 className="text-2xl font-serif text-on-surface">Tell us about this skill</h2>
       </div>
 

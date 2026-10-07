@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { Cpu, RefreshCw, X } from 'lucide-react';
 import { api } from '../api/client';
 import { API_BASE, IS_MOCK, getRequestedMode, setRequestedMode, type RequestedMode } from '../api/runtime';
@@ -48,11 +48,17 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-fade-in" onClick={onClose}>
-      <div className="bg-surface-container border border-outline rounded-xl shadow-2xl max-w-lg w-full overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="settings-runtime-title"
+        className="bg-surface-container border border-outline rounded-xl shadow-2xl max-w-lg w-full overflow-hidden flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="px-6 py-4 bg-surface-dim border-b border-outline flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <Cpu className="w-5 h-5 text-cadmium-amber" />
-            <h2 className="text-sm font-semibold font-mono text-on-surface">RUNTIME</h2>
+            <Cpu className="w-5 h-5 text-cadmium-amber" aria-hidden="true" />
+            <h2 id="settings-runtime-title" className="text-sm font-semibold font-mono text-on-surface">RUNTIME</h2>
             <MockBadge />
           </div>
           <button onClick={onClose} className="flex items-center gap-1 px-2 py-1 rounded text-on-surface-variant hover:text-on-surface transition-colors" aria-label="Close" title="Close (Esc)">
@@ -105,7 +111,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 </button>
               ))}
             </div>
-            <p className="text-[10px] text-on-surface-variant font-sans leading-relaxed">
+            <p className="text-[11px] text-on-surface-variant font-sans leading-relaxed">
               <b>recorded</b> replays recorded model runs (fails with REPLAY_MISMATCH rather than calling a model). <b>live</b> calls models on the server. Each result shows what actually ran: LIVE, RECORDED LIVE or DETERMINISTIC.
             </p>
           </div>

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Check, ChevronDown, HelpCircle, KeyRound, Library, Lock, Settings, Share2, Sparkles, Users } from 'lucide-react';
 import type { AppView } from '../types/workspace';
 import type { RequestedMode } from '../api/runtime';
@@ -121,7 +121,7 @@ export const Header: React.FC<HeaderProps> = ({
               <Users className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
               <span>My skills</span>
               {ownedCount > 0 && (
-                <span className="ml-0.5 px-1 py-0 rounded-full bg-cadmium-amber/80 text-background text-[9px] font-bold leading-none">
+                <span className="ml-0.5 px-1 py-0 rounded-full bg-cadmium-amber/80 text-background text-[11px] font-bold leading-none">
                   {ownedCount}
                 </span>
               )}
@@ -149,7 +149,7 @@ export const Header: React.FC<HeaderProps> = ({
               <select
                 value={selectedCase}
                 onChange={(e) => onSelectCase(e.target.value)}
-                className="bg-transparent text-[10px] font-mono font-medium text-caliper-cyan hover:text-white cursor-pointer focus:outline-none appearance-none pr-4 truncate max-w-[180px]"
+                className="bg-transparent text-[11px] font-mono font-medium text-caliper-cyan hover:text-white cursor-pointer focus:outline-none appearance-none pr-4 truncate max-w-[180px]"
                 aria-label="Select case"
               >
                 {groups.map((g) => (
@@ -276,7 +276,7 @@ export const Header: React.FC<HeaderProps> = ({
                     )}
                     <span>{v.label}</span>
                     {st?.hint && (
-                      <span className={`font-mono text-[10px] ${isActive ? 'text-surface-dim/80' : 'text-on-surface-variant'}`}>
+                      <span className={`font-mono text-[11px] ${isActive ? 'text-surface-dim/80' : 'text-on-surface-variant'}`}>
                         · {st.hint}
                       </span>
                     )}

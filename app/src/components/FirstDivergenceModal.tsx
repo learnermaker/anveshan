@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { AlertTriangle, ArrowRight, CheckCircle2, HelpCircle, Shield, X, Eye, Sparkles } from 'lucide-react';
 import type { CapabilityCase } from '../types/workspace';
 import type { CertaintyState } from '../types/workspace';
@@ -26,25 +26,25 @@ export function FirstDivergenceModal({
     switch (certainty) {
       case 'OBSERVED':
         return (
-          <span className="px-2 py-0.5 text-[10px] font-mono font-semibold bg-caliper-cyan/15 text-caliper-cyan border border-caliper-cyan/30 rounded">
+          <span className="px-2 py-0.5 text-[11px] font-mono font-semibold bg-caliper-cyan/15 text-caliper-cyan border border-caliper-cyan/30 rounded">
             OBSERVED (OPTICAL / ACOUSTIC)
           </span>
         );
       case 'INFERRED':
         return (
-          <span className="px-2 py-0.5 text-[10px] font-mono font-semibold bg-cadmium-amber/15 text-cadmium-amber border border-cadmium-amber/30 rounded">
+          <span className="px-2 py-0.5 text-[11px] font-mono font-semibold bg-cadmium-amber/15 text-cadmium-amber border border-cadmium-amber/30 rounded">
             INFERRED (PHYSICAL CAUSALITY)
           </span>
         );
       case 'SOURCE_DERIVED_FACT':
         return (
-          <span className="px-2 py-0.5 text-[10px] font-mono font-semibold bg-transmission-emerald/15 text-transmission-emerald border border-transmission-emerald/30 rounded">
+          <span className="px-2 py-0.5 text-[11px] font-mono font-semibold bg-transmission-emerald/15 text-transmission-emerald border border-transmission-emerald/30 rounded">
             SOURCE-DERIVED FACT
           </span>
         );
       default:
         return (
-          <span className="px-2 py-0.5 text-[10px] font-mono font-semibold bg-surface-bright text-on-surface-variant border border-outline rounded">
+          <span className="px-2 py-0.5 text-[11px] font-mono font-semibold bg-surface-bright text-on-surface-variant border border-outline rounded">
             UNKNOWN
           </span>
         );
@@ -53,18 +53,22 @@ export function FirstDivergenceModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-fade-in">
-      <div className="bg-surface-elevated border border-divergence-crimson/50 rounded-xl shadow-2xl max-w-2xl w-full overflow-hidden flex flex-col max-h-[90vh]">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="first-divergence-title"
+        className="bg-surface-elevated border border-divergence-crimson/50 rounded-xl shadow-2xl max-w-2xl w-full overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="px-6 py-4 bg-divergence-crimson/10 border-b border-divergence-crimson/30 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-divergence-crimson/20 flex items-center justify-center text-divergence-crimson">
-              <AlertTriangle className="w-4 h-4" />
+              <AlertTriangle className="w-4 h-4" aria-hidden="true" />
             </div>
             <div>
-              <div className="text-[10px] font-mono uppercase tracking-widest text-divergence-crimson font-bold">
+              <div className="text-[11px] font-mono uppercase tracking-widest text-divergence-crimson font-bold">
                 FORENSIC VERIFICATION // FIRST DIVERGENCE DETECTED
               </div>
-              <h2 className="text-base font-semibold text-on-surface">
+              <h2 id="first-divergence-title" className="text-base font-semibold text-on-surface">
                 {div.divergenceTitle}
               </h2>
             </div>
@@ -82,7 +86,7 @@ export function FirstDivergenceModal({
           {/* Rubric Criterion Mapping */}
           <div className="p-3.5 bg-surface-dim rounded-lg border border-outline/40 flex items-start justify-between gap-4">
             <div>
-              <div className="text-[10px] font-mono uppercase text-on-surface-variant">
+              <div className="text-[11px] font-mono uppercase text-on-surface-variant">
                 TARGET RUBRIC CRITERION
               </div>
               <div className="font-semibold text-on-surface text-sm mt-0.5">
@@ -93,7 +97,7 @@ export function FirstDivergenceModal({
               </div>
             </div>
             <div className="text-right">
-              <div className="text-[10px] font-mono uppercase text-on-surface-variant">
+              <div className="text-[11px] font-mono uppercase text-on-surface-variant">
                 TEMPORAL / STEP LOCUS
               </div>
               <div className="font-mono font-bold text-on-surface text-sm mt-0.5">

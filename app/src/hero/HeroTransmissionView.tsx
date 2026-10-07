@@ -160,6 +160,7 @@ export function HeroTransmissionView({ view, session, onBackToPractice, onPracti
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <Panel kicker="Check by check" title="What changed between your first and second try">
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-[11px] font-mono uppercase text-on-surface-variant text-left border-b border-outline">
@@ -192,6 +193,7 @@ export function HeroTransmissionView({ view, session, onBackToPractice, onPracti
               })}
             </tbody>
           </table>
+          </div>
           <p className="mt-2 text-xs text-on-surface-variant">Checks improved: {rec.criteria_improved.length ? rec.criteria_improved.map(id => view.rubric.criteria.find(c => c.criterion_id === id)?.name ?? id).join(', ') : 'none yet'}</p>
         </Panel>
 

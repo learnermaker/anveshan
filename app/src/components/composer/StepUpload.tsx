@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Step 1: Upload — drop zone + optional title/description + rights checkbox.
  * Client-side guards: ≤ 30 MB; video 8–600 s; audio 3–60 s; image short side ≥ 64 px.
  */
@@ -120,7 +120,7 @@ export function StepUpload({ onSubmit, onAnalyzeSample, onCancel, error }: Props
   return (
     <div className="flex flex-col gap-6 max-w-2xl mx-auto animate-fade-in">
       <div className="space-y-1">
-        <div className="text-[10px] font-mono uppercase tracking-widest text-cadmium-amber font-bold">Composer · Step 1</div>
+        <div className="text-[11px] font-mono uppercase tracking-widest text-cadmium-amber font-bold">Composer · Step 1</div>
         <h2 className="text-2xl font-serif text-on-surface">Upload your source</h2>
         <p className="text-sm text-on-surface-variant">Upload a photo, video or audio of something you know how to do. The AI looks at it and proposes a practice task. You check everything before anyone else sees it.</p>
       </div>
@@ -146,7 +146,7 @@ export function StepUpload({ onSubmit, onAnalyzeSample, onCancel, error }: Props
           <>
             <Upload className="w-8 h-8 text-outline" />
             <span className="text-sm text-on-surface-variant">Drag and drop here, or click to browse</span>
-            <span className="text-[10px] font-mono text-outline">image / video / audio · max 30 MB</span>
+            <span className="text-[11px] font-mono text-outline">image / video / audio · max 30 MB</span>
           </>
         )}
         <input
@@ -166,7 +166,7 @@ export function StepUpload({ onSubmit, onAnalyzeSample, onCancel, error }: Props
       {samplesError != null && <ErrorNote error={samplesError} />}
       {samples && samples.length > 0 && (
         <div className="space-y-3">
-          <div className="text-[10px] font-mono uppercase tracking-widest text-on-surface-variant font-bold">
+          <div className="text-[11px] font-mono uppercase tracking-widest text-on-surface-variant font-bold">
             No file to hand? Try with an example
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -174,7 +174,7 @@ export function StepUpload({ onSubmit, onAnalyzeSample, onCancel, error }: Props
               <div key={s.sample_id} className="rounded-lg border border-outline bg-surface-dim p-3 space-y-2">
                 <div className="font-semibold text-sm text-on-surface">{s.label}</div>
                 <p className="text-[11px] text-on-surface-variant">{s.description}</p>
-                <p data-plain-exempt className="text-[10px] font-mono text-on-surface-variant">
+                <p data-plain-exempt className="text-[11px] font-mono text-on-surface-variant">
                   Example provided with Anveshan ({s.licence})
                 </p>
                 <button
@@ -250,7 +250,7 @@ export function StepUpload({ onSubmit, onAnalyzeSample, onCancel, error }: Props
           Cancel
         </button>
       </div>
-      <p className="text-[10px] text-on-surface-variant">This usually takes 10–30 seconds for photos and audio, and up to about 90 seconds for videos.</p>
+      <p className="text-[11px] text-on-surface-variant">This usually takes 10–30 seconds for photos and audio, and up to about 90 seconds for videos.</p>
     </div>
   );
 }

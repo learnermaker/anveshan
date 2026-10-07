@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { X, Sparkles, ExternalLink, Download, Layers } from 'lucide-react';
 import { useEscape } from '../hero/useEscape';
 
@@ -15,17 +15,21 @@ export const StitchModal: React.FC<StitchModalProps> = ({ isOpen, onClose }) => 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/85 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-surface-container-low border border-outline rounded-xl w-full max-w-5xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="stitch-modal-title"
+        className="bg-surface-container-low border border-outline rounded-xl w-full max-w-5xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="p-4 bg-surface-container border-b border-outline flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded bg-cadmium-amber/10 border border-cadmium-amber/40 flex items-center justify-center text-cadmium-amber">
-              <Sparkles className="w-4 h-4" />
+              <Sparkles className="w-4 h-4" aria-hidden="true" />
             </div>
             <div>
               <div className="font-mono text-xs font-bold text-on-surface uppercase tracking-wider flex items-center gap-2">
-                <span>GOOGLE STITCH MCP &bull; CANONICAL WORKBENCH SCREENS</span>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-cadmium-amber/10 text-cadmium-amber border border-cadmium-amber/30 font-bold">
+                <span id="stitch-modal-title">GOOGLE STITCH MCP &bull; CANONICAL WORKBENCH SCREENS</span>
+                <span className="text-[11px] px-2 py-0.5 rounded bg-cadmium-amber/10 text-cadmium-amber border border-cadmium-amber/30 font-bold">
                   PROJECT 6307547599991476233
                 </span>
               </div>

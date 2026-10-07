@@ -1,4 +1,4 @@
-/**
+﻿/**
  * MySkillsView: the creator's "My skills" page (K9-P3 §2.1).
  * Shows all cases the current visitor owns, with status and next-action buttons.
  */
@@ -50,7 +50,7 @@ function SkillStatusCard({ c, isDerivedUpload, onOpen, onShowInsights }: CardPro
             <p className="text-[11px] text-on-surface-variant">by {access.credit_name}</p>
           )}
         </div>
-        <span className={`inline-flex items-center px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase border whitespace-nowrap ${chipCls}`}>
+        <span className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-mono font-bold uppercase border whitespace-nowrap ${chipCls}`}>
           {LIBRARY_STATUS_LABEL[status]}
         </span>
       </div>

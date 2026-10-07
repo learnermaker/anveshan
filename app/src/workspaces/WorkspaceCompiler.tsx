@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import type { CapabilityCase } from '../types/workspace';
 import { ForensicInstrumentWorkspace } from './ForensicInstrumentWorkspace';
 import { SpatialCanvasWorkspace } from './SpatialCanvasWorkspace';
@@ -120,7 +120,7 @@ export function WorkspaceCompiler({
             <Cpu className="w-4 h-4" />
           </div>
           <div>
-            <div className="text-[10px] font-mono uppercase tracking-widest text-cadmium-amber font-bold flex items-center gap-1.5">
+            <div className="text-[11px] font-mono uppercase tracking-widest text-cadmium-amber font-bold flex items-center gap-1.5">
               <span>GENERATIVE UI // WORKSPACE COMPOSITION SPECIFICATION</span>
             </div>
             <div className="text-xs text-on-surface flex flex-wrap items-center gap-2 mt-0.5 font-mono">

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ConsentTab: consent and licence ledger with download (K9-P3 §3.6).
  */
 
@@ -71,7 +71,7 @@ export function ConsentTab() {
           <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-[11px] border-collapse">
               <thead>
-                <tr className="border-b border-outline text-[10px] font-mono uppercase text-on-surface-variant">
+                <tr className="border-b border-outline text-[11px] font-mono uppercase text-on-surface-variant">
                   <th className="text-left py-2 pr-3 font-normal">Skill</th>
                   <th className="text-left py-2 pr-3 font-normal">Credit</th>
                   <th className="text-left py-2 pr-3 font-normal">Licence</th>
@@ -122,7 +122,7 @@ export function ConsentTab() {
                       <tr className="border-b border-outline/30 bg-surface-dim/30">
                         <td colSpan={7} className="py-2 px-3">
                           <div className="space-y-1">
-                            <div className="text-[10px] font-mono uppercase text-on-surface-variant mb-1">History</div>
+                            <div className="text-[11px] font-mono uppercase text-on-surface-variant mb-1">History</div>
                             {row.history.length === 0 ? (
                               <p className="text-[11px] text-on-surface-variant">No history.</p>
                             ) : (
@@ -166,7 +166,7 @@ export function ConsentTab() {
                   {expanded === row.case_id ? 'Hide history' : 'Show history'}
                 </button>
                 {expanded === row.case_id && row.history.map((h, i) => (
-                  <div key={i} className="text-[10px] font-mono text-on-surface-variant">
+                  <div key={i} className="text-[11px] font-mono text-on-surface-variant">
                     {fmtDate(h.at)} · {h.actor} · {h.action}{h.note ? ` — ${h.note}` : ''}
                   </div>
                 ))}

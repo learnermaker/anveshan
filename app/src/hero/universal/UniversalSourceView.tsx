@@ -291,7 +291,7 @@ export function UniversalSourceView({ view, onViewChange, onReload, onEnterPract
                       <div className="flex-1 flex gap-1">
                         <input value={editClaim!.text} onChange={(e) => setEditClaim({ id: c.claim_id, text: e.target.value })} className="flex-1 bg-surface-dim border border-outline rounded px-2 py-0.5 text-[11px] font-mono outline-none focus:border-caliper-cyan" aria-label="Edit claim" />
                         <button onClick={() => void doRevise(c.claim_id, editClaim!.text)} className={`${btn.primary} py-0.5 text-[11px]`}>Save</button>
-                        <button onClick={() => setEditClaim(null)} className={`${btn.ghost}`}><X className="w-3 h-3" /></button>
+                        <button onClick={() => setEditClaim(null)} className={`${btn.ghost}`} aria-label="Cancel edit"><X className="w-3 h-3" aria-hidden="true" /></button>
                       </div>
                     ) : (
                       <>
