@@ -196,7 +196,7 @@ Not yet deployed. Jim will deploy via the GCP Cloud Run console using `docs/depl
 
 ## Documentation
 
-See docs/README.md for the complete map. The repository separates EXPLORED, DECIDED, VALIDATED and IMPLEMENTED material so research does not silently become product scope. See `AGENTS.md` for the source-of-truth hierarchy used by coding agents.
+See docs/README.md for the complete map. The repository separates EXPLORED, DECIDED, VALIDATED and IMPLEMENTED material so research does not silently become product scope. See `AGENTS.md` for the source-of-truth hierarchy used by coding agents. Third-party media and their licences: `docs/MEDIA-ATTRIBUTION.md`.
 
 ### Parallel implementation workspaces
 
