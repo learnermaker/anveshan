@@ -33,19 +33,30 @@ Closes #99
   max-instances 1, 2 GiB memory, 300 s timeout, smoke commands, cost estimate. `.env.example`
   updated with missing `ANVESHAN_STATIC_DIR`.
 
+- Universal-pipeline robustness for ANY new upload (2026-10-07, Claude Code):
+  - video: domain-agnostic state segmentation, stage grouping, Drop-DTW-style monotone alignment, LIS order, relative relevance gate, reference step matching, multi-frame judges;
+  - image: enumerate-then-compare completeness;
+  - audio: non-tabla rhythmic skills compose with banded checks;
+  - gateway: bounded 429 backoff;
+  - uploads up to 600 s.
+
+  Bugs fixed: video perceived only the first 120 s; judges got no frames for video; wording prompt path; reference keyframe lookup; audio skills with zero checks; placeholder rhythm bands.
+  Evidence: `docs/validation/experiments.md` E6, `tracks/track-b/eval/universal_video/`. Design: `docs/plans/universal-pipeline.md` §12.
+- Universal UI wiring: source media and step thumbnails, line_art canvas from the specialist payload, MEASURED vs AI-JUDGED badges, video step strip.
+
 **Not included**
 
 - No deployment (Jim deploys via GCP console using `docs/deploy/DEPLOY-CHECKLIST.md`).
 - No changes to the 8 frozen contracts in `tracks/common/schemas/`.
 - No hero case artifact changes (hero tests unchanged and green).
-- No KolamCanvas wiring for universal UI (WP3 request #4: deferred — placeholder is
-  functional, real geometry wiring requires a separate UI task).
 - No `audio/webm` format-gate change for WP1 request (no observed user-impact during
   integration).
+- Speech/utterance skills not stress-tested. Fine-grained states in low-resolution, hand-dominated video
+  remain a known limit (E6).
 
 ## Validation
 
-- Tests: **423 non-live tests pass** (83 common, 110 track-a, 230 track-b + service).
+- Tests: **434 non-live tests pass**.
   All governance checks pass (check_governance, check_case_packs, check_contract_parity).
   `npm --prefix app run build` passes.
 - Manual / benchmark evidence:
@@ -56,8 +67,9 @@ Closes #99
 - AI changes: quality gate thresholds recalibrated (blur_score 15→0.002, brightness
   0.08→0.02) based on live measurements. min_similarity=0.72 retained. Documented in
   `docs/plans/universal-pipeline.md` §11.
-- No model/prompt/config changes in this PR. No new golden run files committed (live runs
-  go to gitignored `var/`).
+- Prompt changes: `perceive_frames_v2`, `match_steps_v1`, `judge_final_v2`, `judge_step_v2`,
+  `compare_parts_v1` (all vision_fast = gemini-3.5-flash-lite; outputs are observations, scores
+  stay deterministic). No new golden run files committed (live runs go to gitignored `var/`).
 
 ## Alignment
 
