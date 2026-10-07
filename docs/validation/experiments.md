@@ -388,6 +388,40 @@ evaluation is well within budget.
 
 Design and limits: `docs/plans/universal-pipeline.md` §12.
 
+## E7 — Robustness round 2: speech skills, matcher consistency, end-to-end UI (2026-10-07)
+
+**Status:** VALIDATED as engineering/capability evidence (synthetic media; local service, live models). Not learner validation.
+
+**Speech skill (new modality coverage).** Source: a spoken road-safety phrase made with the local Windows speech synthesizer; attempts in a different voice. Evidence: `tracks/track-b/eval/universal_video/speech_summary.json`.
+
+| Attempt | Verdict | Note |
+|---|---|---|
+| same phrase, other voice | PASS | utterance match 1.0 |
+| different phrase | FAIL | match 0.08 |
+| first half of the phrase | FAIL | match 0.5, pace error 0.42 |
+| white noise | REFUSED | "No speech can be heard…" |
+
+The first run exposed two bugs, now fixed:
+- longer speech composed as a *rhythm* skill, so a different phrase PASSED; fixed by letting the audio model's `audio_kind` decide between speech and rhythm;
+- noise was scored "uncertain" with a wrong "audio model disabled" reason; it is now refused.
+
+**Matcher self-consistency (two passes, reversed order).** Synthetic house video, 3 independent live compose + attempt runs:
+- perfect PASS 3/3, missing step FAIL 3/3, stopped early FAIL 3/3, unrelated REFUSED 3/3;
+- swapped order still unstable: PASS, FAIL, PASS.
+
+Cause, found from the runs: in the swapped attempt the canvas briefly shows *only a roof*, a state the expert never showed. A lone roof and a lone rectangle are both "one shape on a blank canvas", so the frame is matched to the expert's "rectangle" step and coverage and order look complete. Known limit; see `docs/plans/universal-pipeline.md` §12.3.
+
+**End-to-end UI walk-through (browser, local service, live models)** found and fixed:
+- composed cases returned 404 after "Create skill" (`load_case` ignored the case folder);
+- a draft made while a model call failed was cached forever for that file;
+- transparent PNG attempts were never shown to the AI judges, yet the judges still returned verdicts (a missing block was judged "correctly positioned"). Now transparency is composited on white, and an unreadable attempt is never judged;
+- duplicated warnings, mid-word name truncation, an over-long event list, and duplicate selector entries.
+
+After the fixes, the composed block-arrangement skill:
+- complete re-drawn arrangement: PASS 11/11;
+- one block missing: FAIL, with the first divergence on the missing block's claim;
+- unrelated graphic: FAIL 0/11, not refused (similarity 0.76 sits in the ambiguous band).
+
 ## Current Planned Experiments — Transmission Thesis
 
 These experiments validate the current competition/MVP wedge defined in `docs/product/product-thesis.md` and bounded by `docs/product/mvp-contract.md`.

@@ -335,5 +335,7 @@ Image and audio fixes found by these runs:
 ### 12.3 Known limits (honest)
 - Global embeddings separate scenes, not fine-grained object states. When hands dominate a low-resolution frame, step identity depends on the vision model, whose answers vary between live runs even at temperature 0. Recorded replay makes demos reproducible; live answers can differ.
 - Composed steps are proposals. The composer's review step, where the expert confirms or edits steps, is the product safeguard. Steps stay INFERRED until then.
-- Speech/utterance skills were not stress-tested (no licence-clean speech sample yet).
-- Next options, not yet authorised: self-consistency (2–3 matcher calls with agreement weighting); crop to the work region before embedding.
+- Speech/utterance skills: stress-tested with synthetic speech (E7). The audio model's `audio_kind` separates speech from rhythm.
+- The step matcher runs two passes (learner keyframes in time order, then reversed). Only labels that agree feed the alignment (E7). This does **not** fix the swapped-order case: a novel intermediate state that looks like an expert state (a lone roof vs a lone rectangle) is matched to that state.
+- An unrelated attempt that is visually similar (same canvas and colours) can land in the ambiguous relevance band and be scored FAIL instead of REFUSED. It is not a false pass.
+- Not done (deliberately): crop to the work region before judging. It needs a measured benefit on real hand-held footage first; our test clips are synthetic or a single internet video.

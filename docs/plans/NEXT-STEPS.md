@@ -16,6 +16,7 @@ Judging weights: Technical and Gen AI 40 %, Problem and Impact 25 %, Innovation 
 - `main` holds everything (the universal pipeline, three hero cases, the composer UI, the service and the deploy files). 435 non-live tests pass, governance, case-pack and contract-parity checks pass, and the app builds.
 - Universal-pipeline evidence for new uploads is in `docs/validation/experiments.md` E6 (video, image and audio new-skill stress tests). Known limits are in `docs/plans/universal-pipeline.md` §12.
 - Not yet done: the Cloud Run deployment, a public repo, the demo video, the deck and team registration.
+- **Update (2026-10-07, later):** the whole engineering backlog in §4 is done, except the live smoke test on the deployed URL (it needs the URL) and the deliberately deferred crop. An end-to-end browser walk-through found and fixed real bugs (E7 in `docs/validation/experiments.md`). 449 non-live tests pass.
 
 ## 1. Critical path (blocking; owner = Jim unless noted)
 
@@ -23,8 +24,8 @@ Judging weights: Technical and Gen AI 40 %, Problem and Impact 25 %, Innovation 
 |---|---|---|---|---|
 | 1 | **Register the team (2–4 members) on Hack2skill**; ask the helpdesk for the deadline time zone | **Oct 9** (roster closes Oct 11) | Confirmation email received | Disqualification |
 | 2 | **Deploy to Cloud Run** via the console using `docs/deploy/DEPLOY-CHECKLIST.md`: secret `gemini-api-key` in Secret Manager, 2 GiB, 2 vCPU, max-instances 1, concurrency 1, timeout 300 s | Oct 10 | `/healthz` is OK; the HTTP smoke test in the checklist passes on the live URL | No live URL means no valid submission |
-| 3 | **Live smoke test of the universal path on the deployed URL** (Claude, with Jim's URL): compose one new image, one short video (≤ 60 s) and one audio skill, plus one attempt each; record latency | Oct 10 | Each compose finishes under the 300 s timeout; numbers recorded in `docs/validation/experiments.md` (E7) | A video compose at the 600 s cap may exceed the timeout (about 120 embeddings plus 2–4 vision calls). Mitigation: lower `_VIDEO_MAX_SEC` for the demo or raise the timeout to 900 s |
-| 4 | **Make the repository public.** First run a secret scan of the full history (Claude: `git log -p --all` plus the scan pattern `AIza[0-9A-Za-z_-]{20,}`), then confirm that third-party media licences in the case packs allow redistribution | Oct 12 | The scan is clean and the repo is public | Required item |
+| 3 | **Live smoke test of the universal path on the deployed URL** (Claude, with Jim's URL): compose one new image, one short video (≤ 60 s) and one audio skill, plus one attempt each; record latency | Oct 10 | Each compose finishes under the 300 s timeout; numbers recorded in `docs/validation/experiments.md` | Low risk. Measured locally: the 335 s Origami video composes in about 50 s; attempts take 25–62 s; images and audio under 10 s. Cloud Run CPUs may be slower. If needed, raise the timeout to 900 s |
+| 4 | **Make the repository public.** Already done by Claude: the history secret scan is clean (no key pattern; only `.env.example` files were ever committed), and the media licences are checked and attributed in `docs/MEDIA-ATTRIBUTION.md`. Jim's part: (a) choose a code licence (there is no LICENSE file; MIT or Apache-2.0 are common), (b) delete the merged remote branches `kiro/*` (Claude was not permitted to), (c) switch the repo to public | Oct 12 | Repo public, with a LICENSE | Required item |
 | 5 | **Lock the demo storyline and decide the Origami presentation** (see §3, D1) | Oct 12 | Decision recorded in `docs/plans/DECISION-LOG.md` | Demo shows a failing engine |
 | 6 | **Record the 3-minute demo video** on the live URL; keep a backup recording of each segment | Oct 15 | Public link, under 3:00 | Required item |
 | 7 | **Deck** (architecture, Gen AI use, business case, evidence and honest limits) | Oct 16 | PDF or Slides link | Required item |
@@ -57,20 +58,22 @@ Pre-record each segment as a backup. Live model variance exists (see the known l
 - **D2 — Demo video source for the live compose.** Use a short (30–90 s), well-lit, top-down video with clearly distinct stages, where you hold the rights or the licence is open. Claude can pre-test candidates with `tools/stress_universal_video.py`.
 - **D3 — Merge discipline.** This push went to `main` directly, at Jim's explicit instruction, without a PR. For the remaining changes, use small branches and PRs again (AGENTS.md lifecycle) or continue direct pushes during the final week. Recommendation: PRs for code, direct pushes allowed for docs only.
 
-## 4. Engineering backlog (ordered; Claude can do these; each is small and independently shippable)
+## 4. Engineering backlog (status 2026-10-07)
 
-Only after §1 steps 2–3 succeed. Stop when the demo is solid. Do not expand scope.
+| Item | Status |
+|---|---|
+| Live smoke test on the deployed URL (all three modalities; record latency) | **TODO**: needs the URL from §1 step 2; Claude runs it |
+| Demo-safe progress text (media-aware expected durations) | DONE |
+| Matcher self-consistency (two passes, reversed order) | DONE. The swapped-order case is still unstable (cause in E7) |
+| Crop to the work region | DEFERRED until real hand-held footage shows a measured need |
+| Speech-skill stress test | DONE (E7). It also fixed speech being composed as rhythm |
+| Kolam card title and provenance (Ithayakkamalam, not Sikku) | DONE |
+| Dead code, merged worktrees | DONE. Remote `kiro/*` branches: Jim |
+| Found in the UI walk-through: 404 after Create skill; cached failed drafts; transparent PNG attempts judged blind; duplicate warnings; mid-word names; long event lists; duplicate selector entries | DONE (E7) |
 
-| P | Item | Why | Acceptance |
-|---|---|---|---|
-| P0 | Fix anything the live smoke test (step 3) reveals: timeouts, cold-start, upload size | The demo must work without manual recovery | All three modalities compose and evaluate on the live URL |
-| P0 | Demo-safe defaults: cap the interactive video compose at a duration that fits the timeout; show progress text during the long compose | UX (10 %) and reliability | No request exceeds the timeout in the smoke test |
-| P1 | Self-consistency for the step matcher (2 calls, keep agreeing labels) | Reduces the variance of the swapped-order verdict (known limit) | Synthetic swapped scenario gives a stable verdict over 3 live runs |
-| P1 | Crop to the work region before the judges | Helps hand-dominated, low-resolution video (the Origami window limit) | Origami 0–194 s perfect attempt passes in 2 of 3 runs |
-| P2 | Speech-skill stress test (utterance structure untested) | Closes a known gap | `tools/stress_universal_other.py --scenario speech` evidence saved |
-| P2 | Kolam card title "Sikku" vs the note that lines pass through dots | Content accuracy | Title and description consistent with `tracks/cases/kolam` |
-| P3 | Remove the dead code flagged by pyflakes (unused `needleman_wunsch` result in the universal evaluator; unused locals) | Hygiene | pyflakes shows no unused locals in `tracks/*/src` |
-| P3 | Remove the merged worktrees `anveshan-wt/*` and the stale remote branches (k1–k4, wp1–wp4) | Repo hygiene before going public | `git worktree list` shows only the main folder |
+Possible next items (small, only if time allows; not started):
+- **Relevance for look-alike unrelated images:** in the ambiguous band, ask the matcher-style yes/no with the expert image beside the attempt. Today such attempts FAIL rather than being REFUSED.
+- **Swapped-order sensitivity:** add a "novel state" check that compares each attempt keyframe with *all* expert keyframes side by side, and treats "none of these" as off-path.
 
 ## 5. Ideal next steps after the hackathon (NEXT bucket; not authorised now)
 

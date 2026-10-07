@@ -76,11 +76,12 @@ The models are cross-checks, not authority (e.g. flash-lite said 7-fold symmetry
   - 429 backoff in the gateway.
 
   Design, evidence and limits: `docs/plans/universal-pipeline.md` §12 and `docs/validation/experiments.md` E6. Stress tools: `tools/stress_universal_video.py --scenario synth|origami|origami_window`, `tools/stress_universal_other.py --scenario image|audio` (`--mode recorded` replays from `var/stress/*/data/runs`; `--mode live` costs a few cents).
-- **Tests:** 434+ non-live passing; governance, case-pack and parity checks pass; the app builds.
+- **Tests:** 449 non-live passing; governance, case-pack and parity checks pass; the app builds.
 - **Known limits:**
   - fine-grained states in low-resolution, hand-dominated video (the Origami bird-base clip);
   - the swapped-order synthetic verdict varies between live runs (vision-model variance);
-  - speech skills are untested.
+  - look-alike unrelated images can FAIL instead of being REFUSED.
+  - Speech skills are now stress-tested, and a browser walk-through fixed several end-to-end bugs: `docs/validation/experiments.md` E7.
 - **Dedicated Origami engine:** its own RESULTS show it fails its "perfect" attempt (5 of 7 states; see `tracks/track-b/eval/origami/RESULTS.md`). The full `OrigamiCrane.ogv` through the universal path does better (positive control passes 11/11). This is Jim's decision: either present Origami through the universal path, or keep the dedicated engine and label it honestly.
 - **UI wiring of universal views** (source media, step thumbnails, line_art canvas, MEASURED vs AI-JUDGED badges) is merged.
 
