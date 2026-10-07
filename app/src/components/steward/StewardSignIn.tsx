@@ -49,8 +49,7 @@ export function StewardSignIn({ onSignedIn, message }: Props) {
         <div className="space-y-1">
           <h2 className="font-semibold text-on-surface">Steward access</h2>
           <p className="text-sm text-on-surface-variant">
-            Enter the access code to manage the library, review skills, and view usage.
-            The code was set when the server was started.
+            Stewards look after the library: they check skills before they are published, keep credit and consent records, and watch usage.
           </p>
         </div>
 

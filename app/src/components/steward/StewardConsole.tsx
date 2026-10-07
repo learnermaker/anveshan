@@ -44,7 +44,8 @@ export function StewardConsole({ health, onOpenSkill, onLibraryChanged }: Props)
   // For passing a case directly into the queue-review flow from the overview
   const [reviewingFromOverview, setReviewingFromOverview] = useState<string | null>(null);
 
-  useEffect(() => subscribeStewardToken(setToken), []);
+  // Queue badge count — hoisted before any early return (Rules of Hooks)
+  const [queueCount, setQueueCount] = useState(0);
 
   const stewardOpen = health?.steward_open === true;
   const stewardEnabled = health?.steward_enabled !== false;
@@ -62,6 +63,15 @@ export function StewardConsole({ health, onOpenSkill, onLibraryChanged }: Props)
     return false;
   };
 
+  useEffect(() => subscribeStewardToken(setToken), []);
+  useEffect(() => {
+    if (!signedIn) return;
+    api.stewardOverview()
+      .then((d: StewardOverview) => setQueueCount(d.waiting_review))
+      .catch((e: unknown) => handle401(e));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signedIn]);
+
   if (!stewardEnabled) {
     return (
       <div className="max-w-sm mx-auto text-center py-10 space-y-3">
@@ -74,15 +84,6 @@ export function StewardConsole({ health, onOpenSkill, onLibraryChanged }: Props)
   if (!signedIn) {
     return <StewardSignIn onSignedIn={() => setSignedOutMsg(null)} message={signedOutMsg} />;
   }
-
-  // Queue badge count (fetched lazily via overview)
-  const [queueCount, setQueueCount] = useState(0);
-  useEffect(() => {
-    api.stewardOverview()
-      .then((d: StewardOverview) => setQueueCount(d.waiting_review))
-      .catch((e: unknown) => handle401(e));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signedIn]);
 
   const tabs: { id: Tab; label: string; icon: typeof Gauge }[] = [
     { id: 'overview', label: 'Overview', icon: Gauge },
@@ -126,7 +127,7 @@ export function StewardConsole({ health, onOpenSkill, onLibraryChanged }: Props)
 
         {/* Steward banner */}
         <div className="flex items-start gap-2 p-3 rounded-lg border border-cadmium-amber/40 bg-cadmium-amber/5 text-[11px] text-on-surface-variant">
-          The steward console lets you publish community skills to the library, keep consent records, and correct featured skills. Use it with care: skills you publish are visible to everyone.
+          Changes on this demo server are temporary and are lost when it restarts. To keep an expert's review of a featured skill, use Download decisions and commit it.
         </div>
       </div>
 
@@ -135,6 +136,7 @@ export function StewardConsole({ health, onOpenSkill, onLibraryChanged }: Props)
         {tabs.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
+            id={`tab-${id}`}
             role="tab"
             aria-selected={tab === id}
             onClick={() => { changeTab(id); setReviewingFromOverview(null); }}
@@ -156,7 +158,7 @@ export function StewardConsole({ health, onOpenSkill, onLibraryChanged }: Props)
       </div>
 
       {/* Tab panel */}
-      <div role="tabpanel" className="min-h-[300px]">
+      <div role="tabpanel" aria-labelledby={`tab-${tab}`} className="min-h-[300px]">
         {tab === 'overview' && (
           <OverviewTab
             onSwitchToQueue={() => changeTab('queue')}

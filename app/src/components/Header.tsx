@@ -119,8 +119,7 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <Users className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-              <span className="hidden sm:inline">My skills</span>
-              <span className="sm:hidden">Mine</span>
+              <span>My skills</span>
               {ownedCount > 0 && (
                 <span className="ml-0.5 px-1 py-0 rounded-full bg-cadmium-amber/80 text-background text-[9px] font-bold leading-none">
                   {ownedCount}
