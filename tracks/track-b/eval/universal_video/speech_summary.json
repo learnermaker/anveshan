@@ -1,0 +1,81 @@
+{
+ "scenario": "speech",
+ "mode": "live",
+ "compose": {
+  "compose_s": 6.3,
+  "refused": false,
+  "build_s": 0.1,
+  "structures": [
+   "utterance"
+  ],
+  "n_steps": 0,
+  "steps": [],
+  "checks": [
+   "CHK-UT-TXT:utterance_match",
+   "CHK-UT-PACE:pace_match"
+  ],
+  "warnings": [
+   "Composed case: claims named by AI are inferred until reviewed.",
+   "package not expert-approved"
+  ]
+ },
+ "attempts": {
+  "same_phrase_other_voice": {
+   "outcome": "PASS",
+   "score": 3.5,
+   "criteria": {
+    "CRIT-U-CHK-UT-TXT": "satisfied",
+    "CRIT-U-CHK-UT-PACE": "partially_satisfied"
+   },
+   "metrics": {
+    "u.utterance_match": 1.0,
+    "u.pace_match": 0.15870984257007542
+   },
+   "warnings": [
+    "Universal pipeline: AI-perceived checks are lower confidence than specialist measurements"
+   ],
+   "first_divergence": "CRIT-U-CHK-UT-PACE",
+   "s": 3.8
+  },
+  "different_phrase": {
+   "outcome": "FAIL",
+   "score": 1.0,
+   "criteria": {
+    "CRIT-U-CHK-UT-TXT": "not_satisfied",
+    "CRIT-U-CHK-UT-PACE": "satisfied"
+   },
+   "metrics": {
+    "u.utterance_match": 0.08333333333333337,
+    "u.pace_match": 0.08447459362600795
+   },
+   "warnings": [
+    "Universal pipeline: AI-perceived checks are lower confidence than specialist measurements"
+   ],
+   "first_divergence": "CRIT-U-CHK-UT-TXT",
+   "s": 4.3
+  },
+  "half_phrase": {
+   "outcome": "FAIL",
+   "score": 0.0,
+   "criteria": {
+    "CRIT-U-CHK-UT-TXT": "not_satisfied",
+    "CRIT-U-CHK-UT-PACE": "not_satisfied"
+   },
+   "metrics": {
+    "u.utterance_match": 0.5,
+    "u.pace_match": 0.4228849353641366
+   },
+   "warnings": [
+    "Universal pipeline: AI-perceived checks are lower confidence than specialist measurements"
+   ],
+   "first_divergence": "CRIT-U-CHK-UT-TXT",
+   "s": 3.0
+  },
+  "white_noise": {
+   "outcome": "REFUSED",
+   "category": "INVALID_INPUT",
+   "reason": "[INVALID_INPUT] No speech can be heard in this recording. Record yourself saying the phrase clearly, close to the microphone.",
+   "s": 3.0
+  }
+ }
+}

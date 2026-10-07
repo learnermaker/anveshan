@@ -128,61 +128,125 @@ MATCH_BOOST = {"high": 2.0, "medium": 1.25, "low": 0.5}   # added to a frame's z
 MATCH_NONE_PENALTY = 1.0                                    # subtracted from all steps when the model saw no step
 
 
-def _reference_step_matches(skill: SkillModel, attempt_record: Any, ctx: Optional[RunContext],
-                            warnings: List[str]) -> Dict[str, Tuple[Optional[int], str]]:
-    """One vision_fast call: which expert step does each learner keyframe show?
+_CONF_RANK = {"low": 0, "medium": 1, "high": 2}
+_MatchMap = Dict[str, Tuple[Optional[int], str]]
 
-    Expert step keyframes and learner keyframes go side by side, so fine-grained states that
-    global embeddings cannot separate (hands dominate the frame) are still told apart.
-    The answer is an OBSERVATION feeding the deterministic monotone fit, never a score.
-    Returns {attempt segment_id: (step index or None, confidence)}; {} when unavailable.
+
+def combine_matches(first: _MatchMap, second: _MatchMap) -> _MatchMap:
+    """Self-consistency: keep only labels that two differently ordered passes agree on.
+
+    Agreement keeps the stronger confidence; any disagreement (different steps, or step vs none)
+    drops the keyframe, so it neither boosts nor penalises the alignment (embeddings decide).
     """
-    if ctx is None or getattr(ctx, "gateway", None) is None or attempt_record is None:
-        return {}
-    from pydantic import BaseModel
+    out: _MatchMap = {}
+    for sid, (step, conf) in first.items():
+        if sid not in second:
+            continue
+        step2, conf2 = second[sid]
+        if step != step2:
+            continue
+        out[sid] = (step, conf if _CONF_RANK[conf] >= _CONF_RANK[conf2] else conf2)
+    return out
+
+
+def _match_dto():
+    """Lenient DTO for the matcher: tolerates "2", "Expert step 2", "null" and missing confidence."""
+    import re as _re
+    from pydantic import BaseModel, field_validator
 
     class _M(BaseModel):
         segment_id: str = ""
         step: Optional[int] = None
         confidence: str = "low"
 
+        @field_validator("step", mode="before")
+        @classmethod
+        def _step(cls, v: Any) -> Optional[int]:
+            if v is None or isinstance(v, bool):
+                return None
+            if isinstance(v, (int, float)):
+                return int(v)
+            m = _re.search(r"-?\d+", str(v))
+            return int(m.group()) if m else None
+
+        @field_validator("confidence", mode="before")
+        @classmethod
+        def _conf(cls, v: Any) -> str:
+            v = str(v or "low").strip().lower()
+            return v if v in MATCH_BOOST else "low"
+
     class _MatchDTO(BaseModel):
         matches: List[_M] = []
 
-    parts: List[Any] = []
+    return _MatchDTO
+
+
+def _reference_step_matches(skill: SkillModel, attempt_record: Any, ctx: Optional[RunContext],
+                            warnings: List[str]) -> _MatchMap:
+    """Two vision_fast calls: which expert step does each learner keyframe show?
+
+    Expert step keyframes and learner keyframes go side by side, so fine-grained states that
+    global embeddings cannot separate (hands dominate the frame) are still told apart.
+    The learner keyframes are shown in time order, then in reverse order; only labels both passes
+    agree on are kept (``combine_matches``), which removes time-order bias and label flicker.
+    The answer is an OBSERVATION feeding the deterministic monotone fit, never a score.
+    Returns {attempt segment_id: (step index or None, confidence)}; {} when unavailable.
+    """
+    if ctx is None or getattr(ctx, "gateway", None) is None or attempt_record is None:
+        return {}
+    _MatchDTO = _match_dto()
+
+    expert: List[Any] = []
     for st in skill.steps[:12]:
         ref = _source_keyframe_part(st.keyframe_asset, f"Expert step {st.index}: {st.name}")
         if ref is None:
             warnings.append(f"reference step matching skipped: no expert keyframe for step {st.index}; alignment uses embeddings only")
             return {}
-        parts.append(ref)
+        expert.append(ref)
     adir = _ATTEMPT_DIR.get()
     segs = [sg for sg in attempt_record.segments if sg.kind == "time" and sg.keyframe_asset]
     if adir is None or not segs:
         warnings.append("reference step matching skipped: attempt keyframes unavailable; alignment uses embeddings only")
         return {}
     from PIL import Image
+    learner: List[Any] = []
     for sg in segs[:16]:
         fp = Path(adir) / sg.keyframe_asset
         if not fp.exists():
             continue
-        parts.append(ImagePart(_jpeg(Image.open(fp), 320), "image/jpeg", f"Learner {sg.segment_id} at t={sg.keyframe_sec or 0:.1f}s"))
-    prompt_path = PROMPT_DIR / "match_steps_v1.txt"
-    try:
-        prompt_text, ver = load_prompt(prompt_path, skill_title=skill.skill_title)
+        learner.append(ImagePart(_jpeg(Image.open(fp), 320), "image/jpeg", f"Learner {sg.segment_id} at t={sg.keyframe_sec or 0:.1f}s"))
+    n = len(skill.steps)
+
+    def one_pass(learner_parts: List[Any], order_note: str) -> _MatchMap:
+        prompt_text, ver = load_prompt(PROMPT_DIR / "match_steps_v2.txt", skill_title=skill.skill_title,
+                                       order_note=order_note)
         res = ctx.gateway.generate_json(
             model_key="vision_fast", prompt_id="match_steps", prompt_version=ver, prompt_text=prompt_text,
-            schema=_MatchDTO, parts=parts, expected_behavior="one expert-step label per learner keyframe",
+            schema=_MatchDTO, parts=[*expert, *learner_parts], expected_behavior="one expert-step label per learner keyframe",
         )
+        out: _MatchMap = {}
+        for m in res.data.matches:
+            step = m.step if (m.step is None or 0 <= m.step < n) else None
+            out[m.segment_id] = (step, m.confidence if m.confidence in MATCH_BOOST else "low")
+        return out
+
+    try:
+        first = one_pass(learner, "in time order")
     except (ModelError, FileNotFoundError) as exc:
         warnings.append(f"reference step matching unavailable ({exc}); alignment uses embeddings only")
         return {}
-    n = len(skill.steps)
-    out: Dict[str, Tuple[Optional[int], str]] = {}
-    for m in res.data.matches:
-        step = m.step if (m.step is None or 0 <= m.step < n) else None
-        out[m.segment_id] = (step, m.confidence if m.confidence in MATCH_BOOST else "low")
-    return out
+    if len(learner) < 2:
+        return first
+    try:
+        second = one_pass(list(reversed(learner)), "in REVERSE time order (latest first)")
+    except ModelError as exc:
+        warnings.append(f"reference step matching consistency pass unavailable ({exc}); using a single pass")
+        return first
+    combined = combine_matches(first, second)
+    dropped = len(first) - len(combined)
+    if dropped:
+        warnings.append(f"reference step matching: {dropped} of {len(first)} learner keyframes had inconsistent labels and were left to embeddings")
+    return combined
 
 
 def _quality_gate(attempt: AttemptMedia, record: Any) -> None:
@@ -1089,12 +1153,24 @@ def _prefix_metrics(result: TrajectoryResult, prefix: str) -> TrajectoryResult:
 # Utterance checks
 # ---------------------------------------------------------------------------
 
+def _audio_model_enabled(ctx: Any) -> bool:
+    try:
+        return bool(ctx.gateway.registry.model_id("audio"))
+    except Exception:  # noqa: BLE001 - no gateway/registry: treat as disabled
+        return False
+
+
 def _utterance_checks(
     skill: SkillModel,
     attempt: AttemptMedia,
     attempt_record: Any,
+    ctx: Any = None,
 ) -> Dict[str, MetricValue]:
-    """Deterministic utterance checks."""
+    """Deterministic utterance checks.
+
+    Raises INVALID_INPUT when the audio model listened and heard no speech (noise, music, silence),
+    so a non-speech upload is refused instead of being scored.
+    """
     metrics: Dict[str, MetricValue] = {}
 
     source_utt = skill.utterance
@@ -1111,6 +1187,11 @@ def _utterance_checks(
     src_duration = source_utt.get("duration_sec") or 0.0
 
     if not speech_obs:
+        if attempt_record is not None and _audio_model_enabled(ctx):
+            raise AnveshanFailure(
+                FailureCategory.INVALID_INPUT,
+                "No speech can be heard in this recording. Record yourself saying the phrase clearly, close to the microphone.",
+            )
         # No transcript available
         for check in skill.checks:
             if check.kind in ("utterance_match", "pace_match") and check.enabled:
@@ -1363,7 +1444,7 @@ def evaluate(goal: GoalModel, attempt: AttemptMedia, ctx: Any = None) -> Traject
                         primary_curve_kind = rh_result.curve_kind
 
         elif structure == "utterance":
-            um = _utterance_checks(skill, attempt, attempt_record)
+            um = _utterance_checks(skill, attempt, attempt_record, ctx)
             all_metrics.update(um)
 
     # Sort events by position

@@ -5,8 +5,10 @@ image: a synthetic block-arrangement ("tangram-like" final state, nothing like k
        blocks in wrong colours/positions, unrelated image.
 audio: a whistled melody-like tone sequence (temporal pattern, not tabla);
        attempts: same melody re-synthesised, rushed tempo, irregular rhythm, white noise.
+speech: a spoken phrase (utterance structure) made with the local Windows speech synthesizer;
+       attempts: same phrase in another voice, a different phrase, half the phrase, white noise.
 
-Usage: python tools/stress_universal_other.py --scenario image|audio --mode live|recorded [--save]
+Usage: python tools/stress_universal_other.py --scenario image|audio|speech --mode live|recorded [--save]
 Verdicts come from real Track B sessions (evaluation.passed + criterion statuses).
 """
 from __future__ import annotations
@@ -15,6 +17,7 @@ import argparse
 import json
 import math
 import shutil
+import subprocess
 import sys
 import wave
 from pathlib import Path
@@ -61,9 +64,28 @@ def tone_melody(path: Path, notes, beat=0.35, sr=22050, jitter=0.0, seed=0) -> N
         w.writeframes((np.clip(x, -1, 1) * 30000).astype("<i2").tobytes())
 
 
+def tts(path: Path, text: str, voice: str = "Microsoft David Desktop", rate: int = 0) -> None:
+    """Windows-only: synthesise speech to a WAV with System.Speech (local, no network)."""
+    def q(v: str) -> str:
+        return "'" + v.replace("'", "''") + "'"
+    script = (
+        "Add-Type -AssemblyName System.Speech; $s = New-Object System.Speech.Synthesis.SpeechSynthesizer; "
+        f"$s.SelectVoice({q(voice)}); $s.Rate = {int(rate)}; $s.SetOutputToWaveFile({q(str(path))}); "
+        f"$s.Speak({q(text)}); $s.Dispose()"
+    )
+    subprocess.run(["powershell", "-NoProfile", "-Command", script], check=True)
+
+
+def write_noise(path: Path, sec: float = 6.0, sr: int = 22050) -> None:
+    noise = np.random.default_rng(1).normal(0, 0.3, int(sec * sr))
+    with wave.open(str(path), "w") as w:
+        w.setnchannels(1); w.setsampwidth(2); w.setframerate(sr)
+        w.writeframes((np.clip(noise, -1, 1) * 30000).astype("<i2").tobytes())
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--scenario", choices=["image", "audio"], default="image")
+    ap.add_argument("--scenario", choices=["image", "audio", "speech"], default="image")
     ap.add_argument("--mode", choices=["live", "recorded"], default="recorded")
     ap.add_argument("--save", action="store_true")
     a = ap.parse_args(argv)
@@ -80,6 +102,22 @@ def main(argv=None) -> int:
         blocks_image(att["wrong_colours"], recolour=True)
         Image.new("RGB", (360, 300), (40, 90, 160)).save(att["unrelated_house_frame"])
         title, mime, kind = "Stacking coloured blocks into a pattern", "image/png", "image"
+    elif a.scenario == "speech":
+        phrase = ("Please keep the left lane clear for emergency vehicles at all times, "
+                  "and slow down when you pass the school gate in the morning.")
+        src = media / "speech_source.wav"
+        att = {"same_phrase_other_voice": media / "s_same.wav", "different_phrase": media / "s_diff.wav",
+               "half_phrase": media / "s_half.wav", "white_noise": media / "s_noise.wav"}
+        if a.mode == "live" or not src.exists():
+            tts(src, phrase)
+            tts(att["same_phrase_other_voice"], phrase, voice="Microsoft Zira Desktop", rate=1)
+            tts(att["different_phrase"], "The museum opens at nine in the morning and closes early on "
+                "public holidays, so please plan your visit ahead.",
+                voice="Microsoft Zira Desktop")
+            tts(att["half_phrase"], "Please keep the left lane clear for emergency vehicles at all times.",
+                voice="Microsoft Zira Desktop")
+            write_noise(att["white_noise"])
+        title, mime, kind = "Saying a road-safety announcement clearly", "audio/wav", "audio"
     else:
         mel = [523, 587, 659, 523, 659, 784, 659, 587, 523, 440, 523, 587, 659, 523, 523, 659]
         src = media / "melody_source.wav"
@@ -90,10 +128,7 @@ def main(argv=None) -> int:
         tone_melody(att["rushed"], mel, beat=0.22)
         tone_melody(att["irregular"], mel, jitter=0.45, seed=5)
         sr = 22050
-        noise = np.random.default_rng(1).normal(0, 0.3, int(6 * sr))
-        with wave.open(str(att["white_noise"]), "w") as w:
-            w.setnchannels(1); w.setsampwidth(2); w.setframerate(sr)
-            w.writeframes((np.clip(noise, -1, 1) * 30000).astype("<i2").tobytes())
+        write_noise(att["white_noise"], sr=sr)
         title, mime, kind = "Whistling a short melody in steady time", "audio/wav", "audio"
     if a.mode == "live" and (work / "data").exists():
         shutil.rmtree(work / "data")

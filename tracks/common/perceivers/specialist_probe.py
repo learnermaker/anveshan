@@ -274,4 +274,15 @@ def available_structures(
     else:
         results["utterance"] = (False, f"modality {modality} does not support utterance directly")
 
+    # ---- the audio model's own classification resolves speech vs rhythm (audio uploads) ----
+    # Speech has syllable onsets that look like a rhythm, and drum syllables (bols) can come back as a
+    # transcript; the model's audio_kind tells them apart, so one structure is not mistaken for the other.
+    if modality == "audio":
+        kind = next((o.label.split(":", 1)[1].strip() for o in record.observations
+                     if o.label.startswith("audio_kind:")), "")
+        if kind == "speech" and results["utterance"][0]:
+            results["temporal_pattern"] = (False, "audio is speech (audio model); rhythm checks do not apply")
+        elif kind in ("music", "percussion") and results["temporal_pattern"][0]:
+            results["utterance"] = (False, f"audio is {kind} (audio model); utterance checks do not apply")
+
     return results
