@@ -518,6 +518,42 @@ class TestUniversalBuild:
         skill_back = SkillModel.model_validate(result.goal_payload)
         assert skill_back.skill_title == skill.skill_title
 
+    def test_build_criteria_cite_their_own_target_claims(self, tmp_path):
+        """Criteria cite the claim of their target (prop/constraint), whatever the number of
+        measurement claims and even when props are inferred (regression: positional mapping)."""
+        from track_a.goals.universal import build
+        from tracks.common.skill_model import Check, Constraint, TargetProperty
+
+        skill = self._minimal_skill_image()
+        skill.goal_state.append(TargetProperty(prop_id="prop-02", statement="four petals",
+                                               certainty="inferred", keep=True))
+        skill.constraints.append(Constraint(constraint_id="con-01", statement="no broken lines",
+                                            certainty="inferred", keep=True))
+        skill.checks += [
+            Check(check_id="CHK-FS-P02", kind="final_property", name="Petals",
+                  observable_indicator="Four petals", targets=["prop-02"],
+                  metric_id="u.final_property.prop-02", method="model_status"),
+            Check(check_id="CHK-FS-C01", kind="final_property", name="Lines",
+                  observable_indicator="No broken lines", targets=["con-01"],
+                  metric_id="u.final_property.con-01", method="model_status"),
+        ]
+        src = _make_source(tmp_path)
+        profile = self._make_profile(tmp_path, skill, "image")
+        ctx = _make_ctx(tmp_path)
+        kdir = ctx.case_dir / "knowledge"
+        kdir.mkdir(parents=True, exist_ok=True)
+        (kdir / "perception_source.v1.json").write_text(
+            _image_record(src.source_id).model_dump_json(), encoding="utf-8")
+
+        result = build(tmp_path / "source.png", src, ctx, case_id=profile.case_id, version=1,
+                       profile=profile)
+        by_id = {c.claim_id: c.statement for c in result.claims}
+        crit = {c.criterion_id: c for c in result.criteria}
+        expected = {"CRIT-U-CHK-FS-P01": "circular shape", "CRIT-U-CHK-FS-P02": "four petals",
+                    "CRIT-U-CHK-FS-C01": "no broken lines"}
+        for cid, statement in expected.items():
+            assert [by_id[x] for x in crit[cid].source_claim_ids] == [statement]
+
     def test_build_procedure_skill_produces_step_claims(self, tmp_path):
         """build() with procedure skill produces STEP claims and correct criterion ids."""
         from track_a.goals.universal import build

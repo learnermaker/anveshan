@@ -613,43 +613,17 @@ def build(
         if uclaim:
             all_claims.append(uclaim)
 
-    # Build a map from prop_id / step_id / constraint_id -> claim_id
-    # The order of claims: meas, cond (from props), steps, constraints, temporal, utterance
+    # Map prop_id / step_id / constraint_id -> claim_id. Each builder emits exactly one claim per
+    # kept input, in input order, so the map is exact (no positional guessing across claim types).
     claim_id_map: Dict[str, str] = {}
-    prop_idx = 0
-    step_idx = 0
-    con_idx = 0
     kept_props = [p for p in skill.goal_state if p.keep]
-    kept_steps = list(skill.steps)
     kept_cons = [c for c in skill.constraints if c.keep]
-
-    # Map props to claims (condition claims, after measurement claims)
-    meas_count = len([c for c in all_claims if c.claim_type == ClaimType.CONDITION and c.is_observed and
-                      "Image is" in c.statement or "Duration" in c.statement or "onsets" in c.statement or
-                      "segments" in c.statement])
-    # Simpler: rebuild map by scanning all_claims
-    for claim in all_claims:
-        if claim.claim_type == ClaimType.STEP and step_idx < len(kept_steps):
-            claim_id_map[kept_steps[step_idx].step_id] = claim.claim_id
-            step_idx += 1
-        elif claim.claim_type == ClaimType.CONDITION and not claim.is_observed and con_idx < len(kept_cons):
-            # This is a constraint claim (failure mode)
-            claim_id_map[kept_cons[con_idx].constraint_id] = claim.claim_id
-            con_idx += 1
-
-    # Map props by order in all_claims (condition claims after measurement ones)
-    condition_claims = [c for c in all_claims if c.claim_type == ClaimType.CONDITION]
-    for i, prop in enumerate(kept_props):
-        if i + 1 < len(condition_claims):
-            claim_id_map[prop.prop_id] = condition_claims[i + 1].claim_id if len(condition_claims) > 1 else condition_claims[0].claim_id
-        elif condition_claims:
-            claim_id_map[prop.prop_id] = condition_claims[-1].claim_id
-
-    # Re-map steps (they come after condition claims)
-    step_claims_in_all = [c for c in all_claims if c.claim_type == ClaimType.STEP]
-    for i, step in enumerate(kept_steps):
-        if i < len(step_claims_in_all):
-            claim_id_map[step.step_id] = step_claims_in_all[i].claim_id
+    for prop, claim in zip(kept_props, cond_claims):
+        claim_id_map[prop.prop_id] = claim.claim_id
+    for step, claim in zip(skill.steps, step_claims):
+        claim_id_map[step.step_id] = claim.claim_id
+    for con, claim in zip(kept_cons, constraint_claims):
+        claim_id_map[con.constraint_id] = claim.claim_id
 
     # Build criteria from enabled checks
     criteria: List[CriterionTemplate] = []
