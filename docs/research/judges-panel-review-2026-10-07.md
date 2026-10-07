@@ -2,7 +2,7 @@
 
 > **REVIEW ARTIFACT (evidence, not scope).** A simulated judging panel reviewed the running app and the codebase against the official AI Builder Cup criteria. It covers the product, not the submission pack (demo video, deck), which is out of scope here. Findings do not authorise work by themselves; the update plan is `docs/plans/technical-panel-plan-2026-10-07.md` (PROPOSED).
 
-## Status summary (2026-10-08)
+## Status summary (2026-10-08, K9 merged into `k9/integration`, pending merge to `main`)
 
 | ID | Sev | Status | Notes |
 |---|---|---|---|

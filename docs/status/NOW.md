@@ -28,12 +28,12 @@ See `docs/plans/track-plan-review-2026-10-06.md` §9 and `docs/plans/evaluation-
 
 **Universal pipeline (IMPLEMENTED 2026-10-07, priority over tuning single hero media):** any uploaded image, video or audio skill is composed (Perception → SkillModel → deterministic evaluation) and learner attempts are verified against it. Evidence: `docs/validation/experiments.md` E6; design and known limits: `docs/plans/universal-pipeline.md` §12. Cloud Run deployment is pending (`docs/deploy/DEPLOY-CHECKLIST.md`). Remaining work and order: `docs/plans/NEXT-STEPS.md`.
 
-**Product roles and surfaces (DECIDED 2026-10-07):**
+**Product roles and surfaces (IMPLEMENTED 2026-10-08, branch `k9/integration`, pending merge to main):**
 - **Learner:** plain language with no audit tooling.
 - **Creator:** "My skills": check what the AI understood, publish, insights.
 - **Steward:** console for the review queue, library, consent and licences, insights, and usage.
 
-Product definition: `docs/product/product-vision.md` §9A and `docs/product/user-journeys.md` Journeys 7–8. Build spec for one Kiro session with parallel agents: `docs/kiro/specs/K9-ORCHESTRATOR.md`.
+Product definition: `docs/product/product-vision.md` §9A and `docs/product/user-journeys.md` Journeys 7–8. Build spec: `docs/kiro/specs/K9-ORCHESTRATOR.md`. Gate evidence: `docs/validation/experiments.md` E-K9.
 
 Scope trades for this change:
 - **Deferred to NEXT:**

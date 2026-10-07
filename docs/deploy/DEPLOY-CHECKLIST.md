@@ -86,6 +86,7 @@ Defaults that switch on automatically on Cloud Run (`K_SERVICE` is set by the pl
 |---|---|---|
 | `ANVESHAN_ALLOW_MODE_OVERRIDE` | `false` | `?mode=live|recorded` from browsers is ignored |
 | `ANVESHAN_ISOLATE_VISITORS` | `true` | Each browser (anonymous `anv_vid` cookie) sees only its own uploads and composed skills |
+| `ANVESHAN_STEWARD_OPEN` | `false` (0) | Steward console is **closed** by default; requires `ANVESHAN_STEWARD_TOKEN` header. Do **not** set to 1 in production unless you want open steward access. |
 | `ANVESHAN_CURATED_REVIEW_OPEN` | `false` | Review of the curated cases needs `ANVESHAN_REVIEW_TOKEN` |
 | `ANVESHAN_RATE_COMPOSE_PER_HOUR` / `_ATTEMPT_` / `_QUERY_` / `_COMPOSE_STEP_` | 6 / 30 / 30 / 30 | Per client IP; over the limit returns 429 with a readable message |
 | `ANVESHAN_DATA_TTL_H` / `ANVESHAN_DATA_CAP_MB` | 6 / 600 | `/tmp` is RAM on Cloud Run: older uploads, drafts and sessions are deleted, then oldest-first to the cap |

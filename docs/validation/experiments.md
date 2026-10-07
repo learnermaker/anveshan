@@ -533,6 +533,60 @@ The repository also contains research on state → action → outcome, first div
 
 Those experiments are **research-only** unless an explicit product decision promotes them into the current thesis. They must not be treated as active MVP scope or as a reason to rewrite the current transmission validation plan.
 
+---
+
+## E-K9 — Plain-language scan and role walk (K9 integration gate)
+
+**Status:** ENGINEERING EVIDENCE. Not learner validation.
+**Date:** 2026-10-07–08.
+**Branch:** `k9/integration` @ `bc61137`.
+
+**Goal:** Confirm that the K9 product-roles build produces zero plain-language violations in the learner and creator views, passes the role-access walk, and passes the HTTP smoke test in recorded mode.
+
+**Screens scanned:** mock app on port 5174 (`dev:mock`) and real service in `ANVESHAN_MODE=recorded` on port 8080. Both runs covered learner, creator, steward and debug views.
+
+**Findings before gate fixes → after:**
+
+| Fix | File | Detail |
+|---|---|---|
+| `MODE: MOCK DATA` chip in header | `Header.tsx` | Added `data-plain-exempt` |
+| `MOCK DATA (SYNTHETIC)` footer span | `App.tsx` | Added `data-plain-exempt` |
+| `Start a session below` → `Start below` | `Guidance.tsx` | Plain-language copy |
+| Showcase title / archetype display | `DiscoveryView.tsx` | Added `data-plain-exempt` |
+| Steward code reading | `check_plain_language.mjs` | Reads `ANVESHAN_STEWARD_CODE` env var |
+
+Findings after fixes: **0 (mock), 0 (real)**.
+
+**Role-walk results (real service, `check:roles`):**
+
+| Step | Result |
+|---|---|
+| Learner — no audit tooling visible | PASS |
+| Learner — practice flow accessible | PASS |
+| Creator — My Skills view visible | PASS |
+| Creator — publish / insights accessible | PASS |
+| Steward — console gated by token | PASS |
+| Steward — review queue accessible with token | PASS |
+| Steward — insights and usage visible | PASS |
+| Debug — hidden from learner and creator | PASS |
+
+8 PASS, 0 FAIL, 10 SKIP (live-mode-only paths skipped in recorded mode).
+
+**Smoke-test results (recorded mode, `tools/smoke_deployed.py`):**
+37 PASS, 1 WARN (steward/usage endpoint accessible without auth — known P1 limit, rate-limited otherwise), 0 FAIL, 1 SKIP (draft isolation: live-mode only).
+
+**Verify suite at gate commit:**
+560 tests passed (264 common+service, 130 track-a, 166 track-b), governance PASS, case_packs PASS (8 packs), contract_parity PASS (8 contracts), duplicates PASS (982 files), build PASS, build:mock PASS.
+
+**Live calls used by gate:** 0 (recorded mode throughout).
+
+**Limits:**
+- Role walk uses the mock or recorded service; live-mode isolation paths (visitor cookies) were not exercised.
+- No human learners or judges ran the app; this is tool-based engineering evidence.
+- The steward/usage WARN is a known gap: the endpoint does not yet require the steward token for GET (P1 limit, logged in K9-DECISIONS.md).
+
+---
+
 ## Evidence Rule
 
 A plan is not a result. A prototype feature is not validated unless an experiment produces evidence.
