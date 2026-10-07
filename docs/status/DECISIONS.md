@@ -129,7 +129,7 @@ Spec: `docs/kiro/specs/K9-ORCHESTRATOR.md`.
 **Revisit trigger:** accounts and persistent storage are introduced, or real communities or organisations pilot the steward role.
 
 
-## Positioning: skills of the physical world (DECIDED 2026-10-07)
+## 2026-10-07 — Positioning: skills of the physical world
 
 **Decision:** Anveshan is described, in the app and in the key documents, as made for skills of the physical world (hands, tools, materials, sound), learned from a real demonstration and checked against a photo, video or recording of the learner's real attempt. Decided by Jim.
 
