@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "samples": [
+    {
+      "sample_id": "good",
+      "label": "A careful attempt",
+      "quality": "good",
+      "attempt_kind": "trace",
+      "file": "good.trace.json",
+      "raster": null,
+      "description": "Follows the line around every dot without lifting. Expect most checks to be met.",
+      "preview": null,
+      "synthetic": true,
+      "credit": null,
+      "licence": "CC0-1.0",
+      "expected": {
+        "passed": true
+      }
+    },
+    {
+      "sample_id": "flawed",
+      "label": "An attempt with a mistake",
+      "quality": "flawed",
+      "attempt_kind": "trace",
+      "file": "flawed.trace.json",
+      "raster": null,
+      "description": "The pen lifts and skips part of the line. See where the feedback says it first went off track.",
+      "preview": null,
+      "synthetic": true,
+      "credit": null,
+      "licence": "CC0-1.0",
+      "expected": {
+        "passed": false,
+        "first_off_track": "CRIT-KOLAM-COVERAGE"
+      }
+    },
+    {
+      "sample_id": "unrelated",
+      "label": "Something unrelated",
+      "quality": "unrelated",
+      "attempt_kind": "trace",
+      "file": "unrelated.trace.json",
+      "raster": null,
+      "description": "A scribble that is not this kolam. Anveshan should say it does not match instead of scoring it.",
+      "preview": null,
+      "synthetic": true,
+      "credit": null,
+      "licence": "CC0-1.0",
+      "expected": {
+        "passed": false,
+        "first_off_track": "CRIT-KOLAM-PRECISION"
+      }
+    }
+  ]
+}
