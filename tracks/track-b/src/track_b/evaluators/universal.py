@@ -78,10 +78,11 @@ _ATTEMPT_DIR: "contextvars.ContextVar[Optional[Path]]" = contextvars.ContextVar(
 
 def _jpeg(img: Any, max_side: int = 512) -> bytes:
     import io
-    im = img.copy()
+    from tracks.common.media import to_rgb
+    im = to_rgb(img)
     im.thumbnail((max_side, max_side))
     buf = io.BytesIO()
-    im.convert("RGB").save(buf, format="JPEG", quality=80)
+    im.save(buf, format="JPEG", quality=80)
     return buf.getvalue()
 
 
@@ -413,14 +414,10 @@ def _ambiguous_relevance_check(
     if attempt.kind == "image" and attempt.path.exists():
         try:
             from PIL import Image
-            import io
-            img = Image.open(attempt.path)
-            img.thumbnail((512, 512))
-            buf = io.BytesIO()
-            img.save(buf, format="JPEG", quality=75)
-            parts.append(ImagePart(buf.getvalue(), "image/jpeg", "Attempt image"))
-        except Exception:
-            pass
+            parts.append(ImagePart(_jpeg(Image.open(attempt.path), 512), "image/jpeg", "Attempt image"))
+        except Exception as exc:  # noqa: BLE001 - an unreadable image is refused, never judged blind
+            raise AnveshanFailure(FailureCategory.INVALID_INPUT,
+                                  f"The attempt image could not be read ({exc}). Please upload a JPEG or PNG photo.")
 
     result = ctx.gateway.generate_json(
         model_key="vision_fast",
@@ -609,17 +606,14 @@ def _call_judge_final(
     prompt_text, ver = load_prompt(prompt_path, checks_json=checks_json)
 
     parts: List[Any] = []
+    have_attempt = False
     # Attempt final image (≤ 2 images, max side 512)
     if attempt.kind == "image" and attempt.path.exists():
         try:
             from PIL import Image
-            import io
-            img = Image.open(attempt.path)
-            img.thumbnail((512, 512))
-            buf = io.BytesIO()
-            img.save(buf, format="JPEG", quality=75)
-            parts.append(ImagePart(buf.getvalue(), "image/jpeg", "Attempt image"))
-        except Exception as exc:
+            parts.append(ImagePart(_jpeg(Image.open(attempt.path), 512), "image/jpeg", "Attempt image"))
+            have_attempt = True
+        except Exception as exc:  # noqa: BLE001 - reported; checks become UNCERTAIN below
             warnings.append(f"Could not load attempt image: {exc}")
         ref = _source_image_part(ctx)
         if ref is not None:
@@ -636,12 +630,18 @@ def _call_judge_final(
             if fp is not None:
                 parts.append(fp)
                 got += 1
+        have_attempt = got > 0
         if not got:
             warnings.append("could not decode the attempt's final frames for the final-state judge")
         if skill.steps:
             ref = _source_keyframe_part(skill.steps[-1].keyframe_asset, "Expert reference: final state")
             if ref is not None:
                 parts.append(ref)
+
+    if not have_attempt:
+        # Judging only the expert reference would invent a verdict: every check is UNCERTAIN instead.
+        return {c.check_id: {"status": "cannot_tell", "finding": "the attempt's own image could not be read, so it was not judged"}
+                for c in checks}
 
     out: Dict[str, Any] = {}
     complete = [c for c in checks if c.metric_id == "u.final_property.complete"]

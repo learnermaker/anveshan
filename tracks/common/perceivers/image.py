@@ -18,6 +18,7 @@ from pydantic import BaseModel, Field
 
 from tracks.common.models import AnveshanFailure, FailureCategory, ImagePart, ModelError, load_prompt
 from tracks.common.perception import MediaInfoRecord, Observation, PerceptionRecord, Segment
+from tracks.common.media import to_rgb
 from tracks.common.runtime import RunContext
 
 log = logging.getLogger(__name__)
@@ -55,7 +56,7 @@ def _resize_jpeg(img: Image.Image, max_side: int) -> bytes:
     img2 = img.copy()
     img2.thumbnail((max_side, max_side), Image.LANCZOS)
     buf = io.BytesIO()
-    img2.convert("RGB").save(buf, format="JPEG", quality=85)
+    to_rgb(img2).save(buf, format="JPEG", quality=85)
     return buf.getvalue()
 
 
@@ -90,7 +91,7 @@ def perceive_image(
     asset_dir = Path(asset_dir)
     asset_dir.mkdir(parents=True, exist_ok=True)
 
-    img = Image.open(path).convert("RGB")
+    img = to_rgb(Image.open(path))
     W, H = img.size
 
     segments: List[Segment] = []

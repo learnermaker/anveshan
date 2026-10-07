@@ -18,6 +18,7 @@ from pydantic import BaseModel, Field
 
 from tracks.common.models import AnveshanFailure, FailureCategory, ImagePart, ModelError, load_prompt
 from tracks.common.perception import MediaInfoRecord, Observation, PerceptionRecord, Segment
+from tracks.common.media import to_rgb
 from tracks.common.runtime import RunContext
 
 log = logging.getLogger(__name__)
@@ -45,7 +46,7 @@ def _resize_jpeg(img: Image.Image, max_side: int) -> bytes:
     img2 = img.copy()
     img2.thumbnail((max_side, max_side), Image.LANCZOS)
     buf = io.BytesIO()
-    img2.convert("RGB").save(buf, format="JPEG", quality=85)
+    to_rgb(img2).save(buf, format="JPEG", quality=85)
     return buf.getvalue()
 
 
@@ -289,7 +290,7 @@ def perceive_video(
             kf_img = (hi[0].image if hi else kf.image).copy()
         except Exception:  # noqa: BLE001 - keep the analysis frame if the re-decode fails
             kf_img = kf.image.copy()
-        kf_img.convert("RGB").save(str(asset_dir / kf_name), format="JPEG", quality=85)
+        to_rgb(kf_img).save(str(asset_dir / kf_name), format="JPEG", quality=85)
         keyframe_jpegs.append(_resize_jpeg(kf_img, 384))
         seg_obj = Segment(
             segment_id=seg_id, kind="time",

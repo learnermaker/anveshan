@@ -136,9 +136,19 @@ def sample_frames(
     return frames
 
 
+def to_rgb(image: Image.Image) -> Image.Image:
+    """RGB copy of any PIL image; transparency is composited on WHITE (not black), so
+    screenshots and transparent PNG drawings look the same to models as on screen."""
+    if image.mode in ("RGBA", "LA") or (image.mode == "P" and "transparency" in image.info):
+        rgba = image.convert("RGBA")
+        bg = Image.new("RGBA", rgba.size, (255, 255, 255, 255))
+        return Image.alpha_composite(bg, rgba).convert("RGB")
+    return image.convert("RGB")
+
+
 def image_to_jpeg_bytes(image: Image.Image, quality: int = 85) -> bytes:
     import io
 
     buf = io.BytesIO()
-    image.convert("RGB").save(buf, format="JPEG", quality=quality)
+    to_rgb(image).save(buf, format="JPEG", quality=quality)
     return buf.getvalue()
