@@ -1,4 +1,4 @@
-/**
+﻿/**
  * StewardConsole: the steward surface — sign-in, tabs, overview (K9-P3 §3.1).
  */
 
@@ -110,7 +110,7 @@ export function StewardConsole({ health, onOpenSkill, onLibraryChanged }: Props)
           </div>
           <div className="flex items-center gap-2">
             {stewardOpen && (
-              <span className="text-[10px] font-mono text-transmission-emerald border border-transmission-emerald/40 rounded px-2 py-0.5">
+              <span className="text-[11px] font-mono text-transmission-emerald border border-transmission-emerald/40 rounded px-2 py-0.5">
                 Open on this local server
               </span>
             )}
@@ -149,7 +149,7 @@ export function StewardConsole({ health, onOpenSkill, onLibraryChanged }: Props)
             <Icon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
             {label}
             {id === 'queue' && queueCount > 0 && (
-              <span className="ml-1 px-1.5 py-0 rounded-full bg-cadmium-amber text-background text-[9px] font-bold">
+              <span className="ml-1 px-1.5 py-0 rounded-full bg-cadmium-amber text-background text-[11px] font-bold">
                 {queueCount}
               </span>
             )}

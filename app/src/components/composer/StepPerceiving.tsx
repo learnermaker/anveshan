@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Step 2: Perceiving — progress screen.
  * Shows stage text and elapsed time; the expected duration depends on the media kind.
  */
@@ -39,7 +39,7 @@ export function StepPerceiving({ since, mime }: Props) {
     <div className="flex flex-col items-center gap-6 py-16 animate-fade-in">
       <Loader2 className="w-8 h-8 text-cadmium-amber animate-spin" />
       <div className="space-y-2 text-center">
-        <div className="text-[10px] font-mono uppercase tracking-widest text-cadmium-amber font-bold">Composer · Analysing</div>
+        <div className="text-[11px] font-mono uppercase tracking-widest text-cadmium-amber font-bold">Composer · Analysing</div>
         <p className="text-lg font-serif text-on-surface">{stage.label}</p>
         <p className="text-sm text-on-surface-variant">{elapsed.toFixed(0)} s elapsed · {exp.text}</p>
       </div>
@@ -49,7 +49,7 @@ export function StepPerceiving({ since, mime }: Props) {
           style={{ width: `${Math.min(95, (elapsed / exp.sec) * 100)}%` }}
         />
       </div>
-      <p className="text-[10px] font-mono text-on-surface-variant max-w-sm text-center">
+      <p className="text-[11px] font-mono text-on-surface-variant max-w-sm text-center">
         AI-perceived elements will be labelled INFERRED and require your review before use.
       </p>
     </div>

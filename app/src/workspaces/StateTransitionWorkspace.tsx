@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { AlertTriangle, ArrowRight, CheckCircle2, Layers, Repeat, ShieldCheck, Activity } from 'lucide-react';
 import type { CapabilityCase } from '../types/workspace';
 import { RubricHUD } from '../components/RubricHUD';
@@ -46,7 +46,7 @@ export function StateTransitionWorkspace({
                   <Layers className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-[10px] font-mono uppercase tracking-widest text-caliper-cyan font-bold">
+                  <div className="text-[11px] font-mono uppercase tracking-widest text-caliper-cyan font-bold">
                     STATE TRANSITION WORKSPACE // DISCRETE MATERIAL EVOLUTION
                   </div>
                   <h3 className="text-base font-semibold text-on-surface">
@@ -75,7 +75,7 @@ export function StateTransitionWorkspace({
               <div className="overflow-x-auto">
                 <table className="w-full text-left font-mono text-xs border-collapse">
                   <thead>
-                    <tr className="border-b border-outline text-[10px] text-on-surface-variant uppercase">
+                    <tr className="border-b border-outline text-[11px] text-on-surface-variant uppercase">
                       <th className="py-2 px-3">Pick #</th>
                       <th className="py-2 px-3">Treadle</th>
                       <th className="py-2 px-3">Shed Aperture</th>
@@ -102,7 +102,7 @@ export function StateTransitionWorkspace({
                         </td>
                         <td className="py-2.5 px-3">
                           <span
-                            className={`px-1.5 py-0.5 rounded text-[10px] ${
+                            className={`px-1.5 py-0.5 rounded text-[11px] ${
                               p.pick === 7
                                 ? 'bg-divergence-crimson/30 text-divergence-crimson font-bold'
                                 : 'bg-surface-elevated border border-outline text-on-surface'
@@ -137,7 +137,7 @@ export function StateTransitionWorkspace({
               {/* Physical Loom Diagram */}
               <div className="p-3.5 bg-surface-elevated rounded border border-outline/40 flex items-center justify-between gap-4">
                 <div className="space-y-1">
-                  <div className="text-[10px] font-mono uppercase text-on-surface-variant">
+                  <div className="text-[11px] font-mono uppercase text-on-surface-variant">
                     ACTIVE PICK #07 RECONSTRUCTION
                   </div>
                   <div className="text-sm font-semibold text-divergence-crimson flex items-center gap-1.5">
@@ -149,7 +149,7 @@ export function StateTransitionWorkspace({
                   </p>
                 </div>
                 <div className="text-right font-mono">
-                  <div className="text-[10px] text-on-surface-variant">SELVAGE DEFLECTION</div>
+                  <div className="text-[11px] text-on-surface-variant">SELVAGE DEFLECTION</div>
                   <div className="text-sm font-bold text-divergence-crimson">+5.8 mm (WAISTING)</div>
                 </div>
               </div>

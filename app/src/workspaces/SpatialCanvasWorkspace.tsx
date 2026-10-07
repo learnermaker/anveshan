@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Eye, Grid, Layers, Sparkles, CheckCircle2, AlertTriangle, ArrowRight, ShieldCheck, Compass } from 'lucide-react';
 import type { CapabilityCase } from '../types/workspace';
 import { RubricHUD } from '../components/RubricHUD';
@@ -44,7 +44,7 @@ export function SpatialCanvasWorkspace({
                   <Compass className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="text-[10px] font-mono uppercase tracking-widest text-transmission-emerald font-bold">
+                  <div className="text-[11px] font-mono uppercase tracking-widest text-transmission-emerald font-bold">
                     SPATIAL PRACTICE CANVAS // VECTOR TRAJECTORY ENGINE
                   </div>
                   <h3 className="text-base font-semibold text-on-surface">

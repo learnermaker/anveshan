@@ -21,7 +21,7 @@ function Toggle({ on, onClick, children }: { on: boolean; onClick: () => void; c
       type="button"
       onClick={onClick}
       aria-pressed={on}
-      className={`px-2 py-1 rounded border text-[10px] font-mono uppercase transition-colors ${on ? 'border-caliper-cyan text-caliper-cyan bg-caliper-cyan/10' : 'border-outline text-on-surface-variant hover:text-on-surface'}`}
+      className={`px-2 py-1 rounded border text-[11px] font-mono uppercase transition-colors ${on ? 'border-caliper-cyan text-caliper-cyan bg-caliper-cyan/10' : 'border-outline text-on-surface-variant hover:text-on-surface'}`}
     >
       {children}
     </button>
@@ -71,7 +71,7 @@ export function KolamSourcePanel({ view, focus }: SourcePanelProps) {
           </div>
         )}
       </div>
-      <div className="flex flex-wrap gap-3 text-[10px] font-mono text-on-surface-variant justify-center">
+      <div className="flex flex-wrap gap-3 text-[11px] font-mono text-on-surface-variant justify-center">
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-cadmium-amber" /> dot on the line</span>
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-caliper-cyan" /> dot enclosed</span>
         <span>τ = {ui.tau ?? '?'} px · canvas {ui.canvas.width}×{ui.canvas.height}</span>
@@ -144,14 +144,14 @@ export function OrigamiSourcePanel({ view, focus }: SourcePanelProps) {
                 <div className="w-full aspect-square bg-surface-dim" />
               )}
               <div className="p-1.5 space-y-0.5">
-                <div className="text-[9px] font-mono text-cadmium-amber">R{s.index} · {fmtTime(s.start_sec)}–{fmtTime(s.end_sec)}</div>
-                <div className="text-[10px] text-on-surface leading-tight line-clamp-2">{s.name}</div>
+                <div className="text-[11px] font-mono text-cadmium-amber">R{s.index} · {fmtTime(s.start_sec)}–{fmtTime(s.end_sec)}</div>
+                <div className="text-[11px] text-on-surface leading-tight line-clamp-2">{s.name}</div>
               </div>
             </button>
           );
         })}
       </div>
-      <div className="text-[10px] font-mono text-on-surface-variant">
+      <div className="text-[11px] font-mono text-on-surface-variant">
         Goal states R0–R{ui.states.length - 1}; order is source-established (the expert performed it). Click a state to seek.
       </div>
     </div>

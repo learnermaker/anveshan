@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import {
   TrendingUp,
   Sparkles,
@@ -37,7 +37,7 @@ export const TransmissionGainHero: React.FC<TransmissionGainHeroProps> = ({
                 TRANSMISSION VERIFICATION COMPLETE
               </span>
               <span className="text-outline text-xs">//</span>
-              <span className="font-mono text-[10px] text-on-surface-variant">
+              <span className="font-mono text-[11px] text-on-surface-variant">
                 DETERMINISTIC RUBRIC SEAM
               </span>
             </div>
@@ -55,13 +55,13 @@ export const TransmissionGainHero: React.FC<TransmissionGainHeroProps> = ({
           <div className="mt-4 pt-4 border-t border-outline/70 flex items-start gap-3 bg-surface-container/60 p-3 rounded border border-outline/50">
             <ShieldCheck className="w-5 h-5 text-transmission-emerald shrink-0 mt-0.5" />
             <div className="text-xs font-sans">
-              <div className="font-mono text-[10px] text-transmission-emerald font-bold mb-0.5">
+              <div className="font-mono text-[11px] text-transmission-emerald font-bold mb-0.5">
                 REPLAY FIXTURE SUMMARY:
               </div>
               <p className="text-on-surface-variant italic">
                 &ldquo;Replay fixture shows improvement on the configured ratchet criterion at the first-divergence timestamp.&rdquo;
               </p>
-              <div className="font-mono text-[10px] text-on-surface-variant mt-1">
+              <div className="font-mono text-[11px] text-on-surface-variant mt-1">
                 — Replay fixture evaluator record &bull; Lineage Node TX-REC-001
               </div>
             </div>
@@ -97,25 +97,25 @@ export const TransmissionGainHero: React.FC<TransmissionGainHeroProps> = ({
             {/* Baseline vs Retry Score Comparison Strip */}
             <div className="grid grid-cols-2 gap-2 mt-1">
               <div className="p-2 rounded bg-surface-container border border-outline">
-                <div className="text-[10px] font-mono text-on-surface-variant uppercase">
+                <div className="text-[11px] font-mono text-on-surface-variant uppercase">
                   BASELINE (ATT-BASE-001)
                 </div>
                 <div className="font-mono text-lg font-bold text-divergence-crimson">
                   {metrics.baselineScore.toFixed(1)} <span className="text-xs text-on-surface-variant font-normal">/ {metrics.maxPossibleScore.toFixed(1)}</span>
                 </div>
-                <div className="text-[9px] font-mono text-divergence-crimson">
+                <div className="text-[11px] font-mono text-divergence-crimson">
                   FAILED (21.4%)
                 </div>
               </div>
 
               <div className="p-2 rounded bg-surface-container border border-outline">
-                <div className="text-[10px] font-mono text-on-surface-variant uppercase">
+                <div className="text-[11px] font-mono text-on-surface-variant uppercase">
                   RETRY (ATT-RETRY-001)
                 </div>
                 <div className="font-mono text-lg font-bold text-transmission-emerald">
                   {metrics.retryScore.toFixed(1)} <span className="text-xs text-on-surface-variant font-normal">/ {metrics.maxPossibleScore.toFixed(1)}</span>
                 </div>
-                <div className="text-[9px] font-mono text-transmission-emerald">
+                <div className="text-[11px] font-mono text-transmission-emerald">
                   PASSED (100.0%)
                 </div>
               </div>
@@ -123,7 +123,7 @@ export const TransmissionGainHero: React.FC<TransmissionGainHeroProps> = ({
 
             {/* Criterion Gains Breakdown */}
             <div className="mt-2 space-y-1.5 pt-2 border-t border-outline/50">
-              <div className="flex items-center justify-between text-[10px] font-mono text-on-surface-variant">
+              <div className="flex items-center justify-between text-[11px] font-mono text-on-surface-variant">
                 <span>CRITERION GAINS:</span>
                 <span>DELTA</span>
               </div>

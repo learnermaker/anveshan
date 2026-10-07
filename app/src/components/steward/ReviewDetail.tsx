@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ReviewDetail: steward reviews one skill from the queue (K9-P3 §3.4).
  */
 
@@ -234,7 +234,7 @@ export function ReviewDetail({ caseId, onBack, onOpenSkill, onLibraryChanged }: 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Left: source */}
         <div className="space-y-3">
-          <div className="text-[10px] font-mono uppercase text-on-surface-variant font-bold">Source</div>
+          <div className="text-[11px] font-mono uppercase text-on-surface-variant font-bold">Source</div>
           {!isUniversal ? (
             <SourcePanel view={view} focus={(focus?.ev as any) ?? null} />
           ) : (
@@ -255,7 +255,7 @@ export function ReviewDetail({ caseId, onBack, onOpenSkill, onLibraryChanged }: 
 
         {/* Right: claims */}
         <div className="space-y-3">
-          <div className="text-[10px] font-mono uppercase text-on-surface-variant font-bold">
+          <div className="text-[11px] font-mono uppercase text-on-surface-variant font-bold">
             Steps and checks ({claims.length})
           </div>
           <ol className="space-y-2">
@@ -323,7 +323,7 @@ export function ReviewDetail({ caseId, onBack, onOpenSkill, onLibraryChanged }: 
                       </div>
                     </div>
                     {DEBUG && (
-                      <div className="text-[9px] font-mono text-on-surface-variant">
+                      <div className="text-[11px] font-mono text-on-surface-variant">
                         {c.claim_id} · {c.claim_type ?? ''} · {c.is_observed ? 'Seen in the source' : "AI's reading"}
                         {(c as any).confidence != null && ` · confidence ${(c as any).confidence}`}
                       </div>
@@ -386,7 +386,7 @@ export function ReviewDetail({ caseId, onBack, onOpenSkill, onLibraryChanged }: 
         {isCurated && !isSubmission && (
           <div className="space-y-3">
             <div>
-              <label htmlFor="reviewer-name" className="block text-[10px] font-mono uppercase text-on-surface-variant mb-1">
+              <label htmlFor="reviewer-name" className="block text-[11px] font-mono uppercase text-on-surface-variant mb-1">
                 Reviewer name (shown in the record)
               </label>
               <input
@@ -432,7 +432,7 @@ export function ReviewDetail({ caseId, onBack, onOpenSkill, onLibraryChanged }: 
               </div>
             )}
 
-            <p className="text-[10px] text-on-surface-variant">
+            <p className="text-[11px] text-on-surface-variant">
               The demo server forgets changes when it restarts. Download the decisions and commit them with{' '}
               <code className="font-mono">tools/apply_expert_review.py</code> to keep them.
             </p>

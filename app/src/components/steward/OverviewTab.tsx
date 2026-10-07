@@ -1,4 +1,4 @@
-/**
+﻿/**
  * OverviewTab: KPI grid and "Needs your attention" list (K9-P3 §3.3).
  */
 
@@ -98,10 +98,10 @@ export function OverviewTab({ onSwitchToQueue, onReviewCase }: Props) {
           >
             <div className="flex items-center gap-2 text-on-surface-variant">
               <Icon className="w-4 h-4 shrink-0" aria-hidden="true" />
-              <span className="text-[10px] font-mono uppercase">{label}</span>
+              <span className="text-[11px] font-mono uppercase">{label}</span>
             </div>
             <div className="text-2xl font-serif font-bold text-on-surface">{value}</div>
-            {caption && <div className="text-[10px] text-on-surface-variant">{caption}</div>}
+            {caption && <div className="text-[11px] text-on-surface-variant">{caption}</div>}
             {bar != null && <ProgressBar value={Math.min(1, bar)} />}
           </button>
         ))}
@@ -140,7 +140,7 @@ export function OverviewTab({ onSwitchToQueue, onReviewCase }: Props) {
       </div>
 
       {data.ephemeral && (
-        <p className="text-[10px] text-on-surface-variant">
+        <p className="text-[11px] text-on-surface-variant">
           This server stores data in memory only. Counts reset when the server restarts.
         </p>
       )}

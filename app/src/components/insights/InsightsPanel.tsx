@@ -1,4 +1,4 @@
-/**
+﻿/**
  * InsightsPanel: aggregate, anonymous learner outcomes for one skill (K9-P3 §2.5).
  * Fetches GET /api/insights/{case_id} and renders the K9-00 §6.7 layout.
  */
@@ -82,14 +82,14 @@ export function InsightsPanel({ caseId }: Props) {
         ].map(({ label, value }) => (
           <div key={label} className="rounded-lg border border-outline bg-surface-container p-3 text-center">
             <div className="text-2xl font-serif font-bold text-on-surface">{value}</div>
-            <div className="text-[10px] font-mono text-on-surface-variant mt-0.5">{label}</div>
+            <div className="text-[11px] font-mono text-on-surface-variant mt-0.5">{label}</div>
           </div>
         ))}
       </div>
 
       {/* First vs second try */}
       <div className="space-y-1">
-        <div className="text-[10px] font-mono uppercase text-on-surface-variant font-bold">First try → Second try</div>
+        <div className="text-[11px] font-mono uppercase text-on-surface-variant font-bold">First try → Second try</div>
         <div className="flex items-center gap-2 font-mono text-sm">
           <span className="text-cadmium-amber">{fmtPct(data.baseline.pass_rate)}</span>
           <span className="text-on-surface-variant">→</span>
@@ -99,7 +99,7 @@ export function InsightsPanel({ caseId }: Props) {
 
       {/* Where learners first go wrong */}
       <div className="space-y-2">
-        <div className="text-[10px] font-mono uppercase text-on-surface-variant font-bold">Where learners first go wrong</div>
+        <div className="text-[11px] font-mono uppercase text-on-surface-variant font-bold">Where learners first go wrong</div>
         {data.first_wrong.length === 0 ? (
           <p className="text-[11px] text-on-surface-variant">No first tries went off track yet.</p>
         ) : (
@@ -113,7 +113,7 @@ export function InsightsPanel({ caseId }: Props) {
 
       {/* Hardest checks */}
       <div className="space-y-2">
-        <div className="text-[10px] font-mono uppercase text-on-surface-variant font-bold">Hardest checks</div>
+        <div className="text-[11px] font-mono uppercase text-on-surface-variant font-bold">Hardest checks</div>
         {data.hardest.length === 0 ? (
           <p className="text-[11px] text-on-surface-variant">No data on hard checks yet.</p>
         ) : (
@@ -127,7 +127,7 @@ export function InsightsPanel({ caseId }: Props) {
 
       {/* Did the feedback help? */}
       <div className="space-y-1">
-        <div className="text-[10px] font-mono uppercase text-on-surface-variant font-bold">Did the feedback help?</div>
+        <div className="text-[11px] font-mono uppercase text-on-surface-variant font-bold">Did the feedback help?</div>
         {data.feedback_helped.sessions === 0 ? (
           <p className="text-[11px] text-on-surface-variant">Not enough second tries yet.</p>
         ) : (
@@ -139,7 +139,7 @@ export function InsightsPanel({ caseId }: Props) {
 
       {/* Suggestions */}
       <div className="space-y-2">
-        <div className="text-[10px] font-mono uppercase text-on-surface-variant font-bold">Suggestions</div>
+        <div className="text-[11px] font-mono uppercase text-on-surface-variant font-bold">Suggestions</div>
         {data.suggestions.length === 0 ? (
           <p className="text-[11px] text-on-surface-variant">No suggestions yet.</p>
         ) : (
@@ -152,10 +152,10 @@ export function InsightsPanel({ caseId }: Props) {
             ))}
           </ul>
         )}
-        <p className="text-[10px] text-on-surface-variant">Suggestions follow fixed rules from these numbers. They are not written by AI.</p>
+        <p className="text-[11px] text-on-surface-variant">Suggestions follow fixed rules from these numbers. They are not written by AI.</p>
       </div>
 
-      <p className="text-[10px] text-on-surface-variant border-t border-outline pt-3">
+      <p className="text-[11px] text-on-surface-variant border-t border-outline pt-3">
         Counts since this demo server last started. No names or recordings are kept.
       </p>
     </div>

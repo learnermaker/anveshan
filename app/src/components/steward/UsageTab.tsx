@@ -1,4 +1,4 @@
-/**
+﻿/**
  * UsageTab: server usage metrics (K9-P3 §3.7).
  */
 
@@ -65,55 +65,55 @@ export function UsageTab() {
       {/* Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         <div className="rounded-xl border border-outline bg-surface-container p-4 space-y-2">
-          <div className="text-[10px] font-mono uppercase text-on-surface-variant">AI calls today</div>
+          <div className="text-[11px] font-mono uppercase text-on-surface-variant">AI calls today</div>
           <div className="text-2xl font-serif font-bold text-on-surface">{data.live_calls_today}</div>
-          <div className="text-[10px] text-on-surface-variant">{hasBudget ? `of ${data.daily_budget} allowed` : 'no daily limit'}</div>
+          <div className="text-[11px] text-on-surface-variant">{hasBudget ? `of ${data.daily_budget} allowed` : 'no daily limit'}</div>
           {hasBudget && aiPct != null && <ProgressBar value={Math.min(1, aiPct)} />}
         </div>
 
         <div className="rounded-xl border border-outline bg-surface-container p-4 space-y-1">
-          <div className="text-[10px] font-mono uppercase text-on-surface-variant">Calls with your own key</div>
+          <div className="text-[11px] font-mono uppercase text-on-surface-variant">Calls with your own key</div>
           <div className="text-2xl font-serif font-bold text-on-surface">{data.own_key_calls}</div>
         </div>
 
         <div className="rounded-xl border border-outline bg-surface-container p-4 space-y-1">
-          <div className="text-[10px] font-mono uppercase text-on-surface-variant">Repeat calls from cache</div>
+          <div className="text-[11px] font-mono uppercase text-on-surface-variant">Repeat calls from cache</div>
           <div className="text-2xl font-serif font-bold text-on-surface">{data.cache_hits}</div>
         </div>
 
         <div className="rounded-xl border border-outline bg-surface-container p-4 space-y-1">
-          <div className="text-[10px] font-mono uppercase text-on-surface-variant">Tries today</div>
+          <div className="text-[11px] font-mono uppercase text-on-surface-variant">Tries today</div>
           <div className="text-2xl font-serif font-bold text-on-surface">{data.attempts_today}</div>
         </div>
 
         <div className="rounded-xl border border-outline bg-surface-container p-4 space-y-1">
-          <div className="text-[10px] font-mono uppercase text-on-surface-variant">New skills analysed today</div>
+          <div className="text-[11px] font-mono uppercase text-on-surface-variant">New skills analysed today</div>
           <div className="text-2xl font-serif font-bold text-on-surface">{data.compose_today}</div>
         </div>
 
         <div className="rounded-xl border border-outline bg-surface-container p-4 space-y-2">
-          <div className="text-[10px] font-mono uppercase text-on-surface-variant">Storage</div>
+          <div className="text-[11px] font-mono uppercase text-on-surface-variant">Storage</div>
           <div className="text-lg font-serif font-bold text-on-surface">{fmtBytes(data.storage_bytes)}</div>
-          <div className="text-[10px] text-on-surface-variant">{hasCap ? `of ${fmtBytes(data.storage_cap_bytes)}` : 'no cap'}</div>
+          <div className="text-[11px] text-on-surface-variant">{hasCap ? `of ${fmtBytes(data.storage_cap_bytes)}` : 'no cap'}</div>
           {hasCap && <ProgressBar value={Math.min(1, data.storage_bytes / data.storage_cap_bytes)} />}
         </div>
 
         <div className="rounded-xl border border-outline bg-surface-container p-4 space-y-1">
-          <div className="text-[10px] font-mono uppercase text-on-surface-variant">Private data kept for</div>
+          <div className="text-[11px] font-mono uppercase text-on-surface-variant">Private data kept for</div>
           <div className="text-lg font-serif font-bold text-on-surface">
             {data.data_ttl_hours > 0 ? `${data.data_ttl_hours} hours` : 'kept until restart'}
           </div>
         </div>
 
         <div className="rounded-xl border border-outline bg-surface-container p-4 space-y-1">
-          <div className="text-[10px] font-mono uppercase text-on-surface-variant">Server mode</div>
+          <div className="text-[11px] font-mono uppercase text-on-surface-variant">Server mode</div>
           <div className="text-lg font-serif font-bold text-on-surface">
             {data.mode === 'live' ? 'Live AI' : 'Recorded results'}
           </div>
         </div>
 
         <div className="rounded-xl border border-outline bg-surface-container p-4 space-y-1">
-          <div className="text-[10px] font-mono uppercase text-on-surface-variant">Running for</div>
+          <div className="text-[11px] font-mono uppercase text-on-surface-variant">Running for</div>
           <div className="text-lg font-serif font-bold text-on-surface">{fmtDuration(data.uptime_s)}</div>
         </div>
       </div>
@@ -121,7 +121,7 @@ export function UsageTab() {
       {/* Requests by type */}
       {requestsByClass.length > 0 && (
         <div className="space-y-2">
-          <h4 className="text-[10px] font-mono uppercase text-on-surface-variant font-bold">Requests by type</h4>
+          <h4 className="text-[11px] font-mono uppercase text-on-surface-variant font-bold">Requests by type</h4>
           <table className="w-full text-[11px] border-collapse">
             <tbody>
               {requestsByClass.map(([cls, count]) => (
@@ -138,7 +138,7 @@ export function UsageTab() {
       {/* Blocked by rate limits */}
       {rateLimited.length > 0 && (
         <div className="space-y-2">
-          <h4 className="text-[10px] font-mono uppercase text-on-surface-variant font-bold">Blocked by rate limits</h4>
+          <h4 className="text-[11px] font-mono uppercase text-on-surface-variant font-bold">Blocked by rate limits</h4>
           <table className="w-full text-[11px] border-collapse">
             <tbody>
               {rateLimited.map(([cls, count]) => (
@@ -155,7 +155,7 @@ export function UsageTab() {
       {/* Problems by type */}
       {errorsByCategory.length > 0 && (
         <div className="space-y-2">
-          <h4 className="text-[10px] font-mono uppercase text-on-surface-variant font-bold">Problems by type</h4>
+          <h4 className="text-[11px] font-mono uppercase text-on-surface-variant font-bold">Problems by type</h4>
           <table className="w-full text-[11px] border-collapse">
             <tbody>
               {errorsByCategory.map(([cat, count]) => (
@@ -169,7 +169,7 @@ export function UsageTab() {
         </div>
       )}
 
-      <div className="text-[10px] text-on-surface-variant">
+      <div className="text-[11px] text-on-surface-variant">
         All counts are since the server started. No personal data is stored.
       </div>
     </div>

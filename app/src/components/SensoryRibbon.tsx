@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Volume2, Activity, Eye, Zap, Crosshair } from 'lucide-react';
 import type { SensoryCueAnnotation, TransmissionTelemetry } from '../data/adapter';
 
@@ -60,13 +60,13 @@ export const SensoryRibbon: React.FC<SensoryRibbonProps> = ({
           <span className="font-mono text-xs font-bold text-on-surface uppercase tracking-wider">
             MULTI-MODAL SENSORY CUE WAVEFORM RIBBON
           </span>
-          <span className="text-[10px] font-mono text-on-surface-variant">
+          <span className="text-[11px] font-mono text-on-surface-variant">
             (ACOUSTIC TORQUE + TACTILE DRAG + PARALLAX OPTICS)
           </span>
         </div>
 
         {/* Legend */}
-        <div className="hidden sm:flex items-center gap-3 text-[10px] font-mono">
+        <div className="hidden sm:flex items-center gap-3 text-[11px] font-mono">
           <span className="flex items-center gap-1 text-caliper-cyan">
             <span className="w-2 h-2 rounded bg-caliper-cyan/60" />
             TACTILE FRICTION (04.5s – 12.0s)
@@ -145,7 +145,7 @@ export const SensoryRibbon: React.FC<SensoryRibbonProps> = ({
         >
           {/* Top playhead indicator badge */}
           <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2.5 h-2.5 bg-cadmium-amber rotate-45" />
-          <div className="absolute top-1 left-2 font-mono text-[9px] bg-cadmium-amber text-surface-container-lowest font-bold px-1 rounded shadow">
+          <div className="absolute top-1 left-2 font-mono text-[11px] bg-cadmium-amber text-surface-container-lowest font-bold px-1 rounded shadow">
             {currentTime.toFixed(1)}s
           </div>
         </div>
@@ -153,7 +153,7 @@ export const SensoryRibbon: React.FC<SensoryRibbonProps> = ({
 
       {/* Sensory Cue Interactive Markers Along Timeline */}
       <div className="flex flex-wrap items-center gap-1.5 pt-1">
-        <span className="font-mono text-[10px] text-on-surface-variant uppercase mr-1">
+        <span className="font-mono text-[11px] text-on-surface-variant uppercase mr-1">
           EVIDENCE PINS:
         </span>
         {telemetry.sensoryCues.map((cue) => {
@@ -162,7 +162,7 @@ export const SensoryRibbon: React.FC<SensoryRibbonProps> = ({
             <button
               key={cue.id}
               onClick={() => onTimeChange(cue.timeSec)}
-              className={`flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono border transition-all ${
+              className={`flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono border transition-all ${
                 isActive
                   ? 'bg-cadmium-amber text-surface-container-lowest border-cadmium-amber font-bold shadow-[0_0_8px_rgba(230,126,34,0.4)]'
                   : 'bg-surface-container-highest border-outline text-on-surface-variant hover:text-on-surface hover:border-on-surface-variant'

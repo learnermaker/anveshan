@@ -20,7 +20,7 @@ export default {
         // used throughout the V0 components but previously undefined
         'surface-elevated': '#14181a',
         'on-surface': '#edece8',
-        'on-surface-variant': '#9ba1a6',
+        'on-surface-variant': '#a9afb4',
         outline: '#2e353b',
         'outline-variant': '#1a1e22',
         

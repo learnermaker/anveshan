@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { ArrowRight, CheckCircle2, ChevronRight, Eye, HelpCircle, Layers, Shield, Sparkles, UserCheck, Video } from 'lucide-react';
 import type { CapabilityCase } from '../types/workspace';
 
@@ -42,10 +42,10 @@ export function SourceAnalysisView({
       {/* Case Header Hero */}
       <div className="space-y-3">
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="inline-block px-2.5 py-0.5 rounded text-[10px] font-mono uppercase font-semibold bg-caliper-cyan/15 text-caliper-cyan border border-caliper-cyan/30">
+          <div className="inline-block px-2.5 py-0.5 rounded text-[11px] font-mono uppercase font-semibold bg-caliper-cyan/15 text-caliper-cyan border border-caliper-cyan/30">
             STAGE 01 // CAPTURE & GROUNDED KNOWLEDGE
           </div>
-          <div className="inline-block px-2.5 py-0.5 rounded text-[10px] font-mono uppercase font-bold bg-surface-dim text-cadmium-amber border border-cadmium-amber/40">
+          <div className="inline-block px-2.5 py-0.5 rounded text-[11px] font-mono uppercase font-bold bg-surface-dim text-cadmium-amber border border-cadmium-amber/40">
             MODE: {capCase.transmissionMode === 'goal_conditioned' ? 'GOAL-CONDITIONED (TARGET-FIRST)' : capCase.transmissionMode === 'corrective' ? 'CORRECTIVE (DIVERGENCE-FIRST)' : 'FORWARD (DEMO-FIRST)'}
           </div>
         </div>
@@ -68,7 +68,7 @@ export function SourceAnalysisView({
                 <Video className="w-4 h-4 text-transmission-emerald" />
                 SOURCE EVIDENCE
               </span>
-              <span className="text-[10px] font-mono text-on-surface-variant bg-surface-dim px-2 py-0.5 rounded border border-outline">
+              <span className="text-[11px] font-mono text-on-surface-variant bg-surface-dim px-2 py-0.5 rounded border border-outline">
                 {capCase.workspaceSpec.evidenceProfile.temporalResolution}
               </span>
             </div>
@@ -93,7 +93,7 @@ export function SourceAnalysisView({
                   {capCase.expertRole}
                 </div>
               </div>
-              <div className="absolute bottom-3 left-3 text-[10px] font-mono text-zinc-300 z-10 flex items-center gap-2">
+              <div className="absolute bottom-3 left-3 text-[11px] font-mono text-zinc-300 z-10 flex items-center gap-2">
                 <span>SOURCE ID: {capCase.sourceProvenance?.sourceId ?? kp.claims[0]?.evidence_refs[0]?.source_id ?? 'src-auth-01'}</span>
                 {capCase.sourceProvenance?.license && (
                   <>
@@ -107,7 +107,7 @@ export function SourceAnalysisView({
                   href={capCase.sourceProvenance.sourceUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="absolute top-3 right-3 z-10 px-2.5 py-1 rounded bg-black/80 hover:bg-black text-[10px] font-mono text-caliper-cyan border border-caliper-cyan/40 shadow"
+                  className="absolute top-3 right-3 z-10 px-2.5 py-1 rounded bg-black/80 hover:bg-black text-[11px] font-mono text-caliper-cyan border border-caliper-cyan/40 shadow"
                 >
                   SOURCE REF ↗
                 </a>
@@ -129,7 +129,7 @@ export function SourceAnalysisView({
               <div className="space-y-2">
                 {kp.claims.map((c, i) => (
                   <div key={i} className="p-3 bg-surface-dim rounded-lg border border-outline/40 space-y-1.5">
-                    <div className="flex items-center justify-between text-[10px] font-mono">
+                    <div className="flex items-center justify-between text-[11px] font-mono">
                       <span className="text-cadmium-amber font-semibold uppercase">
                         CLAIM 0{i + 1} // {c.claim_type}
                       </span>
@@ -140,7 +140,7 @@ export function SourceAnalysisView({
                     <p className="text-xs text-on-surface font-sans">
                       {c.statement}
                     </p>
-                    <div className="text-[10px] font-mono text-on-surface-variant flex items-center gap-2">
+                    <div className="text-[11px] font-mono text-on-surface-variant flex items-center gap-2">
                       <span>EVIDENCE ID: {c.evidence_refs[0]?.evidence_id}</span>
                       <span>•</span>
                       <span>TIME: {c.evidence_refs[0]?.start_sec}s – {c.evidence_refs[0]?.end_sec}s</span>
@@ -161,7 +161,7 @@ export function SourceAnalysisView({
                 <Shield className="w-4 h-4 text-cadmium-amber" />
                 EPISTEMIC CERTAINTY TAXONOMY
               </span>
-              <span className="text-[10px] font-mono text-on-surface-variant">
+              <span className="text-[11px] font-mono text-on-surface-variant">
                 NO FALSE MACHINE CERTAINTY
               </span>
             </div>
@@ -172,7 +172,7 @@ export function SourceAnalysisView({
                   <div className="flex items-center justify-between text-xs font-mono">
                     <span className="font-semibold text-on-surface">{u.aspect}</span>
                     <span
-                      className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
+                      className={`px-1.5 py-0.5 rounded text-[11px] font-bold ${
                         u.state === 'OBSERVED'
                           ? 'bg-caliper-cyan/20 text-caliper-cyan'
                           : u.state === 'INFERRED'
@@ -205,7 +205,7 @@ export function SourceAnalysisView({
                 <div key={cr.criterion_id} className="p-2.5 bg-surface-dim rounded border border-outline/30 flex items-center justify-between text-xs">
                   <div>
                     <div className="font-semibold text-on-surface">{cr.name}</div>
-                    <div className="text-[10px] font-mono text-on-surface-variant">{cr.criterion_id}</div>
+                    <div className="text-[11px] font-mono text-on-surface-variant">{cr.criterion_id}</div>
                   </div>
                   <span className="font-mono text-xs text-cadmium-amber font-bold">
                     {cr.weight} pts

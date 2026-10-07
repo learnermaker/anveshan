@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Step 3c: Proposal — three-column review + editable SkillModel (K8 §5).
  *
  * Column 1: OBSERVED — probe facts, structures/specialists availability, intake safety.
@@ -35,11 +35,11 @@ function AvailabilityRow({ label, available, reason }: { label: string; availabl
 }
 
 function InferredBadge() {
-  return <span className="inline-flex items-center px-1 py-0 rounded text-[8px] font-mono font-bold uppercase bg-cadmium-amber/10 text-cadmium-amber border border-cadmium-amber/30">AI's reading</span>;
+  return <span className="inline-flex items-center px-1 py-0 rounded text-[11px] font-mono font-bold uppercase bg-cadmium-amber/10 text-cadmium-amber border border-cadmium-amber/30">AI's reading</span>;
 }
 
 function ObservedBadge() {
-  return <span className="inline-flex items-center px-1 py-0 rounded text-[8px] font-mono font-bold uppercase bg-transmission-emerald/10 text-transmission-emerald border border-transmission-emerald/30">Measured</span>;
+  return <span className="inline-flex items-center px-1 py-0 rounded text-[11px] font-mono font-bold uppercase bg-transmission-emerald/10 text-transmission-emerald border border-transmission-emerald/30">Measured</span>;
 }
 
 function MethodBadge({ method }: { method: string }) {
@@ -58,7 +58,7 @@ function ColObserved({ draft }: { draft: DraftView }) {
   return (
     <div className="space-y-4">
       <div>
-        <div className="text-[9px] font-mono uppercase tracking-wider text-transmission-emerald font-bold mb-2">What we measured</div>        <table className="w-full text-[11px] border-collapse">
+        <div className="text-[11px] font-mono uppercase tracking-wider text-transmission-emerald font-bold mb-2">What we measured</div>        <table className="w-full text-[11px] border-collapse">
           <tbody>
             <tr className="border-b border-outline/30"><td className="py-1 text-on-surface-variant pr-2">Type</td><td className="py-1 font-mono text-on-surface">{probe.mime_type}</td></tr>
             <tr className="border-b border-outline/30"><td className="py-1 text-on-surface-variant pr-2">Size</td><td className="py-1 font-mono text-on-surface">{(probe.bytes / 1e6).toFixed(2)} MB</td></tr>
@@ -72,7 +72,7 @@ function ColObserved({ draft }: { draft: DraftView }) {
       </div>
 
       <div>
-        <div className="text-[9px] font-mono uppercase tracking-wider text-on-surface-variant font-bold mb-2">Structures available</div>
+        <div className="text-[11px] font-mono uppercase tracking-wider text-on-surface-variant font-bold mb-2">Structures available</div>
         <ul className="space-y-1">
           {(['final_state', 'procedure', 'temporal_pattern', 'utterance'] as const).map((s) => (
             <AvailabilityRow key={s} label={draft.structure_labels[s] ?? s} available={probe.structures_available.includes(s)} reason={probe.reasons?.[s]} />
@@ -82,7 +82,7 @@ function ColObserved({ draft }: { draft: DraftView }) {
 
       {probe.specialists_available != null && probe.specialists_available.length > 0 && (
         <div>
-          <div className="text-[9px] font-mono uppercase tracking-wider text-on-surface-variant font-bold mb-2">Specialists available</div>
+          <div className="text-[11px] font-mono uppercase tracking-wider text-on-surface-variant font-bold mb-2">Specialists available</div>
           <ul className="space-y-1">
             {Object.keys(draft.specialist_labels).map((sp) => (
               <AvailabilityRow key={sp} label={draft.specialist_labels[sp] ?? sp} available={(probe.specialists_available ?? []).includes(sp)} reason={probe.reasons?.[sp]} />
@@ -92,7 +92,7 @@ function ColObserved({ draft }: { draft: DraftView }) {
       )}
 
       <div>
-        <div className="text-[9px] font-mono uppercase tracking-wider text-on-surface-variant font-bold mb-2">Safety decision</div>
+        <div className="text-[11px] font-mono uppercase tracking-wider text-on-surface-variant font-bold mb-2">Safety decision</div>
         <div className="text-[11px] space-y-0.5">
           <div className={safety.decision === 'refuse' ? 'text-divergence-crimson font-mono font-bold' : 'text-transmission-emerald font-mono'}>{safety.decision?.toUpperCase() ?? 'SAFE'}</div>
           {safety.categories && !safety.categories.includes('none') && <div className="text-on-surface-variant">Categories: {safety.categories.join(', ')}</div>}
@@ -116,7 +116,7 @@ function ColInferred({ draft, sourceUrl }: { draft: DraftView; sourceUrl?: strin
     const props = sm.goal_state ?? [];
     return (
       <div className="space-y-4">
-        <div className="text-[9px] font-mono uppercase tracking-wider text-cadmium-amber font-bold mb-2">What the AI understood <InferredBadge /></div>
+        <div className="text-[11px] font-mono uppercase tracking-wider text-cadmium-amber font-bold mb-2">What the AI understood <InferredBadge /></div>
         <div className="relative border border-outline rounded-lg overflow-hidden bg-surface-dim" style={{ minHeight: '140px' }}>
           {sourceUrl ? (
             <img src={sourceUrl} alt="Uploaded source" className="block w-full h-auto" />
@@ -146,14 +146,14 @@ function ColInferred({ draft, sourceUrl }: { draft: DraftView; sourceUrl?: strin
     const segs = draft.perception.segments.filter((s) => s.kind === 'time' && s.keyframe_asset);
     return (
       <div className="space-y-4">
-        <div className="text-[9px] font-mono uppercase tracking-wider text-cadmium-amber font-bold mb-2">What the AI understood <InferredBadge /></div>
+        <div className="text-[11px] font-mono uppercase tracking-wider text-cadmium-amber font-bold mb-2">What the AI understood <InferredBadge /></div>
         <div className="flex gap-2 overflow-x-auto pb-1">
           {segs.map((seg, i) => (
             <div key={seg.segment_id} className="shrink-0 w-20">
-              <div className="w-full aspect-video bg-surface-dim border border-outline rounded text-[8px] font-mono text-on-surface-variant flex items-center justify-center">
+              <div className="w-full aspect-video bg-surface-dim border border-outline rounded text-[11px] font-mono text-on-surface-variant flex items-center justify-center">
                 {steps[i]?.name ? steps[i].name.slice(0, 10) : `Seg ${i + 1}`}
               </div>
-              <div className="text-[8px] font-mono text-on-surface-variant mt-0.5">
+              <div className="text-[11px] font-mono text-on-surface-variant mt-0.5">
                 {seg.start_sec?.toFixed(0)}–{seg.end_sec?.toFixed(0)}s
               </div>
             </div>
@@ -180,10 +180,10 @@ function ColInferred({ draft, sourceUrl }: { draft: DraftView; sourceUrl?: strin
     const speechObs = obs.find((o) => o.kind === 'speech');
     return (
       <div className="space-y-4">
-        <div className="text-[9px] font-mono uppercase tracking-wider text-cadmium-amber font-bold mb-2">What the AI understood <InferredBadge /></div>
+        <div className="text-[11px] font-mono uppercase tracking-wider text-cadmium-amber font-bold mb-2">What the AI understood <InferredBadge /></div>
         {transcript && (
           <div className="p-3 rounded-lg border border-outline bg-surface-dim">
-            <div className="text-[9px] font-mono uppercase text-on-surface-variant mb-1">What was said (AI transcript)</div>
+            <div className="text-[11px] font-mono uppercase text-on-surface-variant mb-1">What was said (AI transcript)</div>
             <p className="text-sm text-on-surface font-mono">"{transcript}"</p>
           </div>
         )}
@@ -256,12 +256,12 @@ function SkillModelEditor({ proposal: _proposal, model, onChange, validationErro
 
   return (
     <div className="space-y-5">
-      <div className="text-[9px] font-mono uppercase tracking-wider text-on-surface-variant font-bold">How we'll teach and check it</div>
+      <div className="text-[11px] font-mono uppercase tracking-wider text-on-surface-variant font-bold">How we'll teach and check it</div>
 
       {/* Basic fields */}
       <div className="space-y-2">
         <label className="block">
-          <span className="text-[10px] font-mono uppercase text-on-surface-variant">Title</span>
+          <span className="text-[11px] font-mono uppercase text-on-surface-variant">Title</span>
           <input
             value={model.skill_title ?? ''}
             onChange={(e) => setField('skill_title', e.target.value)}
@@ -270,7 +270,7 @@ function SkillModelEditor({ proposal: _proposal, model, onChange, validationErro
           />
         </label>
         <label className="block">
-          <span className="text-[10px] font-mono uppercase text-on-surface-variant">Summary</span>
+          <span className="text-[11px] font-mono uppercase text-on-surface-variant">Summary</span>
           <textarea
             value={model.summary ?? ''}
             rows={2}
@@ -283,10 +283,10 @@ function SkillModelEditor({ proposal: _proposal, model, onChange, validationErro
 
       {/* Structures (read-only chips) */}
       <div>
-        <div className="text-[10px] font-mono uppercase text-on-surface-variant mb-1">Structures</div>
+        <div className="text-[11px] font-mono uppercase text-on-surface-variant mb-1">Structures</div>
         <div className="flex flex-wrap gap-1">
           {model.structures.map((s) => (
-            <span key={s} className="px-2 py-0.5 rounded-full bg-surface-container border border-outline text-[10px] font-mono">{s}</span>
+            <span key={s} className="px-2 py-0.5 rounded-full bg-surface-container border border-outline text-[11px] font-mono">{s}</span>
           ))}
         </div>
       </div>
@@ -294,7 +294,7 @@ function SkillModelEditor({ proposal: _proposal, model, onChange, validationErro
       {/* Goal properties */}
       {(model.goal_state ?? []).length > 0 && (
         <div>
-          <div className="text-[10px] font-mono uppercase text-on-surface-variant mb-1">Goal properties</div>
+          <div className="text-[11px] font-mono uppercase text-on-surface-variant mb-1">Goal properties</div>
           <ul className="space-y-1.5">
             {(model.goal_state ?? []).map((p, i) => (
               <li key={p.prop_id} className="flex items-start gap-2">
@@ -315,22 +315,22 @@ function SkillModelEditor({ proposal: _proposal, model, onChange, validationErro
       {/* Steps */}
       {(model.steps ?? []).length > 0 && (
         <div>
-          <div className="text-[10px] font-mono uppercase text-on-surface-variant mb-1">Steps</div>
+          <div className="text-[11px] font-mono uppercase text-on-surface-variant mb-1">Steps</div>
           <ul className="space-y-1.5">
             {(model.steps ?? []).map((s, i) => (
               <li key={s.step_id} className="flex items-center gap-2">
-                <span className="text-[10px] font-mono text-on-surface-variant w-4">{s.index + 1}</span>
+                <span className="text-[11px] font-mono text-on-surface-variant w-4">{s.index + 1}</span>
                 <input
                   value={s.name}
                   onChange={(e) => updateStep(i, { name: e.target.value })}
                   className="flex-1 bg-surface-dim border border-outline rounded px-2 py-1 text-[11px] outline-none focus:border-caliper-cyan"
                   aria-label={`Step ${i + 1} name`}
                 />
-                <label className="flex items-center gap-1 text-[10px] font-mono text-on-surface-variant shrink-0">
+                <label className="flex items-center gap-1 text-[11px] font-mono text-on-surface-variant shrink-0">
                   <input type="checkbox" checked={s.critical === true} onChange={(e) => updateStep(i, { critical: e.target.checked })} className="accent-divergence-crimson" aria-label={`Step ${i + 1} critical`} />
                   critical
                 </label>
-                <span className="text-[8px] font-mono text-on-surface-variant">{s.source_established ? 'DEMONSTRATED' : 'SUGGESTED'}</span>
+                <span className="text-[11px] font-mono text-on-surface-variant">{s.source_established ? 'DEMONSTRATED' : 'SUGGESTED'}</span>
               </li>
             ))}
           </ul>
@@ -340,7 +340,7 @@ function SkillModelEditor({ proposal: _proposal, model, onChange, validationErro
       {/* Constraints */}
       {(model.constraints ?? []).length > 0 && (
         <div>
-          <div className="text-[10px] font-mono uppercase text-on-surface-variant mb-1">Constraints</div>
+          <div className="text-[11px] font-mono uppercase text-on-surface-variant mb-1">Constraints</div>
           <ul className="space-y-1">
             {(model.constraints ?? []).map((c, i) => (
               <li key={c.constraint_id} className="flex items-center gap-2 text-[11px]">
@@ -354,9 +354,9 @@ function SkillModelEditor({ proposal: _proposal, model, onChange, validationErro
 
       {/* Checks table */}
       <div>
-        <div className="text-[10px] font-mono uppercase text-on-surface-variant mb-1">Checks</div>
+        <div className="text-[11px] font-mono uppercase text-on-surface-variant mb-1">Checks</div>
         <div className="overflow-x-auto">
-          <table className="w-full text-[10px] border-collapse">
+          <table className="w-full text-[11px] border-collapse">
             <thead>
               <tr className="border-b border-outline text-on-surface-variant">
                 <th className="text-left py-1 pr-2 font-mono font-normal">On</th>
@@ -377,7 +377,7 @@ function SkillModelEditor({ proposal: _proposal, model, onChange, validationErro
                     <select
                       value={c.weight ?? 2}
                       onChange={(e) => updateCheck(i, { weight: Number(e.target.value) })}
-                      className="bg-surface-dim border border-outline rounded px-1 py-0.5 font-mono text-[10px] outline-none"
+                      className="bg-surface-dim border border-outline rounded px-1 py-0.5 font-mono text-[11px] outline-none"
                       aria-label={`Weight for ${c.check_id}`}
                     >
                       {[1, 2, 3, 4, 5].map((w) => <option key={w} value={w}>{w}</option>)}
@@ -396,7 +396,7 @@ function SkillModelEditor({ proposal: _proposal, model, onChange, validationErro
 
       {/* Learner input kinds */}
       <div>
-        <div className="text-[10px] font-mono uppercase text-on-surface-variant mb-1">Learner input kinds</div>
+        <div className="text-[11px] font-mono uppercase text-on-surface-variant mb-1">Learner input kinds</div>
         <div className="flex flex-wrap gap-2">
           {allKinds.map((kind) => {
             const allowed = allowedKinds.includes(kind);
@@ -444,9 +444,9 @@ export function StepProposal({ draft, sourceUrl, onCreate, onStartOver, error }:
     <div className="flex flex-col gap-4 w-full animate-fade-in">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-1">
-          <div className="text-[10px] font-mono uppercase tracking-widest text-cadmium-amber font-bold">Composer · Step 3 — Review proposal</div>
+          <div className="text-[11px] font-mono uppercase tracking-widest text-cadmium-amber font-bold">Composer · Step 3 — Review proposal</div>
           <h2 className="text-2xl font-serif text-on-surface">{proposal.title}</h2>
-          <div className="flex flex-wrap gap-1 text-[10px] font-mono text-on-surface-variant">
+          <div className="flex flex-wrap gap-1 text-[11px] font-mono text-on-surface-variant">
             <span>{proposal.domain}</span>
             <span>·</span>
             <span>{proposal.transmission_mode}</span>

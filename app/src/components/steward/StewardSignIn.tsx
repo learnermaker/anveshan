@@ -1,4 +1,4 @@
-/**
+﻿/**
  * StewardSignIn: access-code form for the steward console (K9-P3 §3.2).
  */
 
@@ -94,7 +94,7 @@ export function StewardSignIn({ onSignedIn, message }: Props) {
 
         <ErrorNote error={error} />
 
-        <p className="text-[10px] text-on-surface-variant">
+        <p className="text-[11px] text-on-surface-variant">
           The code stays in this tab only and is sent only to this app's server.
         </p>
       </div>
