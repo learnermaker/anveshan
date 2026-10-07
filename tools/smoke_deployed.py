@@ -161,7 +161,9 @@ def _probe_case_samples(client: httpx.Client, base: str, case_id: str) -> None:
               f"HTTP {ar.status_code}")
         if ar.status_code == 200:
             j = ar.json()
-            check(f"{prefix} attempt has evaluation", "evaluation" in j or "result" in j,
+            # Spec says response must contain "evaluation"; "result" is not an accepted alias.
+            # If a real service returns "result", that is a P4 contract deviation we want to catch.
+            check(f"{prefix} attempt has evaluation", "evaluation" in j,
                   f"keys: {list(j.keys())}")
         # submit flawed sample as retry
         fr = client.post(f"{base}/api/sessions/{sid}/attempts/sample/flawed", timeout=TIMEOUT)

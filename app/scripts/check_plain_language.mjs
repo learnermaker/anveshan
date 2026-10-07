@@ -116,6 +116,11 @@ function runSelfTest(terms) {
       ok = false;
     }
   }
+  // Spec: self-test must report exactly "CLM-01" and nothing else.
+  if (findings.length !== 1) {
+    console.error(`SELF-TEST FAIL: expected exactly 1 finding but got ${findings.length}: [${foundTerms.join(', ')}]`);
+    ok = false;
+  }
 
   if (ok) {
     console.log('SELF-TEST PASS: CLM-01 found, exempt "claim" not found');

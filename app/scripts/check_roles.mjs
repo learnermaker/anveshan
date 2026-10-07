@@ -33,7 +33,7 @@ const CHROME_PATH =
     : '/usr/bin/google-chrome');
 
 const BASE_URL = process.env.ANVESHAN_URL || 'http://localhost:5174';
-const STEWARD_CODE = 'steward'; // mock steward code; real: ANVESHAN_STEWARD_TOKEN env var
+const STEWARD_CODE = process.env.ANVESHAN_STEWARD_TOKEN || 'steward'; // env: ANVESHAN_STEWARD_TOKEN
 const SCREENSHOT_DIR = path.resolve(__dirname, '../../var/k9-screens');
 
 const STEP_TIMEOUT = 10_000;

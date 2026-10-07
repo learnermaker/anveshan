@@ -60,6 +60,24 @@
 
 ---
 
+## Review fixes (2026-10-07)
+
+Review verdict was **REVISE** (1 MUST, 3 SHOULD). All fixed:
+
+| # | Severity | Finding | Fix applied |
+|---|---|---|---|
+| 1 | MUST | `check_roles.mjs` hardcodes `STEWARD_CODE = 'steward'`, ignores `ANVESHAN_STEWARD_TOKEN` | Changed to `process.env.ANVESHAN_STEWARD_TOKEN \|\| 'steward'` |
+| 2 | SHOULD | Self-test does not assert exactly 1 finding | Added `findings.length !== 1` check after per-term loop |
+| 3 | SHOULD | Smoke check 3 accepts `"result"` as fallback for `"evaluation"` | Restricted to `"evaluation"` only; added comment explaining contract intent |
+| 4 | SHOULD | PNG fixture is 1×1, spec says 64×64 | Logged deviation in `docs/kiro/reports/K9-DECISIONS.md`; no behavioral change needed |
+
+Must-pass commands re-run after fixes:
+- `npm --prefix app run build` → PASS (1659 modules, 33.80s)
+- `node app/scripts/check_plain_language.mjs --self-test` → PASS (exit 0)
+- `python -m py_compile tools/smoke_deployed.py` → PASS (exit 0)
+
+---
+
 ## Requests for PC
 
 - None.
