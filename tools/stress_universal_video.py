@@ -195,7 +195,7 @@ def attempt(case_dir: Path, path: Path, work: Path, mode: str) -> Dict:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--scenario", choices=["synth", "origami"], default="synth")
+    ap.add_argument("--scenario", choices=["synth", "origami", "origami_window"], default="synth")
     ap.add_argument("--mode", choices=["live", "recorded"], default="recorded")
     ap.add_argument("--media-dir", default=str(ROOT / "var" / "scratch" / "media"))
     ap.add_argument("--work", default=str(ROOT / "var" / "stress"))
@@ -223,6 +223,15 @@ def main(argv=None) -> int:
                 write_procedure_video(p, **kw)
         attempts = {k: v[0] for k, v in variants.items()}
         title, mime = "Drawing a simple house step by step", "video/mp4"
+    elif a.scenario == "origami_window":
+        # Same setup as the dedicated origami engine eval: expert window 0-194 s (goal = bird base),
+        # attempts rendered by tracks/track-b/eval/origami/make_synthetic.py --out-dir var/eval/origami
+        src = media / "origami_window_source.mp4"
+        if not src.exists():
+            write_clip(md / "OrigamiCrane.ogv", src, 0.0, 194.0)
+        ev = ROOT / "var" / "eval" / "origami"
+        attempts = {n: ev / f"{n}.mp4" for n in ("perfect", "real_learner", "missing_state", "swapped_order", "truncated")}
+        title, mime = "Folding an origami bird base", "video/mp4"
     else:
         src = md / "OrigamiCrane.ogv"
         part = media / "origami_first40.mp4"

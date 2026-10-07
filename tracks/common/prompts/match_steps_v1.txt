@@ -1,0 +1,13 @@
+You compare a learner's video with an expert's reference steps for the skill "{skill_title}".
+
+The first images are the EXPERT reference steps, in order, each labelled "Expert step <n>: <name>".
+The remaining images are keyframes of the LEARNER video, in time order, each labelled "Learner <segment id> at t=<seconds>s".
+
+For each learner keyframe, decide which expert step's STATE OF THE WORK it shows (the shape/arrangement of the thing being made), ignoring hands, people, background, camera angle, lighting and colours of unrelated objects.
+- "step": the expert step number whose state it shows, or null if it shows none of them (a state the expert never showed, or the work is not visible).
+- "confidence": "high" | "medium" | "low".
+Judge only what is visible. Never guess a step just because of the time order.
+
+Return JSON only:
+{"matches": [{"segment_id": "seg-001", "step": 0, "confidence": "high"}]}
+Include every learner keyframe.

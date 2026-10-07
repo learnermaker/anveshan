@@ -1,23 +1,24 @@
 {
  "scenario": "origami",
- "mode": "recorded",
+ "mode": "live",
  "compose": {
-  "compose_s": 0.0,
+  "compose_s": 50.2,
   "refused": false,
   "build_s": 0.1,
   "structures": [
    "procedure"
   ],
-  "n_steps": 8,
+  "n_steps": 9,
   "steps": [
-   "0:flat yellow square paper@0-3s",
-   "1:folded rectangular paper@6-34s",
-   "2:triangular folded paper base@53-70s",
-   "3:small diamond shaped base@100-120s",
-   "4:flattened folded body shape@128-148s",
-   "5:narrow elongated folded shape@218-246s",
-   "6:body standing upright with wings down@248-268s",
-   "7:completed origami crane@327-332s"
+   "0:flat yellow square paper on white surface@0-34s",
+   "1:folded triangular paper shape@36-70s",
+   "2:diamond shaped origami base@73-120s",
+   "3:collapsed origami shape with centered crease@128-148s",
+   "4:shaping pointed origami sections@151-187s",
+   "5:slender elongated origami body@190-246s",
+   "6:forming vertical crane body segments@248-268s",
+   "7:shaping head and tail of origami crane@271-324s",
+   "8:completed origami crane@327-332s"
   ],
   "checks": [
    "CHK-PR-COV:step_coverage",
@@ -53,36 +54,36 @@
     "Universal pipeline: AI-perceived checks are lower confidence than specialist measurements"
    ],
    "first_divergence": null,
-   "s": 6.3
+   "s": 61.7
   },
   "first_40_percent": {
    "outcome": "FAIL",
-   "score": 4.0,
+   "score": 3.0,
    "criteria": {
-    "CRIT-U-CHK-PR-COV": "partially_satisfied",
+    "CRIT-U-CHK-PR-COV": "not_satisfied",
     "CRIT-U-CHK-PR-ORD": "satisfied",
-    "CRIT-U-CHK-PR-OFF": "partially_satisfied",
+    "CRIT-U-CHK-PR-OFF": "satisfied",
     "CRIT-U-CHK-PR-FIN": "not_satisfied",
     "CRIT-U-CHK-PR-Q01": "not_satisfied"
    },
    "metrics": {
-    "u.step_coverage": 0.625,
+    "u.step_coverage": 0.3333333333333333,
     "u.step_order": 0.0,
-    "u.off_path": 1.0,
+    "u.off_path": 0.0,
     "u.final_state_match": 0.0,
     "u.step_quality.step-07": 0.0
    },
    "warnings": [
     "Universal pipeline: AI-perceived checks are lower confidence than specialist measurements"
    ],
-   "first_divergence": "CRIT-U-CHK-PR-OFF",
-   "s": 0.7
+   "first_divergence": "CRIT-U-CHK-PR-COV",
+   "s": 34.4
   },
   "unrelated_tabla_video": {
    "outcome": "REFUSED",
    "category": "INVALID_INPUT",
    "reason": "[INVALID_INPUT] This doesn't look like an attempt at Folding an origami crane (similarity 0.67). Please upload video, image.",
-   "s": 2.7
+   "s": 25.3
   }
  }
 }

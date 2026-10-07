@@ -81,6 +81,30 @@ def _monotone_stages(segs: List[Segment], by_id: Dict[str, dict]) -> Dict[str, s
     return out
 
 
+def _drop_brief_in_progress(segs: List[Segment], by_id: Dict[str, dict], stages: Dict[str, str]) -> Dict[str, str]:
+    """Remove stages that are only a brief mid-action moment (e.g. "drawing the door").
+
+    A stage is dropped only if EVERY keyframe in it was flagged in_progress by the model AND
+    it is shorter than half the median stage duration. Skills where hands are always on the
+    work (origami, knots) keep their long hand-held stages.
+    """
+    dur: Dict[str, float] = {}
+    settled: Dict[str, bool] = {}
+    for s in segs:
+        name = stages.get(s.segment_id)
+        if not name:
+            continue
+        dur[name] = dur.get(name, 0.0) + float((s.end_sec or 0.0) - (s.start_sec or 0.0)) + 1.0
+        settled[name] = settled.get(name, False) or not (by_id.get(s.segment_id) or {}).get("in_progress")
+    if len(dur) < 3:
+        return stages
+    med = float(np.median(list(dur.values())))
+    drop = {n for n in dur if not settled[n] and dur[n] < 0.5 * med}
+    if len(dur) - len(drop) < 2:
+        return stages
+    return {k: v for k, v in stages.items() if v not in drop}
+
+
 def _segment_frames(
     frames,  # List of Frame objects from sample_frames
     fps: float,
@@ -258,10 +282,15 @@ def perceive_video(
         seg_id = f"seg-{i + 1:03d}"
         kf = frames[rs["keyframe"]]
         kf_name = f"kf_{seg_id}.jpg"
-        kf_img = kf.image.copy()
-        kf_img.thumbnail((384, 384), Image.LANCZOS)
+        # Keyframes are what judges and reviewers look at: re-decode at up to 512 px
+        # (analysis frames are 256 px thumbnails).
+        try:
+            hi = sample_frames(path, fps=4.0, start_sec=kf.time_sec, end_sec=kf.time_sec + 0.5, max_side=512)
+            kf_img = (hi[0].image if hi else kf.image).copy()
+        except Exception:  # noqa: BLE001 - keep the analysis frame if the re-decode fails
+            kf_img = kf.image.copy()
         kf_img.convert("RGB").save(str(asset_dir / kf_name), format="JPEG", quality=85)
-        keyframe_jpegs.append(_resize_jpeg(kf.image, 384))
+        keyframe_jpegs.append(_resize_jpeg(kf_img, 384))
         seg_obj = Segment(
             segment_id=seg_id, kind="time",
             start_sec=round(frames[rs["start_frame"]].time_sec, 3),
@@ -303,9 +332,7 @@ def perceive_video(
             if unknown:
                 log.warning("perception returned unknown segment ids %s; ignoring", unknown)
             stages = _monotone_stages(time_seg_objects, by_id)
-            settled = [s.segment_id for s in time_seg_objects if not (by_id.get(s.segment_id) or {}).get("in_progress")]
-            if len(settled) >= 2:   # steps come from settled states; mid-action keyframes stay as properties
-                stages = {k: v for k, v in stages.items() if k in settled}
+            stages = _drop_brief_in_progress(time_seg_objects, by_id, stages)
             for seg_obj in time_seg_objects:
                 d = by_id.get(seg_obj.segment_id) or {}
                 stage_name = stages.get(seg_obj.segment_id)

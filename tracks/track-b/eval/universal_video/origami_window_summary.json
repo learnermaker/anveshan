@@ -1,0 +1,157 @@
+{
+ "scenario": "origami_window",
+ "mode": "live",
+ "compose": {
+  "compose_s": 25.5,
+  "refused": false,
+  "build_s": 0.1,
+  "structures": [
+   "procedure"
+  ],
+  "n_steps": 8,
+  "steps": [
+   "0:flat yellow square paper@0-2s",
+   "1:inflating folded paper shape near mouth@7-29s",
+   "2:inflated paper structure@31-34s",
+   "3:flat white sheet of paper@36-44s",
+   "4:folded yellow and white paper shape@45-70s",
+   "5:inflating combined paper shape near mouth@71-126s",
+   "6:pressed folded paper shape@128-147s",
+   "7:three-dimensional pointed paper object@149-192s"
+  ],
+  "checks": [
+   "CHK-PR-COV:step_coverage",
+   "CHK-PR-ORD:step_order",
+   "CHK-PR-OFF:off_path",
+   "CHK-PR-FIN:final_property",
+   "CHK-PR-Q01:step_quality"
+  ],
+  "warnings": [
+   "Composed case: claims named by AI are inferred until reviewed.",
+   "package not expert-approved"
+  ]
+ },
+ "attempts": {
+  "perfect": {
+   "outcome": "FAIL",
+   "score": 2.0,
+   "criteria": {
+    "CRIT-U-CHK-PR-COV": "not_satisfied",
+    "CRIT-U-CHK-PR-ORD": "partially_satisfied",
+    "CRIT-U-CHK-PR-OFF": "satisfied",
+    "CRIT-U-CHK-PR-FIN": "not_satisfied",
+    "CRIT-U-CHK-PR-Q01": "not_satisfied"
+   },
+   "metrics": {
+    "u.step_coverage": 0.5,
+    "u.step_order": 1.0,
+    "u.off_path": 0.0,
+    "u.final_state_match": 0.0,
+    "u.step_quality.step-07": 0.0
+   },
+   "warnings": [
+    "Universal pipeline: AI-perceived checks are lower confidence than specialist measurements"
+   ],
+   "first_divergence": "CRIT-U-CHK-PR-COV",
+   "s": 40.2
+  },
+  "real_learner": {
+   "outcome": "FAIL",
+   "score": 5.0,
+   "criteria": {
+    "CRIT-U-CHK-PR-COV": "not_satisfied",
+    "CRIT-U-CHK-PR-ORD": "satisfied",
+    "CRIT-U-CHK-PR-OFF": "satisfied",
+    "CRIT-U-CHK-PR-FIN": "not_satisfied",
+    "CRIT-U-CHK-PR-Q01": "satisfied"
+   },
+   "metrics": {
+    "u.step_coverage": 0.5,
+    "u.step_order": 0.0,
+    "u.off_path": 0.0,
+    "u.final_state_match": 0.0,
+    "u.step_quality.step-07": 1.0
+   },
+   "warnings": [
+    "Universal pipeline: AI-perceived checks are lower confidence than specialist measurements"
+   ],
+   "first_divergence": "CRIT-U-CHK-PR-COV",
+   "s": 40.2
+  },
+  "missing_state": {
+   "outcome": "FAIL",
+   "score": 8.0,
+   "criteria": {
+    "CRIT-U-CHK-PR-COV": "not_satisfied",
+    "CRIT-U-CHK-PR-ORD": "satisfied",
+    "CRIT-U-CHK-PR-OFF": "satisfied",
+    "CRIT-U-CHK-PR-FIN": "satisfied",
+    "CRIT-U-CHK-PR-Q01": "satisfied"
+   },
+   "metrics": {
+    "u.step_coverage": 0.375,
+    "u.step_order": 0.0,
+    "u.off_path": 0.0,
+    "u.final_state_match": 1.0,
+    "u.step_quality.step-07": 1.0
+   },
+   "warnings": [
+    "Universal pipeline: AI-perceived checks are lower confidence than specialist measurements"
+   ],
+   "first_divergence": "CRIT-U-CHK-PR-COV",
+   "s": 34.3
+  },
+  "swapped_order": {
+   "outcome": "FAIL",
+   "score": 6.0,
+   "criteria": {
+    "CRIT-U-CHK-PR-COV": "not_satisfied",
+    "CRIT-U-CHK-PR-ORD": "satisfied",
+    "CRIT-U-CHK-PR-OFF": "satisfied",
+    "CRIT-U-CHK-PR-FIN": "satisfied",
+    "CRIT-U-CHK-PR-Q01": "not_satisfied"
+   },
+   "metrics": {
+    "u.step_coverage": 0.5,
+    "u.step_order": 0.0,
+    "u.off_path": 0.0,
+    "u.final_state_match": 1.0,
+    "u.step_quality.step-07": 0.0
+   },
+   "warnings": [
+    "Universal pipeline: AI-perceived checks are lower confidence than specialist measurements"
+   ],
+   "first_divergence": "CRIT-U-CHK-PR-COV",
+   "s": 38.7
+  },
+  "truncated": {
+   "outcome": "FAIL",
+   "score": 3.0,
+   "criteria": {
+    "CRIT-U-CHK-PR-COV": "not_satisfied",
+    "CRIT-U-CHK-PR-ORD": "satisfied",
+    "CRIT-U-CHK-PR-OFF": "satisfied",
+    "CRIT-U-CHK-PR-FIN": "not_satisfied",
+    "CRIT-U-CHK-PR-Q01": "not_satisfied"
+   },
+   "metrics": {
+    "u.step_coverage": 0.5,
+    "u.step_order": 0.0,
+    "u.off_path": 0.0,
+    "u.final_state_match": 0.0,
+    "u.step_quality.step-07": 0.0
+   },
+   "warnings": [
+    "Universal pipeline: AI-perceived checks are lower confidence than specialist measurements"
+   ],
+   "first_divergence": "CRIT-U-CHK-PR-COV",
+   "s": 34.5
+  },
+  "unrelated_tabla_video": {
+   "outcome": "REFUSED",
+   "category": "INVALID_INPUT",
+   "reason": "[INVALID_INPUT] This doesn't look like an attempt at Folding an origami bird base (similarity 0.69). Please upload video, image.",
+   "s": 26.2
+  }
+ }
+}

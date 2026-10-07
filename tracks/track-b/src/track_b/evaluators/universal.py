@@ -37,6 +37,7 @@ from track_b.trajectory import AttemptMedia, DivergenceEvent, MetricValue, Traje
 from track_b.evaluators.universal_align import mode_filter, needleman_wunsch
 
 ABS_FLOOR = 0.60   # a frame less similar than this to every step is off-path (unrelated content)
+RELEVANCE_DROP = 0.15   # video attempt must match the source within 0.15 of the source's own frame-to-frame consistency
 CONF_MARGIN_MIN = 0.05   # minimum drop below the attempt's typical match level that marks a frame as unmatched
 Z_OFF = 0.25       # a frame counts for a step only if it is >= 0.25 sd above its mean step similarity
 
@@ -72,6 +73,7 @@ def _ev(eid: str, source_id: str, modality: Modality, excerpt: str,
 
 # Directory of the source perception assets (keyframes) for the evaluation in progress.
 _SOURCE_DIR: "contextvars.ContextVar[Optional[Path]]" = contextvars.ContextVar("universal_source_dir", default=None)
+_ATTEMPT_DIR: "contextvars.ContextVar[Optional[Path]]" = contextvars.ContextVar("universal_attempt_dir", default=None)
 
 
 def _jpeg(img: Any, max_side: int = 512) -> bytes:
@@ -95,10 +97,75 @@ def _video_frame_part(path: Path, t: float, label: str) -> Optional[ImagePart]:
 
 def _source_keyframe_part(asset: Optional[str], label: str) -> Optional[ImagePart]:
     d = _SOURCE_DIR.get()
-    if not asset or d is None or not (Path(d) / asset).exists():
+    if not asset or d is None:
         return None
+    for cand in (Path(d) / asset, Path(d) / "goal_assets" / asset):   # composed cases keep keyframes in goal_assets/
+        if cand.exists():
+            from PIL import Image
+            return ImagePart(_jpeg(Image.open(cand)), "image/jpeg", label)
+    return None
+
+
+
+MATCH_BOOST = {"high": 2.0, "medium": 1.25, "low": 0.5}   # added to a frame's z-score for the matched step
+MATCH_NONE_PENALTY = 1.0                                    # subtracted from all steps when the model saw no step
+
+
+def _reference_step_matches(skill: SkillModel, attempt_record: Any, ctx: Optional[RunContext],
+                            warnings: List[str]) -> Dict[str, Tuple[Optional[int], str]]:
+    """One vision_fast call: which expert step does each learner keyframe show?
+
+    Expert step keyframes and learner keyframes go side by side, so fine-grained states that
+    global embeddings cannot separate (hands dominate the frame) are still told apart.
+    The answer is an OBSERVATION feeding the deterministic monotone fit, never a score.
+    Returns {attempt segment_id: (step index or None, confidence)}; {} when unavailable.
+    """
+    if ctx is None or getattr(ctx, "gateway", None) is None or attempt_record is None:
+        return {}
+    from pydantic import BaseModel
+
+    class _M(BaseModel):
+        segment_id: str = ""
+        step: Optional[int] = None
+        confidence: str = "low"
+
+    class _MatchDTO(BaseModel):
+        matches: List[_M] = []
+
+    parts: List[Any] = []
+    for st in skill.steps[:12]:
+        ref = _source_keyframe_part(st.keyframe_asset, f"Expert step {st.index}: {st.name}")
+        if ref is None:
+            warnings.append(f"reference step matching skipped: no expert keyframe for step {st.index}; alignment uses embeddings only")
+            return {}
+        parts.append(ref)
+    adir = _ATTEMPT_DIR.get()
+    segs = [sg for sg in attempt_record.segments if sg.kind == "time" and sg.keyframe_asset]
+    if adir is None or not segs:
+        warnings.append("reference step matching skipped: attempt keyframes unavailable; alignment uses embeddings only")
+        return {}
     from PIL import Image
-    return ImagePart(_jpeg(Image.open(Path(d) / asset)), "image/jpeg", label)
+    for sg in segs[:16]:
+        fp = Path(adir) / sg.keyframe_asset
+        if not fp.exists():
+            continue
+        parts.append(ImagePart(_jpeg(Image.open(fp), 320), "image/jpeg", f"Learner {sg.segment_id} at t={sg.keyframe_sec or 0:.1f}s"))
+    prompt_path = PROMPT_DIR / "match_steps_v1.txt"
+    try:
+        prompt_text, ver = load_prompt(prompt_path, skill_title=skill.skill_title)
+        res = ctx.gateway.generate_json(
+            model_key="vision_fast", prompt_id="match_steps", prompt_version=ver, prompt_text=prompt_text,
+            schema=_MatchDTO, parts=parts, expected_behavior="one expert-step label per learner keyframe",
+        )
+    except (ModelError, FileNotFoundError) as exc:
+        warnings.append(f"reference step matching unavailable ({exc}); alignment uses embeddings only")
+        return {}
+    n = len(skill.steps)
+    out: Dict[str, Tuple[Optional[int], str]] = {}
+    for m in res.data.matches:
+        step = m.step if (m.step is None or 0 <= m.step < n) else None
+        out[m.segment_id] = (step, m.confidence if m.confidence in MATCH_BOOST else "low")
+    return out
 
 
 def _quality_gate(attempt: AttemptMedia, record: Any) -> None:
@@ -193,6 +260,25 @@ def _relevance_gate(
     src_vec = np.mean(ref_rows, axis=0)
 
     s = _cosine(att_vec, src_vec)
+
+    # Video procedures: compare frame-level best matches against the source's OWN consistency,
+    # so one threshold works for clean screen recordings and noisy hand-held videos alike.
+    if attempt.kind == "video" and source_record is not None:
+        sf = (getattr(source_record, "specialists", {}) or {}).get("frames", {})
+        af = (getattr(attempt_record, "specialists", {}) or {}).get("frames", {})
+        s_rows = [r for r in sf.get("rows", []) if r < len(source_emb)]
+        a_rows = [r for r in af.get("rows", []) if r < len(attempt_emb)]
+        if len(s_rows) >= 4 and a_rows:
+            S = np.asarray(source_emb[s_rows], dtype=np.float64)
+            A = np.asarray(attempt_emb[a_rows], dtype=np.float64)
+            S /= np.maximum(np.linalg.norm(S, axis=1, keepdims=True), 1e-9)
+            A /= np.maximum(np.linalg.norm(A, axis=1, keepdims=True), 1e-9)
+            self_sim = S @ S.T
+            for i in range(len(S)):      # exclude self and immediate neighbours
+                self_sim[i, max(0, i - 1): i + 2] = -1.0
+            self_level = float(np.median(self_sim.max(axis=1)))
+            s = float(np.median((A @ S.T).max(axis=1)))
+            min_sim = max(min_sim, self_level - RELEVANCE_DROP)
 
     if s < min_sim:
         raise AnveshanFailure(
@@ -378,6 +464,7 @@ def _call_judge_final(
     checks: List[Any],
     ctx: RunContext,
     warnings: List[str],
+    final_times: Optional[List[float]] = None,
 ) -> Dict[str, Any]:
     """One vision_fast call for all final_property checks."""
     from pydantic import BaseModel
@@ -391,7 +478,7 @@ def _call_judge_final(
     class JudgeFinalDTO(BaseModel):
         results: List[CheckResult] = []
 
-    prompt_path = PROMPT_DIR / "judge_final_v1.txt"
+    prompt_path = PROMPT_DIR / "judge_final_v2.txt"
     if not prompt_path.exists():
         return {}
 
@@ -418,11 +505,15 @@ def _call_judge_final(
     elif attempt.kind == "video" and attempt.path.exists():
         from tracks.common.media import probe
         dur = probe(attempt.path).duration_sec or 0.0
-        last = _video_frame_part(attempt.path, max(0.0, dur - 1.0), "Attempt: final frame")
-        if last is None:
-            warnings.append("could not decode the attempt's final frame for the final-state judge")
-        else:
-            parts.append(last)
+        got = 0
+        times = final_times or [max(0.0, min(dur * f, dur - 0.5)) for f in (0.90, 0.95, 1.0)]
+        for t in times:
+            fp = _video_frame_part(attempt.path, t, f"Attempt: near the end (t={t:.1f}s)")
+            if fp is not None:
+                parts.append(fp)
+                got += 1
+        if not got:
+            warnings.append("could not decode the attempt's final frames for the final-state judge")
         if skill.steps:
             ref = _source_keyframe_part(skill.steps[-1].keyframe_asset, "Expert reference: final state")
             if ref is not None:
@@ -557,6 +648,19 @@ def _procedure_checks(
     from tracks.common.segmentation import motion_threshold
     calm = att_motion <= motion_threshold(att_motion)
     # Coverage / progress: best non-decreasing path through the steps (skips allowed, no going back).
+    matches = _reference_step_matches(skill, attempt_record, ctx, warnings)
+    if matches:
+        ft = np.asarray(frame_times, dtype=np.float64)
+        for sg in attempt_record.segments:
+            if sg.kind != "time" or sg.segment_id not in matches:
+                continue
+            step, conf = matches[sg.segment_id]
+            sel = (ft >= (sg.start_sec or 0.0) - 1e-6) & (ft <= (sg.end_sec or 0.0) + 1e-6)
+            if step is None:
+                z[sel] -= MATCH_NONE_PENALTY * (MATCH_BOOST[conf] / 2.0)
+            else:
+                z[sel, step] += MATCH_BOOST[conf]
+                on_frame[sel] |= best_sim[sel] >= ABS_FLOOR
     path = monotone_align(np.where(on_frame[:, None], z, -1e3), off_score=Z_OFF)
     visited = sorted({p for p in path if p is not None})
     # Order: unconstrained per-frame best step (confident frames only), smoothed, then aligned
@@ -659,8 +763,24 @@ def _procedure_checks(
     for check in skill.checks:
         if check.metric_id == "u.final_state_match" and check.enabled:
             if ctx is not None and getattr(ctx, "gateway", None) is not None:
+                # Final evidence: the 3 frames of the last 20 % of the attempt that look most like the
+                # expert's final step (calm, representative moments rather than fixed timestamps).
+                # Prefer learner keyframes the reference matcher labelled as the final step (latest first).
+                rank = {"high": 0, "medium": 1, "low": 2}
+                final_kf = sorted(
+                    ((rank[c], -(sg.keyframe_sec or 0.0), float(sg.keyframe_sec or 0.0))
+                     for sg in attempt_record.segments
+                     if sg.kind == "time" and sg.segment_id in matches
+                     for st, c in [matches[sg.segment_id]] if st == n_steps - 1),
+                )[:3]
+                if final_kf:
+                    final_times = sorted(t for _, _, t in final_kf)
+                else:
+                    tail = [i for i, t in enumerate(frame_times) if t >= 0.8 * frame_times[-1]] if frame_times else []
+                    tail = sorted(tail, key=lambda i: -float(sim[i, n_steps - 1]))[:3]
+                    final_times = sorted(float(frame_times[i]) for i in tail)
                 judge_results = _call_judge_final(
-                    skill, attempt, source_record, [check], ctx, warnings
+                    skill, attempt, source_record, [check], ctx, warnings, final_times=final_times or None,
                 )
                 result = judge_results.get(check.check_id)
                 if result:
@@ -687,8 +807,10 @@ def _procedure_checks(
                 metrics[check.metric_id] = MetricValue(
                     0.0, f"the step '{cstep.name}' was never reached in the attempt, so its quality cannot be credited")
             elif ctx is not None and getattr(ctx, "gateway", None) is not None:
+                aligned = [frame_times[i] for i, pth in enumerate(path) if pth == cstep.index and i < len(frame_times)]
                 metrics[check.metric_id] = _judge_step_quality(
-                    skill, attempt, cstep, source_emb, source_record, attempt_emb, attempt_record, ctx, warnings
+                    skill, attempt, cstep, source_emb, source_record, attempt_emb, attempt_record, ctx, warnings,
+                    step_time=float(np.median(aligned)) if aligned else None,
                 )
             else:
                 metrics[check.metric_id] = MetricValue(
@@ -741,15 +863,16 @@ def _judge_step_quality(
     attempt_record: Any,
     ctx: RunContext,
     warnings: List[str],
+    step_time: Optional[float] = None,
 ) -> MetricValue:
-    """One judge_step call for a critical step."""
+    """One judge_step call for a critical step (frames around the moment aligned to it)."""
     from pydantic import BaseModel
 
     class JudgeStepDTO(BaseModel):
         status: str = "cannot_tell"
         finding: str = ""
 
-    prompt_path = PROMPT_DIR / "judge_step_v1.txt"
+    prompt_path = PROMPT_DIR / "judge_step_v2.txt"
     if not prompt_path.exists():
         return MetricValue(None, "prompt not found", uncertain_reason="prompt not found")
 
@@ -762,7 +885,14 @@ def _judge_step_quality(
     frame_rows = frames_info.get("rows", [])
     frame_times = frames_info.get("times", [])
 
-    if frame_rows and attempt_emb is not None:
+    if step_time is not None and frame_times:
+        period = float(np.median(np.diff(frame_times))) if len(frame_times) > 1 else 1.0
+        for dt in (-0.5 * period, 0.0, 0.5 * period):
+            t = max(0.0, step_time + dt)
+            fp = _video_frame_part(attempt.path, t, f"Attempt: around the moment aligned to this step (t={t:.1f}s)")
+            if fp is not None:
+                parts.append(fp)
+    elif frame_rows and attempt_emb is not None:
         source_idx = getattr(source_record, "embedding_index", {}) if source_record else {}
         seg_id = step.segment_id
         if seg_id and seg_id in source_idx:
@@ -773,10 +903,12 @@ def _judge_step_quality(
                 sims = [float(np.dot(attempt_emb[r], step_vec)) for _, r in valid]
                 best_i = int(np.argmax(sims))
                 if best_i < len(frame_times):
-                    fp = _video_frame_part(attempt.path, float(frame_times[best_i]),
-                                           f"Attempt: frame most like this step (t={frame_times[best_i]:.1f}s)")
-                    if fp is not None:
-                        parts.append(fp)
+                    period = float(np.median(np.diff(frame_times))) if len(frame_times) > 1 else 1.0
+                    for dt in (-0.5 * period, 0.0, 0.5 * period):
+                        t = max(0.0, float(frame_times[best_i]) + dt)
+                        fp = _video_frame_part(attempt.path, t, f"Attempt: around the moment most like this step (t={t:.1f}s)")
+                        if fp is not None:
+                            parts.append(fp)
     ref = _source_keyframe_part(step.keyframe_asset, "Expert reference: this step")
     if ref is not None:
         parts.append(ref)
@@ -1036,6 +1168,7 @@ def evaluate(goal: GoalModel, attempt: AttemptMedia, ctx: Any = None) -> Traject
             case_dir = Path(ctx.case_dir) if ctx else Path(".")
             asset_dir = case_dir / "attempts" / attempt.sha256[:12]
             asset_dir.mkdir(parents=True, exist_ok=True)
+            _ATTEMPT_DIR.set(asset_dir)
             attempt_record = perceivers.perceive(
                 attempt.path,
                 attempt.mime_type,
