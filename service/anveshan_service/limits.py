@@ -21,6 +21,7 @@ _ROUTES = (
     ("POST", re.compile(r"^/api/cases/[^/]+/sources$"), "compose"),
     ("POST", re.compile(r"^/api/sessions/[^/]+/attempts(/sample/[^/]+)?$"), "attempt"),
     ("POST", re.compile(r"^/api/cases/[^/]+/query$"), "query"),
+    ("POST", re.compile(r"^/api/key/check$"), "query"),
 )
 
 _MESSAGES = {

@@ -24,6 +24,7 @@ from tracks.common.runtime import RunContext
 from anveshan_service.errors import ServiceError
 from anveshan_service.paths import StoredUpload, case_dir
 from anveshan_service.settings import Settings
+from anveshan_service.userkey import current_key
 
 
 def _module(name: str, label: str) -> ModuleType:
@@ -67,7 +68,11 @@ def translated() -> Iterator[None]:
 
 
 def run_context(settings: Settings, cdir: Path, mode: str) -> RunContext:
+    """A request with the visitor's own Gemini key runs live with that key (never stored)."""
     settings.data_dir.mkdir(parents=True, exist_ok=True)
+    key = current_key.get()
+    if key:
+        return RunContext.create(cdir, settings.data_dir, "live", api_key=key)
     return RunContext.create(cdir, settings.data_dir, mode)  # type: ignore[arg-type]
 
 

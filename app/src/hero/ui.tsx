@@ -5,6 +5,7 @@ import { AlertTriangle, Loader2 } from 'lucide-react';
 import type { CriterionStatus, VerificationState } from '../types/contracts';
 import type { RuntimeClass } from '../api/types';
 import { friendlyError } from '../api/errors';
+import { requestKeyDialog } from '../api/userKey';
 
 const base = 'inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase tracking-wider border whitespace-nowrap';
 
@@ -101,6 +102,11 @@ export function ErrorNote({ error }: { error: unknown }) {
       <div className="space-y-1">
         <div className="font-semibold text-divergence-crimson">{f.title}</div>
         <div>{f.message}</div>
+        {f.suggestKey && (
+          <button type="button" onClick={requestKeyDialog} className="text-sm text-caliper-cyan underline">
+            Use your own Gemini API key instead
+          </button>
+        )}
         <details className="text-xs text-on-surface-variant">
           <summary className="cursor-pointer select-none">Technical details</summary>
           <code className="font-mono break-all">{f.technical}</code>

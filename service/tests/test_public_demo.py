@@ -341,3 +341,75 @@ def test_same_draft_writes_never_interleave(tmp_path, monkeypatch):
     for t in threads:
         t.join()
     assert active["max"] == 1
+
+
+# --- bring your own key ------------------------------------------------------------------------
+
+USER_KEY = "AIzaUSERKEY_abcdefghijklmnop1234"
+
+
+def test_user_key_is_request_scoped_and_forces_live(tmp_path, monkeypatch):
+    from anveshan_service import adapters
+    from anveshan_service.userkey import current_key
+
+    s = _settings(tmp_path)
+    assert adapters.run_context(s, tmp_path, "recorded").mode == "recorded"
+    token = current_key.set(USER_KEY)
+    try:
+        ctx = adapters.run_context(s, tmp_path, "recorded")
+        assert ctx.mode == "live" and ctx.gateway.own_key is True
+    finally:
+        current_key.reset(token)
+    assert current_key.get() is None
+
+
+def test_malformed_key_header_is_ignored(tmp_path):
+    from anveshan_service.userkey import valid_shape
+
+    assert valid_shape(USER_KEY)
+    assert not valid_shape("short") and not valid_shape("has spaces in it 1234567890") and not valid_shape("x" * 200)
+
+
+def test_key_check_without_key_is_400(tmp_path):
+    client = TestClient(create_app(_settings(tmp_path)))
+    r = client.post("/api/key/check")
+    assert r.status_code == 400
+
+
+def test_key_never_echoed_in_errors(tmp_path, monkeypatch):
+    import google.genai as genai
+
+    class Boom:
+        def __init__(self, **kw):
+            raise RuntimeError(f"401 API key not valid: {USER_KEY}")
+
+    monkeypatch.setattr(genai, "Client", Boom)
+    client = TestClient(create_app(_settings(tmp_path)))
+    r = client.post("/api/key/check", headers={"X-Gemini-Api-Key": USER_KEY})
+    assert r.status_code == 400
+    assert USER_KEY not in r.text and "rejected this key" in r.json()["error"]["message"]
+
+
+def test_redaction_covers_request_key():
+    from anveshan_service.errors import _redact
+    from anveshan_service.userkey import current_key
+
+    token = current_key.set(USER_KEY)
+    try:
+        assert USER_KEY not in _redact(f"failed with {USER_KEY}")
+    finally:
+        current_key.reset(token)
+
+
+def test_own_key_skips_daily_budget(tmp_path, monkeypatch):
+    from tracks.common.models import DAILY_BUDGET, ModelGateway, ModelRegistry, RunStore
+
+    monkeypatch.setenv("ANVESHAN_DAILY_CALL_BUDGET", "1")
+    monkeypatch.setenv("ANVESHAN_LIVE_CACHE", "0")
+    monkeypatch.setattr(DAILY_BUDGET, "_day", "")
+    client = _FakeClient()
+    gw = ModelGateway("live", RunStore([tmp_path / "runs"]), registry=ModelRegistry({"vision_fast": "m"}), api_key=USER_KEY, client=client)
+    _call(gw)
+    _call(gw)
+    _call(gw)
+    assert client.calls == 3

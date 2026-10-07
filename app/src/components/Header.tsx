@@ -1,5 +1,5 @@
 import React from 'react';
-import { Compass, Cpu, Layers, Award, ChevronDown, Settings, Sparkles, Lock, Check, HelpCircle } from 'lucide-react';
+import { Compass, Cpu, Layers, Award, ChevronDown, Settings, Sparkles, Lock, Check, HelpCircle, KeyRound } from 'lucide-react';
 import type { AppView } from '../types/workspace';
 import type { RequestedMode } from '../api/runtime';
 import { IS_MOCK } from '../api/runtime';
@@ -26,6 +26,8 @@ interface HeaderProps {
   /** Per-step state for the stepper: progress hints and whether a step is ready yet. */
   steps?: Partial<Record<AppView, StepState>>;
   onOpenGuide?: () => void;
+  onOpenKey?: () => void;
+  hasUserKey?: boolean;
 }
 
 export interface StepState {
@@ -49,6 +51,8 @@ export const Header: React.FC<HeaderProps> = ({
   showRuntime = false,
   steps = {},
   onOpenGuide,
+  onOpenKey,
+  hasUserKey = false,
 }) => {
   const views: { id: AppView; label: string; number: string; icon: typeof Compass }[] = [
     { id: 'discovery', number: '', label: 'Skills', icon: Layers },
@@ -153,7 +157,19 @@ export const Header: React.FC<HeaderProps> = ({
           })}
         </nav>
 
-        <div className="hidden md:flex items-center gap-2">
+        <div className="flex items-center gap-2">
+          {onOpenKey && (
+            <button
+              onClick={onOpenKey}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded border text-xs transition-colors ${
+                hasUserKey ? 'border-transmission-emerald/50 text-transmission-emerald' : 'border-outline text-on-surface hover:border-cadmium-amber'
+              }`}
+              title={hasUserKey ? 'AI calls use your own Gemini key' : 'Optional: use your own Gemini API key'}
+            >
+              <KeyRound className="w-3.5 h-3.5" aria-hidden="true" />
+              <span>{hasUserKey ? 'Your key' : 'AI key'}</span>
+            </button>
+          )}
           {onOpenGuide && (
             <button
               onClick={onOpenGuide}

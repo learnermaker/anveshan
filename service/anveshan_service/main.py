@@ -13,8 +13,9 @@ from anveshan_service.errors import ServiceError, error_response, install_error_
 from anveshan_service.housekeeping import SweepEvery
 from anveshan_service.limits import RateLimitMiddleware
 from anveshan_service.paths import within
-from anveshan_service.routes import cases, compose, health, media, sessions
+from anveshan_service.routes import cases, compose, health, key, media, sessions
 from anveshan_service.settings import Settings
+from anveshan_service.userkey import UserKeyMiddleware
 from anveshan_service.visitors import VisitorMiddleware
 
 MAX_UPLOAD_FILES = 3  # attempts: file + raster + video
@@ -80,17 +81,18 @@ def create_app(settings: Optional[Settings] = None) -> FastAPI:
     install_error_handlers(app)
     if settings.cors_origins:
         app.add_middleware(
-            CORSMiddleware, allow_origins=settings.cors_origins, allow_methods=["GET", "POST"], allow_headers=["*"]
+            CORSMiddleware, allow_origins=settings.cors_origins, allow_methods=["GET", "POST"], allow_headers=["*"], allow_credentials=True
         )
     if settings.data_ttl_hours > 0 or settings.data_cap_mb > 0:
         sweeper = SweepEvery(settings.data_dir, settings.data_ttl_hours, int(settings.data_cap_mb * 1024 * 1024))
         sweeper.maybe()  # once at startup
         app.add_middleware(HousekeepingMiddleware, sweeper=sweeper)
+    app.add_middleware(UserKeyMiddleware)
     app.add_middleware(VisitorMiddleware, secure=settings.secure_cookies)
     if settings.rate_limits:
         app.add_middleware(RateLimitMiddleware, limits=settings.rate_limits)
     app.add_middleware(BodyLimitMiddleware, limit_bytes=settings.max_upload_bytes * MAX_UPLOAD_FILES + (1 << 20))
-    for module in (health, cases, sessions, media, compose):
+    for module in (health, key, cases, sessions, media, compose):
         app.include_router(module.router)
     if settings.static_dir is not None and (settings.static_dir / "index.html").is_file():
         _mount_static(app, settings.static_dir)

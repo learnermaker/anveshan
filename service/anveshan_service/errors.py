@@ -58,8 +58,10 @@ def not_found(message: str, **details: Any) -> ServiceError:
 
 
 def _redact(text: str) -> str:
-    for name in _SECRET_ENV:
-        value = os.environ.get(name)
+    from anveshan_service.userkey import current_key
+
+    values = [os.environ.get(name) for name in _SECRET_ENV] + [current_key.get()]
+    for value in values:
         if value and len(value) >= 8:
             text = text.replace(value, "[REDACTED]")
     return text

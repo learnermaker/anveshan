@@ -81,6 +81,11 @@ export const mockApi: Api = {
     return { ok: true, mode: 'recorded', models: { text_image: 'gemma-4-26b-a4b-it (mock)', video_frames: 'gemma-4-26b-a4b-it (mock)', audio_enabled: false } };
   },
 
+  async checkKey(_o?: CallOptions): Promise<{ ok: boolean; model: string }> {
+    await delay(200);
+    return { ok: true, model: 'gemini (mock)' };
+  },
+
   async listCases(): Promise<CaseSummary[]> {
     await delay(150);
     return [...cases.values()].map((v) => ({

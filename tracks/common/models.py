@@ -323,6 +323,8 @@ class ModelGateway:
         self.store = store
         self.registry = registry or ModelRegistry()
         self._api_key = api_key
+        # A caller-supplied key (bring-your-own-key) is the caller's quota: no shared daily budget.
+        self.own_key = api_key is not None
         if timeout_ms is None:
             timeout_ms = int(os.environ.get("ANVESHAN_MODEL_TIMEOUT_MS", "300000"))
         self._timeout_ms = timeout_ms
@@ -386,7 +388,8 @@ class ModelGateway:
         if not model_id:
             raise ModelError(FailureCategory.MODEL_FAILURE, f"model key {model_key!r} is disabled (no model id configured)")
         client = self._get_client()
-        DAILY_BUDGET.take()
+        if not self.own_key:
+            DAILY_BUDGET.take()
         from google.genai import types
 
         contents: List[Any] = []
@@ -519,7 +522,8 @@ class ModelGateway:
         try:
             for i in range(0, len(items), batch_size):
                 chunk = items[i : i + batch_size]
-                DAILY_BUDGET.take()
+                if not self.own_key:
+                    DAILY_BUDGET.take()
                 for wait in (*RATE_LIMIT_BACKOFF_S, None):
                     try:
                         resp = client.models.embed_content(

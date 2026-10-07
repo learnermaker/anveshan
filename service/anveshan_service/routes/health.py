@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+
 from fastapi import APIRouter, Depends
 
 from tracks.common.models import ModelRegistry
@@ -19,6 +21,8 @@ def health(settings: Settings = Depends(get_settings)) -> dict:
         "ok": True,
         "mode": settings.mode,
         "mode_override": settings.allow_mode_override,
+        "own_key_supported": True,
+        "server_key_configured": bool(os.environ.get("GEMINI_API_KEY")),
         "curated_review_open": settings.curated_review_open or bool(settings.review_token),
         "models": {
             "text_image": registry.model_id("text_image"),

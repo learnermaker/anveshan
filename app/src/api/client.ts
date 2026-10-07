@@ -11,6 +11,7 @@
 import { API_BASE, IS_MOCK, getRequestedMode } from './runtime';
 import { mockApi } from './mock';
 import { ApiError } from './errors';
+import { getUserKey } from './userKey';
 import type {
   ApiErrorBody,
   AttemptKind,
@@ -45,6 +46,12 @@ function withMode(path: string, mode?: 'live' | 'recorded'): string {
   return `${API_BASE}${path}${path.includes('?') ? '&' : '?'}mode=${encodeURIComponent(m)}`;
 }
 
+/** The visitor's own Gemini key, if they set one (bring your own key). Header only, never a URL. */
+function userKeyHeader(): Record<string, string> {
+  const k = getUserKey();
+  return k ? { 'X-Gemini-Api-Key': k } : {};
+}
+
 function toApiError(status: number, body: unknown, fallback: string): ApiError {
   const err = (body as ApiErrorBody | null)?.error;
   if (err && typeof err.message === 'string') {
@@ -61,6 +68,7 @@ async function request<T>(method: 'GET' | 'POST', path: string, body?: unknown, 
       headers: {
         ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
         ...(opts.reviewToken ? { 'X-Review-Token': opts.reviewToken } : {}),
+        ...userKeyHeader(),
       },
       body: body !== undefined ? JSON.stringify(body) : undefined,
       signal: opts.signal,
@@ -84,6 +92,7 @@ function upload<T>(path: string, form: FormData, onProgress?: ProgressFn, opts: 
     const xhr = new XMLHttpRequest();
     xhr.open('POST', withMode(path, opts.mode));
     xhr.responseType = 'text';
+    for (const [k, v] of Object.entries(userKeyHeader())) xhr.setRequestHeader(k, v);
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable && onProgress) onProgress(e.loaded / e.total);
     };
@@ -129,6 +138,7 @@ export interface ComposerUploadOptions {
 
 const httpApi = {
   health: (o?: CallOptions) => request<HealthResponse>('GET', '/api/health', undefined, o),
+  checkKey: (o?: CallOptions) => request<{ ok: boolean; model: string }>('POST', '/api/key/check', {}, o),
   listCases: (o?: CallOptions) => request<CaseSummary[]>('GET', '/api/cases', undefined, o),
   getCase: (caseId: string, o?: CallOptions) => request<CaseView>('GET', `/api/cases/${enc(caseId)}`, undefined, o),
   uploadSource: (caseId: string, file: File, onProgress?: ProgressFn, o?: CallOptions) => {

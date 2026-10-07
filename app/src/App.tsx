@@ -17,6 +17,8 @@ import { HeroTransmissionView } from './hero/HeroTransmissionView';
 import type { HeroSession } from './hero/session';
 import { ErrorNote, Spinner } from './hero/ui';
 import { GuideModal } from './components/HowItWorks';
+import { ApiKeyModal } from './components/ApiKeyModal';
+import { getUserKey, subscribeUserKey } from './api/userKey';
 import type { StepState } from './components/Header';
 
 import { CAPABILITY_CASES, SHOWCASE_CASE_IDS, getCapabilityCase } from './data/cases/registry';
@@ -53,6 +55,14 @@ export function App() {
   const debug = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('debug') === '1';
   const showRuntime = debug || health?.mode_override === true;
   const [guideOpen, setGuideOpen] = useState(false);
+  const [keyOpen, setKeyOpen] = useState(false);
+  const [hasKey, setHasKey] = useState<boolean>(Boolean(getUserKey()));
+  useEffect(() => subscribeUserKey((k) => setHasKey(Boolean(k))), []);
+  useEffect(() => {
+    const open = () => setKeyOpen(true);
+    window.addEventListener('anveshan:open-key-dialog', open);
+    return () => window.removeEventListener('anveshan:open-key-dialog', open);
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -214,6 +224,8 @@ export function App() {
         showRuntime={showRuntime}
         steps={steps}
         onOpenGuide={() => setGuideOpen(true)}
+        onOpenKey={() => setKeyOpen(true)}
+        hasUserKey={hasKey}
       />
 
       <main className="flex-1 max-w-workbench w-full mx-auto p-3 sm:p-4 lg:p-6 flex flex-col gap-6">
@@ -341,6 +353,7 @@ export function App() {
       )}
       <StitchModal isOpen={isStitchOpen} onClose={() => setIsStitchOpen(false)} />
       <GuideModal isOpen={guideOpen} onClose={() => setGuideOpen(false)} />
+      <ApiKeyModal isOpen={keyOpen} onClose={() => setKeyOpen(false)} />
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </div>
   );
