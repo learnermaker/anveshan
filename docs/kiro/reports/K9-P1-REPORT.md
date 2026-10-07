@@ -61,6 +61,30 @@ None.
 
 None. All spec acceptance criteria met.
 
+## Review fixes (commit d7cd9d2)
+
+All 4 MUST findings and all 5 SHOULD findings from `.kiro/k9-run/reviews/K9-P1.md` were applied.
+
+**MUST-1 (`library.py` `withdraw`):** Added `WITHDRAWABLE = {"submitted", "returned", "published", "rejected"}` guard. A creator can no longer withdraw a skill from the "unlisted" state, preserving the steward moderation decision.
+
+**MUST-2 (`library.py` `submit`):** Added `if not body.get("rights_confirmed", False): extra_bl.append(...)` check before accepting a submission. A submit with `rights_confirmed=False` now returns 400.
+
+**MUST-3 (`docs/plans/service-api.md`):** Truncated the file to remove the entire duplicate second `## 7. Product roles (K9)` section (chars 12013–14528) which had stripped backticks and garbled identifiers (`pp/src/api`, `ccess: CaseAccess`, `	rue locally`).
+
+**MUST-4 (`routes/compose.py` `create_case`):** Removed the `try/except Exception: pass` wrapper around `library.create_initial`. A failure now surfaces as a request error rather than silently leaving the case without a `.library.json`.
+
+**SHOULD-5 (`docs/deploy/DEPLOY-CHECKLIST.md`):** Merged the orphaned `ANVESHAN_STEWARD_TOKEN` and `ANVESHAN_INSIGHTS_MAX_EVENTS` rows into the existing environment-variable table by removing the blank-line separator.
+
+**SHOULD-6 (`service/tests/test_k9_steward.py`):** Added `test_apply_expert_review_non_dry_run` which uses `unittest.mock.patch("track_a.api.apply_review", ...)` to assert that `apply_review` is called exactly twice (once per action) and with the correct action types when `--dry-run` is omitted.
+
+**SHOULD-7 (`tracks/common/models.py`, `routes/steward.py`):** Added `DailyBudget.today_used()` public helper that returns today's call count without exposing `_day`. Updated both `steward_overview` and `steward_usage` to call `today_used()` instead of `DAILY_BUDGET._day`.
+
+**SHOULD-8 (`routes/compose.py` `analyze_upload`):** Moved the `METRICS.inc("compose_day", ...)` call to inside a `if not (isinstance(view, dict) and view.get("refused")):` guard. Refused uploads no longer inflate the compose metric.
+
+**SHOULD-9 (`routes/cases.py` `list_cases`):** Extended the unlisted curated-case filter into the `isolate_visitors=False` branch so that a steward-unlisted case is hidden for all non-steward visitors regardless of the isolation mode.
+
+**Tests after fixes:** 354 passed, 1 deselected (full service + common + track-a suite, not live).
+
 ## Live calls used
 
 0
