@@ -1,229 +1,141 @@
-﻿# Anveshan
+# Anveshan
 
-> Working project name: Anveshan  
-> Product name: TBD  
-> Hackathon: Google Cloud AI Builder Cup 2026  
-> Research checkpoint: 2026-10-03
+Anveshan turns a real demonstration into a skill someone else can learn, practise and get verified feedback on.
 
-## Product vision
+**Hackathon:** Google Cloud AI Builder Cup 2026
 
-Anveshan is a **living intelligence layer for human expertise, experience, and memory**.
+---
 
-Its long-term purpose is to make human knowledge **discoverable, preservable, transferable, verifiable, and continuously evolving** across people, generations, communities, and organizations.
+## Try it
 
-The product is not defined by video, a chatbot, an LMS, a family archive, or an enterprise knowledge base. Those are possible applications and interfaces. The underlying system supports:
+Live URL: `https://<cloud-run-url>` (added at deployment)
 
-**CAPTURE â†’ UNDERSTAND â†’ GROUND â†’ TRANSMIT â†’ PRACTICE â†’ VERIFY â†’ EVOLVE**
+**First-time visitor path:**
 
-### Core layers
+1. Open the **Kolam drawing** — a traditional Indian floor art skill, sourced from a real Wikimedia photo.
+2. Press **Start practising** and use **Try a sample attempt**, or draw it yourself on the canvas.
+3. Read the feedback and "Why this feedback?" for each criterion.
+4. Do your second try and see what changed.
 
-**Memory** â€” What happened?  
-**Expertise** â€” What does someone know, and how did they come to know it?  
-**Capability** â€” Can another person actually use it?
+**Other paths:**
+- **Share a skill you know** — upload a photo, short video, or audio clip; the system proposes a skill model; confirm the steps and publish.
+- **My skills** — review and manage skills you have shared.
+- **Steward console** — footer "Steward sign-in"; access code required.
 
-### Product surfaces
+---
 
-- **Personal** â€” accumulated individual knowledge;
-- **Social / Family / Elders** â€” intergenerational memory and living knowledge;
-- **Community / Culture** â€” community-held practices, traditions, languages, and local knowledge;
-- **Education / Apprenticeship** â€” teaching, practice, and skill transfer;
-- **Enterprise** â€” institutional expertise, expert-to-worker transfer, and knowledge continuity;
-- **Research** â€” exploration and synthesis of accumulated human experience.
+## Three ways to use Anveshan
 
-### Multimodality
+**Learner.** Anyone who wants to acquire a skill. Practise a bounded task, get feedback grounded in the source evidence, and see exactly what changed on your retry. Every feedback item links back to a specific step or claim in the original demonstration.
 
-**Video is one modality, not the product.**
+**Creator.** The expert, artisan or practitioner who shares a skill — or anyone sharing a source they hold the rights to. Upload a demonstration, confirm what the AI understood, and publish with clear credit and consent. See aggregated learner outcomes for each skill you share.
 
-Anveshan can combine video, audio, text, images, documents, conversations, demonstrations, simulations, operational data, and learner attempts.
+**Steward.** The body accountable for a collection of knowledge: a school, guild, heritage organisation, or company. Run the review queue, manage consent and licence records, and see usage and continuity insights. All insights are aggregate; no names or raw media are ever shown.
 
-### Long-term vision
+---
 
-> **Anveshan makes human expertise discoverable, preservable, transferable, verifiable, and continuously evolving across people, generations, communities, and organizations.**
+## How it works
 
-See `docs/product/product-vision.md` for the full product vision.
+Every skill flows through one lifecycle:
 
-## Current competition thesis
+**CAPTURE → UNDERSTAND → GROUND → TRANSMIT → PRACTICE → VERIFY → EVOLVE**
 
-For the Google Cloud AI Builder Cup 2026, the broad product vision is being narrowed into a single demonstrable use case.
+**Evaluation core.** The system builds a goal model from the source: key steps, a rubric, and claims grounded in source evidence. When a learner submits an attempt, deterministic checks compare it to the goal model — no model decides whether a criterion passes or fails. The first place the attempt diverged from the model is identified, and targeted feedback is generated. On the retry, the same checks run and the change is measured.
 
-The current working direction remains:
+See [`docs/plans/evaluation-core.md`](docs/plans/evaluation-core.md) and [`docs/plans/universal-pipeline.md`](docs/plans/universal-pipeline.md).
 
-> **Anveshan helps an expert transmit a bounded piece of real-world expertise to another person, grounded in authentic evidence, with observable practice and verification of whether the knowledge transferred.**
+---
 
-This is a prototype wedge, not the definition of the company.
+## Where Gen AI is used (and where it is not)
 
-### Prototype loop
-
-**SOURCE â†’ UNDERSTAND â†’ GROUND â†’ TRANSMIT â†’ PRACTICE â†’ VERIFY â†’ EVOLVE**
-
-Source can be a demonstration, desired state, learner attempt, or combination. The transmission direction follows the capability and available evidence.
-
-The exact domain/skill may still be refined as implementation and validation produce evidence; this does not block the current bounded development work.
-
-## What is and is not novel
-
-Anveshan does **not** claim novelty for AI interviews, tacit-knowledge extraction, knowledge graphs, multimodal RAG, AI tutoring, apprenticeship assistance, learner video assessment, expert cognition modeling, or agentic workflows. These are active product/research areas.
-
-The current differentiation hypothesis is the **knowledge transmission event**:
-
-**authentic expert source â†’ structured knowledge â†’ evidence â†’ teaching â†’ learner attempt â†’ evidence-based feedback â†’ measurable improvement â†’ lineage**
-
-See docs/product/novelty-boundary.md.
-
-## Current proof contract
-
-The MVP must prove:
-
-> **one accountable source + one bounded skill + one source-grounded knowledge representation + one learner + one practice task + one learner attempt + one evidence-grounded feedback loop + one retry + one measurable improvement + one transmission record + one lineage event**
-
-For the original expert-transfer wedge, the accountable source should be a real expert. Goal-conditioned target-first cases are a documented research extension, not validated expert-procedure recovery.
-
-See docs/product/mvp-contract.md.
-
-## Current conceptual architecture
-
-1. Capture or ingest an appropriate source and context.
-2. Understand speech, actions, objects, sequence, conditions and cues.
-3. Represent candidate knowledge and relationships.
-4. Ground claims in source evidence.
-5. Teach through a concise apprenticeship.
-6. Practice a bounded task.
-7. Verify against an explicit rubric/reference.
-8. Record transmission.
-9. Preserve evolution and lineage.
-
-## Current AI architecture
-
-### Knowledge Agent
-Capture â†’ extract â†’ structure â†’ retrieve.
-
-### Evidence Agent
-Ground â†’ verify â†’ cite â†’ detect uncertainty and contradiction.
-
-### Transmission Agent
-Teach â†’ create practice â†’ evaluate attempts â†’ provide feedback â†’ update lineage.
-
-These are logical responsibilities, not a requirement to create three autonomous agents. Deterministic services should handle ingestion, permissions, storage, indexing, auditability and evaluation.
-
-## Current Google stack hypothesis
-
-Current research supports a credible implementation using:
-
-- Gemini 3.5 Transcribe;
-- Gemini video understanding;
-- Gemini Embedding 2;
-- ADK;
-- Cloud Run;
-- agent evaluation.
-
-Model names, feature compatibility, quotas, pricing and launch stages must be checked again immediately before implementation. See `docs/architecture/google-stack-integration.md` for the official Gemini model mapping, SDK patterns (`google-genai`), Pydantic structured outputs, and Google Cloud Run deployment standards.
-
-## Governance principle
-
-The product must not turn human knowledge into unreviewed machine-generated authority.
-
-Source statement, observed evidence, AI interpretation, community interpretation and unknown remain distinct.
-
-Do not claim "community-owned" unless the relevant community actually governs the data and its use.
-
-## Current status
-
-**Branch:** `m1/hero-cases` (Wave 2 integration complete)  
-**Last updated:** 2026-10-06
-
-### What works
-
-Three hero cases are running end-to-end in recorded mode:
-
-| Case | Source | What the system does |
+| Job | Model | Guard |
 |---|---|---|
-| **Kolam** | Real photo (Wikimedia CC) | Detects dot grid, measures coverage/precision/continuity of learner trace. Deterministic, no API key needed. |
-| **Tabla** | Real audio (Wikimedia CC) | Measures tempo, timing, and bass stroke accuracy. One Flash-Lite audio call for bol labels (INFERRED). |
-| **Origami** | Real video (Wikimedia CC, ~25 MB) | Flash-Lite extracts 5 states from a 194 s crane-folding video. |
+| Perceiving uploads | gemini-3.5-flash-lite; audio model configured separately (disabled by default; set `ANVESHAN_AUDIO_MODEL` to enable) | Recorded runs, explicit failures |
+| Embeddings for alignment | gemini-embedding-2 | — |
+| Answering questions about a skill | gemini-3.5-flash-lite, from cited claims only | Insufficient-evidence refusal |
+| Wording coaching advice | gemini-3.5-flash-lite | Guard rejects new numbers or verdict words; template fallback |
+| Scoring, pass/fail, permissions, insights | **no model** | Deterministic bands and rules |
 
-The **universal composer** works for novel image and video skills:
+---
 
-- Upload any image or short video â†’ the system perceives it, proposes a skill model, and builds a case.
-- Evaluates learner attempts using embedding similarity + AI property judgements.
-- Tested on: kolam photograph, synthetic rangoli, tabla chanderi video.
+## Evidence (engineering, not user validation)
 
-The **React frontend** (Vite + TypeScript) connects to the FastAPI service. All three hero cases
-have full UI flows (source view, practice, attempt feedback). The composer wizard lets users
-upload new source media and build composed cases.
+All evidence to date is engineering and capability evidence on internet-licensed and synthetic data.
 
-### How to run locally
+- Experiment log (E1-E9): [`docs/validation/experiments.md`](docs/validation/experiments.md)
+- Non-live test suite: **480 tests** as of 2026-10-08 (`pytest -m "not live"`)
+- Judges-panel review: [`docs/research/judges-panel-review-2026-10-07.md`](docs/research/judges-panel-review-2026-10-07.md)
+
+**No study with real learners or experts has been run yet.**
+
+---
+
+## Limits
+
+- **Recorded vs live mode.** The service runs in recorded mode by default; model responses are replayed deterministically from golden runs. Live mode requires a Gemini API key and may return different results between runs (see E6, E7).
+- **Demo storage is temporary.** Uploaded media and composed skills are kept in memory; data is retained for about 6 hours; published skills persist until the service restarts.
+- **No accounts.** Ownership is tracked per browser session.
+- **Internet sources are not verified experts.** Hero case media comes from Wikimedia Commons under open licences. It is labelled INTERNET REFERENCE in the UI; the photographer or uploader is not an Anveshan expert.
+- **Known weak spots (universal pipeline, from `docs/plans/universal-pipeline.md` §12.3):**
+  - Global embeddings separate scenes, not fine-grained object states; step identity varies between live runs for low-resolution hand-held footage.
+  - Composed steps are proposals until the creator confirms them.
+  - An attempt that is visually similar to the source but unrelated can land in the ambiguous relevance band and FAIL instead of being REFUSED.
+  - Crop to the work region is not yet implemented for real hand-held footage.
+
+---
+
+## Run locally
 
 ```bash
 # Python environment
-python -m venv .venv && .venv\Scripts\activate
+python -m venv .venv
+source .venv/bin/activate         # Windows: .venv\Scripts\activate
 pip install -r requirements-dev.txt
-python tools/fetch_media.py     # downloads licensed media from Wikimedia
+python tools/fetch_media.py       # downloads licensed media from Wikimedia Commons
 
-# Run the service (recorded mode â€” no API key needed)
-uvicorn anveshan_service.main:app --app-dir service --reload
+# Service (recorded mode, no API key required)
+.venv/Scripts/python -m uvicorn anveshan_service.main:app --app-dir service --reload --port 8080
 
-# Run the frontend (in a separate terminal)
+# App dev server (separate terminal)
 cd app && npm install && npm run dev
 # Open http://localhost:5173
 ```
 
-To run with live model calls (Flash-Lite), set `GEMINI_API_KEY` in `.env` and use `?mode=live`
-in requests or set `ANVESHAN_MODE=live`.
+**Mock mode (no service required):** `cd app && npm run build:mock`
 
-### Testing
+**Live model calls:** copy `.env.example` to `.env`, set `GEMINI_API_KEY`, and pass `?mode=live` or set `ANVESHAN_MODE=live`. Never commit `.env`.
 
-```bash
-# All non-live tests (no API key required)
-.venv\Scripts\python -m pytest -q tracks/common/tests tracks/track-a/tests tracks/track-b/tests service/tests -m "not live"
-# Expected: ~423 passed
+---
 
-# Governance checks
-python .github/scripts/check_governance.py
-python .github/scripts/check_case_packs.py
-python .github/scripts/check_contract_parity.py
+## Deploy
 
-# Frontend build
-npm --prefix app run build
+See [`docs/deploy/DEPLOY-CHECKLIST.md`](docs/deploy/DEPLOY-CHECKLIST.md).
+Set `ANVESHAN_STEWARD_TOKEN` as a Cloud Run secret before deploying.
+
+---
+
+## Repository map
+
+```
+app/              React + Vite frontend (TypeScript, strict)
+service/          FastAPI service (Python)
+tracks/common/    Shared contracts, models, and evaluation schemas (8 frozen contracts)
+tracks/track-a/   Case ingestion, universal pipeline, and the Gemini model gateway
+tracks/track-b/   Evaluators, feedback engine, and AI coach
+tracks/cases/     Case packs: kolam, origami, tabla, and four synthetic showcase cases
+docs/             Product vision, architecture, validation log, and plans
+tools/            CLI tools: fetch media, smoke test, stability runs, sample generation
 ```
 
-### Validation scope
+---
 
-All validation evidence to date is **engineering/capability evidence on internet-licensed and synthetic data**. No real learner sessions have been run. See `docs/validation/findings.md` for the honest scope.
+## Licence
 
-### Deployed URL
+Code: Apache-2.0 ([LICENSE](LICENSE)).
+Case media keep their own licences; see each pack's `source/source.json`.
 
-Not yet deployed. Jim will deploy via the GCP Cloud Run console using `docs/deploy/DEPLOY-CHECKLIST.md` after branch review.
+---
 
-## Documentation
+## Team and competition
 
-See docs/README.md for the complete map. The repository separates EXPLORED, DECIDED, VALIDATED and IMPLEMENTED material so research does not silently become product scope. See `AGENTS.md` for the source-of-truth hierarchy used by coding agents. Third-party media and their licences: `docs/MEDIA-ATTRIBUTION.md`.
-
-### Parallel implementation workspaces
-
-Two developers can now work independently under `tracks/track-a/` and `tracks/track-b/`, using the contract and replay-fixture boundary documented in `docs/architecture/parallel-work-contract.md`, with current execution gates in `docs/status/NOW.md`.
-
-## Implementation Status
-
-**Wave 2 integration complete (2026-10-06, branch `m1/hero-cases`)**
-
-| Component | Status | Notes |
-|---|---|---|
-| Kolam evaluator | IMPLEMENTED | 50/50 synthetic eval, photo-path registration |
-| Tabla evaluator | IMPLEMENTED | 49/49 synthetic eval, timbre classes |
-| Origami evaluator | IMPLEMENTED | 5-state goal (R5/R6 missing) |
-| Universal composer backend | IMPLEMENTED | Composer API, perceivers, SkillModel builder |
-| Universal evaluator | IMPLEMENTED | embedding relevance, AI property judgement, specialist delegation |
-| Composer UI | IMPLEMENTED | Wizard, discovery view, universal case views |
-| Tabla timbre (K2b) | IMPLEMENTED | MFCC classes, bol labels INFERRED |
-| FastAPI service | IMPLEMENTED | All routes, recorded + live modes |
-| React frontend | IMPLEMENTED | All hero flows, composer wizard |
-| CI / governance scripts | IMPLEMENTED | check_governance, check_case_packs, check_contract_parity |
-| Cloud Run deploy | PENDING | Jim deploys via console; checklist at docs/deploy/DEPLOY-CHECKLIST.md |
-| Expert review | NOT STARTED | All packages status: pending |
-| Real learner sessions | NOT STARTED | No real learner data |
-
-For contributors, treat:
-- `docs/research/` as exploration and competitive/technical evidence;
-- `docs/validation/` as experiment protocol and results;
-- `docs/product/` as hypotheses and scope contracts pending validation;
-- `docs/hackathon/` as submission/readiness material.
+Google Cloud AI Builder Cup 2026. Submission due 2026-10-18.

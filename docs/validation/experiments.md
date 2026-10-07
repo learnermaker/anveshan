@@ -422,6 +422,48 @@ After the fixes, the composed block-arrangement skill:
 - one block missing: FAIL, with the first divergence on the missing block's claim;
 - unrelated graphic: FAIL 0/11, not refused (similarity 0.76 sits in the ambiguous band).
 
+## E8 — AI coaching wording (validator-guarded)
+
+**Status:** IMPLEMENTED as engineering/capability evidence. Not learner validation.
+**Date:** 2026-10-07.
+
+**Model:** `vision_fast` (gemini-3.5-flash-lite). **Prompt:** `tracks/common/prompts/coach_feedback_v1.txt`. **Code:** `tracks/track-b/src/track_b/coach.py`.
+
+**Guard design:**
+- The coach rewrites only each item's `corrective_advice` field; all other feedback fields are unchanged.
+- Per item, the guard rejects any rewrite that contains a verdict word (regex `_VERDICT_WORDS` in `coach.py`: passed, failed, fail, scored, etc.) or any number not present in the original item.
+- On a rejection the deterministic template advice is kept for that item; the reason is recorded.
+- After per-item checks, `feedback.guard_wording` runs on the full result: structure, evidence references, claim IDs and numbers must all survive.
+
+**Evidence:**
+- 7 unit tests in `tracks/track-b/tests/test_coach.py`: good rewrite accepted; new number rejected; dropped claim ID rejected; verdict language rejected; model failure keeps template; can be disabled; passes-through language not falsely rejected.
+- Browser walk-through on 2026-10-07 (Kolam baseline): AI-worded coaching advice shown; the fixed-wording toggle confirmed that the template fallback works.
+
+**Limits:** no human rating of coaching wording quality yet.
+
+---
+
+## E9 — Bring your own key (BYOK) security behaviour
+
+**Status:** IMPLEMENTED as engineering/capability evidence. Not learner validation.
+**Date:** 2026-10-07.
+
+**Code:** `app/src/api/userKey.ts`, `service/anveshan_service/userkey.py`, `service/anveshan_service/routes/key.py`.
+
+**Behaviour:**
+- The key is stored in `sessionStorage`, or `localStorage` only on explicit user opt-in.
+- It is sent only as a request header and is scoped to one request.
+- It is never stored server-side and is redacted in all error responses.
+- The key check uses a metadata call (no generation quota consumed).
+
+**Evidence:**
+- 6 BYOK tests in `service/tests/test_public_demo.py`: key is request-scoped and forces live mode; malformed key header is ignored; key check without key returns 400; key is never echoed in errors; redaction covers the request key; own key skips the daily budget.
+- Browser test on 2026-10-07: a fake key was rejected ("Google rejected this key") and nothing was stored in session or local storage after the rejection.
+
+**Limits:** a key lives in browser storage while it is in use; users should restrict their API key to the Anveshan demo domain and delete it after use.
+
+---
+
 ## Current Planned Experiments — Transmission Thesis
 
 These experiments validate the current competition/MVP wedge defined in `docs/product/product-thesis.md` and bounded by `docs/product/mvp-contract.md`.
