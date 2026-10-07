@@ -14,6 +14,9 @@ from anveshan_service.housekeeping import SweepEvery
 from anveshan_service.limits import RateLimitMiddleware
 from anveshan_service.paths import within
 from anveshan_service.routes import cases, compose, health, key, media, sessions
+from anveshan_service.routes import library as library_routes
+from anveshan_service.routes import insights as insights_routes
+from anveshan_service.routes import steward as steward_routes
 from anveshan_service.settings import Settings
 from anveshan_service.steward import StewardMiddleware
 from anveshan_service.userkey import UserKeyMiddleware
@@ -100,13 +103,8 @@ def create_app(settings: Optional[Settings] = None) -> FastAPI:
     app.add_middleware(BodyLimitMiddleware, limit_bytes=settings.max_upload_bytes * MAX_UPLOAD_FILES + (1 << 20))
     for module in (health, key, cases, sessions, media, compose):
         app.include_router(module.router)
-    # Import new K9 routers lazily to allow tests to patch them
-    try:
-        from anveshan_service.routes import library as _lib, steward as _swd, insights as _ins  # noqa: F401
-        for _m in (_lib, _swd, _ins):
-            app.include_router(_m.router)
-    except ImportError:
-        pass
+    for _m in (library_routes, steward_routes, insights_routes):
+        app.include_router(_m.router)
     if settings.static_dir is not None and (settings.static_dir / "index.html").is_file():
         _mount_static(app, settings.static_dir)
     return app

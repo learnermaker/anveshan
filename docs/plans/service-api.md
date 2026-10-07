@@ -169,3 +169,105 @@ These routes handle the universal pipeline: upload → analyze (Layer 1 percepti
 - After `/analyze` returns `refused: false, proposal: null`, the UI should call `/refine` with title + description.
 - After `/refine` returns `proposal` (non-null), the UI calls `/create` with optional edits.
 
+## 7. Product roles (K9)
+
+### Endpoints
+
+All response types are defined in `app/src/api/types-product.ts`.
+
+| Method | Path | Auth | Response type |
+|---|---|---|---|
+| `GET` | `/api/cases` (updated) | public | adds `access: CaseAccess` to every summary |
+| `GET` | `/api/cases/{id}` (updated) | public | adds `access: CaseAccess` to the view |
+| `GET` | `/api/library/{case_id}` | owner or steward (others get 404) | `LibraryRecord` |
+| `POST` | `/api/library/{case_id}/submit` | owner only | `LibraryRecord` |
+| `POST` | `/api/library/{case_id}/withdraw` | owner only | `LibraryRecord` |
+| `GET` | `/api/insights/{case_id}` | owner or steward | `InsightsView` |
+| `POST` | `/api/steward/check` | steward | `{ok: true}` |
+| `GET` | `/api/steward/overview` | steward | `StewardOverview` |
+| `GET` | `/api/steward/queue` | steward | `StewardQueueItem[]` |
+| `GET` | `/api/steward/library` | steward | `StewardLibraryRow[]` |
+| `POST` | `/api/steward/library/{case_id}/decide` | steward | `LibraryRecord` |
+| `GET` | `/api/steward/consent` | steward | `ConsentRow[]` |
+| `GET` | `/api/steward/consent/export` | steward | JSON attachment |
+| `GET` | `/api/steward/usage` | steward | `UsageView` |
+| `GET` | `/api/steward/review-export/{case_id}` | steward | JSON attachment |
+
+A **steward request** sends `X-Steward-Token: <token>` matching `ANVESHAN_STEWARD_TOKEN`, or is any
+request when `ANVESHAN_STEWARD_OPEN=true` (local dev only).
+
+### Settings and environment variables
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `ANVESHAN_STEWARD_TOKEN` | — | Steward access code. Falls back to `ANVESHAN_REVIEW_TOKEN`. Set as Cloud Run secret. |
+| `ANVESHAN_STEWARD_OPEN` | `true` locally, `false` on Cloud Run | Skip token check (dev only) |
+| `ANVESHAN_INSIGHTS_MAX_EVENTS` | `5000` | Per-skill event log cap |
+| `ANVESHAN_RATE_AUTH_PER_HOUR` | `10` (Cloud Run) | Rate limit for `POST /api/steward/check` |
+
+### File locations
+
+| Path | Contents |
+|---|---|
+| `<data_dir>/library/<case_id>.json` | Library overlay for curated cases (absence = published) |
+| `<case_dir>/.library.json` | Library record for community/derived cases |
+| `<data_dir>/insights/<case_id>.jsonl` | Per-skill attempt and completion event log (hashed session ids, no names) |
+
+### Bring your own key note
+
+The visitor's Gemini key travels only in the `X-Gemini-Api-Key` header. It is never stored,
+logged, or echoed in responses. Calls made with a visitor key skip the shared daily budget; the
+per-visitor rate limits still apply. Set `ANVESHAN_STEWARD_TOKEN` as a Cloud Run secret; never
+put it in the Dockerfile.
+
+
+## 7. Product roles (K9)
+
+### Endpoints
+
+All response types are defined in pp/src/api/types-product.ts.
+
+| Method | Path | Auth | Response type |
+|---|---|---|---|
+| GET | /api/cases (updated) | public | adds ccess: CaseAccess to every summary |
+| GET | /api/cases/{id} (updated) | public | adds ccess: CaseAccess to the view |
+| GET | /api/library/{case_id} | owner or steward (others get 404) | LibraryRecord |
+| POST | /api/library/{case_id}/submit | owner only | LibraryRecord |
+| POST | /api/library/{case_id}/withdraw | owner only | LibraryRecord |
+| GET | /api/insights/{case_id} | owner or steward | InsightsView |
+| POST | /api/steward/check | steward | {ok: true} |
+| GET | /api/steward/overview | steward | StewardOverview |
+| GET | /api/steward/queue | steward | StewardQueueItem[] |
+| GET | /api/steward/library | steward | StewardLibraryRow[] |
+| POST | /api/steward/library/{case_id}/decide | steward | LibraryRecord |
+| GET | /api/steward/consent | steward | ConsentRow[] |
+| GET | /api/steward/consent/export | steward | JSON attachment |
+| GET | /api/steward/usage | steward | UsageView |
+| GET | /api/steward/review-export/{case_id} | steward | JSON attachment |
+
+A **steward request** sends X-Steward-Token: <token> matching ANVESHAN_STEWARD_TOKEN, or is any
+request when ANVESHAN_STEWARD_OPEN=true (local dev only).
+
+### Settings and environment variables
+
+| Variable | Default | Meaning |
+|---|---|---|
+| ANVESHAN_STEWARD_TOKEN | — | Steward access code. Falls back to ANVESHAN_REVIEW_TOKEN. Set as Cloud Run secret. |
+| ANVESHAN_STEWARD_OPEN | 	rue locally, alse on Cloud Run | Skip token check (dev only) |
+| ANVESHAN_INSIGHTS_MAX_EVENTS | 5000 | Per-skill event log cap |
+| ANVESHAN_RATE_AUTH_PER_HOUR | 10 (Cloud Run) | Rate limit for POST /api/steward/check |
+
+### File locations
+
+| Path | Contents |
+|---|---|
+| <data_dir>/library/<case_id>.json | Library overlay for curated cases (absence = published) |
+| <case_dir>/.library.json | Library record for community/derived cases |
+| <data_dir>/insights/<case_id>.jsonl | Per-skill attempt and completion event log (hashed session ids, no names) |
+
+### Bring your own key note
+
+The visitor's Gemini key travels only in the X-Gemini-Api-Key header. It is never stored,
+logged, or echoed in responses. Calls made with a visitor key skip the shared daily budget; the
+per-visitor rate limits still apply. Set ANVESHAN_STEWARD_TOKEN as a Cloud Run secret; never
+put it in the Dockerfile.

@@ -78,6 +78,9 @@ Set these as plain (non-secret) environment variables in the Cloud Run console:
 | `ANVESHAN_DAILY_CALL_BUDGET` | `2000` | Image default. Live model calls per UTC day; cached and recorded calls are free |
 | `ANVESHAN_REVIEW_TOKEN` | a long random string | Optional. Only the invited expert reviewer gets it (sent as `X-Review-Token`) |
 
+| `ANVESHAN_STEWARD_TOKEN` | a long random string | **Secret** (Cloud Run secret, not plain env var). Steward console access code. |
+| `ANVESHAN_INSIGHTS_MAX_EVENTS` | `5000` | Per-skill event log cap (increase for high-traffic demos) |
+
 Defaults that switch on automatically on Cloud Run (`K_SERVICE` is set by the platform), override only if needed:
 
 | Variable | Cloud Run default | Meaning |
@@ -90,6 +93,19 @@ Defaults that switch on automatically on Cloud Run (`K_SERVICE` is set by the pl
 | `ANVESHAN_LIVE_CACHE` | `1` | An identical earlier live call is reused (same result, no cost) |
 
 Also set a **budget alert** on the billing account of the Gemini key's project (e.g. US$20) and, in AI Studio, check the key's quota tier.
+
+---
+
+## Bring your own key (BYOK)
+
+Visitors may send their own Gemini API key in `X-Gemini-Api-Key`. The key:
+- travels only in that header for one request;
+- is never stored, logged or committed;
+- makes calls in live mode and skips the shared daily budget;
+- the per-visitor rate limits still apply.
+
+Set `ANVESHAN_STEWARD_TOKEN` as a **Cloud Run secret** (not a plain environment variable). Never
+embed it in the Dockerfile or commit it to git.
 
 ---
 

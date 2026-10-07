@@ -216,7 +216,7 @@ def submit(
         licence=licence,
         consent_scope=body.get("consent_scope", "public_practice"),
         rights_confirmed=body.get("rights_confirmed", rec.rights_confirmed),
-        rights_confirmed_at=rec.rights_confirmed_at,
+        rights_confirmed_at=rec.rights_confirmed_at or now,
         people_visible=body.get("people_visible", False),
         people_consented=body.get("people_consented", False),
         submitted_at=now,

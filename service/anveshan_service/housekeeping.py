@@ -7,6 +7,7 @@ touched; only ``data_dir`` children are.
 
 from __future__ import annotations
 
+import json
 import logging
 import shutil
 import threading
@@ -18,6 +19,19 @@ log = logging.getLogger("anveshan_service")
 
 SWEPT = ("uploads", "drafts", "cases", "sessions", "attempts", "runs")
 _lock = threading.Lock()
+
+
+def _protected(p: Path) -> bool:
+    """Return True when the directory has a .library.json with non-private status.
+    Protected cases are skipped in TTL and cap passes."""
+    lib_file = p / ".library.json"
+    if not lib_file.is_file():
+        return False
+    try:
+        data = json.loads(lib_file.read_text(encoding="utf-8"))
+        return data.get("status", "private") != "private"
+    except Exception:
+        return False
 
 
 def _size(p: Path) -> int:
@@ -80,6 +94,9 @@ def sweep(data_dir: Path, ttl_hours: float, cap_bytes: int, now: float | None = 
         keep = []
         for mtime, size, p in entries:
             if ttl_hours > 0 and now - mtime > ttl_hours * 3600:
+                if _protected(p):
+                    keep.append((mtime, size, p))
+                    continue
                 _remove(p)
                 removed.append(p)
             else:
@@ -88,6 +105,8 @@ def sweep(data_dir: Path, ttl_hours: float, cap_bytes: int, now: float | None = 
         for mtime, size, p in sorted(keep):
             if cap_bytes <= 0 or total <= cap_bytes:
                 break
+            if _protected(p):
+                continue
             _remove(p)
             removed.append(p)
             total -= size
