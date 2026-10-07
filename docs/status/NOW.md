@@ -26,6 +26,8 @@ Micrometer, bicycle repair, handloom and square knot are **SYNTHETIC replay show
 Sources are licensed internet media and user uploads; no human recordings are required for the hackathon build.
 See `docs/plans/track-plan-review-2026-10-06.md` §9 and `docs/plans/evaluation-core.md`.
 
+**Universal pipeline (IMPLEMENTED 2026-10-07, priority over tuning single hero media):** any uploaded image, video or audio skill is composed (Perception → SkillModel → deterministic evaluation) and learner attempts are verified against it. Evidence: `docs/validation/experiments.md` E6; design and known limits: `docs/plans/universal-pipeline.md` §12. Cloud Run deployment is pending (`docs/deploy/DEPLOY-CHECKLIST.md`). Remaining work and order: `docs/plans/NEXT-STEPS.md`.
+
 ## Scope firewall
 
 1. Research does not authorize implementation.

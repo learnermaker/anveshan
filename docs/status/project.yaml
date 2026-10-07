@@ -34,5 +34,7 @@ project:
   models:
     text_image: gemma-4-26b-a4b-it
     video_frames: gemma-4-26b-a4b-it
+    vision_fast: gemini-3.5-flash-lite  # interactive perception + universal pipeline judges
+    embedding: gemini-embedding-2       # frame/image/text embeddings (relevance, alignment)
     audio: optional_disabled_by_default
   progress_unit: product_capability

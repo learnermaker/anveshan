@@ -67,7 +67,7 @@ Showcase cases (micrometer, bicycle-repair, handloom-weaving, square-knot) are *
 The models are cross-checks, not authority (e.g. flash-lite said 7-fold symmetry; the geometry says 8).
 
 ## 6. Branches, folders and status (updated 2026-10-07)
-- **Integration branch:** `m1/hero-cases` (pushed). `main` is untouched; Jim opens the PR (`docs/plans/PR-BODY.md`) in GitHub Desktop. The PR needs a real issue number in place of the `#99` placeholder.
+- **`main` is current (2026-10-07):** `m1/hero-cases` was fast-forwarded into `main` at Jim's explicit instruction (no PR). Branch from `main` for new work. **Remaining work, in order: `docs/plans/NEXT-STEPS.md`.**
 - **Everything from Kiro is merged:** K1–K4 and WP1–WP5 (see `docs/plans/DECISION-LOG.md` and `docs/kiro/reports/*`). The `anveshan-wt/*` folders are git worktrees of this repo; remove them with `git worktree remove` once they are no longer needed.
 - **2026-10-07 (Claude Code), universal-pipeline robustness for ANY upload** (Jim's priority over tuning single hero videos):
   - video segmentation, alignment, relevance and judges redesigned;
@@ -82,10 +82,10 @@ The models are cross-checks, not authority (e.g. flash-lite said 7-fold symmetry
   - the swapped-order synthetic verdict varies between live runs (vision-model variance);
   - speech skills are untested.
 - **Dedicated Origami engine:** its own RESULTS show it fails its "perfect" attempt (5 of 7 states; see `tracks/track-b/eval/origami/RESULTS.md`). The full `OrigamiCrane.ogv` through the universal path does better (positive control passes 11/11). This is Jim's decision: either present Origami through the universal path, or keep the dedicated engine and label it honestly.
-- **UI wiring of universal views** (source media, step thumbnails, line_art canvas, MEASURED vs AI-JUDGED badges): branch `ui/universal-wiring` (worktree `anveshan-wt/ui-universal`). Merge it if it isn't merged yet.
+- **UI wiring of universal views** (source media, step thumbnails, line_art canvas, MEASURED vs AI-JUDGED badges) is merged.
 
 ## 7. How to resume in a new session
-1. `git checkout m1/hero-cases && git pull`. Read `docs/plans/DECISION-LOG.md` and `docs/kiro/reports/*-REPORT.md` to see what Kiro finished.
+1. `git checkout main && git pull`. Read `docs/plans/DECISION-LOG.md` and `docs/kiro/reports/*-REPORT.md` to see what Kiro finished.
 2. Run the verification: the `anveshan-verify` skill, or
    ```bash
    .venv/Scripts/python -m pytest -q tracks/common/tests tracks/track-a/tests tracks/track-b/tests service/tests -m "not live"
