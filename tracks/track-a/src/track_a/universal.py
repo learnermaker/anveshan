@@ -48,6 +48,15 @@ def _obs_of_kind(record: PerceptionRecord, segment_id: str, kind: str) -> List[A
     return [o for o in record.observations if o.segment_id == segment_id and o.kind == kind]
 
 
+def _clip(text: str, n: int) -> str:
+    """Shorten to at most n characters at a word boundary, marking the cut with an ellipsis."""
+    text = (text or "").strip()
+    if len(text) <= n:
+        return text
+    cut = text[: n - 1].rsplit(" ", 1)[0].rstrip(" ,;:(-")
+    return (cut or text[: n - 1]) + "…"
+
+
 def _all_obs_of_kind(record: PerceptionRecord, kind: str) -> List[Any]:
     return [o for o in record.observations if o.kind == kind]
 
@@ -218,7 +227,7 @@ def _build_steps(record: PerceptionRecord, structures: List[str]) -> Tuple[List[
         for idx, (seg, state_obs, all_segs) in enumerate(merged):
             action_obs = _obs_of_kind(record, seg.segment_id, "action")
             action = action_obs[0].label if action_obs else None
-            step_name = state_obs.label[:60]
+            step_name = _clip(state_obs.label, 90)
             evidence_ids = [state_obs.obs_id]
             if action_obs:
                 evidence_ids.append(action_obs[0].obs_id)
@@ -257,8 +266,8 @@ def _build_steps(record: PerceptionRecord, structures: List[str]) -> Tuple[List[
                 steps.append(Step(
                     step_id=f"step-{len(steps) + 1:02d}",
                     index=len(steps),
-                    name=obs.label[:60],
-                    state_after=obs.label[:60],
+                    name=_clip(obs.label, 90),
+                    state_after=_clip(obs.label, 90),
                     action=obs.label,
                     start_sec=None,
                     end_sec=None,
@@ -352,7 +361,7 @@ def _default_checks(
             checks.append(Check(
                 check_id=f"CHK-FS-P{i + 1:02d}",
                 kind="final_property",
-                name=f"Property: {prop.statement[:40]}",
+                name=f"Property: {_clip(prop.statement, 40)}",
                 observable_indicator=f"Property is met: {prop.statement[:100]}",
                 targets=[prop.prop_id],
                 metric_id=f"u.final_property.{prop.prop_id}",
@@ -439,8 +448,8 @@ def _default_checks(
             checks.append(Check(
                 check_id=f"CHK-PR-Q01",
                 kind="step_quality",
-                name=f"Quality: {cstep.name[:40]}",
-                observable_indicator=f"Critical step quality: {cstep.name[:80]}",
+                name=f"Quality: {_clip(cstep.name, 40)}",
+                observable_indicator=f"Critical step quality: {_clip(cstep.name, 80)}",
                 targets=[cstep.step_id],
                 metric_id=f"u.step_quality.{cstep.step_id}",
                 method="model_status",
@@ -614,8 +623,8 @@ def _apply_wording(
         "source_modality": skill_model.source_modality,
         "title_hint": title_hint or "",
         "description": description or "",
-        "steps": [{"step_id": s.step_id, "name": s.name[:60]} for s in skill_model.steps],
-        "properties": [{"prop_id": p.prop_id, "statement": p.statement[:60]} for p in skill_model.goal_state],
+        "steps": [{"step_id": s.step_id, "name": _clip(s.name, 60)} for s in skill_model.steps],
+        "properties": [{"prop_id": p.prop_id, "statement": _clip(p.statement, 60)} for p in skill_model.goal_state],
         "check_ids": check_ids,
     }
 
@@ -646,7 +655,7 @@ def _apply_wording(
         # Apply to skill model fields
         updates: Dict[str, Any] = {}
         if dto.skill_title:
-            updates["skill_title"] = dto.skill_title[:60]
+            updates["skill_title"] = _clip(dto.skill_title, 60)
         if dto.summary:
             updates["summary"] = dto.summary[:300]
         vocabulary = dict(skill_model.vocabulary)
@@ -659,7 +668,7 @@ def _apply_wording(
             if chk.check_id in dto.check_texts:
                 ct = dto.check_texts[chk.check_id]
                 new_checks.append(chk.model_copy(update={
-                    "name": ct.get("name", chk.name)[:60],
+                    "name": _clip(ct.get("name", chk.name), 60),
                     "observable_indicator": ct.get("observable_indicator", chk.observable_indicator)[:160],
                 }))
             else:
