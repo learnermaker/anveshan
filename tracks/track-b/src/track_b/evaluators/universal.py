@@ -683,7 +683,10 @@ def _procedure_checks(
     for check in skill.checks:
         if check.kind == "step_quality" and check.enabled and critical_steps:
             cstep = critical_steps[0]
-            if ctx is not None and getattr(ctx, "gateway", None) is not None:
+            if cstep.index not in visited:
+                metrics[check.metric_id] = MetricValue(
+                    0.0, f"the step '{cstep.name}' was never reached in the attempt, so its quality cannot be credited")
+            elif ctx is not None and getattr(ctx, "gateway", None) is not None:
                 metrics[check.metric_id] = _judge_step_quality(
                     skill, attempt, cstep, source_emb, source_record, attempt_emb, attempt_record, ctx, warnings
                 )

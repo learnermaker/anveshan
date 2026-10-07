@@ -1,0 +1,132 @@
+{
+ "scenario": "synth",
+ "mode": "recorded",
+ "compose": {
+  "compose_s": 0.0,
+  "refused": false,
+  "build_s": 0.0,
+  "structures": [
+   "procedure"
+  ],
+  "n_steps": 6,
+  "steps": [
+   "0:blank canvas@0-4s",
+   "1:rectangle body drawn@9-13s",
+   "2:house with roof drawn@17-22s",
+   "3:house with door drawn@27-31s",
+   "4:house with door and window drawn@36-40s",
+   "5:completed house with sun@44-49s"
+  ],
+  "checks": [
+   "CHK-PR-COV:step_coverage",
+   "CHK-PR-ORD:step_order",
+   "CHK-PR-OFF:off_path",
+   "CHK-PR-FIN:final_property",
+   "CHK-PR-Q01:step_quality"
+  ],
+  "warnings": [
+   "Composed case: claims named by AI are inferred until reviewed.",
+   "package not expert-approved"
+  ]
+ },
+ "attempts": {
+  "perfect_reperformance": {
+   "outcome": "PASS",
+   "score": 11.0,
+   "criteria": {
+    "CRIT-U-CHK-PR-COV": "satisfied",
+    "CRIT-U-CHK-PR-ORD": "satisfied",
+    "CRIT-U-CHK-PR-OFF": "satisfied",
+    "CRIT-U-CHK-PR-FIN": "satisfied",
+    "CRIT-U-CHK-PR-Q01": "satisfied"
+   },
+   "metrics": {
+    "u.step_coverage": 1.0,
+    "u.step_order": 0.0,
+    "u.off_path": 0.0,
+    "u.final_state_match": 1.0,
+    "u.step_quality.step-04": 1.0
+   },
+   "warnings": [
+    "Universal pipeline: AI-perceived checks are lower confidence than specialist measurements"
+   ],
+   "first_divergence": null,
+   "s": 0.4
+  },
+  "missing_step_door": {
+   "outcome": "FAIL",
+   "score": 6.0,
+   "criteria": {
+    "CRIT-U-CHK-PR-COV": "partially_satisfied",
+    "CRIT-U-CHK-PR-ORD": "satisfied",
+    "CRIT-U-CHK-PR-OFF": "satisfied",
+    "CRIT-U-CHK-PR-FIN": "partially_satisfied",
+    "CRIT-U-CHK-PR-Q01": "not_satisfied"
+   },
+   "metrics": {
+    "u.step_coverage": 0.8333333333333334,
+    "u.step_order": 0.0,
+    "u.off_path": 0.0,
+    "u.final_state_match": 0.5,
+    "u.step_quality.step-04": 0.0
+   },
+   "warnings": [
+    "Universal pipeline: AI-perceived checks are lower confidence than specialist measurements"
+   ],
+   "first_divergence": "CRIT-U-CHK-PR-COV",
+   "s": 0.2
+  },
+  "swapped_roof_walls": {
+   "outcome": "FAIL",
+   "score": 9.0,
+   "criteria": {
+    "CRIT-U-CHK-PR-COV": "partially_satisfied",
+    "CRIT-U-CHK-PR-ORD": "satisfied",
+    "CRIT-U-CHK-PR-OFF": "partially_satisfied",
+    "CRIT-U-CHK-PR-FIN": "satisfied",
+    "CRIT-U-CHK-PR-Q01": "satisfied"
+   },
+   "metrics": {
+    "u.step_coverage": 0.8333333333333334,
+    "u.step_order": 0.0,
+    "u.off_path": 1.0,
+    "u.final_state_match": 1.0,
+    "u.step_quality.step-04": 1.0
+   },
+   "warnings": [
+    "Universal pipeline: AI-perceived checks are lower confidence than specialist measurements"
+   ],
+   "first_divergence": "CRIT-U-CHK-PR-COV",
+   "s": 0.3
+  },
+  "stopped_after_roof": {
+   "outcome": "FAIL",
+   "score": 3.0,
+   "criteria": {
+    "CRIT-U-CHK-PR-COV": "not_satisfied",
+    "CRIT-U-CHK-PR-ORD": "satisfied",
+    "CRIT-U-CHK-PR-OFF": "satisfied",
+    "CRIT-U-CHK-PR-FIN": "not_satisfied",
+    "CRIT-U-CHK-PR-Q01": "not_satisfied"
+   },
+   "metrics": {
+    "u.step_coverage": 0.5,
+    "u.step_order": 0.0,
+    "u.off_path": 0.0,
+    "u.final_state_match": 0.0,
+    "u.step_quality.step-04": 0.0
+   },
+   "warnings": [
+    "Universal pipeline: AI-perceived checks are lower confidence than specialist measurements"
+   ],
+   "first_divergence": "CRIT-U-CHK-PR-COV",
+   "s": 0.1
+  },
+  "unrelated_tabla_video": {
+   "outcome": "REFUSED",
+   "category": "INVALID_INPUT",
+   "reason": "[INVALID_INPUT] This doesn't look like an attempt at Drawing a simple house step by step (similarity 0.67). Please upload video, image.",
+   "s": 2.5
+  }
+ }
+}

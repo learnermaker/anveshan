@@ -1,6 +1,6 @@
 /**
  * Step 1: Upload — drop zone + optional title/description + rights checkbox.
- * Client-side guards: ≤ 30 MB; video 8–120 s; audio 3–60 s; image short side ≥ 64 px.
+ * Client-side guards: ≤ 30 MB; video 8–600 s; audio 3–60 s; image short side ≥ 64 px.
  */
 
 import React, { useRef, useState } from 'react';
@@ -60,8 +60,8 @@ export function StepUpload({ onSubmit, onCancel, error }: Props) {
         el.addEventListener('loadedmetadata', () => {
           clearTimeout(t);
           const d = el.duration;
-          if (f.type.startsWith('video/') && (d < 8 || d > 120)) {
-            resolve(`Video duration is ${d.toFixed(0)} s — required range: 8–120 s.`);
+          if (f.type.startsWith('video/') && (d < 8 || d > 600)) {
+            resolve(`Video duration is ${d.toFixed(0)} s — required range: 8–600 s.`);
           } else if (f.type.startsWith('audio/') && (d < 3 || d > 60)) {
             resolve(`Audio duration is ${d.toFixed(0)} s — required range: 3–60 s.`);
           } else {

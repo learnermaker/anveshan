@@ -36,7 +36,7 @@ class IntakeLimits:
     min_trace_points: int = 5
     min_audio_sec: float = 3.0
     max_audio_sec: float = 120.0
-    max_video_sec: float = 120.0
+    max_video_sec: float = 600.0
 
 
 class TraceCanvas(BaseModel):

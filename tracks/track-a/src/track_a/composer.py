@@ -51,7 +51,7 @@ except ImportError:
 # Upload limits (matching K6 §3.2 step 1)
 _MAX_BYTES = 30 * 1024 * 1024       # 30 MB
 _VIDEO_MIN_SEC = 8.0
-_VIDEO_MAX_SEC = 120.0
+_VIDEO_MAX_SEC = 600.0   # perceiver samples <= 120 frames adaptively, so cost does not grow with length
 _AUDIO_MIN_SEC = 3.0
 _AUDIO_MAX_SEC = 60.0
 _IMAGE_MIN_PX = 64
