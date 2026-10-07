@@ -16,6 +16,8 @@ interface Props {
   onReload: () => void;
   onEnterPractice: () => void;
   onBack: () => void;
+  /** K9: the creator's "Your skill" panel (built by P3), shown at the top of the right column for the owner */
+  ownerSlot?: React.ReactNode;
 }
 
 export function HeroSourceView(props: Props) {
@@ -23,7 +25,7 @@ export function HeroSourceView(props: Props) {
   return <HeroSourceViewInner {...props} />;
 }
 
-function HeroSourceViewInner({ view, onViewChange, onReload, onEnterPractice, onBack }: Props) {
+function HeroSourceViewInner({ view, onViewChange, onReload, onEnterPractice, onBack, ownerSlot }: Props) {
   const [focus, setFocus] = useState<{ claimId: string; ev: EvidenceRef } | null>(null);
   const claims = view.package.claims;
 
@@ -88,6 +90,7 @@ function HeroSourceViewInner({ view, onViewChange, onReload, onEnterPractice, on
         </div>
 
         <div className="space-y-5 min-w-0">
+          {ownerSlot}
           <Panel kicker="Knowledge package" title={`Claims (${claims.length})`}>
             <p className="text-[11px] text-on-surface-variant mb-3">{view.package.summary}</p>
             <ul className="space-y-2">

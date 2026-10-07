@@ -19,6 +19,8 @@ interface Props {
   onReload: () => void;
   onEnterPractice: () => void;
   onBack: () => void;
+  /** K9: the creator's "Your skill" panel (built by P3), shown at the top of the right column for the owner */
+  ownerSlot?: React.ReactNode;
 }
 
 function SourceMedia({ caseId, sources }: { caseId: string; sources: SourceRecord[] }) {
@@ -151,7 +153,7 @@ function ReviewPanel({ view, onViewChange }: { view: CaseView; onViewChange: (v:
 // Re-export view from parent (needed for type inference in the view prop)
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
-export function UniversalSourceView({ view, onViewChange, onReload, onEnterPractice, onBack }: Props) {
+export function UniversalSourceView({ view, onViewChange, onReload, onEnterPractice, onBack, ownerSlot }: Props) {
   const ui = view.goal.ui_view as UniversalUiView;
   const claims = view.package.claims;
   const profile = view.profile;
@@ -252,6 +254,7 @@ export function UniversalSourceView({ view, onViewChange, onReload, onEnterPract
         </div>
 
         <div className="space-y-5 min-w-0">
+          {ownerSlot}
           <Panel kicker="Knowledge package" title={`Claims (${claims.length})`}>
             <ul className="space-y-2 text-[11px]">
               {claims.map((c: KnowledgeClaim) => (

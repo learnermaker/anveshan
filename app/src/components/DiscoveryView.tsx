@@ -17,6 +17,8 @@ interface DiscoveryViewProps {
   onSelect: (key: CaseKey) => void;
   selected: CaseKey;
   onOpenGuide?: () => void;
+  /** K9: open My skills (App.tsx, P3) */
+  onOpenMine?: () => void;
 }
 
 interface ModalityMeta {

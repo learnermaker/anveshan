@@ -19,6 +19,9 @@ import type {
   TransmissionRecord,
   CriterionStatus,
 } from '../types/contracts';
+import type { CaseAccess } from './types-product';
+
+export * from './types-product';
 
 // ---------------------------------------------------------------------------
 // Runtime / health
@@ -33,6 +36,15 @@ export interface HealthResponse {
   mode_override?: boolean;
   /** false on the public demo: reviewing the curated cases needs an invitation token */
   curated_review_open?: boolean;
+  /** the browser may send its own Gemini key (X-Gemini-Api-Key) */
+  own_key_supported?: boolean;
+  server_key_configured?: boolean;
+  /** the steward console exists on this server (an access code is configured, or it is open) */
+  steward_enabled?: boolean;
+  /** local development: the steward console needs no access code */
+  steward_open?: boolean;
+  /** private skills and uploads are deleted after this many hours (0 = kept) */
+  data_ttl_hours?: number;
   models: {
     text_image: string;
     video_frames: string;
@@ -63,6 +75,8 @@ export interface CaseSummary {
   composed?: boolean;
   /** Structure tags for composed cases (e.g. ["final_state", "procedure"]). */
   structures?: string[];
+  /** library and ownership state for the current visitor (K9) */
+  access?: CaseAccess;
 }
 
 export interface SourceRecord {
@@ -267,6 +281,8 @@ export interface CaseView {
   observers?: Record<string, unknown>;
   versions?: Record<string, number>;
   lesson?: Record<string, unknown>;
+  /** library and ownership state for the current visitor (K9) */
+  access?: CaseAccess;
 }
 
 // ---------------------------------------------------------------------------

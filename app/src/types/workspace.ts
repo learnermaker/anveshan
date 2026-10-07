@@ -27,7 +27,9 @@ export type AppView =
   | 'source'
   | 'practice'
   | 'transmission'
-  | 'composer';
+  | 'composer'
+  | 'mine'
+  | 'steward';
 
 export interface WorkspaceSpecification {
   workspaceType: WorkspaceType;
