@@ -9,7 +9,9 @@
     "build:mock": "tsc && vite build --mode mock",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "audit:devtools": "node scripts/check_devtools.js"
+    "audit:devtools": "node scripts/check_devtools.js",
+    "check:plain": "node scripts/check_plain_language.mjs",
+    "check:roles": "node scripts/check_roles.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",

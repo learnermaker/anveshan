@@ -59,8 +59,22 @@ export function friendlyError(error: unknown): FriendlyError {
         message: 'The model call failed or timed out. Nothing was scored. Please try again; if it keeps failing, try a sample attempt.',
         technical,
       };
-    case 'INVALID_INPUT':
+    case 'STEWARD_REQUIRED':
+      return { title: 'Steward access needed', message: 'Enter the steward access code to continue.', technical };
+    case 'STEWARD_DISABLED':
+      return { title: 'Steward console not enabled', message: 'This server does not have a steward console.', technical };
+    case 'NOT_OWNER':
+      return { title: 'Only the creator can do this', message: raw, technical };
+    case 'INVALID_INPUT': {
+      const blockers = details.blockers;
+      if (Array.isArray(blockers) && blockers.length > 0) {
+        return { title: 'Not ready to publish yet', message: (blockers as string[]).join(' '), technical };
+      }
+      if (raw.startsWith('Google rejected this key')) {
+        return { title: 'That key did not work', message: raw, technical, suggestKey: false };
+      }
       return { title: 'This file or input cannot be used', message: raw, technical };
+    }
     case 'MISSING_EVIDENCE':
       return { title: 'Not found', message: `${raw}. It may have expired (uploads are kept for a few hours) or belong to another visitor.`, technical };
     case 'HUMAN_REVIEW_REQUIRED':
