@@ -3,6 +3,12 @@
 **Written:** 2026-10-06 (updated 2026-10-07) by the Claude Code session (Opus 5.5) that did planning, foundation, integration and orchestration.
 **Read this first in any new session**, then `CLAUDE.md` → `AGENTS.md` → the docs it points to. The repo is the durable record; this file summarises everything that was only in chat.
 
+> **2026-10-07, latest: three product roles (DECIDED by Jim).**
+> - **Roles:** learner (plain language, no audit tooling), creator (check what the AI understood, publish, insights), steward (review queue, library, consent and licences, insights, usage). No admin console or accounts (NEXT).
+> - **Docs:** `docs/product/product-vision.md` §9A, `docs/product/user-journeys.md` Journeys 7–8, `docs/status/DECISIONS.md`.
+> - **Build:** one Kiro session with parallel tasks. Start it with `docs/kiro/specs/K9-ORCHESTRATOR.md`, which pushes `k9/integration`; Claude Code then reviews and merges it to `main`.
+> - **Earlier this session (on `main`):** judges-panel review (`docs/research/judges-panel-review-2026-10-07.md`), the technical-panel plan (`docs/plans/technical-panel-plan-2026-10-07.md`), public-demo safety (WS1), AI coaching wording, first-time-user guidance, and BYOK (bring your own Gemini key).
+
 ## 1. Who and what
 - **Jim** (git "Jim", GitHub `learnermaker`, Windows PC, GitHub Desktop; no `gh`, no gcloud, no Docker locally) owns integration and decisions. Coding is done by Claude Code (main developer) plus **Kiro** sessions (Sonnet 4.6, a weaker model, so **specs for Kiro must be exhaustive and step-by-step**).
 - **Hackathon:** Google Cloud AI Builder Cup 2026, theme **Sustainability & Social Impact** (living heritage + skill transmission).

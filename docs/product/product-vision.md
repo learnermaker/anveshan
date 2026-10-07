@@ -229,6 +229,44 @@ The domain changes.
 
 The underlying lifecycle does not.
 
+## 9A. Three Roles, One Lifecycle (DECIDED 2026-10-07)
+
+Every surface of Anveshan serves one of three roles. They share one lifecycle and one evidence model, but each sees it in its own terms.
+
+| Role | Who | What they want | Lifecycle steps they own |
+|---|---|---|---|
+| **Learner** | Anyone who wants to acquire a skill | Learn a real skill, know exactly what to fix, see progress | TRANSMIT → PRACTICE → VERIFY |
+| **Creator** (the knowledge holder) | The expert, elder, artisan or practitioner whose skill it is, or someone sharing a source they have the rights to | Pass the skill on accurately; keep credit and control; see whether it is working | CAPTURE → UNDERSTAND → GROUND (confirming what the AI understood) and EVOLVE (improving the teaching from learner outcomes) |
+| **Steward** | The body accountable for a collection of knowledge: a school, guild, heritage organisation, community, or a company preserving the know-how of retiring experts | A trustworthy library: right skills, right consent, right quality, sustainable cost | Governance across the lifecycle: curation, review, consent and licence records, moderation, usage, continuity |
+
+The BRD's *Community / Knowledge Owner* and *Curator / Reviewer* users (BRD §4.3–4.4) are served by the Steward role.
+
+**Why the steward matters.** Expertise rarely belongs to one person alone. Craft and cultural knowledge is often held collectively. UNESCO's 2003 Convention requires communities' free, prior and informed consent, and the CARE principles for Indigenous data governance require *authority to control*. Organisational knowledge is mostly tacit and leaves with the people who hold it. Someone has to own consent, quality and continuity at the level of the collection. That is the steward.
+
+### Trust is a layer, not a screen
+
+Provenance, review and consent exist for every role, expressed in that role's terms:
+
+- **Learner:**
+  - one plain line about where a skill comes from and whether it has been checked;
+  - "Show me in the source" on every step;
+  - "Why this feedback?" on every result.
+- **Creator:**
+  - "You confirmed these steps. Learners only practise what you confirmed."
+  - Credit, licence and consent are set by the creator when publishing.
+- **Steward:** the audit detail, including claim-level evidence, review history, consent and licence ledger, run classes and lineage.
+
+Learners never see audit tooling such as claim identifiers, confidence numbers, approval controls or lineage hashes. The detail is disclosed progressively, never hidden. Honesty labels (synthetic examples, internet sources that are not verified experts, AI interpretations) always stay visible in plain words.
+
+### The EVOLVE loop made visible
+
+Creators and stewards see how learners are doing on each skill, and only in aggregate, with no names and no media:
+- where learners first go wrong;
+- which checks are hardest;
+- whether the feedback helped on the retry.
+
+Suggestions are rule-based, not AI-authored. For example: "Many learners miss this step. Consider a clearer demonstration of it." This closes the lifecycle: learner outcomes improve the teaching.
+
 ## 10. Multimodality Is Fundamental
 
 Anveshan should not be defined by a particular input format.

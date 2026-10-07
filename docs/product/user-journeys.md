@@ -66,6 +66,47 @@
 6. Lineage records the governance event.
 
 
+## Journey 7 — Creator Publishes a Skill (2026-10-07)
+
+1. The creator uploads a demonstration (image, video or audio) and confirms they have the rights to it.
+2. Anveshan shows what it measured and what the AI understood.
+3. The creator checks and corrects the steps (edit or remove), then confirms "Looks right".
+4. The creator practises it themselves (optional).
+5. The creator publishes:
+   - chooses credit (attribution name), a licence and the consent scope;
+   - the skill goes to the steward's review queue.
+6. The steward publishes it, or sends it back with a note.
+7. Once published, anyone can practise it. The creator sees aggregate insights: where learners first go wrong, the hardest checks, and whether the feedback helped.
+8. The creator improves the teaching (corrects or clarifies a step), which creates a new version.
+
+## Journey 8 — Steward Curates the Library (2026-10-07)
+
+1. The steward signs in with a steward access code (no accounts in the demo).
+2. Overview:
+   - what needs attention (submissions waiting, skills not yet checked, budget nearly used);
+   - library size;
+   - learner activity.
+3. Review queue:
+   - opens a skill with its source and the AI-extracted steps;
+   - approves, corrects or removes steps;
+   - publishes, sends back with a note, or rejects.
+4. Library: unpublishes a skill that should not be public (moderation).
+5. Consent and licences: checks credit, licence and consent per skill; exports the record.
+6. Insights: sees which skills learners struggle with and where.
+7. Usage: sees today's AI calls against the budget, storage, and blocked requests.
+8. Durable decisions (e.g. an expert's review of a curated skill) are exported and committed. The demo server forgets runtime changes on restart, and the console says so.
+
+## 2026-10-07 UX Rule — end-user-centric surfaces
+
+- The learner surface contains no audit tooling: no claim identifiers, confidence numbers, approve/reject controls, run classes or lineage hashes.
+- Trust reaches the learner through progressive disclosure:
+  - a plain trust line;
+  - "Show me in the source";
+  - "Why this feedback?".
+- Honesty labels stay visible in plain words.
+- Review of the extracted representation belongs to the creator (for their own skill) and the steward (for the library).
+- Each screen has one obvious primary action and a plain-language empty state.
+
 ## 2026-10-03 UX Rule
 
 The learner journey must contain a visible baseline, a bounded task, criterion-level feedback and a retry. The expert journey must contain review of the extracted representation. These are not optional polish; they are the product proof.

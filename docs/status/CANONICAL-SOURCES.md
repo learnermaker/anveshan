@@ -98,6 +98,16 @@ The UI must preserve:
 
 The current UI is a V0/reference workspace, not a disposable mock.
 
+## Product roles and surfaces (DECIDED 2026-10-07)
+
+| Concern | Authoritative document |
+|---|---|
+| Roles (learner, creator, steward) and the trust layer | `docs/product/product-vision.md` §9A |
+| Role needs | `docs/product/BRD.md` §4.5 |
+| Creator and steward journeys; the end-user UX rule | `docs/product/user-journeys.md` Journeys 7–8 and the 2026-10-07 UX rule |
+| MVP surfaces | `docs/product/mvp-contract.md` "Product surfaces" |
+| Build spec (Kiro, parallel agents) | `docs/kiro/specs/K9-ORCHESTRATOR.md` and `K9-*.md` |
+
 ## Frozen common seam
 
 The eight cross-track contracts remain:

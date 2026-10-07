@@ -93,6 +93,24 @@ Needs:
 - contradiction detection
 - correction workflows.
 
+### 4.5 Product roles (DECIDED 2026-10-07)
+
+The users above map to three product roles (`docs/product/product-vision.md` §9A):
+
+| Role | Covers | Surface |
+|---|---|---|
+| **Learner** | 4.2 | Library → Learn → Practise → Results, in plain language. No audit tooling. |
+| **Creator** | 4.1 | "My skills": create from a demonstration, check what the AI understood, publish with credit, licence and consent, see how learners are doing |
+| **Steward** | 4.3, 4.4 | Steward console: review queue, library curation and moderation, consent and licence ledger, learner insights, usage and cost |
+
+Steward needs, in addition to 4.3 and 4.4:
+- one queue for everything awaiting a decision;
+- publish and unpublish;
+- a consent and licence record per skill that can be exported;
+- aggregate learner insights (never per-learner identities);
+- AI usage against budget;
+- a clear statement of what is temporary versus durable.
+
 ## 5. Primary Job to Be Done
 
 > When valuable human expertise exists primarily in people and demonstrations, help us capture it faithfully, make it searchable and teachable, enable another person to practice it, evaluate the transmission, and preserve how the knowledge evolves.

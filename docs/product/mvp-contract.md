@@ -97,6 +97,17 @@ For target-first cases, generated procedure is a candidate inferred path, not an
 
 This is a source/input clarification, not a relaxation of the MVP proof requirements.
 
+## Product surfaces (DECIDED 2026-10-07)
+
+The MVP loop is shown through three role surfaces (`docs/product/product-vision.md` §9A):
+- **Learner:** the transmission loop in plain language.
+- **Creator:** create, check what the AI understood, publish with credit, licence and consent, then per-skill learner insights.
+- **Steward:** a demo-grade console covering the review queue, library curation and moderation, consent and licence ledger, per-skill insights, and usage against budget.
+
+All three run without accounts. A visitor cookie identifies creators, and a server-configured access code identifies stewards. Runtime state is temporary on the demo server, and durable decisions are exported and committed.
+
+Per-skill insights and the steward usage view are narrow operational views. They are not the "broad analytics dashboard" excluded below.
+
 ## MVP Non-Requirements
 
 The following are explicitly not required to prove the thesis:

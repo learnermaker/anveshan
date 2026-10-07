@@ -96,3 +96,35 @@ This file records decisions that materially affect scope, architecture, validati
 **Consequences:** The other four cases become SYNTHETIC replay showcase only. The eight contracts are unchanged; new case-data sidecars (goal model, criterion map, observers) and the locator convention are added. Validation evidence is produced from held-out references and labelled synthetic perturbations; it is not claimed as human-learner validation.
 
 **Revisit trigger:** real expert/learner recordings become available, or Gemma capabilities change.
+
+
+## 2026-10-07 — Three product roles; end-user-centric surfaces
+**Status:** DECIDED (Jim)
+
+**Decision:** Anveshan serves three roles:
+- **learner:** Library → Learn → Practise → Results in plain language, with no audit tooling;
+- **creator:** create, check what the AI understood, publish with credit, licence and consent, see aggregate learner insights;
+- **steward:** review queue, library curation and moderation, consent and licence ledger, insights, usage and cost.
+
+Audit detail (claim ids, confidence, run class, lineage, approve/reject controls) appears only in the steward console and in `?debug=1`. Honesty labels stay visible to learners in plain words. The demo runs without accounts:
+- creators are identified by the visitor cookie;
+- stewards by a server-configured access code (`ANVESHAN_STEWARD_TOKEN`).
+
+Runtime state is temporary on the demo server. Durable decisions are exported and committed.
+
+**Context:** The learner path showed evaluation tooling ("Expert review · Approve, revise or reject claims"), which made the product read as an evaluation harness. The BRD already named knowledge owners and curators (§4.3–4.4) without a surface for them.
+
+**Alternatives considered:**
+- Hide the tooling behind a judge-only "inspect" mode: rejected, because judges are not users.
+- Learner and creator only: rejected, because collective consent, quality and continuity need an accountable role.
+- A full admin console with accounts and persistent storage: deferred to NEXT, because of the time and security cost and an ephemeral demo disk.
+
+**Consequences:**
+- Steward endpoints exist behind an access code.
+- Learner outcomes are logged anonymously (no names, no media) for insights.
+- Universal-path robustness (technical-panel plan WS6) moves to NEXT as the scope trade.
+
+Spec: `docs/kiro/specs/K9-ORCHESTRATOR.md`.
+
+**Revisit trigger:** accounts and persistent storage are introduced, or real communities or organisations pilot the steward role.
+

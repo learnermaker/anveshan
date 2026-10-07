@@ -64,6 +64,11 @@ It distinguishes:
 5. external evidence;
 6. unknown.
 
+It serves three roles (DECIDED 2026-10-07; `product-vision.md` §9A):
+- **learners**, who practise and get verified feedback;
+- **creators**, who capture their skill, confirm what the AI understood, publish it with credit and consent, and see where learners struggle;
+- **stewards**, who curate and govern a library of skills: review, consent and licences, moderation, insights and cost.
+
 ## 6. What It Does Not Claim
 
 Anveshan does not claim to solve tacit knowledge generally.

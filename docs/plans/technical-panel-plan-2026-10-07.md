@@ -363,7 +363,37 @@ Check: the axe-core browser console scan on 5 key views has no serious or critic
 - **WI-8.3** Split `track_b/evaluators/universal.py` into `relevance.py`, `matcher.py`, `judges.py` and `assemble.py`, with no behaviour change. **Deferred until after submission**: too risky in the final week for no judge-visible gain.
 - **WI-8.4** LICENSE (Jim, D-licence), then make the repo public.
 
----
+### WS9 — Three product roles, end-user-centric surfaces (P0, DECIDED by Jim 2026-10-07). Closes the rest of J-14, J-15 and J-16 (wording).
+
+**Problem.** The learner's path showed evaluation tooling:
+- "Expert review · Approve, revise or reject claims";
+- claim IDs, confidence numbers and run-class badges;
+- lineage hashes and the provenance DAG.
+
+The product read as an evaluation harness, and the BRD's knowledge owners and curators (§4.3–4.4) had no surface.
+
+**Decision.**
+- Three roles, as defined in `docs/product/product-vision.md` §9A, `docs/product/user-journeys.md` Journeys 7–8 and `docs/status/DECISIONS.md` (2026-10-07):
+  - **Learner:** plain language, no audit tooling.
+  - **Creator:** check what the AI understood, publish with credit, licence and consent, see insights.
+  - **Steward:** review queue, library and moderation, consent and licence ledger, insights, usage.
+- `?debug=1` stays a team-only diagnostic view.
+- No accounts:
+  - creators are identified by the visitor cookie;
+  - stewards by an access code (`ANVESHAN_STEWARD_TOKEN`).
+- Runtime state is temporary on the demo server; durable decisions are exported and committed (`tools/apply_expert_review.py`).
+
+**Delivery.** One Kiro session with parallel agents. Spec: `docs/kiro/specs/K9-ORCHESTRATOR.md`, plus:
+- K9-00 (product, UX and copy rules);
+- K9-P0 (shared foundation code);
+- K9-P1 (backend);
+- K9-P2 (learner surface);
+- K9-P3 (creator and steward surfaces);
+- K9-PC (integration and verification).
+
+**Scope trade.** WS6 (universal-path robustness) moves to NEXT.
+
+**NEXT (post-submission).** Accounts, persistent storage, a full admin console, and multi-steward collections.
 
 ## 3. Schedule (deadline Oct 18; submit Oct 17)
 
@@ -416,6 +446,6 @@ These are the panel's estimates, not measurements.
 
 ## 7. Explicitly out of scope before submission
 
-- Persistent storage (GCS or a database), multiple instances and auth accounts. The NEXT bucket stays as in `NEXT-STEPS.md` §5.
+- Persistent storage (GCS or a database), multiple instances, auth accounts and a full admin console (WS9 NEXT). The NEXT bucket stays as in `NEXT-STEPS.md` §5.
 - New modalities, new hero cases beyond Origami-universal, and model upgrades.
 - Changes to the eight contracts; any model-authored score.
