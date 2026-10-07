@@ -110,6 +110,9 @@ class ImagePart:
     data: bytes
     mime_type: str = "image/jpeg"
     label: Optional[str] = None  # optional caption placed before the image in the prompt
+    # Gemini 3 media resolution for this image: "low" | "medium" | "high" | None (= gateway policy, see
+    # media_resolution_for). Not part of the replay key, so recorded runs stay valid when it changes.
+    resolution: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -321,6 +324,59 @@ class UsageCounters:
 
 USAGE = UsageCounters()
 
+# ---------------------------------------------------------------------------
+# Token economy (docs/architecture/token-economy.md)
+# ---------------------------------------------------------------------------
+
+_RESOLUTION_LEVEL = {"low": "MEDIA_RESOLUTION_LOW", "medium": "MEDIA_RESOLUTION_MEDIUM", "high": "MEDIA_RESOLUTION_HIGH"}
+
+
+def media_resolution_for(image: ImagePart, model_id: str) -> Optional[str]:
+    """Gemini 3 bills an image by its media resolution, not its pixels: 280 (low), 560 (medium) or
+    1120 (high, the default) tokens. Our images are already downsized to 256-768 px, so paying for
+    "high" buys no detail. Policy ``ANVESHAN_MEDIA_RESOLUTION``: ``auto`` (default) picks low for a
+    long side <= 384 px, medium <= 768 px, high above; or force ``low`` / ``medium`` / ``high``;
+    ``default`` sends nothing (provider default). Only applied to gemini-3 models."""
+    if not model_id.startswith("gemini-3"):
+        return None
+    policy = (image.resolution or os.environ.get("ANVESHAN_MEDIA_RESOLUTION", "auto")).strip().lower()
+    if policy in _RESOLUTION_LEVEL:
+        return _RESOLUTION_LEVEL[policy]
+    if policy != "auto":
+        return None
+    try:
+        import io
+
+        from PIL import Image
+
+        long_side = max(Image.open(io.BytesIO(image.data)).size)
+    except Exception:
+        return None
+    return _RESOLUTION_LEVEL["low" if long_side <= 384 else "medium" if long_side <= 768 else "high"]
+
+
+def max_output_tokens() -> int:
+    """Hard cap on output + thinking tokens per call (``ANVESHAN_MAX_OUTPUT_TOKENS``, default 4096; 0 = no cap).
+    The longest recorded answer is about 1.8k tokens, so 4096 leaves 2x headroom while stopping runaway output."""
+    try:
+        return max(0, int(os.environ.get("ANVESHAN_MAX_OUTPUT_TOKENS", "4096") or 0))
+    except ValueError:
+        return 4096
+
+
+def usage_of(response: Any) -> Dict[str, int]:
+    """Token counts reported by the provider, stored with each run so cost is measurable (tools/token_report.py)."""
+    u = getattr(response, "usage_metadata", None)
+    if u is None:
+        return {}
+    out: Dict[str, int] = {}
+    for name in ("prompt_token_count", "candidates_token_count", "thoughts_token_count",
+                 "cached_content_token_count", "total_token_count"):
+        v = getattr(u, name, None)
+        if isinstance(v, int):
+            out[name] = v
+    return out
+
 
 def live_cache_enabled() -> bool:
     """Live mode reuses an identical earlier call (same model, prompt version, system text and inputs)
@@ -419,17 +475,27 @@ class ModelGateway:
             USAGE.inc("own_key_calls")
         from google.genai import types
 
-        contents: List[Any] = []
-        for p in all_parts:
-            if isinstance(p, str):
-                contents.append(p)
-            elif isinstance(p, ImagePart):
-                if p.label:
-                    contents.append(p.label)
-                contents.append(types.Part.from_bytes(data=p.data, mime_type=p.mime_type))
-            elif isinstance(p, AudioPart):
-                contents.append(types.Part.from_bytes(data=p.data, mime_type=p.mime_type))
+        def build_contents(with_resolution: bool) -> List[Any]:
+            out: List[Any] = []
+            for p in all_parts:
+                if isinstance(p, str):
+                    out.append(p)
+                elif isinstance(p, ImagePart):
+                    if p.label:
+                        out.append(p.label)
+                    res = media_resolution_for(p, model_id) if with_resolution else None
+                    out.append(types.Part.from_bytes(data=p.data, mime_type=p.mime_type, media_resolution=res) if res
+                               else types.Part.from_bytes(data=p.data, mime_type=p.mime_type))
+                elif isinstance(p, AudioPart):
+                    out.append(types.Part.from_bytes(data=p.data, mime_type=p.mime_type))
+            return out
+
+        contents = build_contents(True)
         notes: List[str] = []
+        resolutions = sorted({str(r) for p in all_parts if isinstance(p, ImagePart) for r in [media_resolution_for(p, model_id)] if r})
+        if resolutions:
+            notes.append("media_resolution=" + ",".join(r.replace("MEDIA_RESOLUTION_", "").lower() for r in resolutions))
+        out_cap = max_output_tokens()
         started = datetime.now(timezone.utc).isoformat()
         t0 = time.perf_counter()
         response = None
@@ -438,6 +504,8 @@ class ModelGateway:
         for api_attempt in range(2 + len(RATE_LIMIT_BACKOFF_S)):  # 1 retry on 5xx; up to 3 backoff retries on 429
             for attempt, json_mode in enumerate((True, False)):
                 cfg: Dict[str, Any] = {"temperature": 0.0}
+                if out_cap:
+                    cfg["max_output_tokens"] = out_cap
                 if system:
                     cfg["system_instruction"] = system
                 if json_mode:
@@ -452,6 +520,17 @@ class ModelGateway:
                 except Exception as exc:  # provider error: retry without JSON mode, then fail explicitly
                     last_exc = exc
                     msg = str(exc).lower()
+                    if "resolution" in msg and resolutions:  # model rejects per-image resolution: resend without it
+                        contents, resolutions = build_contents(False), []
+                        notes.append("media_resolution_unsupported_retried_without")
+                        try:
+                            response = client.models.generate_content(
+                                model=model_id, contents=contents, config=types.GenerateContentConfig(**cfg)
+                            )
+                            break
+                        except Exception as exc2:
+                            last_exc = exc2
+                            msg = str(exc2).lower()
                     if attempt == 0 and ("mime" in msg or "json" in msg or "response_mime_type" in msg or "invalid_argument" in msg):
                         continue
                     break
@@ -490,7 +569,11 @@ class ModelGateway:
             expected_behavior=expected_behavior,
             notes=notes,
         )
-        self.store.save(meta, {"text": raw_text})
+        raw: Dict[str, Any] = {"text": raw_text}
+        usage = usage_of(response)
+        if usage:
+            raw["usage"] = usage
+        self.store.save(meta, raw)
         return GenerationResult(self._validate(raw_text, schema, prompt_id), raw_text, meta)
 
     def embed(
