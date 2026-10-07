@@ -406,3 +406,63 @@ def test_real_evaluation_matches_expected(
             )
         except Exception as exc:
             raise AssertionError(f"{case_id}/{s.sample_id}: error: {exc}") from exc
+
+
+# ---------------------------------------------------------------------------
+# §5.6 HTTP-level test for POST /api/compose/sample/{sample_id}
+# ---------------------------------------------------------------------------
+
+class TestAnalyzeSampleSource:
+    """Covers the compose/sample route end-to-end with a fake composer stub."""
+
+    @pytest.fixture(autouse=True)
+    def setup(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+        _install_fakes(monkeypatch)
+
+        # Fake track_a.composer — minimal stub that returns a view with a draft_id.
+        composer_mod = types.ModuleType("track_a.composer")
+
+        @dataclasses.dataclass
+        class _FakeDraft:
+            draft_id: str = "draft-sample-test-001"
+
+            def to_view(self) -> Dict[str, Any]:
+                return {"draft_id": self.draft_id, "status": "ready"}
+
+        def create_draft(
+            data_dir: Path,
+            file_path: Path,
+            mime: str,
+            ctx: Any,
+            title_hint: str = "",
+            rights_confirmed: bool = False,
+        ) -> "_FakeDraft":
+            return _FakeDraft()
+
+        setattr(composer_mod, "create_draft", create_draft)
+        monkeypatch.setitem(sys.modules, "track_a.composer", composer_mod)
+
+        # Capture add_owner calls.
+        self.owned: List[Path] = []
+        monkeypatch.setattr(
+            "anveshan_service.routes.samples.add_owner",
+            lambda path: self.owned.append(path),
+        )
+
+        settings = _settings(tmp_path, tmp_path / "cases")
+        app = create_app(settings)
+        app.include_router(samples_routes.router)
+        self.client = TestClient(app, raise_server_exceptions=False)
+
+    def test_returns_200_and_add_owner_called(self):
+        """POST /api/compose/sample/{sample_id} returns 200 and calls add_owner."""
+        # Uses the first real committed source (kolam-photo) so no fixture file is needed.
+        r = self.client.post("/api/compose/sample/kolam-photo")
+        assert r.status_code == 200, r.text
+        data = r.json()
+        assert "draft_id" in data
+        assert len(self.owned) == 1
+
+    def test_unknown_source_returns_404(self):
+        r = self.client.post("/api/compose/sample/no-such-source")
+        assert r.status_code == 404

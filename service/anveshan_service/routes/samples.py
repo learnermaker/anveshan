@@ -26,7 +26,7 @@ from anveshan_service import REPO_ROOT, adapters
 from anveshan_service.deps import get_mode, get_settings
 from anveshan_service.errors import invalid, not_found
 from anveshan_service.paths import StoredUpload, base_case_id, case_dir, check_session_id, content_type
-from anveshan_service.samples import SAMPLE_ID_RE, load_pack, load_sources, public_view, sample_paths
+from anveshan_service.samples import SAMPLE_ID_RE, _raw_source_entry, load_pack, load_sources, public_view, sample_paths
 from anveshan_service.settings import Settings
 from anveshan_service.visitors import add_owner
 
@@ -199,22 +199,9 @@ def list_sample_sources(settings: Settings = Depends(get_settings)) -> List[dict
 def get_sample_source_file(sample_id: str) -> Any:
     """Serve the source file for a composer example."""
     _check_sample_id(sample_id)
-    sources = load_sources(REPO_ROOT)
-    matched_meta = next((s for s in sources if s["sample_id"] == sample_id), None)
-    if matched_meta is None:
-        raise not_found(f"sample source {sample_id!r} not found", sample_id=sample_id)
-
-    # Find the actual file from sources.json
-    import json as _json
-    sources_json = REPO_ROOT / "tracks" / "samples" / "sources" / "sources.json"
-    if not sources_json.is_file():
-        raise not_found("source data not found")
-    raw_data = _json.loads(sources_json.read_text(encoding="utf-8"))
-    raw_entry = next(
-        (s for s in raw_data.get("sources", []) if s.get("sample_id") == sample_id), None
-    )
+    raw_entry = _raw_source_entry(sample_id)
     if raw_entry is None:
-        raise not_found(f"sample source {sample_id!r} not found in sources.json")
+        raise not_found(f"sample source {sample_id!r} not found", sample_id=sample_id)
 
     file_name = raw_entry.get("file", "")
     file_path = _SOURCES_DIR / file_name
@@ -242,21 +229,9 @@ def analyze_sample_source(
     """
     _check_sample_id(sample_id)
 
-    sources = load_sources(REPO_ROOT)
-    matched_meta = next((s for s in sources if s["sample_id"] == sample_id), None)
-    if matched_meta is None:
-        raise not_found(f"sample source {sample_id!r} not found", sample_id=sample_id)
-
-    import json as _json
-    sources_json = REPO_ROOT / "tracks" / "samples" / "sources" / "sources.json"
-    if not sources_json.is_file():
-        raise not_found("source data not found")
-    raw_data = _json.loads(sources_json.read_text(encoding="utf-8"))
-    raw_entry = next(
-        (s for s in raw_data.get("sources", []) if s.get("sample_id") == sample_id), None
-    )
+    raw_entry = _raw_source_entry(sample_id)
     if raw_entry is None:
-        raise not_found(f"sample source {sample_id!r} not found in sources.json")
+        raise not_found(f"sample source {sample_id!r} not found", sample_id=sample_id)
 
     file_name = raw_entry.get("file", "")
     file_path = _SOURCES_DIR / file_name
@@ -264,7 +239,7 @@ def analyze_sample_source(
         raise not_found(f"source file for {sample_id!r} not found", sample_id=sample_id)
 
     mime = raw_entry.get("mime_type") or content_type(file_path)
-    title_hint = matched_meta["label"]
+    title_hint = raw_entry.get("label", "")
 
     try:
         import importlib

@@ -41,7 +41,7 @@
       "attempt_kind": "trace",
       "file": "unrelated.trace.json",
       "raster": null,
-      "description": "A scribble that is not this kolam. Anveshan should say it does not match instead of scoring it.",
+      "description": "A scribble that is not this kolam. Anveshan scores it as not passing and shows where it first went wrong.",
       "preview": null,
       "synthetic": true,
       "credit": null,

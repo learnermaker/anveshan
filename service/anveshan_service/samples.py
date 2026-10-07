@@ -164,8 +164,6 @@ def sample_paths(case_dir: Path, s: Sample) -> Tuple[Path, Optional[Path]]:
 # Example sources loader
 # ---------------------------------------------------------------------------
 
-_SOURCES_PATH = REPO_ROOT / "tracks" / "samples" / "sources" / "sources.json"
-
 
 def load_sources(repo_root: Path = REPO_ROOT) -> List[dict]:
     """Load example sources for the composer (``tracks/samples/sources/sources.json``).
@@ -206,3 +204,26 @@ def load_sources(repo_root: Path = REPO_ROOT) -> List[dict]:
         })
 
     return result
+
+
+def _raw_source_entry(sample_id: str, repo_root: Path = REPO_ROOT) -> Optional[Dict]:
+    """Return the raw ``sources.json`` entry for *sample_id*, or ``None`` if absent.
+
+    Use this when the caller needs the ``file`` field that :func:`load_sources` strips
+    from the normalised public view.  Having a single reader here eliminates the
+    double-read pattern that would otherwise appear in routes that serve or analyse
+    a source file.
+    """
+    import json
+
+    path = repo_root / "tracks" / "samples" / "sources" / "sources.json"
+    if not path.is_file():
+        return None
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    return next(
+        (s for s in data.get("sources", []) if isinstance(s, dict) and s.get("sample_id") == sample_id),
+        None,
+    )

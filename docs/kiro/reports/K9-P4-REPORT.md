@@ -43,6 +43,17 @@
 
 None. All acceptance criteria met.
 
+## Review fixes
+
+Applied all 4 SHOULD findings from `.kiro/k9-run/reviews/K9-P4.md`:
+
+1. **Dead `_SOURCES_PATH` constant removed** — `samples.py` no longer defines `_SOURCES_PATH = REPO_ROOT / ...` at module level; `load_sources()` already computed the same path from its `repo_root` parameter.
+2. **Double-read eliminated via `_raw_source_entry`** — added `_raw_source_entry(sample_id, repo_root)` to `samples.py`. Both `get_sample_source_file` and `analyze_sample_source` in `routes/samples.py` now call this single helper instead of first calling `load_sources()` and then re-opening `sources.json` raw.
+3. **Kolam "unrelated" description updated** — changed from "Anveshan should say it does not match instead of scoring it" to "Anveshan scores it as not passing and shows where it first went wrong," matching the actual evaluator behaviour (`passed=false, first_off_track=CRIT-KOLAM-PRECISION`).
+4. **HTTP-level test added for `POST /api/compose/sample/{sample_id}`** — `TestAnalyzeSampleSource` in `test_k9_samples.py` uses a fake `track_a.composer.create_draft` stub and a patched `add_owner` to confirm 200 response, correct `draft_id` in the body, and that `add_owner` is called exactly once. Also tests 404 for an unknown source.
+
+**Post-fix test count:** 23 K9-P4 tests, 503 total non-live (from 501 before fixes).
+
 ## Live calls used
 
 0
