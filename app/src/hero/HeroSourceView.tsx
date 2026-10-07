@@ -116,7 +116,7 @@ function HeroSourceViewInner({ view, onViewChange, onReload, onEnterPractice, on
                   </li>
                 ))}
               </ul>
-              <p className="mt-2 text-[10px] text-on-surface-variant">Consent: {view.package.consent.contributor_name} — {view.package.consent.consent_scope}</p>
+              <p className="mt-2 text-xs text-on-surface-variant">Consent: {view.package.consent.contributor_name} — {view.package.consent.consent_scope}</p>
             </Panel>
           )}
         </div>
@@ -162,14 +162,14 @@ function ClaimRow({ claim, active, onFocus }: { claim: KnowledgeClaim; active: b
         className={`w-full text-left p-2.5 rounded-lg border transition-colors ${active ? 'border-cadmium-amber bg-cadmium-amber/10' : 'border-outline/60 bg-surface-dim hover:border-on-surface-variant'} disabled:cursor-default`}
       >
         <div className="flex flex-wrap items-center gap-1.5 mb-1">
-          <code className="text-[10px] font-mono text-caliper-cyan">{claim.claim_id}</code>
+          <code className="text-[11px] font-mono text-caliper-cyan">{claim.claim_id}</code>
           <Badge tone="muted">{claim.claim_type}</Badge>
           <VerificationBadge state={state} />
-          {ev && (typeof ev.start_sec === 'number' ? <span className="text-[10px] font-mono text-on-surface-variant">{fmtTime(ev.start_sec)}{typeof ev.end_sec === 'number' ? `–${fmtTime(ev.end_sec)}` : ''}</span> : null)}
-          {ev && <span className="text-[10px] font-mono text-on-surface-variant">conf {ev.confidence.toFixed(2)}</span>}
+          {ev && (typeof ev.start_sec === 'number' ? <span className="text-[11px] font-mono text-on-surface-variant">{fmtTime(ev.start_sec)}{typeof ev.end_sec === 'number' ? `–${fmtTime(ev.end_sec)}` : ''}</span> : null)}
+          {ev && <span className="text-[11px] font-mono text-on-surface-variant">conf {ev.confidence.toFixed(2)}</span>}
         </div>
         <div className="text-xs text-on-surface leading-relaxed">{claim.statement}</div>
-        {!ev && <div className="text-[10px] font-mono text-on-surface-variant mt-1">No locatable evidence — shown for transparency only.</div>}
+        {!ev && <div className="text-[11px] font-mono text-on-surface-variant mt-1">No locatable evidence — shown for transparency only.</div>}
       </button>
     </li>
   );
@@ -222,11 +222,11 @@ function EvidenceQuery({ view, onCite }: { view: CaseView; onCite: (claimId: str
             </div>
             {ans.cited_claim_ids.length > 0 && (
               <div className="mt-2 flex flex-wrap gap-1.5 items-center">
-                <span className="text-[10px] font-mono text-on-surface-variant">From:</span>
+                <span className="text-[11px] font-mono text-on-surface-variant">From:</span>
                 {ans.cited_claim_ids.map((id) => {
                   const n = pointNumber(claims, id);
                   return (
-                    <button key={id} onClick={() => onCite(id)} className="text-[10px] font-mono text-caliper-cyan underline decoration-dotted">
+                    <button key={id} onClick={() => onCite(id)} className="text-[11px] font-mono text-caliper-cyan underline decoration-dotted">
                       {n != null ? `point ${n}` : DEBUG ? id : 'a step'}
                     </button>
                   );
@@ -300,7 +300,7 @@ function ExpertReviewPanel({ view, onViewChange }: { view: CaseView; onViewChang
       )}
       <div className={`space-y-3 text-xs ${open === false && !token.trim() ? 'opacity-50 pointer-events-none' : ''}`} aria-disabled={open === false && !token.trim()}>
         {review && (
-          <div className="text-[10px] font-mono text-on-surface-variant">
+          <div className="text-[11px] font-mono text-on-surface-variant">
             Last: {review.reviewer_name} · {review.status}{review.reviewed_at ? ` · ${review.reviewed_at.slice(0, 16).replace('T', ' ')}` : ''}{review.notes ? ` · "${review.notes}"` : ''}
           </div>
         )}
@@ -312,7 +312,7 @@ function ExpertReviewPanel({ view, onViewChange }: { view: CaseView; onViewChang
           {view.package.claims.map((c) => (
             <li key={c.claim_id} className="p-2 rounded border border-outline/60 bg-surface-dim">
               <div className="flex items-center justify-between gap-2">
-                <code className="text-[10px] font-mono text-caliper-cyan">{c.claim_id}</code>
+                <code className="text-[11px] font-mono text-caliper-cyan">{c.claim_id}</code>
                 <div className="flex gap-1">
                   <button disabled={busy} onClick={() => { setEditing(c.claim_id); setDraft(c.statement); }} className={btn.ghost} title="Revise claim text">
                     <Pencil className="w-3 h-3" /> revise
@@ -348,7 +348,7 @@ function ExpertReviewPanel({ view, onViewChange }: { view: CaseView; onViewChang
         </div>
         {busy && <Spinner label="Saving review…" />}
         <ErrorNote error={err} />
-        <p className="text-[10px] text-on-surface-variant">Review records a human decision on the extracted claims. It does not certify the source or the learner.</p>
+        <p className="text-xs text-on-surface-variant">Review records a human decision on the extracted claims. It does not certify the source or the learner.</p>
       </div>
     </Panel>
   );

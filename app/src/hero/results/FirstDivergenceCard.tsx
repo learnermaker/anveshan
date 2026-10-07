@@ -26,7 +26,7 @@ function Side({ label, tone, children, caption }: { label: string; tone: 'crimso
         <Badge tone={tone}>{label}</Badge>
       </div>
       {children}
-      {caption && <div className="text-[10px] font-mono text-on-surface-variant">{caption}</div>}
+      {caption && <div className="text-[11px] font-mono text-on-surface-variant">{caption}</div>}
     </div>
   );
 }
@@ -46,7 +46,7 @@ function SeekVideo({ url, time, className = '' }: { url?: string; time: number |
     if (el.readyState >= 1) go();
     else el.addEventListener('loadedmetadata', go, { once: true });
   }, [url, time]);
-  if (!url) return <div className={`aspect-video rounded-lg border border-outline bg-surface-dim flex items-center justify-center text-[10px] font-mono text-on-surface-variant ${className}`}>media not available</div>;
+  if (!url) return <div className={`aspect-video rounded-lg border border-outline bg-surface-dim flex items-center justify-center text-[11px] font-mono text-on-surface-variant ${className}`}>media not available</div>;
   return <video ref={ref} src={url} controls muted className={`w-full rounded-lg border border-outline bg-black ${className}`} preload="metadata" />;
 }
 
@@ -89,7 +89,7 @@ export function FirstDivergenceCard({ view, result, media }: Props) {
               )}
             </div>
           ) : (
-            <div className="text-[10px] font-mono text-on-surface-variant">learner media not kept locally</div>
+            <div className="text-[11px] font-mono text-on-surface-variant">learner media not kept locally</div>
           )}
         </Side>
         <Side label="Target (goal)" tone="emerald" caption={fd.expert_evidence?.cue_excerpt}>
@@ -115,7 +115,7 @@ export function FirstDivergenceCard({ view, result, media }: Props) {
             <div className="aspect-video rounded-lg border border-outline bg-surface-dim" />
           )}
           {state?.properties && (
-            <ul className="text-[10px] text-on-surface-variant list-disc pl-4">
+            <ul className="text-xs text-on-surface-variant list-disc pl-4">
               {state.properties.map((p) => <li key={p}>{p}</li>)}
             </ul>
           )}
@@ -130,7 +130,7 @@ export function FirstDivergenceCard({ view, result, media }: Props) {
         <BeatTimeline ui={ui} alignment={result.trajectory.artifacts.alignment} focusBeat={beat} highlight={fd.expert_evidence && typeof fd.expert_evidence.start_sec === 'number' ? [fd.expert_evidence.start_sec, fd.expert_evidence.end_sec ?? fd.expert_evidence.start_sec + 0.3] : null} />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Side label="Learner audio" tone="crimson" caption={`stroke at ${fmtTime(evidenceTime(fd.learner_evidence))}`}>
-            {media.url ? <audio src={media.url} controls className="w-full" /> : <div className="text-[10px] font-mono text-on-surface-variant">not kept locally</div>}
+            {media.url ? <audio src={media.url} controls className="w-full" /> : <div className="text-[11px] font-mono text-on-surface-variant">not kept locally</div>}
           </Side>
           <Side label="Source audio" tone="emerald" caption={fd.expert_evidence?.cue_excerpt}>
             <audio src={api.mediaUrl(view.case_id, (view.goal.ui_view as TablaUiView).source_id ?? view.goal.source_ids[0])} controls className="w-full" />
@@ -151,7 +151,7 @@ export function FirstDivergenceCard({ view, result, media }: Props) {
       title={<span className="flex items-center gap-2"><Crosshair className="w-4 h-4 text-divergence-crimson" />{fd.criterion_name}</span>}
       right={
         <>
-          {DEBUG && <code className="text-[10px] font-mono text-caliper-cyan">{fd.criterion_id}</code>}
+          {DEBUG && <code className="text-[11px] font-mono text-caliper-cyan">{fd.criterion_id}</code>}
           <StatusBadge status={fd.status} />
           <Badge tone="crimson">{fmtPosition(fd.position, fd.position_kind)}</Badge>
         </>
@@ -173,7 +173,7 @@ export function FirstDivergenceCard({ view, result, media }: Props) {
                 {fd.source_claim_ids.map((id) => {
                   const c = view.package.claims.find((x) => x.claim_id === id);
                   return (
-                    <span key={id} title={c?.statement} className="text-[10px] font-mono text-caliper-cyan">
+                    <span key={id} title={c?.statement} className="text-[11px] font-mono text-caliper-cyan">
                       {id}
                     </span>
                   );

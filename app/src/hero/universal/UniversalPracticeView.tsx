@@ -296,7 +296,7 @@ function FilePick({ accept, label, file, onFile, disabled }: { accept: string; l
       <FileUp className="w-5 h-5 text-cadmium-amber shrink-0" />
       <div className="min-w-0">
         <div className="text-[11px] font-mono text-on-surface">{label}</div>
-        <div className="text-[10px] text-on-surface-variant truncate">{file ? `${file.name} · ${(file.size / 1e6).toFixed(2)} MB` : 'choose a file'}</div>
+        <div className="text-xs text-on-surface-variant truncate">{file ? `${file.name} · ${(file.size / 1e6).toFixed(2)} MB` : 'choose a file'}</div>
       </div>
       <input type="file" accept={accept} className="hidden" disabled={disabled} onChange={(e) => onFile(e.target.files?.[0] ?? null)} />
     </label>

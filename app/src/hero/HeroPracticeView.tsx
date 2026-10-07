@@ -357,7 +357,7 @@ function FilePick({ accept, label, file, onFile, disabled }: { accept: string; l
       <FileUp className="w-5 h-5 text-cadmium-amber shrink-0" />
       <div className="min-w-0">
         <div className="text-[11px] font-mono text-on-surface">{label}</div>
-        <div className="text-[10px] text-on-surface-variant truncate">{file ? `${file.name} · ${(file.size / 1e6).toFixed(2)} MB` : 'choose a file'}</div>
+        <div className="text-xs text-on-surface-variant truncate">{file ? `${file.name} · ${(file.size / 1e6).toFixed(2)} MB` : 'choose a file'}</div>
       </div>
       <input type="file" accept={accept} className="hidden" disabled={disabled} onChange={(e) => onFile(e.target.files?.[0] ?? null)} />
     </label>
@@ -408,7 +408,7 @@ function KolamCapture({ view, busy, onSubmit }: { view: CaseView; busy: boolean;
               <button className={btn.secondary} disabled={busy || !strokes.length} onClick={() => { setStrokes([]); startRef.current = null; }}>
                 <Eraser className="w-3.5 h-3.5" /> Clear
               </button>
-              <span className="text-[10px] font-mono text-on-surface-variant">{strokes.length} strokes · {strokes.reduce((s, x) => s + x.length, 0)} points</span>
+              <span className="text-[11px] font-mono text-on-surface-variant">{strokes.length} strokes · {strokes.reduce((s, x) => s + x.length, 0)} points</span>
               <button className={`${btn.primary} ml-auto`} disabled={busy || !strokes.length} onClick={submitTrace}>
                 <Send className="w-3.5 h-3.5" /> Submit drawing
               </button>
@@ -431,7 +431,7 @@ function KolamCapture({ view, busy, onSubmit }: { view: CaseView; busy: boolean;
             >
               <Send className="w-3.5 h-3.5" /> Submit photo
             </button>
-            <p className="text-[10px] text-cadmium-amber">A photo shows only the finished drawing, so we can't tell whether the line was continuous or where it first went off track. Drawing on screen gives fuller feedback.</p>
+            <p className="text-xs text-cadmium-amber">A photo shows only the finished drawing, so we can't tell whether the line was continuous or where it first went off track. Drawing on screen gives fuller feedback.</p>
           </div>
         )}
         <div className="space-y-1.5">
@@ -491,7 +491,7 @@ function OrigamiCapture({ view, busy, onSubmit }: { view: CaseView; busy: boolea
       >
         <Send className="w-3.5 h-3.5" /> Submit video
       </button>
-      <p className="text-[10px] text-on-surface-variant">Frames are sampled at 1 fps (max 90) and sent as images; keep the paper in view.</p>
+      <p className="text-xs text-on-surface-variant">Frames are sampled at 1 fps (max 90) and sent as images; keep the paper in view.</p>
     </div>
   );
 }
@@ -528,7 +528,7 @@ function TablaCapture({ view, busy, onSubmit }: { view: CaseView; busy: boolean;
       >
         <Send className="w-3.5 h-3.5" /> Submit audio
       </button>
-      <p className="text-[10px] text-on-surface-variant">
+      <p className="text-xs text-on-surface-variant">
         Source: {ui.tempo_bpm ?? '?'} BPM · {cycleLen ?? '?'}-beat cycle · {fmtTime(ui.duration_sec ?? null)}. Onsets and bass are measured deterministically.
       </p>
     </div>

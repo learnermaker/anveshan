@@ -117,7 +117,7 @@ export function ProgressCurve({ series, kind, firstDivergence, height = 220, onS
           </g>
         )}
       </svg>
-      <div className="flex flex-wrap gap-3 text-[10px] font-mono text-on-surface-variant">
+      <div className="flex flex-wrap gap-3 text-[11px] font-mono text-on-surface-variant">
         {series.map((s) => (
           <span key={s.id} className="flex items-center gap-1.5">
             <svg width="18" height="6">

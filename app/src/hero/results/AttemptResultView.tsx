@@ -64,7 +64,7 @@ export function AttemptResultView({ view, result, media }: Props) {
             ))}
             {t.events.length > EVENTS_SHOWN && (
               <li>
-                <button type="button" className="text-[10px] font-mono uppercase tracking-wider text-caliper-cyan hover:underline" onClick={() => setAllEvents((v) => !v)}>
+                <button type="button" className="text-[11px] font-mono uppercase tracking-wider text-caliper-cyan hover:underline" onClick={() => setAllEvents((v) => !v)}>
                   {allEvents ? 'Show fewer events' : `Show all ${t.events.length} events`}
                 </button>
               </li>
@@ -72,7 +72,7 @@ export function AttemptResultView({ view, result, media }: Props) {
           </ul>
         )}
         {result.warnings.length > 0 && (
-          <ul className="mt-3 text-[10px] font-mono text-cadmium-amber space-y-0.5">
+          <ul className="mt-3 text-[11px] font-mono text-cadmium-amber space-y-0.5">
             {result.warnings.map((w, i) => <li key={i}>⚠ {w}</li>)}
           </ul>
         )}
@@ -116,7 +116,7 @@ export function AttemptResultView({ view, result, media }: Props) {
                     <td className="py-2 text-on-surface-variant">
                       <span data-plain-exempt>{r?.observed_finding}</span>
                       {r?.status === 'uncertain' && (
-                        <div className="text-[10px] font-mono text-cadmium-amber mt-0.5">{STATUS_PLAIN['uncertain']}: {r.deviation_analysis ?? 'evidence insufficient'}</div>
+                        <div className="text-[11px] font-mono text-cadmium-amber mt-0.5">{STATUS_PLAIN['uncertain']}: {r.deviation_analysis ?? 'evidence insufficient'}</div>
                       )}
                     </td>
                   </tr>
@@ -126,9 +126,9 @@ export function AttemptResultView({ view, result, media }: Props) {
           </table>
         </div>
         {DEBUG ? (
-          <p className="mt-2 text-[10px] text-on-surface-variant">Scores come from measured metrics through fixed bands. No model authors a score; UNCERTAIN scores zero and is reported, not hidden.</p>
+          <p className="mt-2 text-xs text-on-surface-variant">Scores come from measured metrics through fixed bands. No model authors a score; UNCERTAIN scores zero and is reported, not hidden.</p>
         ) : (
-          <p className="mt-2 text-[10px] text-on-surface-variant">Each check is scored by fixed rules from what was measured. The AI never sets a score; when we couldn't tell, the check scores zero and says so.</p>
+          <p className="mt-2 text-xs text-on-surface-variant">Each check is scored by fixed rules from what was measured. The AI never sets a score; when we couldn't tell, the check scores zero and says so.</p>
         )}
       </Panel>
 
@@ -158,9 +158,9 @@ export function AttemptResultView({ view, result, media }: Props) {
                   {criterionName && <div className="font-semibold text-on-surface text-sm">{criterionName}</div>}
                   {DEBUG && (
                     <div className="flex flex-wrap items-center gap-2">
-                      <code className="text-[10px] font-mono text-caliper-cyan">{it.criterion_id}</code>
+                      <code className="text-[11px] font-mono text-caliper-cyan">{it.criterion_id}</code>
                       {map?.source_claim_ids.map((id) => (
-                        <span key={id} title={view.package.claims.find((c) => c.claim_id === id)?.statement} className="text-[10px] font-mono text-on-surface-variant">
+                        <span key={id} title={view.package.claims.find((c) => c.claim_id === id)?.statement} className="text-[11px] font-mono text-on-surface-variant">
                           cites {id}
                         </span>
                       ))}
@@ -203,7 +203,7 @@ function DrillCard({ view, drill }: { view: CaseView; drill: NonNullable<Attempt
           </p>
         )}
         {DEBUG && drill.source_claim_ids && drill.source_claim_ids.length > 0 && (
-          <p className="text-[10px] font-mono text-on-surface-variant">
+          <p className="text-[11px] font-mono text-on-surface-variant">
             Grounded in {drill.source_claim_ids.map((id) => (
               <span key={id} className="text-caliper-cyan mr-1" title={view.package.claims.find((c) => c.claim_id === id)?.statement}>{id}</span>
             ))}
@@ -212,7 +212,7 @@ function DrillCard({ view, drill }: { view: CaseView; drill: NonNullable<Attempt
         {!DEBUG && drill.source_claim_ids && drill.source_claim_ids.length > 0 && (
           <WhyThisFeedback view={view} claimIds={drill.source_claim_ids ?? []} />
         )}
-        <p className="text-[10px] text-on-surface-variant flex items-center gap-1">
+        <p className="text-xs text-on-surface-variant flex items-center gap-1">
           <RotateCcw className="w-3 h-3" /> This exercise is not scored. Only your second try of the whole task is checked.
         </p>
       </div>

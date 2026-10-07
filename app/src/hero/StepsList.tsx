@@ -35,7 +35,7 @@ export function StepsList({ claims, activeId, onShow }: StepsListProps) {
                 <div className="flex flex-wrap items-center gap-2">
                   {verif === 'inferred' && <VerificationBadge state="inferred" />}
                   {ev?.start_sec != null && (
-                    <span className="text-[10px] font-mono text-on-surface-variant">at {fmtTime(ev.start_sec)}</span>
+                    <span className="text-[11px] font-mono text-on-surface-variant">at {fmtTime(ev.start_sec)}</span>
                   )}
                   {ev && (
                     <button

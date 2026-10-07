@@ -80,6 +80,33 @@
 - Transmission record panel in HeroTransmissionView
 - claim-id spans in FirstDivergenceCard
 
+## Review fixes (2026-10-07)
+
+Review verdict was **REVISE** with one MUST and two SHOULD findings.
+
+### MUST — text-[10px] replaced in all P2-owned files
+
+The spec requires replacing `text-[8px]`, `text-[9px]` and `text-[10px]` with `text-[11px]` (labels/mono) or `text-xs` (body prose) in every file edited, and not adding new ones. The original submission missed this across all 17 files, including the two new components.
+
+Fixed in:
+- `hero/StepsList.tsx` — timestamp label (1 occurrence) → `text-[11px]`
+- `hero/WhyThisFeedback.tsx` — section kickers, Point label, Show me button (5 occurrences) → `text-[11px]`
+- `hero/results/AttemptResultView.tsx` — show-events button, warnings list, uncertain note (3 occurrences) → `text-[11px]`; checks-table footnote (2 occurrences, both DEBUG and learner), DrillCard footnote (1 occurrence) → `text-xs`; DEBUG criterion_id and cites spans (3 occurrences) → `text-[11px]`
+- `hero/universal/UniversalSourceView.tsx` — step timestamps, review buttons (3 occurrences) → `text-[11px]`; Consent footnote (1 occurrence) → `text-xs`; claims edit input, query From:/cited spans (3 occurrences) → `text-[11px]`
+- `hero/HeroSourceView.tsx` — ClaimRow: claim_id, timestamps, confidence, no-evidence note (4 occurrences) → `text-[11px]`; EvidenceQuery From:/cited buttons (2 occurrences) → `text-[11px]`; ExpertReviewPanel last-review info, claim_id in list (2 occurrences) → `text-[11px]`; review footer (1 occurrence) → `text-xs`; Provenance Consent line (1 occurrence) → `text-xs`
+- `hero/results/FirstDivergenceCard.tsx` — Side caption, SeekVideo placeholder, "learner media not kept locally", "not kept locally", DEBUG criterion_id, DEBUG claim spans (7 occurrences) → `text-[11px]`; Origami states properties list (1 occurrence) → `text-xs`
+- `hero/universal/UniversalPracticeView.tsx` — FilePick file name/size (1 occurrence) → `text-xs`
+- `hero/results/ProgressCurve.tsx` — legend container (1 occurrence) → `text-[11px]`
+- `hero/HeroPracticeView.tsx` — FilePick file name/size, kolam photo note, video frame note, tabla audio note (4 occurrences) → `text-xs`; strokes count (1 occurrence) → `text-[11px]`
+
+### SHOULD — ReviewNote wording
+
+`ReviewNote` uses `trustLine()` rather than the literal spec sentence. Logged in `K9-DECISIONS.md`: the deviation is intentional (spec intent §8.6, honesty §8.2).
+
+### SHOULD — attemptLabel(2) qualifier
+
+`attemptLabel(2)` returns "Second try" without the "whole task again" qualifier. Panel kickers are correct. Logged in `K9-DECISIONS.md`: the deviation is cosmetic and never misleading in the hero-only context.
+
 ## Requests for PC
 - None: all changes are within P2's ownership files
 

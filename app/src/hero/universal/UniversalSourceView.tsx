@@ -101,7 +101,7 @@ function GoalStateSection({ ui, caseId, reviewed }: { ui: UniversalUiView; caseI
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5">
                     {s.start_sec != null && (
-                      <span className="text-[10px] font-mono text-on-surface-variant">{s.start_sec.toFixed(1)}–{(s.end_sec ?? s.start_sec).toFixed(1)} s</span>
+                      <span className="text-[11px] font-mono text-on-surface-variant">{s.start_sec.toFixed(1)}–{(s.end_sec ?? s.start_sec).toFixed(1)} s</span>
                     )}
                     {!reviewed && <VerificationBadge state="inferred" />}
                   </div>
@@ -151,8 +151,8 @@ function ReviewPanel({ view, onViewChange }: { view: CaseView; onViewChange: (v:
       <input value={reviewer} onChange={(e) => setReviewer(e.target.value)} placeholder="Your name (reviewer)" className="w-full bg-surface-dim border border-outline rounded-lg px-2.5 py-1.5 text-xs outline-none focus:border-caliper-cyan" aria-label="Reviewer name" />
       <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Optional note" rows={2} className="w-full bg-surface-dim border border-outline rounded-lg px-2.5 py-1.5 text-xs outline-none focus:border-caliper-cyan resize-none" aria-label="Review note" />
       <div className="flex flex-wrap gap-2">
-        <button disabled={busy || !reviewer.trim()} onClick={() => void act('approve')} className={`${btn.primary} text-[10px] py-1.5`}><Check className="w-3 h-3" /> Approve</button>
-        <button disabled={busy || !reviewer.trim()} onClick={() => void act('reject_package')} className={`${btn.secondary} text-[10px] py-1.5`}><X className="w-3 h-3" /> Reject</button>
+        <button disabled={busy || !reviewer.trim()} onClick={() => void act('approve')} className={`${btn.primary} text-[11px] py-1.5`}><Check className="w-3 h-3" /> Approve</button>
+        <button disabled={busy || !reviewer.trim()} onClick={() => void act('reject_package')} className={`${btn.secondary} text-[11px] py-1.5`}><X className="w-3 h-3" /> Reject</button>
       </div>
       <ErrorNote error={err} />
     </div>
@@ -273,7 +273,7 @@ export function UniversalSourceView({ view, onViewChange, onReload, onEnterPract
                   </li>
                 ))}
               </ul>
-              <p className="mt-2 text-[10px] text-on-surface-variant">Consent: {view.package.consent.contributor_name} — {view.package.consent.consent_scope}</p>
+              <p className="mt-2 text-xs text-on-surface-variant">Consent: {view.package.consent.contributor_name} — {view.package.consent.consent_scope}</p>
             </Panel>
           ) : null}
         </div>
@@ -289,7 +289,7 @@ export function UniversalSourceView({ view, onViewChange, onReload, onEnterPract
                     <VerificationBadge state={c.is_observed ? 'observed' : 'inferred'} />
                     {editClaim?.id === c.claim_id ? (
                       <div className="flex-1 flex gap-1">
-                        <input value={editClaim!.text} onChange={(e) => setEditClaim({ id: c.claim_id, text: e.target.value })} className="flex-1 bg-surface-dim border border-outline rounded px-2 py-0.5 text-[10px] font-mono outline-none focus:border-caliper-cyan" aria-label="Edit claim" />
+                        <input value={editClaim!.text} onChange={(e) => setEditClaim({ id: c.claim_id, text: e.target.value })} className="flex-1 bg-surface-dim border border-outline rounded px-2 py-0.5 text-[11px] font-mono outline-none focus:border-caliper-cyan" aria-label="Edit claim" />
                         <button onClick={() => void doRevise(c.claim_id, editClaim!.text)} className={`${btn.primary} py-0.5 text-[11px]`}>Save</button>
                         <button onClick={() => setEditClaim(null)} className={`${btn.ghost}`}><X className="w-3 h-3" /></button>
                       </div>
@@ -331,11 +331,11 @@ export function UniversalSourceView({ view, onViewChange, onReload, onEnterPract
                 </div>
                 {queryAnswer.cited_claim_ids.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-1.5 items-center">
-                    <span className="text-[10px] font-mono text-on-surface-variant">From:</span>
+                    <span className="text-[11px] font-mono text-on-surface-variant">From:</span>
                     {queryAnswer.cited_claim_ids.map((id) => {
                       const n = pointNumber(claims, id);
                       return (
-                        <span key={id} className="text-[10px] font-mono text-caliper-cyan">
+                        <span key={id} className="text-[11px] font-mono text-caliper-cyan">
                           {n != null ? `point ${n}` : DEBUG ? id : 'a step'}
                         </span>
                       );
