@@ -231,3 +231,38 @@ export interface UsageView {
   storage_cap_bytes: number;
   data_ttl_hours: number;
 }
+
+// ---------------------------------------------------------------------------
+// Sample attempts and sample sources (WI-3.1): try a skill without your own materials
+// ---------------------------------------------------------------------------
+
+export type SampleQuality = 'good' | 'flawed' | 'unrelated';
+
+/** GET /api/cases/{case_id}/samples: ready-made attempts a visitor can submit as their own try */
+export interface SampleAttempt {
+  sample_id: string;
+  /** e.g. "A careful attempt", "An attempt with a mistake", "Something unrelated" */
+  label: string;
+  quality: SampleQuality;
+  /** 'trace' | 'image' | 'audio' | 'video' (AttemptKind) */
+  attempt_kind: string;
+  /** one sentence: what this sample shows and what to look for in the feedback */
+  description: string;
+  /** media preview URL, or null when there is nothing to preview (e.g. a trace) */
+  preview_url: string | null;
+  /** true when the sample was made for the demo (synthetic); shown to the visitor */
+  synthetic: boolean;
+  /** credit line for third-party media in the sample, if any */
+  credit: string | null;
+}
+
+/** GET /api/compose/samples: example sources for "Share a skill you know" */
+export interface SampleSource {
+  sample_id: string;
+  label: string;
+  description: string;
+  mime_type: string;
+  preview_url: string;
+  credit: string;
+  licence: string;
+}

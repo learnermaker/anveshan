@@ -122,3 +122,7 @@ tracks/track-b/data/runs/
 
 # Claude Code agent worktrees
 .claude/worktrees/
+
+# K9 Kiro run: task worktrees and live run status (see docs/kiro/specs/K9-ORCHESTRATOR.md)
+.worktrees/
+.kiro/k9-run/

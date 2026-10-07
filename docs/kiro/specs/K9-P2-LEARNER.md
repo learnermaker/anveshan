@@ -198,6 +198,35 @@ When the claims panel is removed in learner mode, `ownerSlot` must still render 
 - Kolam photo note (HeroPracticeView ~line 319): "A photo shows only the final state: continuity and first-divergence-in-time become UNCERTAIN." → "A photo shows only the finished drawing, so we can't tell whether the line was continuous or where it first went off track. Drawing on screen gives fuller feedback."
 - Any other occurrence of baseline, retry (as a noun label), session, criterion, trajectory or divergence in visible text → plain wording per K9-00 §5.
 
+### 5.1 "Try a sample attempt" (WI-3.1; closes J-11)
+
+Both practice views get a sample picker, so anyone can try a skill with no materials. The API is frozen from Phase 0:
+- `api.listSamples(caseId)` returns `SampleAttempt[]`;
+- `api.submitSampleAttempt(sessionId, sampleId)` returns `AttemptResult`.
+
+The mock returns three samples. P4 builds the real ones; P5 builds them for origami-crane.
+
+**Placement.** In the attempt panel, under the normal upload or draw controls for the current try (first and second try):
+- a `<details>` with the summary "No materials? Try a sample attempt";
+- open it by default when the visitor has not submitted anything yet.
+
+**Content:**
+- One card per sample: label, description, a "Synthetic sample" badge when `synthetic`, and the credit line when present (`data-plain-exempt`).
+- An optional preview:
+  - `<img>`, `<audio controls>` or `<video controls>` by `attempt_kind`, when `preview_url` is set;
+  - prefix `API_BASE` the same way `api.mediaUrl` does: build `${API_BASE}${preview_url}`, importing `API_BASE` from `api/runtime`.
+- A secondary button "Use this as my {first|second} try".
+
+**Behaviour:**
+- Clicking the button calls `api.submitSampleAttempt(session.sessionId, sample_id)` and then follows **exactly the same code path** as a successful upload: the same state updates, session attempts and result display.
+- To do that, find the function in each view that handles the result of `api.submitAttempt`, and extract the shared "on result" part into a local function so both paths call it.
+- When no session exists yet, start one first, the same way the "Start practising" button does (name "Guest").
+
+**Copy rules:**
+- Under the cards: "Samples let you see the feedback without your own materials. Your real practice counts more."
+- Hide the whole section when `listSamples` returns an empty list.
+- On error, show `ErrorNote`.
+
 ## 6. Guidance (`hero/Guidance.tsx`)
 
 - `WithClaimRefs`:

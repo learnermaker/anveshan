@@ -400,6 +400,22 @@ Props:
 - A "Problems by type" table from `errors_by_category`, using friendly names where known (`INVALID_INPUT` "Rejected input", `MODEL_FAILURE` "AI service problem", `MODEL_TIMEOUT` "AI took too long", `RATE_LIMITED` "Rate limited", `STEWARD_REQUIRED` "Steward code missing"; otherwise the raw category).
 - Shared formatters go in `components/steward/format.ts`: `fmtBytes`, `fmtPct`, `fmtDuration`, `fmtRelative` (e.g. "5 min ago") and `fmtDate`.
 
+## 4a. "Try with an example" in the composer (WI-3.1)
+
+In `StepUpload.tsx`, under the drop zone, add a section "No file to hand? Try with an example".
+
+**Content:**
+- Call `api.listSampleSources()` (frozen from Phase 0; the mock returns 2).
+- Show one small card per source: label, description, a credit and licence line (`data-plain-exempt`), and a secondary button "Use this example".
+
+**Behaviour:**
+- The button calls `api.analyzeSampleSource(sample_id)` instead of `analyzeSource`. Everything after that is identical:
+  - the wizard shows "perceiving";
+  - it then branches to refused, needs-input or proposal exactly as for an upload.
+- Implement this by adding an `onAnalyzeSample(sampleId)` prop or callback from `ComposerWizard`, reusing its existing state machine. Do not duplicate the branching logic.
+- The rights checkbox is not needed for examples: the server sets `rights_confirmed` for committed examples. Show "Example provided with Anveshan ({licence})" instead.
+- Hide the section when the list is empty. On error, show `ErrorNote`.
+
 ## 4. Composer wording (`components/composer/**`; creator surface)
 
 Apply K9-00 §5 to the wizard's visible text. Keep its logic.

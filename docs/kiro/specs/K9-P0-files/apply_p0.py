@@ -23,6 +23,7 @@ NEW_FILES = [
     "app/src/api/debug.ts",
     "app/src/api/steward.ts",
     "app/src/api/mock/library.ts",
+    "app/src/api/mock/samples.ts",
     "app/src/copy/plain.ts",
 ]
 
@@ -120,7 +121,7 @@ EDITS = [
     (
         "app/src/api/client.ts",
         "  HealthResponse,\n  QueryAnswer,\n  ReviewAction,\n  SessionCreated,\n  SessionResult,\n  SessionView,\n} from './types';\n",
-        "  HealthResponse,\n  InsightsView,\n  LibraryRecord,\n  QueryAnswer,\n  ReviewAction,\n  SessionCreated,\n  SessionResult,\n  SessionView,\n"
+        "  HealthResponse,\n  InsightsView,\n  LibraryRecord,\n  QueryAnswer,\n  ReviewAction,\n  SampleAttempt,\n  SampleSource,\n  SessionCreated,\n  SessionResult,\n  SessionView,\n"
         "  StewardDecision,\n  StewardLibraryRow,\n  StewardOverview,\n  StewardQueueItem,\n  SubmitBody,\n  UsageView,\n} from './types';\n",
     ),
     (
@@ -194,6 +195,16 @@ EDITS = [
         "  stewardConsentExport: () => requestBlob('/api/steward/consent/export'),\n"
         "  /** JSON download of one skill's latest reviewed steps and review record (commit it with tools/apply_expert_review.py) */\n"
         "  stewardReviewExport: (caseId: string) => requestBlob(`/api/steward/review-export/${enc(caseId)}`),\n"
+        "\n"
+        "  // ---- K9: sample attempts and sample sources (WI-3.1) ----\n"
+        "  /** GET /api/cases/{case_id}/samples */\n"
+        "  listSamples: (caseId: string, o?: CallOptions) => request<SampleAttempt[]>('GET', `/api/cases/${enc(caseId)}/samples`, undefined, o),\n"
+        "  /** POST /api/sessions/{sid}/attempts/sample/{sample_id}: submit a ready-made sample as this try */\n"
+        "  submitSampleAttempt: (sid: string, sampleId: string, o?: CallOptions) => request<AttemptResult>('POST', `/api/sessions/${enc(sid)}/attempts/sample/${enc(sampleId)}`, {}, o),\n"
+        "  /** GET /api/compose/samples */\n"
+        "  listSampleSources: (o?: CallOptions) => request<SampleSource[]>('GET', '/api/compose/samples', undefined, o),\n"
+        "  /** POST /api/compose/sample/{sample_id}: start a draft from an example source */\n"
+        "  analyzeSampleSource: (sampleId: string, o?: CallOptions) => request<DraftView>('POST', `/api/compose/sample/${enc(sampleId)}`, {}, o),\n"
         "};\n",
     ),
     (
@@ -216,7 +227,8 @@ EDITS = [
         "  requireMockSteward,\n"
         "} from './mock/library';\n"
         "import { getStewardToken } from './steward';\n"
-        "import type { ConsentRow, InsightsView, LibraryRecord, StewardDecision, StewardLibraryRow, StewardOverview, StewardQueueItem, SubmitBody, UsageView } from './types';\n",
+        "import type { ConsentRow, InsightsView, LibraryRecord, SampleAttempt, SampleSource, StewardDecision, StewardLibraryRow, StewardOverview, StewardQueueItem, SubmitBody, UsageView } from './types';\n"
+        "import { mockAnalyzeSampleFile, mockSampleSources, mockSamplesFor, mockSampleUpload } from './mock/samples';\n",
     ),
     (
         "app/src/api/mock.ts",
@@ -287,6 +299,22 @@ EDITS = [
         "  async stewardConsentExport(): Promise<Blob> {\n"
         "    const rows = mockConsent([...cases.values()]);\n"
         "    return new Blob([JSON.stringify({ exported_at: new Date().toISOString(), synthetic_mock: true, skills: rows }, null, 2)], { type: 'application/json' });\n"
+        "  },\n"
+        "  async listSamples(caseId: string): Promise<SampleAttempt[]> {\n"
+        "    await delay(120);\n"
+        "    return mockSamplesFor(getView(caseId));\n"
+        "  },\n"
+        "  async submitSampleAttempt(sid: string, sampleId: string): Promise<AttemptResult> {\n"
+        "    const s = sessions.get(sid);\n"
+        "    if (!s) throw new ApiError('MISSING_EVIDENCE', `session ${sid} not found`, 404);\n"
+        "    return mockApi.submitAttempt(sid, mockSampleUpload(getView(s.caseId), sampleId));\n"
+        "  },\n"
+        "  async listSampleSources(): Promise<SampleSource[]> {\n"
+        "    await delay(120);\n"
+        "    return mockSampleSources();\n"
+        "  },\n"
+        "  async analyzeSampleSource(sampleId: string): Promise<DraftView> {\n"
+        "    return mockApi.analyzeSource(mockAnalyzeSampleFile(sampleId), { rightsConfirmed: true });\n"
         "  },\n"
         "  async stewardReviewExport(caseId: string): Promise<Blob> {\n"
         "    requireMockSteward();\n"

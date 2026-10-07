@@ -149,7 +149,7 @@ class LibraryRecord(BaseModel):
 | Function | Behaviour |
 |---|---|
 | `kind_of(settings, case_id) -> Literal["curated","community","derived"]` | Curated if no `~`. Community if the dir has `knowledge/case_profile.v*.json`. Otherwise derived. |
-| `load(settings, case_id, case_dir) -> LibraryRecord` | **Curated:** from the overlay, else defaults (status `published`, collection `curated`). `credit_name` and `licence` come from the primary source in `case_dir/sources.json` (or `source/sources.json`): use the existing registry loader if easy, else read the JSON and take the first source whose `used_by_system` is not false and `role` is not `held_out_reference`. Consent scope is `public_practice`. **Community or derived:** from `.library.json`, else defaults (status `private`, collection `community`). |
+| `load(settings, case_id, case_dir) -> LibraryRecord` | **Curated:** from the overlay, else defaults (status `published`, collection `curated`). `credit_name` and `licence` come from the primary source in `case_dir/source/source.json` (the source registry; the composer may also write `source/source.json`; check with `ls`): use the existing registry loader if easy, else read the JSON and take the first source whose `used_by_system` is not false and `role` is not `held_out_reference`. Consent scope is `public_practice`. **Community or derived:** from `.library.json`, else defaults (status `private`, collection `community`). |
 | `save(settings, rec, case_dir)` | Writes to the correct location. |
 | `create_initial(settings, case_dir, case_id)` | Called by compose create (§3.9). Writes status `private`, `rights_confirmed=True`, `rights_confirmed_at=now` (the composer already refuses uploads without the rights checkbox) and a history entry `created`. |
 | `submit(settings, case_id, case_dir, body, review_status) -> LibraryRecord` | Creator only; see the transition table. |
@@ -267,6 +267,7 @@ def today_totals(settings) -> dict                   # {"learners_today": int, "
 
 **`compute()` (deterministic):**
 - `attempts`: number of attempt events.
+- **Samples are not learners.** Events with `source == "sample"` (written by K9-P4's sample route) are excluded from every number below. Count them separately only in `activity()` as `sample_attempts` (internal; not in the view).
 - `learners`: distinct `s` over all events.
 - `completed`: distinct `s` with a complete event.
 - `since`: the earliest `at`, or None.
@@ -459,7 +460,9 @@ Update the health-shape test in `service/tests/test_service_cases.py` if it comp
 | `POST /{case_id}/submit` | Owner only (403 `NOT_OWNER` "Only the creator can publish this skill."). The body is a Pydantic model mirroring `SubmitBody` (`extra="forbid"`; `credit_name` ≤ 60, `note` ≤ 500). Get `review_status` from `track_a.load_case(cdir).to_view()["review_status"]` inside `translated()`; use "pending" if the view is not a dict. Runs under `resource_lock("case", id)`. |
 | `POST /{case_id}/withdraw` | Owner only. |
 
-Add to the rate-limit table: `("POST", re.compile(r"^/api/library/[^/]+/(submit|withdraw)$"), "compose_step")`.
+Add to the rate-limit table:
+- `("POST", re.compile(r"^/api/library/[^/]+/(submit|withdraw)$"), "compose_step")`;
+- `("POST", re.compile(r"^/api/compose/sample/[^/]+$"), "compose")`, for K9-P4's example-source route. The sample-attempt route `/api/sessions/{id}/attempts/sample/{id}` is already covered by the existing attempt regex.
 
 **`routes/insights.py`:** `GET /api/insights/{case_id}` resolves `case_dir()`, then allows the owner (community or derived) or a steward; otherwise 403 `NOT_OWNER` "Only the creator or a steward can see how learners are doing." Returns `insights.compute(...)`.
 
@@ -488,7 +491,11 @@ Add `## 7. Product roles (K9)` to `docs/plans/service-api.md`:
 - the settings and env vars: `ANVESHAN_STEWARD_TOKEN`, `ANVESHAN_STEWARD_OPEN`, `ANVESHAN_INSIGHTS_MAX_EVENTS`, `ANVESHAN_RATE_AUTH_PER_HOUR`;
 - the file locations: `.library.json`, `data_dir/library/`, `data_dir/insights/`.
 
-Add one row each for the new env vars to `docs/deploy/DEPLOY-CHECKLIST.md`'s env table, if one exists. Set `ANVESHAN_STEWARD_TOKEN` as a Cloud Run secret; never put it in the Dockerfile.
+Add one row each for the new env vars to `docs/deploy/DEPLOY-CHECKLIST.md`'s env table, if one exists. Also add a short "Bring your own key" note:
+- the visitor's key travels only in the `X-Gemini-Api-Key` header;
+- it is never stored or logged;
+- calls made with it skip the shared daily budget;
+- the per-visitor rate limits still apply. Set `ANVESHAN_STEWARD_TOKEN` as a Cloud Run secret; never put it in the Dockerfile.
 
 ## 4. JSON shapes
 

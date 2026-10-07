@@ -1,0 +1,374 @@
+name: k9-build
+description: >
+  K9 build for Anveshan: three product roles (learner, creator, steward) and the remaining technical-panel items.
+  Phase 0 foundation, then Wave A (7 parallel tasks in isolated worktrees), merge, Wave B (2 parallel tasks),
+  merge, verification gate, finalize. Spec: docs/kiro/specs/K9-ORCHESTRATOR.md.
+inputs: {}
+steps:
+  - type: step
+    id: phase0
+    agent: wf-coder
+    artifacts:
+      phase0_status: ".kiro/k9-run/status/PHASE0.md"
+    prompt: >
+      You are the K9 Phase 0 step. Read docs/kiro/specs/K9-ORCHESTRATOR.md sections 1 to 4 and then do section 3
+      (Phase 0) exactly: create the integration worktree under .worktrees, apply the foundation with apply_p0.py,
+      verify, commit, push k9/integration, create the nine task worktrees and their node_modules junctions, and
+      create the .kiro/k9-run files (STATUS.md, INBOX.md, status/, verify/, reviews/). Write
+      .kiro/k9-run/status/PHASE0.md using the status template in section 4. Call send_message with severity
+      success and a one-line summary when done, or severity error with the exact failing command.
+
+  - type: parallel
+    id: wave-a
+    joinPolicy: allSettled
+    branches:
+      - type: sequence
+        id: p1
+        steps:
+          - type: step
+            id: p1-build
+            agent: wf-coder
+            prompt: >
+              You are task K9-P1. Follow the Task prompt in docs/kiro/specs/K9-ORCHESTRATOR.md section 5.2 with
+              ID=K9-P1, FOLDER=.worktrees/k9-p1-backend, BRANCH=kiro/k9-p1-backend, SPEC=K9-P1-BACKEND.md.
+          - type: repeat
+            id: p1-verify
+            maxIterations: 3
+            onMaxIterations: continue
+            stopCondition:
+              fileCheck: { path: ".kiro/k9-run/verify/K9-P1.json", jsonPath: verdict, value: PASS }
+            steps:
+              - type: step
+                id: p1-check
+                agent: wf-coder
+                prompt: >
+                  Verify task K9-P1 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.3 (folder .worktrees/k9-p1-backend).
+          - type: step
+            id: p1-review
+            agent: semantic_reviewer
+            prompt: >
+              Review task K9-P1 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.4 (folder .worktrees/k9-p1-backend,
+              spec docs/kiro/specs/K9-P1-BACKEND.md). Read-only; write .kiro/k9-run/reviews/K9-P1.md.
+          - type: step
+            id: p1-fix
+            agent: wf-coder
+            prompt: >
+              Apply the review for task K9-P1 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.5
+              (folder .worktrees/k9-p1-backend, review .kiro/k9-run/reviews/K9-P1.md).
+
+      - type: sequence
+        id: p2
+        steps:
+          - type: step
+            id: p2-build
+            agent: wf-coder
+            prompt: >
+              You are task K9-P2. Follow the Task prompt in docs/kiro/specs/K9-ORCHESTRATOR.md section 5.2 with
+              ID=K9-P2, FOLDER=.worktrees/k9-p2-learner, BRANCH=kiro/k9-p2-learner, SPEC=K9-P2-LEARNER.md.
+          - type: repeat
+            id: p2-verify
+            maxIterations: 3
+            onMaxIterations: continue
+            stopCondition:
+              fileCheck: { path: ".kiro/k9-run/verify/K9-P2.json", jsonPath: verdict, value: PASS }
+            steps:
+              - type: step
+                id: p2-check
+                agent: wf-coder
+                prompt: >
+                  Verify task K9-P2 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.3 (folder .worktrees/k9-p2-learner).
+          - type: step
+            id: p2-review
+            agent: semantic_reviewer
+            prompt: >
+              Review task K9-P2 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.4 (folder .worktrees/k9-p2-learner,
+              spec docs/kiro/specs/K9-P2-LEARNER.md). Read-only; write .kiro/k9-run/reviews/K9-P2.md.
+          - type: step
+            id: p2-fix
+            agent: wf-coder
+            prompt: >
+              Apply the review for task K9-P2 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.5
+              (folder .worktrees/k9-p2-learner, review .kiro/k9-run/reviews/K9-P2.md).
+
+      - type: sequence
+        id: p3
+        steps:
+          - type: step
+            id: p3-build
+            agent: wf-coder
+            prompt: >
+              You are task K9-P3. Follow the Task prompt in docs/kiro/specs/K9-ORCHESTRATOR.md section 5.2 with
+              ID=K9-P3, FOLDER=.worktrees/k9-p3-creator-steward, BRANCH=kiro/k9-p3-creator-steward,
+              SPEC=K9-P3-CREATOR-STEWARD.md.
+          - type: repeat
+            id: p3-verify
+            maxIterations: 3
+            onMaxIterations: continue
+            stopCondition:
+              fileCheck: { path: ".kiro/k9-run/verify/K9-P3.json", jsonPath: verdict, value: PASS }
+            steps:
+              - type: step
+                id: p3-check
+                agent: wf-coder
+                prompt: >
+                  Verify task K9-P3 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.3 (folder .worktrees/k9-p3-creator-steward).
+          - type: step
+            id: p3-review
+            agent: semantic_reviewer
+            prompt: >
+              Review task K9-P3 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.4 (folder .worktrees/k9-p3-creator-steward,
+              spec docs/kiro/specs/K9-P3-CREATOR-STEWARD.md). Read-only; write .kiro/k9-run/reviews/K9-P3.md.
+          - type: step
+            id: p3-fix
+            agent: wf-coder
+            prompt: >
+              Apply the review for task K9-P3 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.5
+              (folder .worktrees/k9-p3-creator-steward, review .kiro/k9-run/reviews/K9-P3.md).
+
+      - type: sequence
+        id: p4
+        steps:
+          - type: step
+            id: p4-build
+            agent: wf-coder
+            prompt: >
+              You are task K9-P4. Follow the Task prompt in docs/kiro/specs/K9-ORCHESTRATOR.md section 5.2 with
+              ID=K9-P4, FOLDER=.worktrees/k9-p4-samples, BRANCH=kiro/k9-p4-samples, SPEC=K9-P4-SAMPLES.md.
+          - type: repeat
+            id: p4-verify
+            maxIterations: 3
+            onMaxIterations: continue
+            stopCondition:
+              fileCheck: { path: ".kiro/k9-run/verify/K9-P4.json", jsonPath: verdict, value: PASS }
+            steps:
+              - type: step
+                id: p4-check
+                agent: wf-coder
+                prompt: >
+                  Verify task K9-P4 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.3 (folder .worktrees/k9-p4-samples).
+          - type: step
+            id: p4-review
+            agent: semantic_reviewer
+            prompt: >
+              Review task K9-P4 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.4 (folder .worktrees/k9-p4-samples,
+              spec docs/kiro/specs/K9-P4-SAMPLES.md). Read-only; write .kiro/k9-run/reviews/K9-P4.md.
+          - type: step
+            id: p4-fix
+            agent: wf-coder
+            prompt: >
+              Apply the review for task K9-P4 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.5
+              (folder .worktrees/k9-p4-samples, review .kiro/k9-run/reviews/K9-P4.md).
+
+      - type: sequence
+        id: p5
+        steps:
+          - type: step
+            id: p5-build
+            agent: wf-coder
+            prompt: >
+              You are task K9-P5. Follow the Task prompt in docs/kiro/specs/K9-ORCHESTRATOR.md section 5.2 with
+              ID=K9-P5, FOLDER=.worktrees/k9-p5-origami-universal, BRANCH=kiro/k9-p5-origami-universal,
+              SPEC=K9-P5-ORIGAMI-UNIVERSAL.md.
+          - type: repeat
+            id: p5-verify
+            maxIterations: 3
+            onMaxIterations: continue
+            stopCondition:
+              fileCheck: { path: ".kiro/k9-run/verify/K9-P5.json", jsonPath: verdict, value: PASS }
+            steps:
+              - type: step
+                id: p5-check
+                agent: wf-coder
+                prompt: >
+                  Verify task K9-P5 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.3 (folder .worktrees/k9-p5-origami-universal).
+          - type: step
+            id: p5-review
+            agent: semantic_reviewer
+            prompt: >
+              Review task K9-P5 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.4 (folder .worktrees/k9-p5-origami-universal,
+              spec docs/kiro/specs/K9-P5-ORIGAMI-UNIVERSAL.md). Read-only; write .kiro/k9-run/reviews/K9-P5.md.
+          - type: step
+            id: p5-fix
+            agent: wf-coder
+            prompt: >
+              Apply the review for task K9-P5 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.5
+              (folder .worktrees/k9-p5-origami-universal, review .kiro/k9-run/reviews/K9-P5.md).
+
+      - type: sequence
+        id: p6
+        steps:
+          - type: step
+            id: p6-build
+            agent: wf-coder
+            prompt: >
+              You are task K9-P6. Follow the Task prompt in docs/kiro/specs/K9-ORCHESTRATOR.md section 5.2 with
+              ID=K9-P6, FOLDER=.worktrees/k9-p6-docs, BRANCH=kiro/k9-p6-docs, SPEC=K9-P6-DOCS.md.
+          - type: repeat
+            id: p6-verify
+            maxIterations: 3
+            onMaxIterations: continue
+            stopCondition:
+              fileCheck: { path: ".kiro/k9-run/verify/K9-P6.json", jsonPath: verdict, value: PASS }
+            steps:
+              - type: step
+                id: p6-check
+                agent: wf-coder
+                prompt: >
+                  Verify task K9-P6 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.3 (folder .worktrees/k9-p6-docs).
+          - type: step
+            id: p6-review
+            agent: semantic_reviewer
+            prompt: >
+              Review task K9-P6 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.4 (folder .worktrees/k9-p6-docs,
+              spec docs/kiro/specs/K9-P6-DOCS.md). Read-only; write .kiro/k9-run/reviews/K9-P6.md.
+          - type: step
+            id: p6-fix
+            agent: wf-coder
+            prompt: >
+              Apply the review for task K9-P6 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.5
+              (folder .worktrees/k9-p6-docs, review .kiro/k9-run/reviews/K9-P6.md).
+
+      - type: sequence
+        id: p7
+        steps:
+          - type: step
+            id: p7-build
+            agent: wf-coder
+            prompt: >
+              You are task K9-P7. Follow the Task prompt in docs/kiro/specs/K9-ORCHESTRATOR.md section 5.2 with
+              ID=K9-P7, FOLDER=.worktrees/k9-p7-tools, BRANCH=kiro/k9-p7-tools, SPEC=K9-P7-TOOLS.md.
+          - type: repeat
+            id: p7-verify
+            maxIterations: 3
+            onMaxIterations: continue
+            stopCondition:
+              fileCheck: { path: ".kiro/k9-run/verify/K9-P7.json", jsonPath: verdict, value: PASS }
+            steps:
+              - type: step
+                id: p7-check
+                agent: wf-coder
+                prompt: >
+                  Verify task K9-P7 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.3 (folder .worktrees/k9-p7-tools).
+          - type: step
+            id: p7-review
+            agent: semantic_reviewer
+            prompt: >
+              Review task K9-P7 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.4 (folder .worktrees/k9-p7-tools,
+              spec docs/kiro/specs/K9-P7-TOOLS.md). Read-only; write .kiro/k9-run/reviews/K9-P7.md.
+          - type: step
+            id: p7-fix
+            agent: wf-coder
+            prompt: >
+              Apply the review for task K9-P7 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.5
+              (folder .worktrees/k9-p7-tools, review .kiro/k9-run/reviews/K9-P7.md).
+
+  - type: step
+    id: merge-a
+    agent: wf-coder
+    prompt: >
+      You are the K9 integrator for Wave A. Do docs/kiro/specs/K9-PC-INTEGRATION.md sections 1 to 4 in
+      .worktrees/k9-integration, following the status discipline in K9-ORCHESTRATOR.md section 4. Then create the
+      Wave B worktrees from the updated k9/integration (K9-ORCHESTRATOR.md section 3.3). Call send_message with
+      severity success and the merged and blocked task list, or severity warning if a task was left out.
+
+  - type: parallel
+    id: wave-b
+    joinPolicy: allSettled
+    branches:
+      - type: sequence
+        id: b1
+        steps:
+          - type: step
+            id: b1-build
+            agent: wf-coder
+            prompt: >
+              You are task K9-B1. Follow the Task prompt in docs/kiro/specs/K9-ORCHESTRATOR.md section 5.2 with
+              ID=K9-B1, FOLDER=.worktrees/k9-b1-evidence-a11y, BRANCH=kiro/k9-b1-evidence-a11y,
+              SPEC=K9-B1-EVIDENCE-A11Y.md.
+          - type: repeat
+            id: b1-verify
+            maxIterations: 3
+            onMaxIterations: continue
+            stopCondition:
+              fileCheck: { path: ".kiro/k9-run/verify/K9-B1.json", jsonPath: verdict, value: PASS }
+            steps:
+              - type: step
+                id: b1-check
+                agent: wf-coder
+                prompt: >
+                  Verify task K9-B1 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.3 (folder .worktrees/k9-b1-evidence-a11y).
+          - type: step
+            id: b1-review
+            agent: semantic_reviewer
+            prompt: >
+              Review task K9-B1 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.4 (folder .worktrees/k9-b1-evidence-a11y,
+              spec docs/kiro/specs/K9-B1-EVIDENCE-A11Y.md). Read-only; write .kiro/k9-run/reviews/K9-B1.md.
+          - type: step
+            id: b1-fix
+            agent: wf-coder
+            prompt: >
+              Apply the review for task K9-B1 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.5
+              (folder .worktrees/k9-b1-evidence-a11y, review .kiro/k9-run/reviews/K9-B1.md).
+      - type: sequence
+        id: b2
+        steps:
+          - type: step
+            id: b2-build
+            agent: wf-coder
+            prompt: >
+              You are task K9-B2. Follow the Task prompt in docs/kiro/specs/K9-ORCHESTRATOR.md section 5.2 with
+              ID=K9-B2, FOLDER=.worktrees/k9-b2-stability, BRANCH=kiro/k9-b2-stability, SPEC=K9-B2-STABILITY.md.
+          - type: repeat
+            id: b2-verify
+            maxIterations: 3
+            onMaxIterations: continue
+            stopCondition:
+              fileCheck: { path: ".kiro/k9-run/verify/K9-B2.json", jsonPath: verdict, value: PASS }
+            steps:
+              - type: step
+                id: b2-check
+                agent: wf-coder
+                prompt: >
+                  Verify task K9-B2 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.3 (folder .worktrees/k9-b2-stability).
+          - type: step
+            id: b2-review
+            agent: semantic_reviewer
+            prompt: >
+              Review task K9-B2 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.4 (folder .worktrees/k9-b2-stability,
+              spec docs/kiro/specs/K9-B2-STABILITY.md). Read-only; write .kiro/k9-run/reviews/K9-B2.md.
+          - type: step
+            id: b2-fix
+            agent: wf-coder
+            prompt: >
+              Apply the review for task K9-B2 per docs/kiro/specs/K9-ORCHESTRATOR.md section 5.5
+              (folder .worktrees/k9-b2-stability, review .kiro/k9-run/reviews/K9-B2.md).
+
+  - type: step
+    id: merge-b
+    agent: wf-coder
+    prompt: >
+      You are the K9 integrator for Wave B. Do docs/kiro/specs/K9-PC-INTEGRATION.md section 5 (and section 4 sync)
+      in .worktrees/k9-integration, following the status discipline in K9-ORCHESTRATOR.md section 4.
+
+  - type: repeat
+    id: gate
+    maxIterations: 4
+    onMaxIterations: pause
+    stopCondition:
+      fileCheck: { path: ".kiro/k9-run/verify/PC.json", jsonPath: verdict, value: PASS }
+    steps:
+      - type: step
+        id: gate-run
+        agent: wf-coder
+        prompt: >
+          You are the K9 verification gate. Do one iteration of docs/kiro/specs/K9-PC-INTEGRATION.md section 6 in
+          .worktrees/k9-integration (read .kiro/k9-run/verify/PC.json first if it exists and fix its findings), then
+          write .kiro/k9-run/verify/PC.json. Follow the status discipline in K9-ORCHESTRATOR.md section 4.
+
+  - type: step
+    id: finalize
+    agent: wf-coder
+    prompt: >
+      You are the K9 finalizer. Do docs/kiro/specs/K9-PC-INTEGRATION.md section 7 in .worktrees/k9-integration,
+      then write the final message described in docs/kiro/specs/K9-ORCHESTRATOR.md section 9 and call
+      send_message with severity success and that message.

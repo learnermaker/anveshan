@@ -6,7 +6,12 @@
 > **2026-10-07, latest: three product roles (DECIDED by Jim).**
 > - **Roles:** learner (plain language, no audit tooling), creator (check what the AI understood, publish, insights), steward (review queue, library, consent and licences, insights, usage). No admin console or accounts (NEXT).
 > - **Docs:** `docs/product/product-vision.md` §9A, `docs/product/user-journeys.md` Journeys 7–8, `docs/status/DECISIONS.md`.
-> - **Build:** one Kiro session with parallel tasks. Start it with `docs/kiro/specs/K9-ORCHESTRATOR.md`, which pushes `k9/integration`; Claude Code then reviews and merges it to `main`.
+> - **Build:** one Kiro session runs the workflow `.kiro/workflows/k9-build.yaml`: Phase 0, 7 parallel tasks (Wave A), merge, 2 parallel tasks (Wave B), merge, gate, finalize. It covers the three roles plus every open technical-panel item that does not need humans. Start from `docs/kiro/specs/K9-ORCHESTRATOR.md` §0. It pushes `k9/integration`; Claude Code then reviews and merges it to `main`.
+> - **While Kiro runs:**
+>   - live status is in `.kiro/k9-run/STATUS.md` and `.kiro/k9-run/status/*.md` (gitignored);
+>   - steer it by appending to `.kiro/k9-run/INBOX.md`;
+>   - task worktrees live in `.worktrees/` (gitignored).
+>   - When Claude Code changes UI on `main` during the run, add a `CHANGED-ON-MAIN` inbox entry so the integrator merges it correctly.
 > - **Earlier this session (on `main`):** judges-panel review (`docs/research/judges-panel-review-2026-10-07.md`), the technical-panel plan (`docs/plans/technical-panel-plan-2026-10-07.md`), public-demo safety (WS1), AI coaching wording, first-time-user guidance, and BYOK (bring your own Gemini key).
 
 ## 1. Who and what
