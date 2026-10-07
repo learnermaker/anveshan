@@ -225,3 +225,15 @@ For case-data work, read:
 - `tracks/common/CASE-DATA-CONVENTIONS.md`
 
 Do not introduce a database or service solely to make seven prototype cases appear scalable. Keep versioned case content separate from future mutable runtime state and large media.
+
+## UI and UX work (all agents: Claude Code, Kiro, Antigravity, others)
+
+Anveshan's UI is an end-user product with three roles (learner, creator, steward), not an evaluation tool (DECIDED 2026-10-07, `docs/status/DECISIONS.md`). Before changing anything under `app/`, read and follow:
+
+- `.claude/skills/anveshan-ux/SKILL.md`: roles, what each may see, plain-language copy, honesty labels, visual language;
+- `.claude/skills/anveshan-a11y/SKILL.md`: the accessibility checklist;
+- `.claude/skills/anveshan-ui-check/SKILL.md`: verify in a browser at 375 px and desktop, `check:plain`, builds.
+
+The product source of truth is `docs/kiro/specs/K9-00-PRODUCT-UX.md`. Visual tokens are in `DESIGN.md` and `app/tailwind.config.js`; where `DESIGN.md` §4 shows technical detail to learners, K9-00 wins.
+
+Tool wiring points at these files, never at copies: Claude Code `.claude/skills/`, Kiro `.kiro/steering/anveshan-ui.md`, Antigravity `.agents/rules/anveshan-ui.md` and `.agents/skills/`.
