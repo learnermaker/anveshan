@@ -9,7 +9,8 @@
 import React, { useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, Pencil, RefreshCw, Search, X } from 'lucide-react';
 import type { KnowledgeClaim } from '../../types/contracts';
-import type { CaseView, ReviewAction, UniversalUiView } from '../../api/types';import { api } from '../../api/client';
+import type { CaseView, ReviewAction, SourceRecord, UniversalUiView } from '../../api/types';
+import { api } from '../../api/client';
 import { Badge, btn, ErrorNote, MockBadge, Panel, ReviewBadge, SourceLabelBadge, Spinner, VerificationBadge } from '../ui';
 
 interface Props {
@@ -20,7 +21,28 @@ interface Props {
   onBack: () => void;
 }
 
-function GoalStateSection({ ui, caseId }: { ui: UniversalUiView; caseId: string }) {
+function SourceMedia({ caseId, sources }: { caseId: string; sources: SourceRecord[] }) {
+  const usable = sources.filter((s) => s.used_by_system !== false && s.role !== 'held_out_reference');
+  if (usable.length === 0) return null;
+  return (
+    <div className="space-y-3">
+      {usable.map((s) => {
+        const url = api.mediaUrl(caseId, s.source_id);
+        const mime = s.mime_type ?? '';
+        return (
+          <div key={s.source_id} className="space-y-1">
+            {mime.startsWith('image/') && <img src={url} alt={`Source ${s.source_id}`} className="max-h-80 w-auto rounded border border-outline bg-surface-dim" />}
+            {mime.startsWith('audio/') && <audio controls src={url} className="w-full" aria-label={`Source audio ${s.source_id}`} />}
+            {mime.startsWith('video/') && <video controls src={url} className="w-full max-h-96 rounded border border-outline bg-black" aria-label={`Source video ${s.source_id}`} />}
+            <div className="text-[9px] font-mono text-on-surface-variant">{s.source_id} · {mime}</div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function GoalStateSection({ ui, caseId, reviewed }: { ui: UniversalUiView; caseId: string; reviewed: boolean }) {
   const props = ui.goal_state ?? [];
   const steps = ui.steps ?? [];
   const transcript = ui.transcript;
@@ -51,24 +73,31 @@ function GoalStateSection({ ui, caseId }: { ui: UniversalUiView; caseId: string 
       {steps.length > 0 && (
         <div>
           <div className="text-[9px] font-mono uppercase text-on-surface-variant mb-2">Steps (INFERRED)</div>
-          <div className="flex gap-2 overflow-x-auto pb-1">
+          <ul className="space-y-2">
             {steps.map((s, stepIdx) => (
-              <div key={s.step_id} className="shrink-0 w-24 space-y-1">
+              <li key={s.step_id} className="flex items-start gap-3">
                 {s.keyframe_asset ? (
-                  <img src={api.goalAssetUrl(caseId, s.keyframe_asset)} alt={s.name} className="w-full aspect-video object-cover rounded border border-outline bg-surface-dim" />
+                  <img src={api.goalAssetUrl(caseId, s.keyframe_asset)} alt={s.name} className="w-28 shrink-0 aspect-video object-cover rounded border border-outline bg-surface-dim" />
                 ) : (
-                  <div className="w-full aspect-video bg-surface-dim border border-outline rounded flex items-center justify-center text-[9px] font-mono text-on-surface-variant">
+                  <div className="w-28 shrink-0 aspect-video bg-surface-dim border border-outline rounded flex items-center justify-center text-[9px] font-mono text-on-surface-variant">
                     Step {stepIdx + 1}
                   </div>
                 )}
-                <div className="text-[9px] font-mono text-on-surface-variant leading-tight">
-                  {s.name}
-                  {s.critical && <span className="text-divergence-crimson"> (critical)</span>}
+                <div className="min-w-0 space-y-1">
+                  <div className="text-[11px] text-on-surface">
+                    {stepIdx + 1}. {s.name}
+                    {s.critical && <span className="text-divergence-crimson"> (critical)</span>}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {s.start_sec != null && (
+                      <span className="text-[10px] font-mono text-on-surface-variant">{s.start_sec.toFixed(1)}–{(s.end_sec ?? s.start_sec).toFixed(1)} s</span>
+                    )}
+                    {!reviewed && <Badge tone="amber" title="Perceived by a model; not yet confirmed by an expert">AI-inferred until reviewed</Badge>}
+                  </div>
                 </div>
-                {s.start_sec != null && <div className="text-[8px] font-mono text-outline">{s.start_sec.toFixed(0)}–{s.end_sec?.toFixed(0)}s</div>}
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       )}
 
@@ -185,8 +214,12 @@ export function UniversalSourceView({ view, onViewChange, onReload, onEnterPract
 
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] gap-5">
         <div className="space-y-5 min-w-0">
+          <Panel kicker="Source" title="Uploaded source media">
+            <SourceMedia caseId={view.case_id} sources={view.sources} />
+          </Panel>
+
           <Panel kicker="Goal state" title={view.package.title}>
-            <GoalStateSection ui={ui} caseId={view.case_id} />
+            <GoalStateSection ui={ui} caseId={view.case_id} reviewed={view.review_status === 'approved'} />
           </Panel>
 
           {profile && (
