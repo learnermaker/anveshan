@@ -162,3 +162,22 @@ Post-workflow independent checks by the Kiro orchestrator session:
 | Final HEAD | 5c662f9 on m1/hero-cases (pushed) |
 
 PR-BODY.md: docs/plans/PR-BODY.md — ready for Jim to open in GitHub Desktop.
+
+
+---
+
+## 2026-10-07 — Claude Code: universal pipeline robustness (post-Kiro)
+
+**Context:** Jim asked to prioritise the universal pipeline for ANY new upload over tuning single hero videos. Kiro's WP5 live checks counted "no exception" as PASS and never tested video uploads.
+**Decisions:**
+- Video procedures use domain-agnostic segmentation (embedding+layout DP), ONE stage-grouping vision call, Drop-DTW-style monotone alignment, LIS order, a relative relevance gate, and reference step matching (model labels used as observations only). See `universal-pipeline.md` §12.
+- Video upload cap raised 120 → 600 s (sampling stays ≤ 120 frames, so cost is flat).
+- Completeness of final states uses enumerate-then-compare with a deterministic rule.
+- 429 backoff in the gateway (K4 request).
+**Evidence:** `tracks/track-b/eval/universal_video/*_summary.json`. Stress tools: `tools/stress_universal_video.py`, `tools/stress_universal_other.py`.
+**Open:**
+- Origami bird-base clip (low resolution, hands always on the paper) is unstable for the perfect attempt;
+- swapped-order synthetic verdict varies between live runs;
+- speech is untested;
+- the composer's expert-review step is the safeguard for inferred steps.
+**Log entry by:** Claude Code (Opus 5.5)

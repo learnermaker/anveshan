@@ -320,7 +320,20 @@ Model outputs remain observations. Every score comes from deterministic metrics,
 | Full `OrigamiCrane.ogv` as a new upload (no origami code) | 8–9 steps through to the finished crane; `Crane.ogv` positive control PASS 11/11; first 40 % FAIL; unrelated REFUSED |
 | Hard clip: 0–194 s window at 400×226, hands always on the paper (the dedicated-engine eval setup) | unrelated REFUSED; missing, swapped and truncated attempts flagged; **the perfect re-encode does not pass reliably**. Stage names vary between runs, and the clip has no clean final moment |
 
+| New IMAGE skill: coloured-block arrangement (`tools/stress_universal_other.py --scenario image`) | re-drawn and shifted PASS 11/11; one block missing FAIL; wrong colours FAIL; blank image REFUSED |
+| New AUDIO skill: melody in steady time (`--scenario audio`) | same melody PASS 11/11; rushed tempo FAIL; irregular rhythm FAIL; white noise REFUSED |
+
+Image and audio fixes found by these runs:
+- the composer now passes the uploaded file to the proposer, so specialists run at draft time (audio-only skills previously had zero checks);
+- WP4's 4-tuple `payload_from_audio` is now unpacked;
+- rhythm checks get explicit bands (previously a placeholder ≥ 0.7 was applied to % and ms errors);
+- steadiness is judged relative to the source's own IOI CV;
+- final-state skills get a completeness check: the model first lists the parts of the expert image and of the attempt, then a deterministic rule decides from the missing/extra/misplaced lists (`compare_parts_v1`);
+- the expert image is now actually sent to the judge;
+- the gateway backs off on HTTP 429 (5/15/30 s).
+
 ### 12.3 Known limits (honest)
 - Global embeddings separate scenes, not fine-grained object states. When hands dominate a low-resolution frame, step identity depends on the vision model, whose answers vary between live runs even at temperature 0. Recorded replay makes demos reproducible; live answers can differ.
 - Composed steps are proposals. The composer's review step, where the expert confirms or edits steps, is the product safeguard. Steps stay INFERRED until then.
+- Speech/utterance skills were not stress-tested (no licence-clean speech sample yet).
 - Next options, not yet authorised: self-consistency (2–3 matcher calls with agreement weighting); crop to the work region before embedding.
