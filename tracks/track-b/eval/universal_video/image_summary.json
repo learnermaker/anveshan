@@ -1,0 +1,113 @@
+{
+ "scenario": "image",
+ "mode": "recorded",
+ "compose": {
+  "compose_s": 0.0,
+  "refused": false,
+  "build_s": 0.1,
+  "structures": [
+   "final_state"
+  ],
+  "n_steps": 3,
+  "steps": [
+   "0:build step 1: Place the brown shelf base (guess)",
+   "1:build step 2: Place the bottom three boxes (red, blue, green",
+   "2:build step 3: Place the top two boxes (yellow, purple) spann"
+  ],
+  "checks": [
+   "CHK-FS-SIM:final_similarity",
+   "CHK-FS-P01:final_property",
+   "CHK-FS-P02:final_property",
+   "CHK-FS-P03:final_property",
+   "CHK-FS-P04:final_property",
+   "CHK-FS-ALL:final_property"
+  ],
+  "warnings": [
+   "Composed case: claims named by AI are inferred until reviewed.",
+   "package not expert-approved"
+  ]
+ },
+ "attempts": {
+  "redrawn_shifted": {
+   "outcome": "PASS",
+   "score": 11.0,
+   "criteria": {
+    "CRIT-U-CHK-FS-SIM": "satisfied",
+    "CRIT-U-CHK-FS-P01": "satisfied",
+    "CRIT-U-CHK-FS-P02": "satisfied",
+    "CRIT-U-CHK-FS-P03": "satisfied",
+    "CRIT-U-CHK-FS-P04": "satisfied",
+    "CRIT-U-CHK-FS-ALL": "satisfied"
+   },
+   "metrics": {
+    "u.final_similarity": 0.9870555996894836,
+    "u.final_property.prop-01": 1.0,
+    "u.final_property.prop-02": 1.0,
+    "u.final_property.prop-03": 1.0,
+    "u.final_property.prop-04": 1.0,
+    "u.final_property.complete": 1.0
+   },
+   "warnings": [
+    "Universal pipeline: AI-perceived checks are lower confidence than specialist measurements"
+   ],
+   "first_divergence": null,
+   "s": 0.2
+  },
+  "one_block_missing": {
+   "outcome": "FAIL",
+   "score": 6.0,
+   "criteria": {
+    "CRIT-U-CHK-FS-SIM": "satisfied",
+    "CRIT-U-CHK-FS-P01": "satisfied",
+    "CRIT-U-CHK-FS-P02": "satisfied",
+    "CRIT-U-CHK-FS-P03": "not_satisfied",
+    "CRIT-U-CHK-FS-P04": "not_satisfied",
+    "CRIT-U-CHK-FS-ALL": "partially_satisfied"
+   },
+   "metrics": {
+    "u.final_similarity": 0.9714271426200867,
+    "u.final_property.prop-01": 1.0,
+    "u.final_property.prop-02": 1.0,
+    "u.final_property.prop-03": 0.0,
+    "u.final_property.prop-04": 0.0,
+    "u.final_property.complete": 0.5
+   },
+   "warnings": [
+    "Universal pipeline: AI-perceived checks are lower confidence than specialist measurements"
+   ],
+   "first_divergence": "CRIT-U-CHK-FS-P03",
+   "s": 0.2
+  },
+  "wrong_colours": {
+   "outcome": "FAIL",
+   "score": 3.0,
+   "criteria": {
+    "CRIT-U-CHK-FS-SIM": "satisfied",
+    "CRIT-U-CHK-FS-P01": "satisfied",
+    "CRIT-U-CHK-FS-P02": "not_satisfied",
+    "CRIT-U-CHK-FS-P03": "not_satisfied",
+    "CRIT-U-CHK-FS-P04": "not_satisfied",
+    "CRIT-U-CHK-FS-ALL": "not_satisfied"
+   },
+   "metrics": {
+    "u.final_similarity": 0.9537099599838257,
+    "u.final_property.prop-01": 1.0,
+    "u.final_property.prop-02": 0.0,
+    "u.final_property.prop-03": 0.0,
+    "u.final_property.prop-04": 0.0,
+    "u.final_property.complete": 0.0
+   },
+   "warnings": [
+    "Universal pipeline: AI-perceived checks are lower confidence than specialist measurements"
+   ],
+   "first_divergence": "CRIT-U-CHK-FS-P02",
+   "s": 0.3
+  },
+  "unrelated_house_frame": {
+   "outcome": "REFUSED",
+   "category": "INVALID_INPUT",
+   "reason": "[INVALID_INPUT] Image is too blurry (blur score 0.0000 < 0.002); please re-record.",
+   "s": 0.0
+  }
+ }
+}

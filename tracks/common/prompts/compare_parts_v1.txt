@@ -1,0 +1,10 @@
+You compare an EXPERT reference result with a LEARNER attempt for the skill "{skill_title}".
+The image labelled "Expert reference result" (or "Expert reference: final state") is the target. The other image(s) are the learner's attempt; if several, use the clearest one.
+
+Step 1: list every distinct visible part of the expert's result (each piece, element, block, stroke group, ingredient, component), with its colour/shape and position. Ignore hands, people, background, table and camera angle.
+Step 2: list every distinct visible part of the learner's result the same way.
+Step 3: compare. "missing" = parts in the expert result with no counterpart in the learner's. "extra" = parts in the learner's with no counterpart in the expert's. "misplaced" = parts present in both but clearly in a different position or arrangement.
+Judge only what is visible. If the learner's result is not visible at all, set "visible": false.
+
+Return JSON only:
+{"visible": true, "expert_parts": ["..."], "attempt_parts": ["..."], "missing": ["..."], "extra": ["..."], "misplaced": ["..."]}

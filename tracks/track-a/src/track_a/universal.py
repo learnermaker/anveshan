@@ -365,6 +365,22 @@ def _default_checks(
                 process=False,
             ))
 
+        # Completeness against the expert's result: catches a missing/extra part even when the
+        # global similarity is high (judged with the expert image shown as reference).
+        checks.append(Check(
+            check_id="CHK-FS-ALL",
+            kind="final_property",
+            name="Complete: nothing missing or extra",
+            observable_indicator=("Every part visible in the expert reference result is also present in the attempt, "
+                                  "in the same arrangement, with nothing missing and nothing extra"),
+            targets=[],
+            metric_id="u.final_property.complete",
+            method="model_status",
+            weight=2,
+            required=True,
+            process=False,
+        ))
+
         if "line_art" in specialists:
             # Get line_art criterion templates from the specialist payload
             la_checks = _kolam_line_art_checks(specialists["line_art"])
@@ -512,18 +528,32 @@ def _kolam_line_art_checks(la_payload: Dict[str, Any]) -> List[Check]:
 
 
 def _rhythm_checks(rh_payload: Dict[str, Any]) -> List[Check]:
-    """Build rhythm checks from a Tabla-style specialist payload."""
-    checks = []
-    known_rhythm_metrics = [
-        ("tabla.tempo_error_pct", "Tempo accuracy", "Tempo error as a percentage", 3, True),
-        ("tabla.timing_median_ms", "Timing accuracy", "Median timing error in ms", 3, True),
-        ("tabla.bass_accuracy", "Bass/accent accuracy", "Balanced accuracy of bass strokes", 2, False),
-        ("tabla.missing_extra", "Missing/extra strokes", "Number of missing or extra strokes", 2, False),
+    """Rhythm checks for ANY rhythmic audio (onset-based DSP specialist), with explicit bands.
+
+    Bands follow the calibrated Tabla observers (tempo 5/10 %, timing 50/100 ms, completeness
+    1/3); steadiness is relative to the source's own inter-onset variability, so a loose
+    folk rhythm and a metronomic one are both judged against themselves.
+    """
+    src_cv = rh_payload.get("ioi_cv")
+    try:
+        src_cv = float(src_cv) if src_cv is not None else 0.1
+    except (TypeError, ValueError):
+        src_cv = 0.1
+    lo = lambda sat, part: [{"status": "satisfied", "max": sat}, {"status": "partially_satisfied", "max": part}]  # noqa: E731
+    hi = lambda sat, part: [{"status": "satisfied", "min": sat}, {"status": "partially_satisfied", "min": part}]  # noqa: E731
+    spec = [
+        ("tabla.tempo_error_pct", "Tempo", "Tempo within 5 % of the source", 3, True, "lower_is_better", lo(5.0, 10.0)),
+        ("tabla.timing_median_ms", "Timing", "Median onset timing error under 50 ms", 3, True, "lower_is_better", lo(50.0, 100.0)),
+        ("tabla.ioi_cv", "Steadiness", f"Inter-onset variability close to the source's ({src_cv:.2f})", 2, True,
+         "lower_is_better", lo(round(src_cv + 0.05, 3), round(src_cv + 0.12, 3))),
+        ("tabla.missing_extra", "Completeness", "At most 1 missing or extra onset", 2, False, "lower_is_better", lo(1.0, 3.0)),
+        ("tabla.bass_accuracy", "Accents", "Low/accented onsets in the same places as the source", 1, False,
+         "higher_is_better", hi(0.9, 0.7)),
     ]
-    for i, (metric, name, indicator, weight, required) in enumerate(known_rhythm_metrics):
-        check_id = f"CHK-RH-{i + 1:02d}"
+    checks = []
+    for i, (metric, name, indicator, weight, required, direction, bands) in enumerate(spec):
         checks.append(Check(
-            check_id=check_id,
+            check_id=f"CHK-RH-{i + 1:02d}",
             kind="rhythm",
             name=name,
             observable_indicator=indicator,
@@ -533,12 +563,7 @@ def _rhythm_checks(rh_payload: Dict[str, Any]) -> List[Check]:
             weight=weight,
             required=required,
             process=False,
-            params={"binding": {
-                "metric": f"rhythm:{metric}",
-                "direction": "lower_is_better" if "error" in metric or "missing" in metric else "higher_is_better",
-                "bands": [],
-                "process": False,
-            }},
+            params={"binding": {"metric": f"rhythm:{metric}", "direction": direction, "bands": bands, "process": False}},
         ))
     return checks
 
@@ -699,7 +724,11 @@ def propose_skill_model(
             # Prefer tracks.common.goals.tabla.payload_from_audio if available
             try:
                 from tracks.common.goals.tabla import payload_from_audio  # type: ignore
-                rh_payload = payload_from_audio(source_path, None)
+                rh_out = payload_from_audio(source_path, None)
+                # WP4 API: (payload, built_with, warnings, run_keys); older API: payload only
+                rh_payload = rh_out[0] if isinstance(rh_out, tuple) else rh_out
+                if isinstance(rh_out, tuple) and len(rh_out) > 2 and rh_out[2]:
+                    warnings.extend(f"rhythm: {w}" for w in rh_out[2])
                 specialists["rhythm"] = rh_payload if isinstance(rh_payload, dict) else rh_payload.model_dump(mode="json")
             except (ImportError, AttributeError):
                 # Fallback: call track_a.goals.tabla.build

@@ -95,6 +95,23 @@ def _video_frame_part(path: Path, t: float, label: str) -> Optional[ImagePart]:
         return None
 
 
+
+def _source_image_part(ctx: Optional[RunContext]) -> Optional[ImagePart]:
+    """The case's source image (expert result) as a judge reference, max side 512."""
+    if ctx is None or getattr(ctx, "case_dir", None) is None:
+        return None
+    try:
+        from PIL import Image
+        from tracks.common.casedata import load_sources, resolve_media
+        for src in load_sources(Path(ctx.case_dir)).sources:
+            if (src.mime_type or "").startswith("image/"):
+                return ImagePart(_jpeg(Image.open(resolve_media(Path(ctx.case_dir), src))), "image/jpeg",
+                                 "Expert reference result")
+    except Exception:  # noqa: BLE001 - caller records a warning when no reference is available
+        return None
+    return None
+
+
 def _source_keyframe_part(asset: Optional[str], label: str) -> Optional[ImagePart]:
     d = _SOURCE_DIR.get()
     if not asset or d is None:
@@ -457,6 +474,44 @@ def _judge_final(
     return metrics
 
 
+
+def _compare_parts(skill: SkillModel, parts: List[Any], checks: List[Any], ctx: RunContext,
+                   warnings: List[str]) -> Dict[str, Any]:
+    """Enumerate-then-compare completeness (model lists parts; a deterministic rule decides).
+
+    met = nothing missing/extra/misplaced; partly = exactly one discrepancy; not_met = more.
+    """
+    from pydantic import BaseModel
+
+    class _PartsDTO(BaseModel):
+        visible: bool = True
+        expert_parts: List[str] = []
+        attempt_parts: List[str] = []
+        missing: List[str] = []
+        extra: List[str] = []
+        misplaced: List[str] = []
+
+    try:
+        prompt_text, ver = load_prompt(PROMPT_DIR / "compare_parts_v1.txt", skill_title=skill.skill_title)
+        res = ctx.gateway.generate_json(
+            model_key="vision_fast", prompt_id="compare_parts", prompt_version=ver, prompt_text=prompt_text,
+            schema=_PartsDTO, parts=parts, expected_behavior="part lists for expert and attempt, with differences",
+        )
+    except (ModelError, FileNotFoundError) as exc:
+        warnings.append(f"completeness comparison failed: {exc}")
+        return {}
+    d = res.data
+    n = len(d.missing) + len(d.extra) + len(d.misplaced)
+    if not d.visible:
+        status, finding = "cannot_tell", "the learner's result is not visible"
+    else:
+        status = "met" if n == 0 else ("partly" if n == 1 else "not_met")
+        bits = [f"missing: {', '.join(d.missing)}" if d.missing else "", f"extra: {', '.join(d.extra)}" if d.extra else "",
+                f"misplaced: {', '.join(d.misplaced)}" if d.misplaced else ""]
+        finding = "; ".join(b for b in bits if b) or f"all {len(d.expert_parts)} parts present and in place"
+    return {c.check_id: {"check_id": c.check_id, "status": status, "finding": finding[:300], "region": None} for c in checks}
+
+
 def _call_judge_final(
     skill: SkillModel,
     attempt: AttemptMedia,
@@ -502,6 +557,11 @@ def _call_judge_final(
             parts.append(ImagePart(buf.getvalue(), "image/jpeg", "Attempt image"))
         except Exception as exc:
             warnings.append(f"Could not load attempt image: {exc}")
+        ref = _source_image_part(ctx)
+        if ref is not None:
+            parts.append(ref)
+        else:
+            warnings.append("expert reference image unavailable for the final-state judge")
     elif attempt.kind == "video" and attempt.path.exists():
         from tracks.common.media import probe
         dur = probe(attempt.path).duration_sec or 0.0
@@ -519,6 +579,15 @@ def _call_judge_final(
             if ref is not None:
                 parts.append(ref)
 
+    out: Dict[str, Any] = {}
+    complete = [c for c in checks if c.metric_id == "u.final_property.complete"]
+    checks = [c for c in checks if c.metric_id != "u.final_property.complete"]
+    if complete and parts:
+        out.update(_compare_parts(skill, parts, complete, ctx, warnings))
+    if not checks:
+        return out
+    checks_json = json.dumps([{"check_id": c.check_id, "target_statement": c.observable_indicator} for c in checks], indent=2)
+    prompt_text, ver = load_prompt(prompt_path, checks_json=checks_json)
     try:
         result = ctx.gateway.generate_json(
             model_key="vision_fast",
@@ -529,10 +598,11 @@ def _call_judge_final(
             parts=parts,
             expected_behavior="judge final properties of the attempt",
         )
-        return {r.check_id: r.model_dump() for r in result.data.results}
+        out.update({r.check_id: r.model_dump() for r in result.data.results})
+        return out
     except ModelError as exc:
         warnings.append(f"judge_final model call failed: {exc}")
-        return {}
+        return out
 
 
 # ---------------------------------------------------------------------------
@@ -972,7 +1042,15 @@ def _run_specialist(
             return kolam_evaluate(goal_specialist, attempt, ctx)
         elif specialist_name == "rhythm":
             from track_b.evaluators.tabla import evaluate as tabla_evaluate
-            return tabla_evaluate(goal_specialist, attempt, ctx)
+            try:
+                return tabla_evaluate(goal_specialist, attempt, ctx)
+            except AnveshanFailure as exc:
+                # The rhythm specialist serves ANY rhythmic skill here: drop tabla-specific wording.
+                msg = exc.message
+                for a, b in (("distinct drum strokes", "distinct notes, beats or strokes"), ("the tabla", "the sound source"),
+                             ("the drums", "the sound source"), ("drum strokes", "notes or beats"), ("drums", "sound source")):
+                    msg = msg.replace(a, b)
+                raise AnveshanFailure(exc.category, msg, getattr(exc, "details", None)) from exc
     except AnveshanFailure:
         raise
     except Exception as exc:

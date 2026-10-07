@@ -306,8 +306,12 @@ def _build_probe_and_proposal(
     description: Optional[str],
     sha: str,
     asset_dir: Path,
+    source_path: Optional[Path] = None,
 ) -> tuple:
-    """Run specialist/structure probes and call the skill model proposer."""
+    """Run specialist/structure probes and call the skill model proposer.
+
+    ``source_path`` (the uploaded file) lets specialists (rhythm, line art) build their
+    payloads; without it an audio-only skill would have no checks."""
     spec_results = available_specialists(record, asset_dir)
     struct_results = available_structures(record, spec_results)
 
@@ -340,7 +344,7 @@ def _build_probe_and_proposal(
     if propose_skill_model is not None:
         try:
             skill_model, proposal_meta, model_warnings = propose_skill_model(
-                record, probe, intake, ctx, title_hint, description
+                record, probe, intake, ctx, title_hint, description, source_path=source_path
             )
         except Exception as e:
             log.warning("propose_skill_model failed: %s; using fallback", e)
@@ -348,7 +352,8 @@ def _build_probe_and_proposal(
             skill_model = None
 
     if skill_model is None:
-        skill_model, proposal_meta, model_warnings = _fallback_skill_model(record, probe, intake, title_hint)
+        skill_model, proposal_meta, fb_warnings = _fallback_skill_model(record, probe, intake, title_hint)
+        model_warnings = [*model_warnings, *fb_warnings]
 
     return probe, skill_model, proposal_meta, model_warnings
 
@@ -491,7 +496,7 @@ def create_draft(
         else:
             try:
                 probe, skill_model, proposal_meta, model_warnings = _build_probe_and_proposal(
-                    record, intake, ctx, title_hint, description, sha, asset_dir
+                    record, intake, ctx, title_hint, description, sha, asset_dir, source_path=source_dest
                 )
                 warnings_list.extend(model_warnings)
 
@@ -580,7 +585,7 @@ def refine_draft(
 
     probe, skill_model, proposal_meta, model_warnings = _build_probe_and_proposal(
         draft.perception, draft.intake, ctx,
-        title, description, sha, draft.dir / "assets",
+        title, description, sha, draft.dir / "assets", source_path=draft.source_path,
     )
     probe = ProbeFacts(**{**probe.model_dump(), "bytes": size})
 

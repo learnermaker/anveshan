@@ -1,0 +1,111 @@
+{
+ "scenario": "audio",
+ "mode": "recorded",
+ "compose": {
+  "compose_s": 0.0,
+  "refused": false,
+  "build_s": 0.1,
+  "structures": [
+   "temporal_pattern"
+  ],
+  "n_steps": 0,
+  "steps": [],
+  "checks": [
+   "CHK-RH-01:rhythm",
+   "CHK-RH-02:rhythm",
+   "CHK-RH-03:rhythm",
+   "CHK-RH-04:rhythm",
+   "CHK-RH-05:rhythm"
+  ],
+  "warnings": [
+   "Composed case: claims named by AI are inferred until reviewed.",
+   "package not expert-approved"
+  ]
+ },
+ "attempts": {
+  "same_melody": {
+   "outcome": "PASS",
+   "score": 11.0,
+   "criteria": {
+    "CRIT-U-CHK-RH-01": "satisfied",
+    "CRIT-U-CHK-RH-02": "satisfied",
+    "CRIT-U-CHK-RH-03": "satisfied",
+    "CRIT-U-CHK-RH-04": "satisfied",
+    "CRIT-U-CHK-RH-05": "satisfied"
+   },
+   "metrics": {
+    "rhythm:tabla.tempo_error_pct": 0.0,
+    "rhythm:tabla.timing_median_ms": 0.0,
+    "rhythm:tabla.timing_p90_ms": 0.0,
+    "rhythm:tabla.ioi_cv": 0.0,
+    "rhythm:tabla.bass_accuracy": 1.0,
+    "rhythm:tabla.missing_extra": 0.0,
+    "rhythm:tabla.bol_accuracy": null,
+    "rhythm:tabla.stroke_class_accuracy": 1.0
+   },
+   "warnings": [
+    "Universal pipeline: AI-perceived checks are lower confidence than specialist measurements"
+   ],
+   "first_divergence": null,
+   "s": 0.2
+  },
+  "rushed": {
+   "outcome": "FAIL",
+   "score": 7.5,
+   "criteria": {
+    "CRIT-U-CHK-RH-01": "not_satisfied",
+    "CRIT-U-CHK-RH-02": "satisfied",
+    "CRIT-U-CHK-RH-03": "satisfied",
+    "CRIT-U-CHK-RH-04": "satisfied",
+    "CRIT-U-CHK-RH-05": "partially_satisfied"
+   },
+   "metrics": {
+    "rhythm:tabla.tempo_error_pct": 48.23,
+    "rhythm:tabla.timing_median_ms": 4.2,
+    "rhythm:tabla.timing_p90_ms": 6.9,
+    "rhythm:tabla.ioi_cv": 0.0202,
+    "rhythm:tabla.bass_accuracy": 0.875,
+    "rhythm:tabla.missing_extra": 0.0,
+    "rhythm:tabla.bol_accuracy": null,
+    "rhythm:tabla.stroke_class_accuracy": 0.0
+   },
+   "warnings": [
+    "Universal pipeline: AI-perceived checks are lower confidence than specialist measurements"
+   ],
+   "first_divergence": "CRIT-U-CHK-RH-01",
+   "s": 0.1
+  },
+  "irregular": {
+   "outcome": "FAIL",
+   "score": 3.0,
+   "criteria": {
+    "CRIT-U-CHK-RH-01": "not_satisfied",
+    "CRIT-U-CHK-RH-02": "satisfied",
+    "CRIT-U-CHK-RH-03": "not_satisfied",
+    "CRIT-U-CHK-RH-04": "not_satisfied",
+    "CRIT-U-CHK-RH-05": "not_satisfied"
+   },
+   "metrics": {
+    "rhythm:tabla.tempo_error_pct": 12.9,
+    "rhythm:tabla.timing_median_ms": 48.3,
+    "rhythm:tabla.timing_p90_ms": 115.4,
+    "rhythm:tabla.ioi_cv": 0.2611,
+    "rhythm:tabla.bass_accuracy": 0.5833,
+    "rhythm:tabla.missing_extra": 4.0,
+    "rhythm:tabla.bol_accuracy": null,
+    "rhythm:tabla.stroke_class_accuracy": 0.0
+   },
+   "warnings": [
+    "Universal pipeline: AI-perceived checks are lower confidence than specialist measurements"
+   ],
+   "first_divergence": "CRIT-U-CHK-RH-01",
+   "s": 0.1
+  },
+  "white_noise": {
+   "outcome": "REFUSED",
+   "category": "INVALID_INPUT",
+   "reason": "[INVALID_INPUT] No distinct notes, beats or strokes can be heard in this recording (it sounds like a steady tone or background noise). Record the sound source c",
+   "s": 0.1
+  }
+ }
+}

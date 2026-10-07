@@ -166,7 +166,7 @@ def compose(src: Path, mime: str, title: str, work: Path, mode: str) -> Dict:
     return info
 
 
-def attempt(case_dir: Path, path: Path, work: Path, mode: str) -> Dict:
+def attempt(case_dir: Path, path: Path, work: Path, mode: str, kind: str = "video") -> Dict:
     from tracks.common.runtime import RunContext
     from track_b import api as tb
     from tracks.common.models import AnveshanFailure
@@ -175,7 +175,7 @@ def attempt(case_dir: Path, path: Path, work: Path, mode: str) -> Dict:
     sess = tb.start_session(case_dir, "stress", data_dir)
     t0 = time.time()
     try:
-        media = tb.intake_attempt(sess, path, "video")
+        media = tb.intake_attempt(sess, path, kind)
         res = tb.submit_attempt(sess, media, RunContext.create(case_dir, data_dir, mode)).data
     except AnveshanFailure as exc:
         return {"outcome": "REFUSED", "category": exc.category.value, "reason": str(exc)[:160], "s": round(time.time() - t0, 1)}
