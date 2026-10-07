@@ -1,0 +1,50 @@
+{
+  "generated_at": "2026-10-07T10:03:15+00:00",
+  "tests": {
+    "count": 560,
+    "date": "2026-10-07"
+  },
+  "skills": [
+    {
+      "case_id": "kolam",
+      "title": "Ithayakkamalam Kolam (heart lotus)",
+      "runs_per_sample": 3,
+      "consistency": 1.0,
+      "samples": {
+        "good": "passed",
+        "flawed": "caught",
+        "unrelated": "refused"
+      },
+      "notes": "Deterministic checks; identical results by design."
+    },
+    {
+      "case_id": "tabla",
+      "title": "Tabla Dha Stroke & Timing",
+      "runs_per_sample": 3,
+      "consistency": 1.0,
+      "samples": {
+        "good": "passed",
+        "flawed": "caught",
+        "unrelated": "refused"
+      },
+      "notes": "Deterministic checks; identical results by design."
+    },
+    {
+      "case_id": "origami-crane",
+      "title": "Fold a paper crane: the first folds",
+      "runs_per_sample": 3,
+      "consistency": 0.8889,
+      "samples": {
+        "good": "failed",
+        "flawed": "caught",
+        "unrelated": "refused"
+      },
+      "notes": "Some variation observed (consistency=0.89). Swapped-order mistakes are not always caught in video."
+    }
+  ],
+  "not_yet": [
+    "No study with real learners or experts has been run yet.",
+    "Internet sources are not verified experts.",
+    "Sample sizes are small (3 samples x 3 runs per skill); these numbers are engineering evidence, not learner validation."
+  ]
+}

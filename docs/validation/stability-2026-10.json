@@ -1,0 +1,491 @@
+{
+  "generated_at": "2026-10-07T10:03:15+00:00",
+  "runs_per_sample": 3,
+  "live_cache_disabled": true,
+  "total_live_calls": 40,
+  "live_call_budget": 60,
+  "models": {
+    "kolam": "deterministic (no model calls)",
+    "tabla": "deterministic (no model calls)",
+    "origami-crane": "vision_fast=gemini-3.5-flash-lite, embedding=gemini-embedding-2"
+  },
+  "cases": {
+    "kolam": {
+      "case_id": "kolam",
+      "mode": "recorded",
+      "runs_per_sample": 3,
+      "samples": {
+        "good": {
+          "quality": "good",
+          "runs": [
+            {
+              "passed": true,
+              "total_score": 1.0,
+              "criterion_statuses": {
+                "CRIT-KOLAM-COVERAGE": "satisfied",
+                "CRIT-KOLAM-PRECISION": "satisfied",
+                "CRIT-KOLAM-DOTS": "satisfied",
+                "CRIT-KOLAM-CURVES": "satisfied",
+                "CRIT-KOLAM-CONTINUITY": "satisfied"
+              },
+              "first_divergence_criterion": null,
+              "refused": false,
+              "live_calls": 0,
+              "error": null
+            },
+            {
+              "passed": true,
+              "total_score": 1.0,
+              "criterion_statuses": {
+                "CRIT-KOLAM-COVERAGE": "satisfied",
+                "CRIT-KOLAM-PRECISION": "satisfied",
+                "CRIT-KOLAM-DOTS": "satisfied",
+                "CRIT-KOLAM-CURVES": "satisfied",
+                "CRIT-KOLAM-CONTINUITY": "satisfied"
+              },
+              "first_divergence_criterion": null,
+              "refused": false,
+              "live_calls": 0,
+              "error": null
+            },
+            {
+              "passed": true,
+              "total_score": 1.0,
+              "criterion_statuses": {
+                "CRIT-KOLAM-COVERAGE": "satisfied",
+                "CRIT-KOLAM-PRECISION": "satisfied",
+                "CRIT-KOLAM-DOTS": "satisfied",
+                "CRIT-KOLAM-CURVES": "satisfied",
+                "CRIT-KOLAM-CONTINUITY": "satisfied"
+              },
+              "first_divergence_criterion": null,
+              "refused": false,
+              "live_calls": 0,
+              "error": null
+            }
+          ],
+          "consistency": 1.0,
+          "outcome": "passed",
+          "budget_exceeded": false
+        },
+        "flawed": {
+          "quality": "flawed",
+          "runs": [
+            {
+              "passed": false,
+              "total_score": 0.7,
+              "criterion_statuses": {
+                "CRIT-KOLAM-COVERAGE": "partially_satisfied",
+                "CRIT-KOLAM-PRECISION": "satisfied",
+                "CRIT-KOLAM-DOTS": "satisfied",
+                "CRIT-KOLAM-CURVES": "not_satisfied",
+                "CRIT-KOLAM-CONTINUITY": "satisfied"
+              },
+              "first_divergence_criterion": "CRIT-KOLAM-COVERAGE",
+              "refused": false,
+              "live_calls": 0,
+              "error": null
+            },
+            {
+              "passed": false,
+              "total_score": 0.7,
+              "criterion_statuses": {
+                "CRIT-KOLAM-COVERAGE": "partially_satisfied",
+                "CRIT-KOLAM-PRECISION": "satisfied",
+                "CRIT-KOLAM-DOTS": "satisfied",
+                "CRIT-KOLAM-CURVES": "not_satisfied",
+                "CRIT-KOLAM-CONTINUITY": "satisfied"
+              },
+              "first_divergence_criterion": "CRIT-KOLAM-COVERAGE",
+              "refused": false,
+              "live_calls": 0,
+              "error": null
+            },
+            {
+              "passed": false,
+              "total_score": 0.7,
+              "criterion_statuses": {
+                "CRIT-KOLAM-COVERAGE": "partially_satisfied",
+                "CRIT-KOLAM-PRECISION": "satisfied",
+                "CRIT-KOLAM-DOTS": "satisfied",
+                "CRIT-KOLAM-CURVES": "not_satisfied",
+                "CRIT-KOLAM-CONTINUITY": "satisfied"
+              },
+              "first_divergence_criterion": "CRIT-KOLAM-COVERAGE",
+              "refused": false,
+              "live_calls": 0,
+              "error": null
+            }
+          ],
+          "consistency": 1.0,
+          "outcome": "caught",
+          "budget_exceeded": false
+        },
+        "unrelated": {
+          "quality": "unrelated",
+          "runs": [
+            {
+              "passed": false,
+              "total_score": 0.3,
+              "criterion_statuses": {
+                "CRIT-KOLAM-COVERAGE": "not_satisfied",
+                "CRIT-KOLAM-PRECISION": "not_satisfied",
+                "CRIT-KOLAM-DOTS": "uncertain",
+                "CRIT-KOLAM-CURVES": "not_satisfied",
+                "CRIT-KOLAM-CONTINUITY": "satisfied"
+              },
+              "first_divergence_criterion": "CRIT-KOLAM-PRECISION",
+              "refused": false,
+              "live_calls": 0,
+              "error": null
+            },
+            {
+              "passed": false,
+              "total_score": 0.3,
+              "criterion_statuses": {
+                "CRIT-KOLAM-COVERAGE": "not_satisfied",
+                "CRIT-KOLAM-PRECISION": "not_satisfied",
+                "CRIT-KOLAM-DOTS": "uncertain",
+                "CRIT-KOLAM-CURVES": "not_satisfied",
+                "CRIT-KOLAM-CONTINUITY": "satisfied"
+              },
+              "first_divergence_criterion": "CRIT-KOLAM-PRECISION",
+              "refused": false,
+              "live_calls": 0,
+              "error": null
+            },
+            {
+              "passed": false,
+              "total_score": 0.3,
+              "criterion_statuses": {
+                "CRIT-KOLAM-COVERAGE": "not_satisfied",
+                "CRIT-KOLAM-PRECISION": "not_satisfied",
+                "CRIT-KOLAM-DOTS": "uncertain",
+                "CRIT-KOLAM-CURVES": "not_satisfied",
+                "CRIT-KOLAM-CONTINUITY": "satisfied"
+              },
+              "first_divergence_criterion": "CRIT-KOLAM-PRECISION",
+              "refused": false,
+              "live_calls": 0,
+              "error": null
+            }
+          ],
+          "consistency": 1.0,
+          "outcome": "refused",
+          "budget_exceeded": false
+        }
+      },
+      "consistency": 1.0
+    },
+    "tabla": {
+      "case_id": "tabla",
+      "mode": "recorded",
+      "runs_per_sample": 3,
+      "samples": {
+        "good": {
+          "quality": "good",
+          "runs": [
+            {
+              "passed": true,
+              "total_score": 0.7857,
+              "criterion_statuses": {
+                "CRIT-TABLA-TEMPO": "satisfied",
+                "CRIT-TABLA-TIMING": "satisfied",
+                "CRIT-TABLA-BAYAN": "satisfied",
+                "CRIT-TABLA-COMPLETE": "satisfied",
+                "CRIT-TABLA-STEADY": "satisfied",
+                "CRIT-TABLA-BOLS": "uncertain",
+                "CRIT-TABLA-STROKES": "not_satisfied"
+              },
+              "first_divergence_criterion": "CRIT-TABLA-STROKES",
+              "refused": false,
+              "live_calls": 0,
+              "error": null
+            },
+            {
+              "passed": true,
+              "total_score": 0.7857,
+              "criterion_statuses": {
+                "CRIT-TABLA-TEMPO": "satisfied",
+                "CRIT-TABLA-TIMING": "satisfied",
+                "CRIT-TABLA-BAYAN": "satisfied",
+                "CRIT-TABLA-COMPLETE": "satisfied",
+                "CRIT-TABLA-STEADY": "satisfied",
+                "CRIT-TABLA-BOLS": "uncertain",
+                "CRIT-TABLA-STROKES": "not_satisfied"
+              },
+              "first_divergence_criterion": "CRIT-TABLA-STROKES",
+              "refused": false,
+              "live_calls": 0,
+              "error": null
+            },
+            {
+              "passed": true,
+              "total_score": 0.7857,
+              "criterion_statuses": {
+                "CRIT-TABLA-TEMPO": "satisfied",
+                "CRIT-TABLA-TIMING": "satisfied",
+                "CRIT-TABLA-BAYAN": "satisfied",
+                "CRIT-TABLA-COMPLETE": "satisfied",
+                "CRIT-TABLA-STEADY": "satisfied",
+                "CRIT-TABLA-BOLS": "uncertain",
+                "CRIT-TABLA-STROKES": "not_satisfied"
+              },
+              "first_divergence_criterion": "CRIT-TABLA-STROKES",
+              "refused": false,
+              "live_calls": 0,
+              "error": null
+            }
+          ],
+          "consistency": 1.0,
+          "outcome": "passed",
+          "budget_exceeded": false
+        },
+        "flawed": {
+          "quality": "flawed",
+          "runs": [
+            {
+              "passed": false,
+              "total_score": 0.5714,
+              "criterion_statuses": {
+                "CRIT-TABLA-TEMPO": "satisfied",
+                "CRIT-TABLA-TIMING": "satisfied",
+                "CRIT-TABLA-BAYAN": "partially_satisfied",
+                "CRIT-TABLA-COMPLETE": "not_satisfied",
+                "CRIT-TABLA-STEADY": "satisfied",
+                "CRIT-TABLA-BOLS": "uncertain",
+                "CRIT-TABLA-STROKES": "not_satisfied"
+              },
+              "first_divergence_criterion": "CRIT-TABLA-COMPLETE",
+              "refused": false,
+              "live_calls": 0,
+              "error": null
+            },
+            {
+              "passed": false,
+              "total_score": 0.5714,
+              "criterion_statuses": {
+                "CRIT-TABLA-TEMPO": "satisfied",
+                "CRIT-TABLA-TIMING": "satisfied",
+                "CRIT-TABLA-BAYAN": "partially_satisfied",
+                "CRIT-TABLA-COMPLETE": "not_satisfied",
+                "CRIT-TABLA-STEADY": "satisfied",
+                "CRIT-TABLA-BOLS": "uncertain",
+                "CRIT-TABLA-STROKES": "not_satisfied"
+              },
+              "first_divergence_criterion": "CRIT-TABLA-COMPLETE",
+              "refused": false,
+              "live_calls": 0,
+              "error": null
+            },
+            {
+              "passed": false,
+              "total_score": 0.5714,
+              "criterion_statuses": {
+                "CRIT-TABLA-TEMPO": "satisfied",
+                "CRIT-TABLA-TIMING": "satisfied",
+                "CRIT-TABLA-BAYAN": "partially_satisfied",
+                "CRIT-TABLA-COMPLETE": "not_satisfied",
+                "CRIT-TABLA-STEADY": "satisfied",
+                "CRIT-TABLA-BOLS": "uncertain",
+                "CRIT-TABLA-STROKES": "not_satisfied"
+              },
+              "first_divergence_criterion": "CRIT-TABLA-COMPLETE",
+              "refused": false,
+              "live_calls": 0,
+              "error": null
+            }
+          ],
+          "consistency": 1.0,
+          "outcome": "caught",
+          "budget_exceeded": false
+        },
+        "unrelated": {
+          "quality": "unrelated",
+          "runs": [
+            {
+              "passed": false,
+              "total_score": 0.0,
+              "criterion_statuses": {},
+              "first_divergence_criterion": null,
+              "refused": true,
+              "live_calls": 0,
+              "error": "[INVALID_INPUT] No distinct drum strokes can be heard in this recording (it sounds like a steady tone or background noise). Record the tabla closer to the microphone in a quiet room."
+            },
+            {
+              "passed": false,
+              "total_score": 0.0,
+              "criterion_statuses": {},
+              "first_divergence_criterion": null,
+              "refused": true,
+              "live_calls": 0,
+              "error": "[INVALID_INPUT] No distinct drum strokes can be heard in this recording (it sounds like a steady tone or background noise). Record the tabla closer to the microphone in a quiet room."
+            },
+            {
+              "passed": false,
+              "total_score": 0.0,
+              "criterion_statuses": {},
+              "first_divergence_criterion": null,
+              "refused": true,
+              "live_calls": 0,
+              "error": "[INVALID_INPUT] No distinct drum strokes can be heard in this recording (it sounds like a steady tone or background noise). Record the tabla closer to the microphone in a quiet room."
+            }
+          ],
+          "consistency": 1.0,
+          "outcome": "refused",
+          "budget_exceeded": false
+        }
+      },
+      "consistency": 1.0
+    },
+    "origami-crane": {
+      "case_id": "origami-crane",
+      "mode": "live",
+      "runs_per_sample": 3,
+      "samples": {
+        "good": {
+          "quality": "good",
+          "runs": [
+            {
+              "passed": false,
+              "total_score": 0.4,
+              "criterion_statuses": {
+                "CRIT-U-CHK-PR-COV": "not_satisfied",
+                "CRIT-U-CHK-PR-ORD": "satisfied",
+                "CRIT-U-CHK-PR-OFF": "satisfied",
+                "CRIT-U-CHK-PR-FIN": "not_satisfied",
+                "CRIT-U-CHK-PR-Q01": "not_satisfied"
+              },
+              "first_divergence_criterion": "CRIT-U-CHK-PR-COV",
+              "refused": false,
+              "live_calls": 6,
+              "error": null
+            },
+            {
+              "passed": false,
+              "total_score": 0.4,
+              "criterion_statuses": {
+                "CRIT-U-CHK-PR-COV": "not_satisfied",
+                "CRIT-U-CHK-PR-ORD": "satisfied",
+                "CRIT-U-CHK-PR-OFF": "satisfied",
+                "CRIT-U-CHK-PR-FIN": "not_satisfied",
+                "CRIT-U-CHK-PR-Q01": "not_satisfied"
+              },
+              "first_divergence_criterion": "CRIT-U-CHK-PR-COV",
+              "refused": false,
+              "live_calls": 6,
+              "error": null
+            },
+            {
+              "passed": false,
+              "total_score": 0.3,
+              "criterion_statuses": {
+                "CRIT-U-CHK-PR-COV": "not_satisfied",
+                "CRIT-U-CHK-PR-ORD": "satisfied",
+                "CRIT-U-CHK-PR-OFF": "partially_satisfied",
+                "CRIT-U-CHK-PR-FIN": "not_satisfied",
+                "CRIT-U-CHK-PR-Q01": "not_satisfied"
+              },
+              "first_divergence_criterion": "CRIT-U-CHK-PR-OFF",
+              "refused": false,
+              "live_calls": 6,
+              "error": null
+            }
+          ],
+          "consistency": 0.6667,
+          "outcome": "failed",
+          "budget_exceeded": false
+        },
+        "flawed": {
+          "quality": "flawed",
+          "runs": [
+            {
+              "passed": false,
+              "total_score": 0.6,
+              "criterion_statuses": {
+                "CRIT-U-CHK-PR-COV": "not_satisfied",
+                "CRIT-U-CHK-PR-ORD": "satisfied",
+                "CRIT-U-CHK-PR-OFF": "satisfied",
+                "CRIT-U-CHK-PR-FIN": "satisfied",
+                "CRIT-U-CHK-PR-Q01": "not_satisfied"
+              },
+              "first_divergence_criterion": "CRIT-U-CHK-PR-COV",
+              "refused": false,
+              "live_calls": 6,
+              "error": null
+            },
+            {
+              "passed": false,
+              "total_score": 0.6,
+              "criterion_statuses": {
+                "CRIT-U-CHK-PR-COV": "not_satisfied",
+                "CRIT-U-CHK-PR-ORD": "satisfied",
+                "CRIT-U-CHK-PR-OFF": "satisfied",
+                "CRIT-U-CHK-PR-FIN": "satisfied",
+                "CRIT-U-CHK-PR-Q01": "not_satisfied"
+              },
+              "first_divergence_criterion": "CRIT-U-CHK-PR-COV",
+              "refused": false,
+              "live_calls": 5,
+              "error": null
+            },
+            {
+              "passed": false,
+              "total_score": 0.6,
+              "criterion_statuses": {
+                "CRIT-U-CHK-PR-COV": "not_satisfied",
+                "CRIT-U-CHK-PR-ORD": "satisfied",
+                "CRIT-U-CHK-PR-OFF": "satisfied",
+                "CRIT-U-CHK-PR-FIN": "satisfied",
+                "CRIT-U-CHK-PR-Q01": "not_satisfied"
+              },
+              "first_divergence_criterion": "CRIT-U-CHK-PR-COV",
+              "refused": false,
+              "live_calls": 5,
+              "error": null
+            }
+          ],
+          "consistency": 1.0,
+          "outcome": "caught",
+          "budget_exceeded": false
+        },
+        "unrelated": {
+          "quality": "unrelated",
+          "runs": [
+            {
+              "passed": false,
+              "total_score": 0.0,
+              "criterion_statuses": {},
+              "first_divergence_criterion": null,
+              "refused": true,
+              "live_calls": 2,
+              "error": "[INVALID_INPUT] This doesn't look like an attempt at Fold a Paper Crane (similarity 0.73). Please upload video, image."
+            },
+            {
+              "passed": false,
+              "total_score": 0.0,
+              "criterion_statuses": {},
+              "first_divergence_criterion": null,
+              "refused": true,
+              "live_calls": 2,
+              "error": "[INVALID_INPUT] This doesn't look like an attempt at Fold a Paper Crane (similarity 0.73). Please upload video, image."
+            },
+            {
+              "passed": false,
+              "total_score": 0.0,
+              "criterion_statuses": {},
+              "first_divergence_criterion": null,
+              "refused": true,
+              "live_calls": 2,
+              "error": "[INVALID_INPUT] This doesn't look like an attempt at Fold a Paper Crane (similarity 0.73). Please upload video, image."
+            }
+          ],
+          "consistency": 1.0,
+          "outcome": "refused",
+          "budget_exceeded": false
+        }
+      },
+      "consistency": 0.8889
+    }
+  }
+}
