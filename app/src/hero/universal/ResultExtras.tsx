@@ -1,7 +1,8 @@
-/** Universal-case result extras: MEASURED vs AI-JUDGED criterion badges and a video step strip. */
+/** Universal-case result extras: MEASURED vs AI-JUDGED criterion badges and a video step strip (DEBUG only). */
 import React from 'react';
 import type { AttemptResult, CaseView, UniversalUiView } from '../../api/types';
 import { Badge } from '../ui';
+import { DEBUG } from '../../api/debug';
 
 const MEASURED_MARKERS = ['u.step_', 'u.off_path', 'u.final_similarity', 'rhythm:', 'line_art'];
 const JUDGED_MARKERS = ['u.final_property.', 'u.final_state_match', 'u.step_quality.'];
@@ -30,6 +31,7 @@ export function criterionMetricIds(view: CaseView): Record<string, string> {
 }
 
 export function OriginBadge({ metricId }: { metricId: string | undefined }) {
+  if (!DEBUG) return null;
   const o = metricOrigin(metricId);
   if (o === 'measured') return <Badge tone="emerald" title={`Computed deterministically (${metricId})`}>MEASURED</Badge>;
   if (o === 'judged') return <Badge tone="amber" title={`Judged by a model (${metricId})`}>AI-JUDGED</Badge>;
