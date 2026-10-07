@@ -366,7 +366,7 @@ async function runWalk(matchers) {
     // Enter steward code
     const codeInput = await page.$('input[type="password"], input[name*="code"], input[placeholder*="code"]');
     if (codeInput) {
-      await codeInput.type('steward');
+      await codeInput.type(process.env.ANVESHAN_STEWARD_CODE || 'steward');
       const signInBtn = await findButtonByText(page, 'Sign in');
       if (signInBtn) {
         await signInBtn.click();

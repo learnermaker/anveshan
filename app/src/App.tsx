@@ -392,7 +392,7 @@ export function App() {
               VIEW PROVENANCE DAG
             </button>
           )}
-          <span>{selected.kind === 'showcase' ? 'SYNTHETIC REPLAY FIXTURE' : IS_MOCK ? 'MOCK DATA (SYNTHETIC)' : 'Scores come from fixed rules, never from the AI'}</span>
+          <span data-plain-exempt>{selected.kind === 'showcase' ? 'SYNTHETIC REPLAY FIXTURE' : IS_MOCK ? 'MOCK DATA (SYNTHETIC)' : 'Scores come from fixed rules, never from the AI'}</span>
           {health?.steward_enabled !== false && currentView !== 'steward' && (
             <button
               onClick={() => setCurrentView('steward')}

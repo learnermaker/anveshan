@@ -85,7 +85,7 @@ export function AttemptProgress({ attempts, started, completing, onRetry, onComp
   const steps = ['First try', 'Second try', 'See what changed'];
   const doneCount = Math.min(attempts, 2);
   let next: React.ReactNode;
-  if (!started) next = 'Start a session below. Your name is optional.';
+  if (!started) next = 'Start below. Your name is optional.';
   else if (attempts === 0) next = 'Do the task once, as well as you can, and submit it.';
   else if (attempts === 1)
     next = retryOpen ? (

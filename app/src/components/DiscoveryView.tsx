@@ -227,8 +227,8 @@ export function DiscoveryView({ heroCases, heroError, heroLoading, onRefreshHero
                   <div className="w-9 h-9 rounded-lg bg-surface-dim border border-outline flex items-center justify-center">{SHOWCASE_ICON[id]}</div>
                   <Badge tone="crimson">SYNTHETIC</Badge>
                 </div>
-                <div className="font-semibold text-sm">{c.title}</div>
-                <div className="text-xs font-mono text-on-surface-variant">{c.archetype}</div>
+                <div className="font-semibold text-sm" data-plain-exempt>{c.title}</div>
+                <div className="text-xs font-mono text-on-surface-variant" data-plain-exempt>{c.archetype}</div>
               </button>
             );
           })}

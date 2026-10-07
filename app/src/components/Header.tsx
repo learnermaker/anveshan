@@ -183,7 +183,7 @@ export const Header: React.FC<HeaderProps> = ({
               aria-label={`Runtime panel, mode ${modeLabel}`}
             >
               <span className={`w-1.5 h-1.5 rounded-full ${IS_MOCK ? 'bg-divergence-crimson' : 'bg-cadmium-amber'}`} />
-              <span className="hidden sm:inline">MODE: {modeLabel}</span>
+              <span className="hidden sm:inline" data-plain-exempt>MODE: {modeLabel}</span>
               <Settings className="w-3 h-3 opacity-60" aria-hidden="true" />
             </button>
           )}
