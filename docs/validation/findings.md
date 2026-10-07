@@ -36,7 +36,8 @@ The universal composer can process novel image and video skills without skill-sp
 
 **What is validated (capability evidence):**
 - Image compose: perceive → propose → build → evaluate works on a real Kolam image and a synthetic rangoli. (E4)
-- Similarity gate: same image = 1.00; half-erased = 0.96; gradient (blank/uniform) correctly refused. (E4)
+- Similarity gate: same image = 1.00; half-erased = 0.96; the gradient (blank/uniform) image was refused by the quality gate. (E4; "PASS" there meant no error, not a rubric pass.)
+- New-upload robustness at verdict level (video, image, audio): see E6. Known limit: fine-grained states in low-resolution, hand-dominated video. (E6)
 - Video compose: tabla_chanderi video correctly classified as procedure + temporal_pattern. (E4)
 
 **What is NOT validated:**

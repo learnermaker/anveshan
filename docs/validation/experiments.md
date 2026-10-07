@@ -308,6 +308,8 @@ For each source: compose (perceive + propose + build), then evaluate 1–2 attem
 | tabla_chanderi compose | BUILT | structures=['procedure','temporal_pattern'], ~20 s |
 | tabla_chanderi: chanderi_2 | PASS | step_coverage=0.00 (different performance, expected) |
 
+> **Correction (2026-10-07):** "PASS" in this table means the evaluator ran without raising an error. It does **not** mean the attempt passed the rubric (`evaluation.passed`). The gradient image was refused by the quality gate, not by the relevance gate. Verdict-level results are in E6.
+
 ### Metrics
 
 | Metric | Value |
@@ -370,6 +372,21 @@ exceed 45 s total due to the number of calls (25 batches at FPS=0.5). A single a
 evaluation is well within budget.
 
 ---
+
+## E6 — Universal pipeline on entirely new uploads (verdict level)
+
+**Status:** VALIDATED as engineering/capability evidence on synthetic and internet media. This is not learner validation.
+**Date:** 2026-10-07. **Tools:** `tools/stress_universal_video.py`, `tools/stress_universal_other.py`. **Evidence:** `tracks/track-b/eval/universal_video/*_summary.json`. Every case is composed exactly as the UI does, and every attempt runs through a real Track B session; the result recorded is `evaluation.passed`.
+
+| New skill (source) | Correct verdicts |
+|---|---|
+| Synthetic "draw a house" video (5 steps) | re-performance PASS; missing step FAIL; stopped early FAIL; unrelated video REFUSED; swapped order unstable between live runs |
+| `OrigamiCrane.ogv` uploaded as a new case (no origami code) | positive control PASS 11/11; first 40 % FAIL; unrelated REFUSED |
+| Origami 0–194 s clip (400×226, hands always on the paper) | unrelated REFUSED and errors flagged, but the **perfect attempt does not pass reliably**: a known limit |
+| Synthetic block-arrangement image | re-drawn PASS; one block missing FAIL; wrong colours FAIL; blank REFUSED |
+| Synthetic melody audio | same PASS; rushed FAIL; irregular FAIL; noise REFUSED |
+
+Design and limits: `docs/plans/universal-pipeline.md` §12.
 
 ## Current Planned Experiments — Transmission Thesis
 
