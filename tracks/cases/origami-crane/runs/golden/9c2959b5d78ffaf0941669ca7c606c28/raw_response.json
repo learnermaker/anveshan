@@ -1,0 +1,3 @@
+{
+  "text": "{\n  \"results\": [\n    {\n      \"check_id\": \"CHK-PR-FIN\",\n      \"status\": \"met\",\n      \"finding\": \"The origami crane is fully formed with wings, head, and tail visible in the final completed state.\",\n      \"region\": [20, 20, 60, 60]\n    }\n  ]\n}"
+}

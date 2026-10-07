@@ -1,0 +1,20 @@
+{
+  "expected_behavior": "one entry per keyframe with a non-decreasing stage grouping",
+  "input_digests": [
+    "ImagePart:d6ec8d2ebb3d1f10f0ddf2129209b5af9928db3441531cd209e8eb778915d046",
+    "ImagePart:8f8e65d466a5482659fc3e8784ddca8dc28bd315850f336c900ffb00a91768f9",
+    "text:63199f925202fc64cf919a82d3c6f2d4f238d917fde113d3adbe3044543a9e80"
+  ],
+  "latency_ms": 3191,
+  "model_id": "gemini-3.5-flash-lite",
+  "model_key": "vision_fast",
+  "notes": [],
+  "prompt_id": "perceive_frames",
+  "prompt_sha256": "63199f925202fc64cf919a82d3c6f2d4f238d917fde113d3adbe3044543a9e80",
+  "prompt_version": "v2",
+  "provider": "google-genai",
+  "replay_key": "3624e58b6ee2053dc96f299345bcb6fd",
+  "run_id": "run.perceive_frames.20261007T080422.cf8b46",
+  "runtime_class": "LIVE",
+  "started_at": "2026-10-07T08:04:19.476679+00:00"
+}

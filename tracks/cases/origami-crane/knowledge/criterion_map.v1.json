@@ -1,0 +1,93 @@
+{
+  "criteria": {
+    "CRIT-U-CHK-PR-COV": {
+      "drill_hint": "Practice each step separately before combining them.",
+      "order_index": 0,
+      "reference_evidence_ids": [
+        "ev.universal.clm-04",
+        "ev.universal.clm-05",
+        "ev.universal.clm-06",
+        "ev.universal.clm-07",
+        "ev.universal.clm-08",
+        "ev.universal.clm-09",
+        "ev.universal.clm-10",
+        "ev.universal.clm-11",
+        "ev.universal.clm-12"
+      ],
+      "source_claim_ids": [
+        "CLM-04",
+        "CLM-05",
+        "CLM-06",
+        "CLM-07",
+        "CLM-08",
+        "CLM-09",
+        "CLM-10",
+        "CLM-11",
+        "CLM-12"
+      ],
+      "why_it_matters": "All folding steps from the flat sheet to the finished crane are performed. (CLM-04)"
+    },
+    "CRIT-U-CHK-PR-FIN": {
+      "drill_hint": "Review the specific property in the reference and adjust your result.",
+      "order_index": 3,
+      "reference_evidence_ids": [
+        "ev.universal.clm-12"
+      ],
+      "source_claim_ids": [
+        "CLM-12"
+      ],
+      "why_it_matters": "The procedure concludes with the fully formed origami crane. (CLM-12)"
+    },
+    "CRIT-U-CHK-PR-OFF": {
+      "drill_hint": "Identify where you deviated and focus on staying on track.",
+      "order_index": 2,
+      "reference_evidence_ids": [
+        "ev.universal.clm-01"
+      ],
+      "source_claim_ids": [
+        "CLM-01"
+      ],
+      "why_it_matters": "Only actions relevant to folding the paper crane are performed, without unnecessary movements. (CLM-01)"
+    },
+    "CRIT-U-CHK-PR-ORD": {
+      "drill_hint": "Follow the demonstrated sequence; rewatch the video for the correct order.",
+      "order_index": 1,
+      "reference_evidence_ids": [
+        "ev.universal.clm-04",
+        "ev.universal.clm-05",
+        "ev.universal.clm-06",
+        "ev.universal.clm-07",
+        "ev.universal.clm-08",
+        "ev.universal.clm-09",
+        "ev.universal.clm-10",
+        "ev.universal.clm-11",
+        "ev.universal.clm-12"
+      ],
+      "source_claim_ids": [
+        "CLM-04",
+        "CLM-05",
+        "CLM-06",
+        "CLM-07",
+        "CLM-08",
+        "CLM-09",
+        "CLM-10",
+        "CLM-11",
+        "CLM-12"
+      ],
+      "why_it_matters": "The steps are performed in the correct sequence, starting with the flat sheet and ending with the completed crane. (CLM-04)"
+    },
+    "CRIT-U-CHK-PR-Q01": {
+      "drill_hint": "Compare your execution of this critical step with the reference.",
+      "order_index": 4,
+      "reference_evidence_ids": [
+        "ev.universal.clm-12"
+      ],
+      "source_claim_ids": [
+        "CLM-12"
+      ],
+      "why_it_matters": "Each intermediate shape, from the rectangular fold to the diamond base, is formed accurately. (CLM-12)"
+    }
+  },
+  "package_id": "kp.origami-crane.1",
+  "rubric_id": "rubric.origami-crane.1"
+}

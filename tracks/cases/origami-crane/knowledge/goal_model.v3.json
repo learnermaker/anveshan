@@ -1,0 +1,353 @@
+{
+  "built_with": {
+    "builder": "track_a.goals.universal@v1",
+    "case_id": "origami-crane",
+    "profile_case_id": "paper-crane~4489d37966da",
+    "run_keys": [],
+    "structures": [
+      "procedure"
+    ],
+    "version": 3
+  },
+  "case_id": "origami-crane",
+  "modality": "universal",
+  "package_id": "kp.origami-crane.3",
+  "payload": {
+    "checks": [
+      {
+        "check_id": "CHK-PR-COV",
+        "enabled": true,
+        "kind": "step_coverage",
+        "method": "deterministic",
+        "metric_id": "u.step_coverage",
+        "name": "Complete All Folding Steps",
+        "observable_indicator": "All folding steps from the flat sheet to the finished crane are performed.",
+        "params": {},
+        "process": true,
+        "required": true,
+        "targets": [
+          "step-01",
+          "step-02",
+          "step-03",
+          "step-04",
+          "step-05",
+          "step-06",
+          "step-07",
+          "step-08",
+          "step-09"
+        ],
+        "weight": 3.0
+      },
+      {
+        "check_id": "CHK-PR-ORD",
+        "enabled": true,
+        "kind": "step_order",
+        "method": "deterministic",
+        "metric_id": "u.step_order",
+        "name": "Follow Correct Folding Order",
+        "observable_indicator": "The steps are performed in the correct sequence, starting with the flat sheet and ending with the completed crane.",
+        "params": {},
+        "process": true,
+        "required": true,
+        "targets": [
+          "step-01",
+          "step-02",
+          "step-03",
+          "step-04",
+          "step-05",
+          "step-06",
+          "step-07",
+          "step-08",
+          "step-09"
+        ],
+        "weight": 2.0
+      },
+      {
+        "check_id": "CHK-PR-OFF",
+        "enabled": true,
+        "kind": "off_path",
+        "method": "deterministic",
+        "metric_id": "u.off_path",
+        "name": "Avoid Extraneous Actions",
+        "observable_indicator": "Only actions relevant to folding the paper crane are performed, without unnecessary movements.",
+        "params": {},
+        "process": true,
+        "required": false,
+        "targets": [],
+        "weight": 1.0
+      },
+      {
+        "check_id": "CHK-PR-FIN",
+        "enabled": true,
+        "kind": "final_property",
+        "method": "model_status",
+        "metric_id": "u.final_state_match",
+        "name": "Reach Final Crane Shape",
+        "observable_indicator": "The procedure concludes with the fully formed origami crane.",
+        "params": {},
+        "process": false,
+        "required": true,
+        "targets": [
+          "step-09"
+        ],
+        "weight": 3.0
+      },
+      {
+        "check_id": "CHK-PR-Q01",
+        "enabled": true,
+        "kind": "step_quality",
+        "method": "model_status",
+        "metric_id": "u.step_quality.step-09",
+        "name": "Maintain Proper Paper Shapes",
+        "observable_indicator": "Each intermediate shape, from the rectangular fold to the diamond base, is formed accurately.",
+        "params": {},
+        "process": true,
+        "required": false,
+        "targets": [
+          "step-09"
+        ],
+        "weight": 2.0
+      }
+    ],
+    "constraints": [],
+    "goal_state": [
+      {
+        "certainty": "inferred",
+        "evidence": [
+          "obs-111"
+        ],
+        "keep": true,
+        "prop_id": "prop-01",
+        "region": null,
+        "statement": "fully formed golden origami crane held up by hands"
+      },
+      {
+        "certainty": "inferred",
+        "evidence": [
+          "obs-112"
+        ],
+        "keep": true,
+        "prop_id": "prop-02",
+        "region": null,
+        "statement": "final origami crane product"
+      }
+    ],
+    "order": "strict",
+    "perception_file": "knowledge/perception_source.v1.json",
+    "relevance": {
+      "ambiguous_band": 0.08,
+      "expected_kinds": [
+        "video",
+        "image"
+      ],
+      "min_similarity": 0.7,
+      "reference_segment_ids": [
+        "seg-001",
+        "seg-002",
+        "seg-003",
+        "seg-004",
+        "seg-005",
+        "seg-006",
+        "seg-007",
+        "seg-008",
+        "seg-009",
+        "seg-010",
+        "seg-011",
+        "seg-012",
+        "seg-013",
+        "seg-014",
+        "seg-015",
+        "seg-016"
+      ]
+    },
+    "schema_version": "1.0",
+    "skill_title": "Fold a Paper Crane",
+    "source_modality": "video",
+    "specialists": {},
+    "steps": [
+      {
+        "action": "holding paper flat",
+        "certainty": "inferred",
+        "critical": false,
+        "end_sec": 2.803,
+        "evidence": [
+          "obs-020",
+          "obs-021"
+        ],
+        "index": 0,
+        "keyframe_asset": "kf_seg-001.jpg",
+        "name": "flat sheet of paper",
+        "segment_id": "seg-001",
+        "source_established": true,
+        "start_sec": 0.0,
+        "state_after": "flat sheet of paper",
+        "step_id": "step-01"
+      },
+      {
+        "action": "holding paper",
+        "certainty": "inferred",
+        "critical": false,
+        "end_sec": 33.5,
+        "evidence": [
+          "obs-026",
+          "obs-027"
+        ],
+        "index": 1,
+        "keyframe_asset": "kf_seg-002.jpg",
+        "name": "folded rectangular paper",
+        "segment_id": "seg-002",
+        "source_established": true,
+        "start_sec": 5.606,
+        "state_after": "folded rectangular paper",
+        "step_id": "step-02"
+      },
+      {
+        "action": "folding paper corners",
+        "certainty": "inferred",
+        "critical": false,
+        "end_sec": 69.803,
+        "evidence": [
+          "obs-032",
+          "obs-033"
+        ],
+        "index": 2,
+        "keyframe_asset": "kf_seg-003.jpg",
+        "name": "partially folded fan-like pattern",
+        "segment_id": "seg-003",
+        "source_established": true,
+        "start_sec": 36.303,
+        "state_after": "partially folded fan-like pattern",
+        "step_id": "step-03"
+      },
+      {
+        "action": "holding paper base",
+        "certainty": "inferred",
+        "critical": false,
+        "end_sec": 120.053,
+        "evidence": [
+          "obs-044",
+          "obs-045"
+        ],
+        "index": 3,
+        "keyframe_asset": "kf_seg-005.jpg",
+        "name": "diamond base shape",
+        "segment_id": "seg-005",
+        "source_established": true,
+        "start_sec": 72.606,
+        "state_after": "diamond base shape",
+        "step_id": "step-04"
+      },
+      {
+        "action": "pressing paper flat",
+        "certainty": "inferred",
+        "critical": false,
+        "end_sec": 164.731,
+        "evidence": [
+          "obs-061",
+          "obs-062"
+        ],
+        "index": 4,
+        "keyframe_asset": "kf_seg-008.jpg",
+        "name": "flattened complex folded base",
+        "segment_id": "seg-008",
+        "source_established": true,
+        "start_sec": 128.428,
+        "state_after": "flattened complex folded base",
+        "step_id": "step-05"
+      },
+      {
+        "action": "pulling layer open",
+        "certainty": "inferred",
+        "critical": false,
+        "end_sec": 214.981,
+        "evidence": [
+          "obs-073",
+          "obs-074"
+        ],
+        "index": 5,
+        "keyframe_asset": "kf_seg-010.jpg",
+        "name": "elongated diamond structure with pockets",
+        "segment_id": "seg-010",
+        "source_established": true,
+        "start_sec": 167.501,
+        "state_after": "elongated diamond structure with pockets",
+        "step_id": "step-06"
+      },
+      {
+        "action": "pressing flat",
+        "certainty": "inferred",
+        "critical": false,
+        "end_sec": 268.001,
+        "evidence": [
+          "obs-085",
+          "obs-086"
+        ],
+        "index": 6,
+        "keyframe_asset": "kf_seg-012.jpg",
+        "name": "narrow flattened strip shape",
+        "segment_id": "seg-012",
+        "source_established": true,
+        "start_sec": 217.751,
+        "state_after": "narrow flattened strip shape",
+        "step_id": "step-07"
+      },
+      {
+        "action": "bending tip down",
+        "certainty": "inferred",
+        "critical": false,
+        "end_sec": 323.857,
+        "evidence": [
+          "obs-097",
+          "obs-098"
+        ],
+        "index": 7,
+        "keyframe_asset": "kf_seg-014.jpg",
+        "name": "forming head and tail sections",
+        "segment_id": "seg-014",
+        "source_established": true,
+        "start_sec": 270.804,
+        "state_after": "forming head and tail sections",
+        "step_id": "step-08"
+      },
+      {
+        "action": "holding finished origami model",
+        "certainty": "inferred",
+        "critical": true,
+        "end_sec": 332.232,
+        "evidence": [
+          "obs-109",
+          "obs-110"
+        ],
+        "index": 8,
+        "keyframe_asset": "kf_seg-016.jpg",
+        "name": "completed origami crane",
+        "segment_id": "seg-016",
+        "source_established": true,
+        "start_sec": 326.626,
+        "state_after": "completed origami crane",
+        "step_id": "step-09"
+      }
+    ],
+    "structures": [
+      "procedure"
+    ],
+    "summary": "Fold a square piece of paper into a paper crane by following the step-by-step demonstration.",
+    "temporal": null,
+    "utterance": null,
+    "vocabulary": {
+      "action_verb": "fold",
+      "object_noun": "crane",
+      "state_noun": "paper",
+      "unit_noun": "step"
+    },
+    "warnings": []
+  },
+  "schema_version": "1.0",
+  "source_ids": [
+    "src.upload.4489d37966da"
+  ],
+  "version": 3,
+  "warnings": [
+    "Composed case: claims named by AI are inferred until reviewed."
+  ]
+}

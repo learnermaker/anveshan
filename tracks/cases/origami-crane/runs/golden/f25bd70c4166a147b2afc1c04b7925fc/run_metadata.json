@@ -1,0 +1,33 @@
+{
+  "expected_behavior": "one expert-step label per learner keyframe",
+  "input_digests": [
+    "ImagePart:a3ad20030d5b704266cd2844550fa153076cce86416d1cf51f6def63a2b3d7a3",
+    "ImagePart:26d67184953d4a8dfea2113469500d65105db3d700cd6cd7d7b801c8fe9996ee",
+    "ImagePart:9e4ca24b7774bf4e06ddea9c526bc54e84de4d90ef56486535d69098756b6b83",
+    "ImagePart:338d271b44b1f160045bb1742c45d20517cadf633e45d266d5efd86a59b53acc",
+    "ImagePart:4f4940f77ed8435926df809e8e15f94690ed5e4ea70214ad1eb3b43163fba976",
+    "ImagePart:4c00d88a3ac52fe21643847ed348fadf32917656f880f1fe53c1add820f8aa1d",
+    "ImagePart:9030721712713b244e38a1e5b1615194dd1437c20f156bcada2113e3c0dc7d0f",
+    "ImagePart:938207618c0cf50cb848a8fdf0d2969f8fdbb92b4d6884feebeaeb51f064574a",
+    "ImagePart:084658914f337316773d3997c50c06c8b0fb459a753b31be190503cb89c3a0ac",
+    "ImagePart:91bfbfa04f61b59e2ca6b2fb28d29a347a5ac2c003a3a4d7b76a12d0fbe8f323",
+    "ImagePart:c050ae9417fdae9993077875f20f50eeaa203951cadab845b7273d346201f64b",
+    "ImagePart:1da5d0e82c025e94b73b70ba05d9532e743433b82536a51e6d7c26db25efe83c",
+    "ImagePart:f3872a59c12e926b2fe38975f5a39c5c7472b6039e1832816e3f78325d69f025",
+    "ImagePart:63af4b4b5cc8876ac52a4512463fd19dde36dacae373003bcc632a8cd53d8627",
+    "ImagePart:b1e89796e14d3deb41c5041d64ea157e1b1448bb59471613bade43917fb6a005",
+    "text:ff5217754af99cfa9ebc5a14d2ef7e8a629fa5b3dd42c15766df15d32a3ce0d9"
+  ],
+  "latency_ms": 3902,
+  "model_id": "gemini-3.5-flash-lite",
+  "model_key": "vision_fast",
+  "notes": [],
+  "prompt_id": "match_steps",
+  "prompt_sha256": "ff5217754af99cfa9ebc5a14d2ef7e8a629fa5b3dd42c15766df15d32a3ce0d9",
+  "prompt_version": "v2",
+  "provider": "google-genai",
+  "replay_key": "f25bd70c4166a147b2afc1c04b7925fc",
+  "run_id": "run.match_steps.20261007T080414.ebec99",
+  "runtime_class": "LIVE",
+  "started_at": "2026-10-07T08:04:10.167249+00:00"
+}

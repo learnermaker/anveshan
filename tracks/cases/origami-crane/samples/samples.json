@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "samples": [
+    {
+      "sample_id": "good",
+      "label": "A real learner's attempt",
+      "quality": "good",
+      "attempt_kind": "video",
+      "file": "good.mp4",
+      "description": "A re-encoding of Crane.ogv (CC BY 3.0, Tavin, via Wikimedia Commons). Covers the first 25 s of the folding procedure. The full crane takes longer; this clip shows early steps only.",
+      "preview": null,
+      "raster": null,
+      "synthetic": false,
+      "credit": "Crane.ogv by Tavin, CC BY 3.0, via Wikimedia Commons (https://commons.wikimedia.org/wiki/File:Crane.ogv)",
+      "licence": "CC BY 3.0",
+      "expected": {
+        "passed": false
+      }
+    },
+    {
+      "sample_id": "flawed",
+      "label": "An attempt with steps out of order",
+      "quality": "flawed",
+      "attempt_kind": "video",
+      "file": "flawed.mp4",
+      "description": "Derived from OrigamiCrane.ogv (CC BY 3.0, Tavin) by reordering the four quarters of the video as 1, 3, 2, 4. See where the feedback says it first went off track.",
+      "preview": null,
+      "raster": null,
+      "synthetic": false,
+      "credit": "Derived from OrigamiCrane.ogv by Tavin, CC BY 3.0, via Wikimedia Commons (https://commons.wikimedia.org/wiki/File:OrigamiCrane.ogv)",
+      "licence": "CC BY 3.0",
+      "expected": {
+        "passed": false
+      }
+    },
+    {
+      "sample_id": "unrelated",
+      "label": "Something unrelated",
+      "quality": "unrelated",
+      "attempt_kind": "video",
+      "file": "unrelated.mp4",
+      "description": "Synthetic video: slowly moving coloured rectangles (CC0). Anveshan should say it does not match instead of scoring it.",
+      "preview": null,
+      "raster": null,
+      "synthetic": true,
+      "credit": "Synthetic. Generated for the demo (CC0).",
+      "licence": "CC0-1.0",
+      "expected": {
+        "refused": true
+      }
+    }
+  ]
+}

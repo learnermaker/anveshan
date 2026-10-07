@@ -32,9 +32,11 @@ def test_list_cases_orders_hero_upload_showcase(cases_root, data_dir, tmp_path, 
     up = api.create_upload_case(cases_root, data_dir, "kolam", img, "image/png")
     cases = api.list_cases(cases_root, data_dir)
     ids = [c["case_id"] for c in cases]
-    assert ids[:3] == ["kolam", "origami", "tabla"]
-    assert ids[3] == up.name
-    assert ids[4:] == SHOWCASE
+    # origami is EXPERIMENTAL (hidden from list); origami-crane not in temp cases_root
+    # so featured order is: kolam, tabla
+    assert ids[:2] == ["kolam", "tabla"]
+    assert ids[2] == up.name
+    assert ids[3:] == SHOWCASE
     by = {c["case_id"]: c for c in cases}
     assert by["kolam"] == {
         "case_id": "kolam",
@@ -56,7 +58,13 @@ def test_list_cases_orders_hero_upload_showcase(cases_root, data_dir, tmp_path, 
 
 def test_list_cases_on_real_case_root(data_dir):
     cases = api.list_cases(REAL_CASES, data_dir)
-    assert [c["case_id"] for c in cases] == ["kolam", "origami", "tabla", *SHOWCASE]
+    ids = [c["case_id"] for c in cases]
+    # origami is now EXPERIMENTAL (hidden); origami-crane is the FEATURED_COMPOSED replacement
+    assert "origami" not in ids, "origami (dedicated engine) must be hidden from the library"
+    assert "origami-crane" in ids, "origami-crane (universal pipeline) must be in the library"
+    # Featured order: kolam, origami-crane, tabla
+    featured = [i for i in ids if i in ("kolam", "origami-crane", "tabla")]
+    assert featured == ["kolam", "origami-crane", "tabla"]
 
 
 @pytest.mark.parametrize("cid", SHOWCASE)

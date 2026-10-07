@@ -1,0 +1,25 @@
+{
+  "expected_behavior": "",
+  "input_digests": [
+    "ImagePart:276e6e53ff08e469e9ac6e37ea487bfe914614be5350c0bd60602a0aa45b4298",
+    "ImagePart:683a7f98a05323d96e32648a473f87dcc51916f5dc948c00bcb5e45acfae3154",
+    "ImagePart:67fbf29b39974a80749a039d14bc80885ebecc8917efc1245df8797804fda0b4",
+    "ImagePart:570f618b1273d51e17cdcf31c6d92b8d7dda5892d85aad20b83708abda8fdea8",
+    "ImagePart:1515140979c4a3fea593cccce6249da14eea0a0868dab9a7aba62562f748eb01",
+    "ImagePart:f628b85a9027d0f5ffd0c301f43c7554a5bd571a3392feae88211e6da8d4e696",
+    "ImagePart:646572c84b6fc7a0a81ef2b53fe25910dfb5df8156ee20a7506fc499f793f064",
+    "ImagePart:ea55600262cb62487f945df8f5bf9effe2bb3a327f62c056b9ec8c37e4fa8f68"
+  ],
+  "latency_ms": 1709,
+  "model_id": "gemini-embedding-2",
+  "model_key": "embedding",
+  "notes": [],
+  "prompt_id": "embed:attempt_frames",
+  "prompt_sha256": "",
+  "prompt_version": "d768",
+  "provider": "google-genai",
+  "replay_key": "d441afab74f4670f7ca878d0d2f1f9d4",
+  "run_id": "run.embed.attempt_frames.20261007T080420.c03561",
+  "runtime_class": "LIVE",
+  "started_at": "2026-10-07T08:04:18.655830+00:00"
+}
