@@ -1,11 +1,12 @@
 /** Shared badges and small primitives for the live hero-case screens. */
 
-import React from 'react';
-import { AlertTriangle, Loader2 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { AlertTriangle, KeyRound, Loader2 } from 'lucide-react';
 import type { CriterionStatus, VerificationState } from '../types/contracts';
 import type { RuntimeClass } from '../api/types';
 import { friendlyError } from '../api/errors';
-import { requestKeyDialog } from '../api/userKey';
+import { getUserKey, requestKeyDialog, subscribeUserKey } from '../api/userKey';
+import { IS_MOCK } from '../api/runtime';
 import { DEBUG } from '../api/debug';
 import { SOURCE_LABEL, REVIEW_LABEL, OWN_REVIEW_LABEL, STATUS_PLAIN } from '../copy/plain';
 
@@ -139,6 +140,33 @@ export function ErrorNote({ error }: { error: unknown }) {
         </details>
       </div>
     </div>
+  );
+}
+
+/**
+ * Shown next to every live upload: checking a new photo, video or recording uses Gemini. The visitor can
+ * use the shared demo allowance or their own key (kept in this browser, sent only to this app's service).
+ */
+export function KeyHint() {
+  const [key, setKey] = useState<string | null>(() => getUserKey());
+  useEffect(() => subscribeUserKey(setKey), []);
+  if (IS_MOCK) return null;
+  return (
+    <p className="text-xs text-on-surface-variant leading-relaxed">
+      <KeyRound className="inline w-3.5 h-3.5 mr-1 -mt-0.5 text-cadmium-amber" aria-hidden="true" />
+      {key ? (
+        <>
+          Checking your upload uses your own Gemini API key.{' '}
+          <button type="button" onClick={requestKeyDialog} className="text-caliper-cyan underline">Change key</button>
+        </>
+      ) : (
+        <>
+          Checking a new upload uses Gemini AI, from a small shared daily allowance.{' '}
+          <button type="button" onClick={requestKeyDialog} className="text-caliper-cyan underline">Use your own Gemini API key</button>{' '}
+          (free from Google AI Studio; it stays in this browser). Sample attempts need no key.
+        </>
+      )}
+    </p>
   );
 }
 

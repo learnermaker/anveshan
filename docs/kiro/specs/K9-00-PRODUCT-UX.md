@@ -13,7 +13,7 @@ If anything here seems to conflict with those, those win. Log the conflict in yo
 
 ## 1. What we are building, in one paragraph
 
-Anveshan turns a real demonstration into a skill someone else can learn, practise and get verified feedback on. Today the app shows all its machinery to everyone: claim IDs, confidence numbers, "Approve package" buttons, run classes and lineage hashes. That makes it look like an evaluation tool. K9 makes it a product for three kinds of people:
+Anveshan passes on skills of the physical world: learned from a real demonstration, practised with real hands, and checked against a photo, video or recording of the learner's real attempt ([positioning](../../product/novelty-boundary.md#skills-of-the-physical-world-positioning-decided-2026-10-07)). Before K9, the app shows all its machinery to everyone: claim IDs, confidence numbers, "Approve package" buttons, run classes and lineage hashes. That makes it look like an evaluation tool. K9 makes it a product for three kinds of people:
 - **learners** practise;
 - **creators** share their own skill and see whether it is being learned;
 - **stewards** look after the library.
@@ -60,6 +60,7 @@ The machinery stays, as the steward's audit detail and behind `?debug=1` for the
     - Use the tokens in `app/tailwind.config.js`: `bg-surface-container`, `border-outline`, `text-on-surface`, `text-on-surface-variant`, `cadmium-amber` for primary or attention, `transmission-emerald` for success, `caliper-cyan` for links and info, `divergence-crimson` for problems.
     - Use the primitives in `app/src/hero/ui.tsx` (`Panel`, `Badge`, `btn.*`, `ErrorNote`, `Spinner`, `ProgressBar`).
     - Headings use `font-serif`.
+13. **Speak about the physical world** (added 2026-10-07). Product-level wording (home page, about text) comes from `PITCH`; the page title and description are in `app/index.html` in `app/src/copy/plain.ts`, which adapts the [positioning](../../product/novelty-boundary.md#skills-of-the-physical-world-positioning-decided-2026-10-07). When asking for an attempt, say what to capture in the real world ("Take a photo of your drawing from above", "Film your hands"), not "upload a file". When something cannot be sensed (pressure, force, touch), say so.
 
 ## 4. Information architecture (target state after K9)
 

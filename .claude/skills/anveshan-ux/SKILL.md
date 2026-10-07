@@ -22,7 +22,7 @@ Anveshan is a product for people who want to learn a skill, not a dashboard for 
 
 `?debug=1` is a team diagnostic, not a role. Never link to it. If a new panel is technical, gate it with `DEBUG` from `app/src/api/debug.ts`.
 
-## 2. Twelve rules for every screen
+## 2. Thirteen rules for every screen
 
 1. **One primary action.** Exactly one `btn.primary`; everything else is secondary or a link.
 2. **A one-sentence purpose at the top** ("Watch how the source does it, then press Start practising.").
@@ -40,6 +40,7 @@ Anveshan is a product for people who want to learn a skill, not a dashboard for 
 10. **Accessible by default**: see the `anveshan-a11y` skill.
 11. **No new dependencies**: React 18, Tailwind, lucide-react 0.475. Declare each new lucide icon in `app/src/vite-env.d.ts`.
 12. **Match the visual language** (§5).
+13. **Speak about the physical world.** Product-level wording comes from `PITCH` in `app/src/copy/plain.ts` (adapted from the [positioning](../../../docs/product/novelty-boundary.md#skills-of-the-physical-world-positioning-decided-2026-10-07)). Ask for attempts in real-world terms ("Take a photo of your drawing from above", "Film your hands"), and say when something cannot be sensed.
 
 ## 3. Copy: say this, not that
 

@@ -10,7 +10,7 @@ Implementation is now authorized and underway. Product validation continues in p
 
 ## Current MVP wedge
 
-Anveshan helps an expert transmit a bounded piece of real-world expertise to another person, grounded in authentic evidence, with observable practice and verification of whether the knowledge transferred.
+Anveshan helps an expert transmit a bounded piece of real-world expertise to another person, grounded in authentic evidence, with observable practice and verification of whether the knowledge transferred. Focus: skills of the physical world, checked from a phone photo, video or recording of the real attempt ([positioning](../product/novelty-boundary.md#skills-of-the-physical-world-positioning-decided-2026-10-07)).
 
 ## Hero cases (decided 2026-10-06)
 

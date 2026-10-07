@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Activity, ArrowRight, Compass, HelpCircle, Layers, Music, PlusCircle, RefreshCw, Scissors, Shield, Sparkles, Wrench } from 'lucide-react';
+import { Activity, ArrowRight, Compass, Eye, HelpCircle, Layers, Music, PlusCircle, RefreshCw, Scissors, Shield, Sparkles, Wrench } from 'lucide-react';
 import { CAPABILITY_CASES, SHOWCASE_CASE_IDS } from '../data/cases/registry';
 import type { CaseSummary } from '../api/types';
 import { api } from '../api/client';
 import { IS_MOCK, API_BASE } from '../api/runtime';
 import { Badge, ErrorNote, Panel, ReviewBadge, SourceLabelBadge, Spinner } from '../hero/ui';
 import { AiRoleNote, HowItWorksSteps } from './HowItWorks';
-import { MODALITY_PHRASE, SOURCE_LABEL } from '../copy/plain';
+import { MODALITY_PHRASE, PITCH, SOURCE_LABEL } from '../copy/plain';
 
 export type CaseKey = { kind: 'hero'; id: string } | { kind: 'showcase'; id: string } | { kind: 'composer' };
 
@@ -55,10 +55,8 @@ export function DiscoveryView({ heroCases, heroError, heroLoading, onRefreshHero
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cadmium-amber/10 border border-cadmium-amber/30 text-cadmium-amber font-mono text-[11px] font-semibold uppercase tracking-widest">
           Google Cloud AI Builder Cup 2026 · Prototype
         </div>
-        <h1 className="font-serif text-4xl sm:text-5xl font-normal tracking-tight leading-[1.15]">Learn a hands-on skill from a real source, and see whether it transferred.</h1>
-        <p className="text-base text-on-surface-variant max-w-2xl mx-auto leading-relaxed">
-          Anveshan turns a demonstration into steps and checks you can trust, because each one points back to the source. You try the skill, it shows where you first went off track, you retry once, and it records what changed.
-        </p>
+        <h1 className="font-serif text-4xl sm:text-5xl font-normal tracking-tight leading-[1.15]">{PITCH.headline}</h1>
+        <p className="text-base text-on-surface-variant max-w-2xl mx-auto leading-relaxed">{PITCH.lead}</p>
         <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
           <button
             onClick={() => onSelect({ kind: 'hero', id: 'kolam' })}
@@ -78,6 +76,19 @@ export function DiscoveryView({ heroCases, heroError, heroLoading, onRefreshHero
             <HelpCircle className="w-4 h-4 text-cadmium-amber" aria-hidden="true" /> What the labels mean
           </button>
         )}
+      </section>
+
+      {/* Why it is different: skills of the physical world */}
+      <section aria-label="What makes Anveshan different" className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {PITCH.points.map((p, i) => (
+          <div key={p.title} className="p-4 rounded-xl border border-outline bg-surface-container-low space-y-1.5">
+            <div className="flex items-center gap-2">
+              {[<Eye key="e" className="w-4 h-4 text-cadmium-amber" aria-hidden="true" />, <Compass key="c" className="w-4 h-4 text-caliper-cyan" aria-hidden="true" />, <Shield key="s" className="w-4 h-4 text-transmission-emerald" aria-hidden="true" />][i]}
+              <h2 className="text-sm font-semibold text-on-surface">{p.title}</h2>
+            </div>
+            <p className="text-sm text-on-surface-variant leading-relaxed">{p.text}</p>
+          </div>
+        ))}
       </section>
 
       {/* How it works */}
@@ -159,7 +170,7 @@ export function DiscoveryView({ heroCases, heroError, heroLoading, onRefreshHero
       <section className="space-y-4">
         <div className="border-b border-outline pb-3">
           <div className="text-xs font-mono uppercase tracking-widest text-caliper-cyan font-bold">Share a skill</div>
-          <h2 className="text-xl font-semibold font-serif">Upload a demonstration, get a practice task</h2>
+          <h2 className="text-xl font-semibold font-serif">{PITCH.shareHeading}</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <button
@@ -177,10 +188,7 @@ export function DiscoveryView({ heroCases, heroError, heroLoading, onRefreshHero
             <div>
               <h3 className="font-semibold text-base">Share a skill you know</h3>
             </div>
-            <p className="text-sm text-on-surface-variant leading-relaxed">
-              Upload something you have the right to use: a photo of a finished piece, a short video of a process, or an audio recording. The AI proposes the steps and
-              checks, and you review them before the skill is created.
-            </p>
+            <p className="text-sm text-on-surface-variant leading-relaxed">{PITCH.shareText}</p>
             <div className="mt-auto inline-flex items-center gap-1.5 text-sm font-semibold text-caliper-cyan">
               <Sparkles className="w-4 h-4" aria-hidden="true" /> Open the composer
             </div>

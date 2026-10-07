@@ -14,7 +14,7 @@ import { ApiError } from '../../api/errors';
 import { AttemptProgress, ReviewNote, TaskInstructions } from '../Guidance';
 import { AttemptResultView } from '../results/AttemptResultView';
 import type { HeroSession, LocalAttemptMedia } from '../session';
-import { Badge, btn, ErrorNote, Panel, ProgressBar, ReviewBadge, SourceLabelBadge, Spinner } from '../ui';
+import { Badge, btn, ErrorNote, KeyHint, Panel, ProgressBar, ReviewBadge, SourceLabelBadge, Spinner } from '../ui';
 import { TrustLine } from '../TrustLine';
 import { KolamCanvas, buildRasterPng, buildTraceJson, type Stroke } from '../kolam/KolamCanvas';
 import type { UniversalUiView } from '../../api/types';
@@ -197,6 +197,7 @@ export function UniversalPracticeView({ view, session, onSessionChange, onComple
                 <summary className="cursor-pointer text-sm font-semibold text-on-surface">Task steps</summary>
                 <div className="mt-2"><TaskInstructions text={view.task.instructions} claims={view.package.claims} /></div>
               </details>
+              <div className="mb-3"><KeyHint /></div>
               <UniversalCapture view={view} allowedKinds={allowedKinds} busy={phase.kind !== 'idle'} onSubmit={submit} />
               <div className="mt-4">
                 {phase.kind === 'uploading' && <ProgressBar value={phase.progress} label="Uploading attempt" />}

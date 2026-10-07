@@ -94,6 +94,7 @@ The current UI is a V0/reference workspace, not a disposable mock.
 | Role needs | `docs/product/BRD.md` §4.5 |
 | Creator and steward journeys; the end-user UX rule | `docs/product/user-journeys.md` Journeys 7–8 and the 2026-10-07 UX rule |
 | MVP surfaces | `docs/product/mvp-contract.md` "Product surfaces" |
+| Positioning: skills of the physical world (one line, contrast, wording rule) | `docs/product/novelty-boundary.md` "Skills of the physical world" |
 | Build spec (Kiro, parallel agents) | `docs/kiro/specs/K9-ORCHESTRATOR.md` and `K9-*.md` |
 
 ## Frozen common seam

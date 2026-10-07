@@ -8,6 +8,24 @@
 
 import type { LibraryStatus, LicenceId } from '../api/types-product';
 
+/**
+ * Product-level wording: skills of the physical world. Adapted from the single positioning statement in
+ * docs/product/novelty-boundary.md ("Skills of the physical world"); change that first, then this.
+ */
+export const PITCH = {
+  headline: 'Learn skills of the physical world from a real demonstration.',
+  lead:
+    'Folding, drawing, drumming, fixing: things you do with your hands, tools and materials. Anveshan builds the steps from a real demonstration, then looks at your real attempt: a photo of what you made, a video of your hands, or a recording of you playing. It shows where you first went off track, you try again, and it records what changed.',
+  points: [
+    { title: 'It looks at what you actually did', text: 'A chat tutor only reads what you type. Here, a photo, video or recording of your attempt is what gets checked. A phone is enough.' },
+    { title: 'Every tip points to the real demonstration', text: 'Each tip links to the moment in the source that shows what to change.' },
+    { title: "Honest about what a camera can't sense", text: "Pressure, force and touch aren't measured. When it can't tell, it says so." },
+  ],
+  shareHeading: 'Show how you do it, get a practice task',
+  shareText:
+    'Share a skill you do with your hands, using something you have the right to use: a photo of a finished piece, a short video of your hands at work, or a recording of you playing. The AI proposes the steps and checks, and you review them before the skill is created.',
+} as const;
+
 /** runtime_label -> where the skill comes from */
 export const SOURCE_LABEL: Record<string, string> = {
   INTERNET_REFERENCE: 'From an openly licensed internet source',

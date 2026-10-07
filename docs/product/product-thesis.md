@@ -103,6 +103,8 @@ The current differentiation hypothesis is:
 
 This is a hypothesis, not a market-wide claim of uniqueness.
 
+Positioning: Anveshan is made for skills of the physical world (hands, tools, materials, sound). The single statement and its wording are in [novelty-boundary.md, skills of the physical world](novelty-boundary.md#skills-of-the-physical-world-positioning-decided-2026-10-07).
+
 ## 9. MVP
 
 The first proof should use one accountable source, one bounded skill, one source-grounded representation, one learner, one practice task, one baseline attempt, one teaching/transmission interaction, one feedback loop, one retry, one measurable improvement, one transmission record and one lineage event.

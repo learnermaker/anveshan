@@ -7,7 +7,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FileUp, Upload } from 'lucide-react';
 import type { SampleSource } from '../../api/types';
 import { api } from '../../api/client';
-import { ErrorNote, Spinner } from '../../hero/ui';
+import { ErrorNote, KeyHint, Spinner } from '../../hero/ui';
 
 export interface UploadPayload {
   file: File;
@@ -121,8 +121,9 @@ export function StepUpload({ onSubmit, onAnalyzeSample, onCancel, error }: Props
     <div className="flex flex-col gap-6 max-w-2xl mx-auto animate-fade-in">
       <div className="space-y-1">
         <div className="text-[11px] font-mono uppercase tracking-widest text-cadmium-amber font-bold">Composer · Step 1</div>
-        <h2 className="text-2xl font-serif text-on-surface">Upload your source</h2>
-        <p className="text-sm text-on-surface-variant">Upload a photo, video or audio of something you know how to do. The AI looks at it and proposes a practice task. You check everything before anyone else sees it.</p>
+        <h2 className="text-2xl font-serif text-on-surface">Show how you do it</h2>
+        <p className="text-sm text-on-surface-variant">Add a photo of something you made, a short video of your hands at work, or a recording of you playing. The AI looks at it and proposes a practice task. You check everything before anyone else sees it.</p>
+        <KeyHint />
       </div>
 
       <div

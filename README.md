@@ -1,6 +1,8 @@
 # Anveshan
 
-Anveshan turns a real demonstration into a skill someone else can learn, practise and get verified feedback on.
+Anveshan passes on skills of the physical world from one person to another: learned from a real demonstration, practised with real hands, and checked against a photo, video or recording of the learner's real attempt.
+
+Folding, drawing, drumming, repairing: skills a chat tutor cannot see. Every tip points back to the moment in the real demonstration, and the app says plainly what a camera cannot sense. Why this matters and how it differs: [positioning](docs/product/novelty-boundary.md#skills-of-the-physical-world-positioning-decided-2026-10-07).
 
 **Hackathon:** Google Cloud AI Builder Cup 2026
 
@@ -56,6 +58,10 @@ See [`docs/plans/evaluation-core.md`](docs/plans/evaluation-core.md) and [`docs/
 | Wording coaching advice | gemini-3.5-flash-lite | Guard rejects new numbers or verdict words; template fallback |
 | Scoring, pass/fail, permissions, insights | **no model** | Deterministic bands and rules |
 
+**Cost control.** Identical calls are answered from stored runs, the shared key has a daily call budget, Kolam and Tabla scoring use no model, images are downsized and sent to Gemini 3 at a matching media resolution, and output is capped. Token use is recorded per run (`tools/token_report.py`). Details: [`docs/architecture/token-economy.md`](docs/architecture/token-economy.md).
+
+**Your own key.** Visitors can add their own Gemini API key in the app (key button in the header, or the prompt next to any upload that needs AI). It stays in their browser, is sent only to this service in a request header, and their calls skip the shared budget.
+
 ---
 
 ## Evidence (engineering, not user validation)
@@ -63,7 +69,7 @@ See [`docs/plans/evaluation-core.md`](docs/plans/evaluation-core.md) and [`docs/
 All evidence to date is engineering and capability evidence on internet-licensed and synthetic data.
 
 - Experiment log (E1-E9): [`docs/validation/experiments.md`](docs/validation/experiments.md)
-- Non-live test suite: **480 tests** as of 2026-10-08 (`pytest -m "not live"`)
+- Non-live test suite: **566 tests** as of 2026-10-07 (`pytest -m "not live"`)
 - Judges-panel review: [`docs/research/judges-panel-review-2026-10-07.md`](docs/research/judges-panel-review-2026-10-07.md)
 
 **No study with real learners or experts has been run yet.**
@@ -122,10 +128,12 @@ service/          FastAPI service (Python)
 tracks/common/    Shared contracts, models, and evaluation schemas (8 frozen contracts)
 tracks/track-a/   Case ingestion, universal pipeline, and the Gemini model gateway
 tracks/track-b/   Evaluators, feedback engine, and AI coach
-tracks/cases/     Case packs: kolam, origami, tabla, and four synthetic showcase cases
+tracks/cases/     Case packs: kolam, origami, origami-crane, tabla, and four synthetic showcase cases
 docs/             Product vision, architecture, validation log, and plans
-tools/            CLI tools: fetch media, smoke test, stability runs, sample generation
+tools/            CLI tools: fetch media, smoke test, stability runs, sample generation, token report, repeated-text report
 ```
+
+**Contributing.** Read [`AGENTS.md`](AGENTS.md) first. Each file and each rule has one canonical home; link to it instead of copying (`.github/scripts/check_duplicates.py` runs in CI).
 
 ---
 

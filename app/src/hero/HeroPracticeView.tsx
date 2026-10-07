@@ -11,7 +11,7 @@ import { KolamTeach } from './kolam/KolamTeach';
 import { BeatTimeline } from './tabla/BeatTimeline';
 import { AttemptResultView } from './results/AttemptResultView';
 import type { HeroSession, LocalAttemptMedia } from './session';
-import { Badge, btn, ErrorNote, Panel, ProgressBar, ReviewBadge, SourceLabelBadge, Spinner } from './ui';
+import { Badge, btn, ErrorNote, KeyHint, Panel, ProgressBar, ReviewBadge, SourceLabelBadge, Spinner } from './ui';
 import { TrustLine } from './TrustLine';
 import { fmtTime } from './locators';
 import { UniversalPracticeView } from './universal/UniversalPracticeView';
@@ -366,8 +366,13 @@ function FilePick({ accept, label, file, onFile, disabled }: { accept: string; l
 
 function Capture({ view, busy, onSubmit }: { view: CaseView; busy: boolean; onSubmit: (u: AttemptUpload, m: LocalAttemptMedia) => void }) {
   if (view.modality === 'kolam_image') return <KolamCapture view={view} busy={busy} onSubmit={onSubmit} />;
-  if (view.modality === 'origami_video') return <OrigamiCapture view={view} busy={busy} onSubmit={onSubmit} />;
-  return <TablaCapture view={view} busy={busy} onSubmit={onSubmit} />;
+  // Kolam is checked by geometry alone (no AI call), so the key hint is shown only for origami and tabla.
+  return (
+    <div className="space-y-3">
+      <KeyHint />
+      {view.modality === 'origami_video' ? <OrigamiCapture view={view} busy={busy} onSubmit={onSubmit} /> : <TablaCapture view={view} busy={busy} onSubmit={onSubmit} />}
+    </div>
+  );
 }
 
 function KolamCapture({ view, busy, onSubmit }: { view: CaseView; busy: boolean; onSubmit: (u: AttemptUpload, m: LocalAttemptMedia) => void }) {
@@ -413,11 +418,11 @@ function KolamCapture({ view, busy, onSubmit }: { view: CaseView; busy: boolean;
                 <Send className="w-3.5 h-3.5" /> Submit drawing
               </button>
             </div>
-            <p className="text-xs text-on-surface-variant">Draw the line through the dots, ideally without lifting. Undo is allowed before submitting. Timing and stroke order are recorded so the evaluator can see the process.</p>
+            <p className="text-xs text-on-surface-variant">Draw the line through the dots, ideally without lifting. Undo is allowed before submitting. Timing and stroke order are recorded so the app can see how you drew it, not only the result.</p>
           </div>
         ) : (
           <div className="space-y-2">
-            <FilePick accept="image/*" label="Photo of your drawn kolam" file={photo} onFile={setPhoto} disabled={busy} />
+            <FilePick accept="image/*" label="Photo of your drawn kolam, taken from above" file={photo} onFile={setPhoto} disabled={busy} />
             {photoUrl && <img src={photoUrl} alt="preview" className="max-h-72 rounded-lg border border-outline" />}
             {photo && photo.size > MAX_UPLOAD_BYTES && (
               <p className="text-[11px] font-mono text-divergence-crimson">
@@ -478,7 +483,7 @@ function OrigamiCapture({ view, busy, onSubmit }: { view: CaseView; busy: boolea
           </div>
         ))}
       </div>
-      <FilePick accept="video/*" label="Video of your folding attempt" file={file} onFile={setFile} disabled={busy} />
+      <FilePick accept="video/*" label="Video of your hands folding" file={file} onFile={setFile} disabled={busy} />
       {file && file.size > MAX_UPLOAD_BYTES && (
         <p className="text-[11px] font-mono text-divergence-crimson">
           File is {(file.size / 1e6).toFixed(1)} MB — limit is 30 MB. Re-encode at a lower bitrate (e.g. ffmpeg -i input.mp4 -crf 28 out.mp4).
@@ -491,7 +496,7 @@ function OrigamiCapture({ view, busy, onSubmit }: { view: CaseView; busy: boolea
       >
         <Send className="w-3.5 h-3.5" /> Submit video
       </button>
-      <p className="text-xs text-on-surface-variant">Frames are sampled at 1 fps (max 90) and sent as images; keep the paper in view.</p>
+      <p className="text-xs text-on-surface-variant">Film from above with the paper and your hands in view. The app looks at about one frame per second (up to 90).</p>
     </div>
   );
 }
@@ -507,7 +512,7 @@ function TablaCapture({ view, busy, onSubmit }: { view: CaseView; busy: boolean;
     <div className="space-y-3">
       <BeatTimeline ui={ui} />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        <FilePick accept="audio/*,video/*" label="Audio of your playing (required)" file={audio} onFile={setAudio} disabled={busy} />
+        <FilePick accept="audio/*,video/*" label="Recording of you playing (required)" file={audio} onFile={setAudio} disabled={busy} />
         <FilePick accept="video/*" label="Video (optional — shown, not scored)" file={video} onFile={setVideo} disabled={busy} />
       </div>
       {audio && audio.size > MAX_UPLOAD_BYTES && (
@@ -529,7 +534,7 @@ function TablaCapture({ view, busy, onSubmit }: { view: CaseView; busy: boolean;
         <Send className="w-3.5 h-3.5" /> Submit audio
       </button>
       <p className="text-xs text-on-surface-variant">
-        Source: {ui.tempo_bpm ?? '?'} BPM · {cycleLen ?? '?'}-beat cycle · {fmtTime(ui.duration_sec ?? null)}. Onsets and bass are measured deterministically.
+        Source: {ui.tempo_bpm ?? '?'} BPM · {cycleLen ?? '?'}-beat cycle · {fmtTime(ui.duration_sec ?? null)}. Stroke timing and bass are measured from the sound; how hard you strike is not.
       </p>
     </div>
   );

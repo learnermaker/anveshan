@@ -128,3 +128,13 @@ Spec: `docs/kiro/specs/K9-ORCHESTRATOR.md`.
 
 **Revisit trigger:** accounts and persistent storage are introduced, or real communities or organisations pilot the steward role.
 
+
+## Positioning: skills of the physical world (DECIDED 2026-10-07)
+
+**Decision:** Anveshan is described, in the app and in the key documents, as made for skills of the physical world (hands, tools, materials, sound), learned from a real demonstration and checked against a photo, video or recording of the learner's real attempt. Decided by Jim.
+
+**Single statement:** [`docs/product/novelty-boundary.md`, "Skills of the physical world"](../product/novelty-boundary.md#skills-of-the-physical-world-positioning-decided-2026-10-07). The app adapts it in `PITCH` (`app/src/copy/plain.ts`).
+
+**Consequences:** no "nobody does this" claims (industrial "Physical AI" tools exist); the app asks for attempts in real-world terms and says what a camera or microphone cannot sense.
+
+**Revisit trigger:** a learner or expert study shows the physical-world framing does not match how people use the product.
