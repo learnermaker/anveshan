@@ -9,6 +9,7 @@ See docs/kiro/specs/K7-engines-generalise.md §4.
 
 from __future__ import annotations
 
+import contextvars
 import importlib
 import json
 import logging
@@ -33,7 +34,11 @@ from tracks.common.schemas.evidence import Modality, VerificationState
 from tracks.common.skill_model import SkillModel
 
 from track_b.trajectory import AttemptMedia, DivergenceEvent, MetricValue, TrajectoryResult
-from track_b.evaluators.universal_align import label_frames, mode_filter, needleman_wunsch
+from track_b.evaluators.universal_align import mode_filter, needleman_wunsch
+
+ABS_FLOOR = 0.60   # a frame less similar than this to every step is off-path (unrelated content)
+CONF_MARGIN_MIN = 0.05   # minimum drop below the attempt's typical match level that marks a frame as unmatched
+Z_OFF = 0.25       # a frame counts for a step only if it is >= 0.25 sd above its mean step similarity
 
 log = logging.getLogger(__name__)
 
@@ -63,6 +68,38 @@ def _ev(eid: str, source_id: str, modality: Modality, excerpt: str,
 # ---------------------------------------------------------------------------
 # Quality gate
 # ---------------------------------------------------------------------------
+
+
+# Directory of the source perception assets (keyframes) for the evaluation in progress.
+_SOURCE_DIR: "contextvars.ContextVar[Optional[Path]]" = contextvars.ContextVar("universal_source_dir", default=None)
+
+
+def _jpeg(img: Any, max_side: int = 512) -> bytes:
+    import io
+    im = img.copy()
+    im.thumbnail((max_side, max_side))
+    buf = io.BytesIO()
+    im.convert("RGB").save(buf, format="JPEG", quality=80)
+    return buf.getvalue()
+
+
+def _video_frame_part(path: Path, t: float, label: str) -> Optional[ImagePart]:
+    """The attempt video frame at time ``t`` (first decoded frame at/after t)."""
+    try:
+        from tracks.common.media import sample_frames
+        fr = sample_frames(path, fps=2.0, start_sec=max(0.0, t - 0.25), end_sec=t + 1.0, max_side=512)
+        return ImagePart(_jpeg(fr[0].image), "image/jpeg", label) if fr else None
+    except Exception:  # noqa: BLE001 - undecodable tail: judged without the frame (reported as warning)
+        return None
+
+
+def _source_keyframe_part(asset: Optional[str], label: str) -> Optional[ImagePart]:
+    d = _SOURCE_DIR.get()
+    if not asset or d is None or not (Path(d) / asset).exists():
+        return None
+    from PIL import Image
+    return ImagePart(_jpeg(Image.open(Path(d) / asset)), "image/jpeg", label)
+
 
 def _quality_gate(attempt: AttemptMedia, record: Any) -> None:
     """Raise INVALID_INPUT for unusable attempts."""
@@ -378,6 +415,18 @@ def _call_judge_final(
             parts.append(ImagePart(buf.getvalue(), "image/jpeg", "Attempt image"))
         except Exception as exc:
             warnings.append(f"Could not load attempt image: {exc}")
+    elif attempt.kind == "video" and attempt.path.exists():
+        from tracks.common.media import probe
+        dur = probe(attempt.path).duration_sec or 0.0
+        last = _video_frame_part(attempt.path, max(0.0, dur - 1.0), "Attempt: final frame")
+        if last is None:
+            warnings.append("could not decode the attempt's final frame for the final-state judge")
+        else:
+            parts.append(last)
+        if skill.steps:
+            ref = _source_keyframe_part(skill.steps[-1].keyframe_asset, "Expert reference: final state")
+            if ref is not None:
+                parts.append(ref)
 
     try:
         result = ctx.gateway.generate_json(
@@ -437,22 +486,30 @@ def _procedure_checks(
     if n_steps == 0:
         return metrics, events, curve
 
-    # Source: step keyframe rows
+    # Source: one prototype per step = centroid of the source frames inside the step's span
+    # (robust to a single blurred/occluded keyframe); falls back to the keyframe row.
     source_idx = getattr(source_record, "embedding_index", {}) if source_record else {}
-    step_rows: List[Optional[np.ndarray]] = []
+    src_frames = (getattr(source_record, "specialists", {}) or {}).get("frames", {}) if source_record else {}
+    src_times = np.asarray(src_frames.get("times", []), dtype=np.float64)
+    src_rows = np.asarray(src_frames.get("rows", []), dtype=int)
+    step_rows: List[np.ndarray] = []
     for step in skill.steps:
-        seg_id = step.segment_id
-        if seg_id and seg_id in source_idx and source_idx[seg_id] < len(source_emb):
-            step_rows.append(source_emb[source_idx[seg_id]])
-        else:
-            # Fallback: use the nth row if available
-            idx = step.index
-            if idx < len(source_emb):
-                step_rows.append(source_emb[idx])
+        rows: List[int] = []
+        if len(src_times) and step.start_sec is not None and step.end_sec is not None:
+            sel = (src_times >= step.start_sec - 1e-6) & (src_times <= step.end_sec + 1e-6)
+            rows = [int(r) for r in src_rows[sel] if r < len(source_emb)]
+        if not rows:
+            seg_id = step.segment_id
+            if seg_id and seg_id in source_idx and source_idx[seg_id] < len(source_emb):
+                rows = [source_idx[seg_id]]
             else:
-                step_rows.append(source_emb[-1])
+                rows = [min(step.index, len(source_emb) - 1)]
+        v = np.asarray(source_emb[rows], dtype=np.float64)
+        v = v / np.maximum(np.linalg.norm(v, axis=1, keepdims=True), 1e-9)
+        c = v.mean(axis=0)
+        step_rows.append(c / max(float(np.linalg.norm(c)), 1e-9))
 
-    step_vecs = np.stack(step_rows)  # (N, D)
+    step_vecs = np.stack(step_rows)  # (N, D) unit
 
     # Attempt: per-frame rows from specialists["frames"]
     att_specialists = getattr(attempt_record, "specialists", {}) if attempt_record else {}
@@ -468,27 +525,59 @@ def _procedure_checks(
                 )
         return metrics, events, curve
 
-    # Build frame embedding matrix
     valid_rows = [r for r in frame_rows if r < len(attempt_emb)]
     if not valid_rows:
         return metrics, events, curve
-    frame_vecs = attempt_emb[valid_rows]  # (F, D)
-    n_frames = len(frame_vecs)
+    frame_vecs = np.asarray(attempt_emb[valid_rows], dtype=np.float64)
+    frame_vecs = frame_vecs / np.maximum(np.linalg.norm(frame_vecs, axis=1, keepdims=True), 1e-9)
+    frame_times = list(frame_times[: len(valid_rows)])
 
-    # Label frames
-    raw_labels = label_frames(frame_vecs, step_vecs, margin=0.03, floor=0.60)
+    # Similarity of every attempt frame to every step. Global embeddings of one scene are all
+    # similar (cos ~0.9+), so each frame's scores are z-scored across steps: "which step does
+    # this frame look MOST like", independent of the video's overall similarity level.
+    from tracks.common.segmentation import monotone_align
+
+    sim = frame_vecs @ step_vecs.T  # (F, N)
+    if n_steps > 1:
+        z = (sim - sim.mean(axis=1, keepdims=True)) / (sim.std(axis=1, keepdims=True) + 1e-6)
+    else:
+        z = sim - ABS_FLOOR
+    # Confident frames: close to SOME step relative to this attempt's own typical match level
+    # (adaptive margin from the spread of the attempt's best-match scores). Low-scoring frames
+    # are transitions (hands moving) or, when calm for a while, a NOVEL state the expert never
+    # showed (off-path, e.g. doing steps in a different order).
+    best_sim = sim.max(axis=1)
+    level = float(np.percentile(best_sim, 75))
+    mad = float(np.median(np.abs(best_sim - np.median(best_sim))))
+    margin = max(CONF_MARGIN_MIN, 3.0 * mad)
+    on_frame = (best_sim >= ABS_FLOOR) & (best_sim >= level - margin)
+    att_motion = np.asarray(frames_info.get("motion", [0.0] * len(frame_vecs))[: len(frame_vecs)], dtype=np.float64)
+    if len(att_motion) < len(frame_vecs):
+        att_motion = np.zeros(len(frame_vecs))
+    from tracks.common.segmentation import motion_threshold
+    calm = att_motion <= motion_threshold(att_motion)
+    # Coverage / progress: best non-decreasing path through the steps (skips allowed, no going back).
+    path = monotone_align(np.where(on_frame[:, None], z, -1e3), off_score=Z_OFF)
+    visited = sorted({p for p in path if p is not None})
+    # Order: unconstrained per-frame best step (confident frames only), smoothed, then aligned
+    # against the expected order with Needleman-Wunsch to count out-of-order steps.
+    raw_labels: List[Any] = []
+    for i in range(len(frame_vecs)):
+        if not on_frame[i]:
+            raw_labels.append("off" if (calm[i] or best_sim[i] < ABS_FLOOR) else "transition")
+        else:
+            j = int(np.argmax(z[i]))
+            raw_labels.append(j if (n_steps == 1 or z[i, j] >= Z_OFF) else "transition")
     filt_labels = mode_filter(raw_labels, window=3)
+    obs_seq: List[int] = []
+    for lbl in filt_labels:
+        if isinstance(lbl, int) and (not obs_seq or obs_seq[-1] != lbl):
+            obs_seq.append(lbl)
+    nw = needleman_wunsch(obs_seq, list(range(n_steps)))
 
-    # Extract step index labels
-    step_labels: List[int] = [l for l in filt_labels if isinstance(l, int)]
-    obs_seq = step_labels  # sequence of step indices seen
-
-    expected = list(range(n_steps))
-    nw = needleman_wunsch(obs_seq, expected)
-
-    n_matched = nw["matched"]
+    n_matched = len(visited)
     coverage = n_matched / n_steps if n_steps > 0 else 0.0
-    violations = nw["violations"]
+    violations = order_violations(raw_labels, z, frame_times, n_steps)
 
     # Count off-path runs lasting >= 2s
     off_path_count = 0
@@ -503,6 +592,17 @@ def _procedure_checks(
                 t_end = frame_times[min(j - 1, len(frame_times) - 1)]
                 if t_end - t_start >= 2.0:
                     off_path_count += 1
+                    events.append(DivergenceEvent(
+                        metric="u.off_path",
+                        kind="off_path_state",
+                        position=t_start,
+                        position_kind="time",
+                        evidence=_ev(f"ev.universal.offpath.{i}.{attempt.source_id[:8]}",
+                                     attempt.source_id, Modality.VIDEO,
+                                     f"From {t_start:.0f}s to {t_end:.0f}s the work is in a state the expert never showed",
+                                     t_start, t_end),
+                        detail=f"held state at {t_start:.0f}-{t_end:.0f}s matches no expert step (possible wrong order or extra step)",
+                    ))
             i = j
         else:
             i += 1
@@ -525,31 +625,34 @@ def _procedure_checks(
                  0.0, frame_times[-1] if frame_times else 0.0)
     metrics["u.off_path"] = MetricValue(float(off_path_count), f"{off_path_count} off-path run(s) >= 2s", evidence=ev_off)
 
-    # Events for missing steps
-    alignment = nw.get("alignment", [])
-    for obs_step, exp_step in alignment:
-        if obs_step is None and exp_step is not None:
-            # Missing step — interpolated position
-            frac = exp_step / max(n_steps - 1, 1)
-            t_pos = (frame_times[-1] if frame_times else 0.0) * frac
-            events.append(DivergenceEvent(
-                metric="u.step_coverage",
-                kind="missing_state",
-                position=t_pos,
-                position_kind="time",
-                evidence=_ev(f"ev.universal.missing.step{exp_step}.{attempt.source_id[:8]}",
-                             attempt.source_id, Modality.VIDEO,
-                             f"Step {exp_step} ({skill.steps[exp_step].name if exp_step < n_steps else '?'}) not found",
-                             t_pos, t_pos),
-                detail=f"Step {exp_step} not found in attempt",
-            ))
+    # Events for missing steps: steps the monotone path never visits, placed where the
+    # learner moved from the previous visited step to the next one.
+    t_end = frame_times[-1] if frame_times else 0.0
+    for exp_step in range(n_steps):
+        if exp_step in visited:
+            continue
+        prev_t = [frame_times[i] for i, p in enumerate(path) if p is not None and p < exp_step]
+        t_pos = prev_t[-1] if prev_t else 0.0
+        if not prev_t and not any(p is not None and p > exp_step for p in path):
+            t_pos = t_end
+        events.append(DivergenceEvent(
+            metric="u.step_coverage",
+            kind="missing_state",
+            position=t_pos,
+            position_kind="time",
+            evidence=_ev(f"ev.universal.missing.step{exp_step}.{attempt.source_id[:8]}",
+                         attempt.source_id, Modality.VIDEO,
+                         f"Step {exp_step} ({skill.steps[exp_step].name}) not found",
+                         t_pos, t_pos),
+            detail=f"Step {exp_step} not found in attempt",
+        ))
 
     # Curve: (time, max step fraction)
     if frame_times:
         max_matched = 0
-        for i, (t, lbl) in enumerate(zip(frame_times, filt_labels)):
-            if isinstance(lbl, int):
-                max_matched = max(max_matched, lbl + 1)
+        for t, p in zip(frame_times, path):
+            if p is not None:
+                max_matched = max(max_matched, p + 1)
             curve.append((t, max_matched / n_steps if n_steps > 0 else 0.0))
 
     # Final state match check for procedure
@@ -590,6 +693,39 @@ def _procedure_checks(
                 )
 
     return metrics, events, curve
+
+
+
+def order_violations(labels: List[Any], z: np.ndarray, times: List[float], n_steps: int) -> int:
+    """Steps performed out of order = present steps - longest increasing run of step times.
+
+    Each step's time is the median time of the attempt frames that look most like it.
+    Times closer than two sampling periods count as simultaneous (adjacent source states
+    can look almost identical), so only clear reorderings are counted. This is the
+    "minimum number of steps to move" (LIS) measure, robust to per-frame flicker.
+    """
+    if n_steps < 2 or not times:
+        return 0
+    period = float(np.median(np.diff(times))) if len(times) > 1 else 1.0
+    tol = 2.0 * period
+    by_step: Dict[int, List[float]] = {}
+    for i, lbl in enumerate(labels):
+        if isinstance(lbl, int) and i < len(times):
+            by_step.setdefault(lbl, []).append(times[i])
+    present = sorted(((float(np.median(ts)), j) for j, ts in by_step.items() if len(ts) >= 2))
+    if len(present) < 2:
+        return 0
+    # Quantise times by the tolerance so near-simultaneous steps tie, ties ordered by index.
+    seq = [j for _, j in sorted(((round(t / tol), j) for t, j in present))]
+    lis: List[int] = []
+    import bisect
+    for j in seq:
+        k = bisect.bisect_left(lis, j)
+        if k == len(lis):
+            lis.append(j)
+        else:
+            lis[k] = j
+    return len(seq) - len(lis)
 
 
 def _judge_step_quality(
@@ -633,6 +769,17 @@ def _judge_step_quality(
             if valid:
                 sims = [float(np.dot(attempt_emb[r], step_vec)) for _, r in valid]
                 best_i = int(np.argmax(sims))
+                if best_i < len(frame_times):
+                    fp = _video_frame_part(attempt.path, float(frame_times[best_i]),
+                                           f"Attempt: frame most like this step (t={frame_times[best_i]:.1f}s)")
+                    if fp is not None:
+                        parts.append(fp)
+    ref = _source_keyframe_part(step.keyframe_asset, "Expert reference: this step")
+    if ref is not None:
+        parts.append(ref)
+    if not parts:
+        return MetricValue(None, "no frame of this step could be shown to the judge",
+                           uncertain_reason="no evidence frame")
 
     try:
         result = ctx.gateway.generate_json(
@@ -928,6 +1075,7 @@ def evaluate(goal: GoalModel, attempt: AttemptMedia, ctx: Any = None) -> Traject
                 try:
                     perceivers = importlib.import_module("tracks.common.perceivers")
                     emb_dir = perc_path.parent
+                    _SOURCE_DIR.set(emb_dir)
                     source_emb = perceivers.load_embeddings(source_record, emb_dir)
                 except Exception:
                     source_emb = None

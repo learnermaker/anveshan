@@ -29,7 +29,7 @@ from tracks.common.skill_model import (
 
 log = logging.getLogger(__name__)
 
-PROMPT_DIR = Path(__file__).resolve().parents[2] / "prompts"
+PROMPT_DIR = Path(__file__).resolve().parents[3] / "common" / "prompts"
 STRUCTURE_SKILL_PROMPT = PROMPT_DIR / "structure_skill_v1.txt"
 PROMPT_ID = "structure_skill"
 
@@ -37,6 +37,7 @@ PROMPT_ID = "structure_skill"
 MAX_PROPERTIES = 8
 # Confidence for all inferred steps/properties
 INFERRED_CONFIDENCE = 0.5
+TRANSITION_CALM = 0.5   # video segments with < 50 % calm frames are transitions, not steps
 
 
 # ---------------------------------------------------------------------------
@@ -183,6 +184,15 @@ def _build_steps(record: PerceptionRecord, structures: List[str]) -> Tuple[List[
         # Build steps from time segments with state observations
         time_segs = [s for s in record.segments if s.kind == "time"]
         # Collect segments that have a state observation
+        # Transition segments (mostly hands/camera in motion) are not states of the work:
+        # skip them when enough calm segments exist, so steps are the stable states.
+        def _calm(seg) -> float:
+            vals = [o.value for o in _obs_of_kind(record, seg.segment_id, "measurement") if o.label == "calm_fraction"]
+            return float(vals[0]) if vals and isinstance(vals[0], (int, float)) else 1.0
+
+        calm_segs = [s for s in time_segs if _calm(s) >= TRANSITION_CALM]
+        if len(calm_segs) >= 2:
+            time_segs = calm_segs
         step_segs = []
         for seg in time_segs:
             state_obs = _obs_of_kind(record, seg.segment_id, "state")

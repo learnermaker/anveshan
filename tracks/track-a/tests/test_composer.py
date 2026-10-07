@@ -293,7 +293,9 @@ def test_refine_draft_no_new_perception(tmp_path):
     refined = c.refine_draft(tmp_path, draft.draft_id, ctx, title="Grid Art", description="a grid drawing skill")
     # No new perception calls (embed + vision_fast)
     assert refined.proposal is not None
-    assert len(gw.calls) == calls_before  # no new model calls for perception
+    # No new perception calls: any new call must be the text-only wording call (no media parts).
+    new_calls = gw.calls[calls_before:]
+    assert all(c.get("n_image_parts", 0) == 0 and c.get("n_parts", 0) == 0 for c in new_calls), new_calls
 
 
 def test_fallback_skill_model_when_universal_missing(tmp_path, monkeypatch):

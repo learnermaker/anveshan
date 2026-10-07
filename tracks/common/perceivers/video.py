@@ -1,7 +1,8 @@
 """Layer 1 video perceiver.
 
-Implements K6 §2.2: deterministic segmentation, keyframe extraction, embeddings
-(keyframes + per-second frames), vision_fast batched perception, optional audio track.
+Whole-video sampling (adaptive fps), one embedding per frame, domain-agnostic visual-state
+segmentation (tracks/common/segmentation.py; pixel-motion fallback), ONE vision_fast call that
+describes every keyframe and groups them into ordered stages, optional audio track.
 """
 
 from __future__ import annotations
@@ -23,7 +24,8 @@ log = logging.getLogger(__name__)
 
 _PROMPTS_DIR = Path(__file__).resolve().parents[1] / "prompts"
 _PROMPT_ID = "perceive_frames"
-_PROMPT_VERSION_FILE = "perceive_frames_v1.txt"
+_PROMPT_VERSION_FILE = "perceive_frames_v2.txt"
+_MAX_FRAMES = 120
 
 _STILL_THRESHOLD = 0.02
 _SMOOTH_WINDOW = 3
@@ -53,6 +55,30 @@ def _smooth(arr: np.ndarray, window: int) -> np.ndarray:
         return arr.copy()
     padded = np.pad(arr, window // 2, mode="edge")
     return np.convolve(padded, np.ones(window) / window, mode="valid")[: len(arr)]
+
+
+def _monotone_stages(segs: List[Segment], by_id: Dict[str, dict]) -> Dict[str, str]:
+    """Stage name per segment, forced to a non-decreasing stage sequence.
+
+    The model groups keyframes into stages; we enforce the grouping deterministically:
+    a segment whose stage number goes backwards (or is missing) stays in the current stage,
+    and every segment of one stage carries that stage's FIRST name, so step building
+    merges them into one step.
+    """
+    out: Dict[str, str] = {}
+    cur_stage, cur_name = -1, None
+    for s in segs:
+        d = by_id.get(s.segment_id) or {}
+        try:
+            st = int(d.get("stage"))
+        except (TypeError, ValueError):
+            st = None
+        name = (d.get("stage_name") or d.get("state") or "").strip() or None
+        if name and (cur_name is None or (st is not None and st > cur_stage)):
+            cur_stage, cur_name = (st if st is not None else 0), name
+        if cur_name:
+            out[s.segment_id] = cur_name
+    return out
 
 
 def _segment_frames(
@@ -170,236 +196,132 @@ def perceive_video(
     # seg-000: whole video
     segments.append(Segment(segment_id="seg-000", kind="whole"))
 
-    # ---- Step 1: Deterministic segmentation ----
-    fps = 1.0
-    frames = sample_frames(path, fps=fps, max_side=256, max_frames=120)
-
-    raw_segs, diffs = _segment_frames(frames, fps)
-    all_diffs = np.array(diffs)
-
-    # Compute active fraction from the diffs
-    active_diffs = all_diffs[1:] if len(all_diffs) > 1 else all_diffs
-    smooth_diffs = _smooth(active_diffs, _SMOOTH_WINDOW)
-    active_count = int(np.sum(smooth_diffs >= _STILL_THRESHOLD))
-    active_fraction = float(active_count / max(len(smooth_diffs), 1))
-
-    # Add whole-video measurements
-    meas_defs = [
-        ("duration", round(duration, 3), "s"),
-        ("segment_count", float(len(raw_segs)), None),
-        ("active_fraction", round(active_fraction, 4), None),
-    ]
-    for label, value, unit in meas_defs:
-        observations.append(Observation(
-            obs_id=next_obs(),
-            segment_id="seg-000",
-            kind="measurement",
-            label=label,
-            value=value,
-            unit=unit,
-            certainty="observed",
-            producer="det:video_segment",
-        ))
-
-    # Build time segments (seg-001...)
-    time_seg_objects: List[Segment] = []
-    keyframe_jpegs: List[bytes] = []
-
-    for i, seg in enumerate(raw_segs):
-        seg_id = f"seg-{i + 1:03d}"
-        start_sec = seg["start_sec"]
-        end_sec = seg["end_sec"]
-        seg_diffs = np.array(seg["diffs"])
-
-        # Keyframe = frame with minimum diff inside the segment
-        start_frame = seg["start_frame"]
-        end_frame = seg["end_frame"]
-        frame_range = frames[start_frame : end_frame + 1]
-        if frame_range:
-            seg_diff_range = all_diffs[start_frame : end_frame + 1]
-            kf_local = int(np.argmin(seg_diff_range))
-            kf_frame = frame_range[kf_local]
-            kf_sec = kf_frame.time_sec
-            stability = float(1.0 - np.mean(seg_diff_range))
-            stability = max(0.0, min(1.0, stability))
-
-            # Save keyframe (max side 384)
-            kf_name = f"kf_{seg_id}.jpg"
-            kf_path = asset_dir / kf_name
-            kf_img = kf_frame.image.copy()
-            kf_img.thumbnail((384, 384), Image.LANCZOS)
-            kf_img.save(str(kf_path), format="JPEG", quality=85)
-            kf_jpeg = _resize_jpeg(kf_frame.image, 384)
-            keyframe_jpegs.append(kf_jpeg)
-        else:
-            kf_sec = (start_sec + end_sec) / 2
-            stability = 0.5
-            kf_name = None
-            keyframe_jpegs.append(b"")
-
-        seg_obj = Segment(
-            segment_id=seg_id,
-            kind="time",
-            start_sec=round(start_sec, 3),
-            end_sec=round(end_sec, 3),
-            keyframe_sec=round(kf_sec, 3),
-            keyframe_asset=kf_name if kf_name else None,
-            stability=round(stability, 4),
-        )
-        segments.append(seg_obj)
-        time_seg_objects.append(seg_obj)
-
-    # ---- Step 2: Embeddings ----
-    # Keyframes (one per segment) + per-second frames (all sampled)
+    # ---- Step 1: sample frames over the WHOLE video (adaptive fps, <= _MAX_FRAMES) ----
+    fps = min(1.0, _MAX_FRAMES / duration) if duration > 0 else 1.0
+    frames = sample_frames(path, fps=fps, max_side=256, max_frames=_MAX_FRAMES)
+    if not frames:
+        raise AnveshanFailure(FailureCategory.INVALID_INPUT, f"no decodable video frames in {path.name}")
+    grays = [np.asarray(f.image.convert("L"), dtype=np.float32) / 255.0 for f in frames]
+    motion = [0.0] + [float(np.mean(np.abs(grays[i] - grays[i - 1]))) for i in range(1, len(grays))]
+    smooth_m = _smooth(np.array(motion[1:] or [0.0]), _SMOOTH_WINDOW)
+    active_fraction = float(np.mean(smooth_m >= _STILL_THRESHOLD)) if len(smooth_m) else 0.0
     per_sec_jpegs = [_resize_jpeg(f.image, 256) for f in frames]
     per_sec_times = [f.time_sec for f in frames]
 
-    all_embed_items = (
-        [ImagePart(j) for j in keyframe_jpegs if j]
-        + [ImagePart(j) for j in per_sec_jpegs]
-    )
-
-    embedding_index: Dict[str, int] = {}
+    # ---- Step 2: one embedding per sampled frame (keyframes reuse their frame's row) ----
+    vecs: Optional[np.ndarray] = None
     embeddings_file = None
+    try:
+        embed_result = ctx.gateway.embed(items=[ImagePart(j) for j in per_sec_jpegs], purpose=f"{purpose}_frames")
+        runs.append(embed_result.metadata.replay_key)
+        vecs = np.asarray(embed_result.vectors, dtype=np.float32)
+        npy_name = f"emb_{sha[:12]}.npy"
+        np.save(str(asset_dir / npy_name), vecs.astype(np.float16))
+        embeddings_file = npy_name
+        specialists["frames"] = {"times": per_sec_times, "rows": list(range(len(frames))), "fps": round(fps, 4),
+                                 "motion": [round(m, 5) for m in motion]}
+    except ModelError as e:
+        warnings_list.append(f"embedding failed: {e.message}; falling back to motion-only segmentation")
 
-    if all_embed_items:
-        try:
-            embed_result = ctx.gateway.embed(
-                items=all_embed_items,
-                purpose=f"{purpose}_frames",
-            )
-            runs.append(embed_result.metadata.replay_key)
-            vecs = embed_result.vectors
+    # ---- Step 3: visual-state segmentation (domain-agnostic; see tracks/common/segmentation.py) ----
+    from tracks.common import segmentation as seg_lib
 
-            # First N rows = keyframe rows (one per non-empty segment)
-            kf_idx = 0
-            for seg_obj in time_seg_objects:
-                if seg_obj.segment_id in [f"seg-{i + 1:03d}" for i in range(len(raw_segs))]:
-                    seg_num = int(seg_obj.segment_id.split("-")[1]) - 1
-                    if seg_num < len(keyframe_jpegs) and keyframe_jpegs[seg_num]:
-                        embedding_index[seg_obj.segment_id] = kf_idx
-                        kf_idx += 1
+    if vecs is not None and len(vecs) == len(frames):
+        feats = seg_lib.layout_features([f.image for f in frames], vecs)
+        st_segs = seg_lib.segment_k(feats, seg_lib.default_k(len(frames)), motion)
+        raw_segs = [{"start_frame": s.start, "end_frame": s.end, "keyframe": s.keyframe, "stability": s.cohesion,
+                     "calm": s.calm_fraction} for s in st_segs]
+        seg_method = "embedding+layout DP (segment_k)"
+    else:
+        raw_segs = []
+        for s in _segment_frames(frames, fps)[0]:
+            rng = list(range(s["start_frame"], s["end_frame"] + 1))
+            kf = min(rng, key=lambda k: motion[k])
+            raw_segs.append({"start_frame": s["start_frame"], "end_frame": s["end_frame"], "keyframe": kf,
+                             "stability": max(0.0, min(1.0, 1.0 - float(np.mean([motion[k] for k in rng])))),
+                             "calm": round(float(np.mean([motion[k] < _STILL_THRESHOLD for k in rng])), 4)})
+        seg_method = "pixel motion (fallback)"
 
-            n_kf = kf_idx
-            # Frame rows start after keyframes
-            frame_rows = list(range(n_kf, n_kf + len(per_sec_jpegs)))
-            specialists["frames"] = {
-                "times": per_sec_times,
-                "rows": frame_rows,
-            }
+    for label, value, unit in (
+        ("duration", round(duration, 3), "s"),
+        ("segment_count", float(len(raw_segs)), None),
+        ("active_fraction", round(active_fraction, 4), None),
+        ("sample_fps", round(fps, 4), "fps"),
+    ):
+        observations.append(Observation(obs_id=next_obs(), segment_id="seg-000", kind="measurement", label=label,
+                                        value=value, unit=unit, certainty="observed", producer="det:video_segment"))
 
-            # Save
-            npy_name = f"emb_{sha[:12]}.npy"
-            npy_path = asset_dir / npy_name
-            np.save(str(npy_path), vecs.astype(np.float16))
-            embeddings_file = npy_name
+    time_seg_objects: List[Segment] = []
+    keyframe_jpegs: List[bytes] = []
+    embedding_index: Dict[str, int] = {}
+    for i, rs in enumerate(raw_segs):
+        seg_id = f"seg-{i + 1:03d}"
+        kf = frames[rs["keyframe"]]
+        kf_name = f"kf_{seg_id}.jpg"
+        kf_img = kf.image.copy()
+        kf_img.thumbnail((384, 384), Image.LANCZOS)
+        kf_img.convert("RGB").save(str(asset_dir / kf_name), format="JPEG", quality=85)
+        keyframe_jpegs.append(_resize_jpeg(kf.image, 384))
+        seg_obj = Segment(
+            segment_id=seg_id, kind="time",
+            start_sec=round(frames[rs["start_frame"]].time_sec, 3),
+            end_sec=round(frames[rs["end_frame"]].time_sec, 3),
+            keyframe_sec=round(kf.time_sec, 3), keyframe_asset=kf_name,
+            stability=round(float(rs["stability"]), 4),
+        )
+        segments.append(seg_obj)
+        time_seg_objects.append(seg_obj)
+        observations.append(Observation(obs_id=next_obs(), segment_id=seg_id, kind="measurement", label="calm_fraction",
+                                        value=float(rs["calm"]), certainty="observed", producer="det:video_segment"))
+        if vecs is not None:
+            embedding_index[seg_id] = int(rs["keyframe"])
+    specialists["segmentation"] = {"method": seg_method,
+                                   "frames": [[r["start_frame"], r["end_frame"]] for r in raw_segs]}
 
-        except ModelError as e:
-            warnings_list.append(f"embedding failed: {e.message}")
-
-    # ---- Step 3: Perception calls (vision_fast, batches of ≤4) ----
+    # ---- Step 4: ONE vision_fast call sees every keyframe in order: descriptions + stage grouping ----
     gate = {}
-    all_safety_categories: List[str] = []
-
-    if time_seg_objects and any(keyframe_jpegs):
+    if time_seg_objects:
         try:
             prompt_text, prompt_ver = load_prompt(_PROMPTS_DIR / _PROMPT_VERSION_FILE)
-
-            # Build (segment_id, jpeg) pairs for non-empty keyframes
-            kf_pairs = []
-            for i, seg_obj in enumerate(time_seg_objects):
-                if i < len(keyframe_jpegs) and keyframe_jpegs[i]:
-                    kf_pairs.append((seg_obj.segment_id, keyframe_jpegs[i], seg_obj.keyframe_sec or 0.0))
-
-            first_batch = True
-            for batch_start in range(0, len(kf_pairs), 4):
-                batch = kf_pairs[batch_start : batch_start + 4]
-                batch_parts = [
-                    ImagePart(jpeg, label=f"Segment {seg_id} keyframe at t={kf_sec:.1f}s")
-                    for seg_id, jpeg, kf_sec in batch
-                ]
-
-                result = ctx.gateway.generate_json(
-                    model_key="vision_fast",
-                    prompt_id=_PROMPT_ID,
-                    prompt_version=prompt_ver,
-                    prompt_text=prompt_text,
-                    schema=_FramesPerceptionDTO,
-                    parts=batch_parts,
-                )
-                runs.append(result.metadata.replay_key)
-                dto = result.data
-
-                # Merge safety categories from all batches
-                if first_batch and dto.safety_categories:
-                    all_safety_categories.extend(dto.safety_categories)
-                    gate = {
-                        "teachable": dto.teachable,
-                        "teachable_reason": dto.teachable_reason,
-                        "skill_kind": dto.skill_kind,
-                        "safety_categories": dto.safety_categories,
-                    }
-                    first_batch = False
-                elif dto.safety_categories:
-                    for cat in dto.safety_categories:
-                        if cat not in all_safety_categories:
-                            all_safety_categories.append(cat)
-
-                # Map segment observations
-                batch_seg_ids = {seg_id for seg_id, _, _ in batch}
-                for seg_data in dto.segments:
-                    seg_id = seg_data.get("segment_id", "")
-                    if seg_id not in batch_seg_ids:
-                        if seg_id:
-                            log.warning("perception returned unknown segment_id %s; ignoring", seg_id)
-                        continue
-
-                    state = seg_data.get("state")
-                    action = seg_data.get("action")
-                    notes = seg_data.get("notes")
-                    objects = seg_data.get("objects", [])
-
-                    if state:
-                        observations.append(Observation(
-                            obs_id=next_obs(),
-                            segment_id=seg_id,
-                            kind="state",
-                            label=state[:200],
-                            certainty="inferred",
-                            producer="model:vision_fast",
-                        ))
-                    if action:
-                        observations.append(Observation(
-                            obs_id=next_obs(),
-                            segment_id=seg_id,
-                            kind="action",
-                            label=action[:200],
-                            certainty="inferred",
-                            producer="model:vision_fast",
-                        ))
-                    for obj in (objects or [])[:5]:
-                        observations.append(Observation(
-                            obs_id=next_obs(),
-                            segment_id=seg_id,
-                            kind="object",
-                            label=obj[:200],
-                            certainty="inferred",
-                            producer="model:vision_fast",
-                        ))
-                    if notes:
-                        observations.append(Observation(
-                            obs_id=next_obs(),
-                            segment_id=seg_id,
-                            kind="property",
-                            label=notes[:200],
-                            certainty="inferred",
-                            producer="model:vision_fast",
-                        ))
-
-            # Update gate with merged safety
-            if all_safety_categories and gate:
-                gate["safety_categories"] = list(dict.fromkeys(all_safety_categories))
-
+            parts = [ImagePart(j, label=f"Segment {s.segment_id} keyframe at t={s.keyframe_sec:.1f}s")
+                     for s, j in zip(time_seg_objects, keyframe_jpegs)]
+            result = ctx.gateway.generate_json(
+                model_key="vision_fast", prompt_id=_PROMPT_ID, prompt_version=prompt_ver,
+                prompt_text=prompt_text, schema=_FramesPerceptionDTO, parts=parts,
+                expected_behavior="one entry per keyframe with a non-decreasing stage grouping",
+            )
+            runs.append(result.metadata.replay_key)
+            dto = result.data
+            gate = {
+                "teachable": dto.teachable, "teachable_reason": dto.teachable_reason,
+                "skill_kind": dto.skill_kind,
+                "safety_categories": list(dict.fromkeys(dto.safety_categories or ["none"])),
+            }
+            by_id = {d.get("segment_id"): d for d in dto.segments if isinstance(d, dict)}
+            known_ids = {s.segment_id for s in time_seg_objects}
+            unknown = [k for k in by_id if k not in known_ids]
+            if unknown:
+                log.warning("perception returned unknown segment ids %s; ignoring", unknown)
+            stages = _monotone_stages(time_seg_objects, by_id)
+            settled = [s.segment_id for s in time_seg_objects if not (by_id.get(s.segment_id) or {}).get("in_progress")]
+            if len(settled) >= 2:   # steps come from settled states; mid-action keyframes stay as properties
+                stages = {k: v for k, v in stages.items() if k in settled}
+            for seg_obj in time_seg_objects:
+                d = by_id.get(seg_obj.segment_id) or {}
+                stage_name = stages.get(seg_obj.segment_id)
+                if stage_name:
+                    observations.append(Observation(obs_id=next_obs(), segment_id=seg_obj.segment_id, kind="state",
+                                                    label=stage_name[:200], certainty="inferred", producer="model:vision_fast"))
+                for kind, val in (("action", d.get("action")), ("property", d.get("state")), ("property", d.get("notes"))):
+                    if val:
+                        observations.append(Observation(obs_id=next_obs(), segment_id=seg_obj.segment_id, kind=kind,
+                                                        label=str(val)[:200], certainty="inferred", producer="model:vision_fast"))
+                for obj in (d.get("objects") or [])[:5]:
+                    observations.append(Observation(obs_id=next_obs(), segment_id=seg_obj.segment_id, kind="object",
+                                                    label=str(obj)[:200], certainty="inferred", producer="model:vision_fast"))
+            missing = [s.segment_id for s in time_seg_objects if s.segment_id not in by_id]
+            if missing:
+                warnings_list.append(f"vision_fast gave no entry for segments {missing}; their stage was carried from the previous segment")
         except ModelError as e:
             warnings_list.append(f"vision_fast video perception failed: {e.message}")
 
