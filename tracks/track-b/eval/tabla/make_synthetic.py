@@ -8,7 +8,7 @@ stroke moved, by how much, and which strokes lost their bass.
 Outputs
   var/eval/tabla/<name>.wav                          (gitignored; derived from CC BY-SA audio)
   tracks/track-b/eval/tabla/labels/<name>.json       (committed ground truth)
-  tracks/track-b/eval/tabla/labels/goal_model.snapshot.json   (goal the labels refer to)
+  tracks/track-b/eval/tabla/labels/goal_model.ref.json        (path + sha256 of the goal the labels refer to; a link, not a copy)
 
 Goal: the latest tracks/cases/tabla/knowledge/goal_model.v*.json if present; otherwise it is
 bootstrapped with the Track A builder (eval tooling only; the track_b package never imports
@@ -33,7 +33,7 @@ for p in (ROOT, ROOT / "tracks" / "track-a" / "src", ROOT / "tracks" / "track-b"
 
 from tracks.common import tabla_dsp as dsp  # noqa: E402
 from tracks.common.casedata import GoalModel, latest_version, load_sources, load_versioned, resolve_media, write_json  # noqa: E402
-from tracks.common.media import decode_audio  # noqa: E402
+from tracks.common.media import decode_audio, sha256_file  # noqa: E402
 
 SR = 16000
 SEED = 20261006
@@ -65,6 +65,13 @@ def load_goal() -> GoalModel:
         "Run build_case first (Task 5 / tools/build_tabla.py)."
     )
     return load_versioned(kdir, "goal_model", GoalModel)
+
+
+def write_goal_ref() -> None:
+    """Pin the goal the labels refer to by path + sha256 (versioned goal files are immutable)."""
+    v = latest_version(CASE_DIR / "knowledge", "goal_model")
+    path = CASE_DIR / "knowledge" / f"goal_model.v{v}.json"
+    write_json(LABEL_DIR / "goal_model.ref.json", {"path": path.relative_to(ROOT).as_posix(), "sha256": sha256_file(path)})
 
 
 def segments(x: np.ndarray, times: List[float]) -> List[np.ndarray]:
@@ -136,7 +143,7 @@ def main() -> int:
     g = goal.payload
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     LABEL_DIR.mkdir(parents=True, exist_ok=True)
-    write_json(LABEL_DIR / "goal_model.snapshot.json", goal)
+    write_goal_ref()
     src = load_sources(CASE_DIR).get(goal.source_ids[0])
     w0, w1 = g["window_sec"]
     x = decode_audio(resolve_media(CASE_DIR, src), SR, start_sec=w0, end_sec=w1)

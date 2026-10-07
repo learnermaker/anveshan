@@ -30,6 +30,8 @@ export default defineConfig(({ mode }) => ({
   server: {
     port: 5173,
     host: true,
+    // The app imports a few canonical files from ../tracks instead of keeping copies (single-copy rule).
+    fs: { allow: [__dirname, path.resolve(__dirname, '../tracks')] },
     proxy: {
       '/api': {
         target: process.env.ANVESHAN_API_PROXY ?? 'http://localhost:8080',

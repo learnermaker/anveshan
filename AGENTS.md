@@ -19,6 +19,16 @@ When documents disagree, use this order:
 11. docs/product/feature-universe.md — exhaustive possibility inventory; never treat presence as commitment.
 
 
+### Single-copy rule (files)
+
+Every file has exactly one canonical copy in the repository. Do not copy a file to make it convenient for another folder, tool or agent; link to it instead:
+
+- code imports or reads it by relative path (the app may import from `../tracks`; see `app/vite.config.ts` and the `Dockerfile`);
+- pinned data uses a pointer with path + sha256 (example: `tracks/track-b/eval/tabla/labels/goal_model.ref.json`);
+- docs and agent wiring (`.agents/`, `.kiro/steering/`, `.claude/skills/`) point at the canonical file with a Markdown link or path.
+
+`.github/scripts/check_duplicates.py` enforces this in CI. Genuine exceptions go in `.github/duplicate-allowlist.txt` with a reason.
+
 ### Contract single-source rule
 
 The eight shared contracts have exactly one authoritative source: `tracks/common/schemas/`. This includes field names, enum values, required/optional semantics, and validation meaning.

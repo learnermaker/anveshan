@@ -10,6 +10,7 @@ Run from the repository root. Use the project venv (`.venv/Scripts/python` on Wi
 ```bash
 PY=.venv/Scripts/python
 $PY .github/scripts/check_governance.py
+$PY .github/scripts/check_duplicates.py
 $PY .github/scripts/check_case_packs.py
 $PY -m pytest -q .github/scripts/test_check_case_packs.py .github/scripts/test_check_pr_contract.py
 $PY .github/scripts/check_contract_parity.py

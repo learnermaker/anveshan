@@ -12,6 +12,8 @@ ENV VITE_API_BASE=${VITE_API_BASE}
 COPY app/package.json app/package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY app/ ./
+# Canonical files the app imports from ../tracks (single-copy rule; see app/vite.config.ts).
+COPY tracks/common/tests/fixtures/transmission_case_001/ /src/tracks/common/tests/fixtures/transmission_case_001/
 RUN npm run build
 
 # ---------------------------------------------------------------------------
