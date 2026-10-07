@@ -29,3 +29,6 @@ Model ids come from env (`ANVESHAN_TEXT_IMAGE_MODEL`, `ANVESHAN_VIDEO_FRAMES_MOD
 
 ## Keys
 `GEMINI_API_KEY` from `.env` (server only). The browser never sees a key and never calls a model.
+
+## Token economy
+Read `docs/architecture/token-economy.md` before adding images, frames or long outputs to a call. In short: downsize images first (the gateway picks the Gemini 3 media resolution from image size), keep the output cap, and check `tools/token_report.py` after live runs.
