@@ -1,4 +1,4 @@
-﻿/** Per-modality source views rendered from CaseView.goal.ui_view. */
+/** Per-modality source views rendered from CaseView.goal.ui_view. */
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Film, Music } from 'lucide-react';

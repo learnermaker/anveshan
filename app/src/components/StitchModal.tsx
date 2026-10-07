@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { X, Sparkles, ExternalLink, Download, Layers } from 'lucide-react';
 import { useEscape } from '../hero/useEscape';
 

@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Cpu, RefreshCw, X } from 'lucide-react';
 import { api } from '../api/client';
 import { API_BASE, IS_MOCK, getRequestedMode, setRequestedMode, type RequestedMode } from '../api/runtime';

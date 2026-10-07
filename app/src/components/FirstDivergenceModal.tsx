@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { AlertTriangle, ArrowRight, CheckCircle2, HelpCircle, Shield, X, Eye, Sparkles } from 'lucide-react';
 import type { CapabilityCase } from '../types/workspace';
 import type { CertaintyState } from '../types/workspace';

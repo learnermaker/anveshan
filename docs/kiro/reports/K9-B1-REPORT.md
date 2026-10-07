@@ -54,3 +54,44 @@
 
 ## Live calls used
 - 0
+
+## Review fixes (applied after REVISE verdict)
+
+Review `K9-B1.md` returned **REVISE** with 3 MUST and 1 SHOULD finding.
+
+### MUST 1 — Template-literal syntax error (FIXED)
+**File:** `app/scripts/check_plain_language.mjs` line 343  
+**Fix:** Added missing backticks so `page.goto(${BASE_URL}?view=evidence, …)` became `` page.goto(`${BASE_URL}?view=evidence`, …) ``.  
+`node --check` confirms no syntax errors.
+
+### MUST 2 — `--mobile` flag never called (FIXED)
+**File:** `app/scripts/check_plain_language.mjs` tail  
+**Fix:** Replaced the unconditional `main().catch(…)` tail with a conditional:
+```js
+if (process.argv.includes('--mobile')) {
+  runMobileCheck().catch(…);
+} else {
+  main().catch(…);
+}
+```
+`node check_plain_language.mjs --mobile` now routes to `runMobileCheck()`.
+
+### MUST 3 — Incomplete `MOBILE_VIEWS` list (FIXED)
+**File:** `app/scripts/check_plain_language.mjs`  
+**Fix:** Added three missing entries so all 7 spec-required views are covered:
+```js
+{ url: '?view=practice&case=kolam',     label: 'practise' },
+{ url: '?view=transmission&case=kolam', label: 'results' },
+{ url: '?view=steward',                 label: 'steward' },
+```
+`MOBILE_VIEWS` now has 7 entries (library, learn, practise, results, my-skills, steward, evidence).
+
+### SHOULD — BOM bytes in 7 files (FIXED)
+**Files:** `FirstDivergenceModal.tsx`, `LineageDrawer.tsx`, `LifecycleInspectorModal.tsx`, `StitchModal.tsx`, `SettingsModal.tsx`, `SourcePanels.tsx`, `check_plain_language.mjs`  
+**Fix:** Stripped the UTF-8 BOM (`\xEF\xBB\xBF`) from the opening bytes of all 7 files. Builds continue to pass.
+
+### Re-verify after fixes
+- `npm --prefix app run build`: PASS (15.86 s)
+- `npm --prefix app run build:mock`: PASS (17.10 s)
+- `node --check check_plain_language.mjs`: PASS (exit 0)
+- BOM check: 0 files with BOM remaining

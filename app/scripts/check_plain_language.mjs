@@ -1,4 +1,4 @@
-﻿/**
+/**
  * check_plain_language.mjs
  *
  * Plain-language scan: walk the mock app and report any banned learner terms visible
@@ -340,7 +340,7 @@ async function runWalk(matchers) {
     await shot(page, '8-my-skills');
     // -- Step 9: How we check results (evidence page) ---------------------
     console.log('  Step 9: How we check results (evidence page)');
-    await page.goto(${BASE_URL}?view=evidence, { waitUntil: 'networkidle0', timeout: 30_000 });
+    await page.goto(`${BASE_URL}?view=evidence`, { waitUntil: 'networkidle0', timeout: 30_000 });
     await page.waitForNetworkIdle({ timeout: STEP_TIMEOUT }).catch(() => {});
     allFindings.push(...await scan(page, '9-evidence', matchers));
     await shot(page, '9-evidence');
@@ -501,10 +501,13 @@ async function main() {
 // Mobile check (--mobile): asserts no horizontal overflow at 375 px viewport
 // ---------------------------------------------------------------------------
 const MOBILE_VIEWS = [
-  { url: '',                  label: 'library' },
-  { url: '?view=source&case=kolam', label: 'learn' },
-  { url: '?view=mine',        label: 'my-skills' },
-  { url: '?view=evidence',    label: 'evidence' },
+  { url: '',                           label: 'library' },
+  { url: '?view=source&case=kolam',    label: 'learn' },
+  { url: '?view=practice&case=kolam',  label: 'practise' },
+  { url: '?view=transmission&case=kolam', label: 'results' },
+  { url: '?view=mine',                 label: 'my-skills' },
+  { url: '?view=steward',              label: 'steward' },
+  { url: '?view=evidence',             label: 'evidence' },
 ];
 async function runMobileCheck() {
   const browser = await puppeteer.launch({
@@ -540,7 +543,14 @@ async function runMobileCheck() {
   console.log(`\nMobile check PASSED: all ${MOBILE_VIEWS.length} views fit in 375 px`);
   process.exit(0);
 }
-main().catch((err) => {
-  console.error('Fatal error:', err);
-  process.exit(1);
-});
+if (process.argv.includes('--mobile')) {
+  runMobileCheck().catch((err) => {
+    console.error('Fatal error:', err);
+    process.exit(1);
+  });
+} else {
+  main().catch((err) => {
+    console.error('Fatal error:', err);
+    process.exit(1);
+  });
+}
