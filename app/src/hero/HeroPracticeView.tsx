@@ -2,18 +2,23 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, Eraser, FileUp, Play, RotateCcw, Send, Undo2 } from 'lucide-react';
-import type { AttemptKind, CaseView, KolamUiView, OrigamiUiView, TablaUiView } from '../api/types';
+import type { AttemptKind, AttemptResult, CaseView, KolamUiView, OrigamiUiView, TablaUiView } from '../api/types';
 import { api, type AttemptUpload } from '../api/client';
+import { API_BASE } from '../api/runtime';
 import { KolamCanvas, buildRasterPng, buildTraceJson, type Stroke } from './kolam/KolamCanvas';
 import { KolamFigure } from './kolam/KolamFigure';
 import { KolamTeach } from './kolam/KolamTeach';
 import { BeatTimeline } from './tabla/BeatTimeline';
 import { AttemptResultView } from './results/AttemptResultView';
 import type { HeroSession, LocalAttemptMedia } from './session';
-import { Badge, btn, ErrorNote, MockBadge, Panel, ProgressBar, ReviewBadge, SourceLabelBadge, Spinner } from './ui';
+import { Badge, btn, ErrorNote, Panel, ProgressBar, ReviewBadge, SourceLabelBadge, Spinner } from './ui';
+import { TrustLine } from './TrustLine';
 import { fmtTime } from './locators';
 import { UniversalPracticeView } from './universal/UniversalPracticeView';
 import { AttemptProgress, ReviewNote, TaskInstructions } from './Guidance';
+import { DEBUG } from '../api/debug';
+import { attemptLabel } from '../copy/plain';
+import type { SampleAttempt } from '../api/types-product';
 
 interface Props {
   view: CaseView;
@@ -49,7 +54,6 @@ function HeroPracticeViewInner({ view, session, onSessionChange, onComplete, onB
   const attempts = session?.attempts ?? [];
   const n = attempts.length;
   const shown = attempts[selected >= 0 && selected < n ? selected : n - 1];
-  const stage = n === 0 ? 'baseline' : 'retry';
   const canSubmit = n < 2;
 
   useEffect(() => {
@@ -68,6 +72,12 @@ function HeroPracticeViewInner({ view, session, onSessionChange, onComplete, onB
     }
   };
 
+  const handleResult = (result: AttemptResult) => {
+    if (!session) return;
+    onSessionChange({ ...session, attempts: [...session.attempts, { result, media: { kind: 'image' } }] });
+    setShowCapture(false);
+  };
+
   const submit = async (upload: AttemptUpload, media: LocalAttemptMedia) => {
     if (!session) return;
     setErr(null);
@@ -81,6 +91,36 @@ function HeroPracticeViewInner({ view, session, onSessionChange, onComplete, onB
         } else if (!switched) setPhase({ kind: 'uploading', progress: p });
       });
       onSessionChange({ ...session, attempts: [...session.attempts, { result, media }] });
+      setShowCapture(false);
+    } catch (x) {
+      setErr(x);
+    } finally {
+      setPhase({ kind: 'idle' });
+    }
+  };
+
+  const submitSample = async (sampleId: string) => {
+    let sid = session?.sessionId;
+    let currentSession = session;
+    if (!currentSession) {
+      setErr(null);
+      try {
+        const name = 'Guest';
+        const s = await api.createSession(view.case_id, name);
+        currentSession = { caseId: view.case_id, sessionId: s.session_id, learnerName: name, attempts: [], result: null };
+        onSessionChange(currentSession);
+        sid = s.session_id;
+      } catch (x) {
+        setErr(x);
+        return;
+      }
+    }
+    if (!sid) return;
+    setErr(null);
+    setPhase({ kind: 'evaluating', since: Date.now(), attemptKind: 'image' });
+    try {
+      const result = await api.submitSampleAttempt(sid, sampleId);
+      onSessionChange({ ...currentSession!, attempts: [...(currentSession!.attempts), { result, media: { kind: 'image' } }] });
       setShowCapture(false);
     } catch (x) {
       setErr(x);
@@ -109,6 +149,8 @@ function HeroPracticeViewInner({ view, session, onSessionChange, onComplete, onB
     }
   };
 
+  const tryLabel = n === 0 ? attemptLabel(1) : attemptLabel(2);
+
   return (
     <div className="flex flex-col gap-5 w-full animate-fade-in">
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -117,13 +159,25 @@ function HeroPracticeViewInner({ view, session, onSessionChange, onComplete, onB
             <ArrowLeft className="w-3.5 h-3.5" /> Back to Learn
           </button>
           <div className="text-xs font-mono uppercase tracking-widest text-cadmium-amber font-bold">Step 2 of 3 · Practise · {view.task.title}</div>
-          <h1 className="font-serif text-2xl text-on-surface">{view.title}</h1>
-          <div className="flex flex-wrap gap-1.5">
-            <SourceLabelBadge label={view.runtime_label} />
-            <ReviewBadge status={view.review_status} />
-            {session && <Badge tone="muted" title={`Session ${session.sessionId}`}>Learner: {session.learnerName}</Badge>}
-            <MockBadge />
-          </div>
+          <h1 className="font-serif text-2xl text-on-surface" data-plain-exempt>{view.title}</h1>
+          {!DEBUG ? (
+            <TrustLine view={view} />
+          ) : (
+            <div className="flex flex-wrap gap-1.5">
+              <SourceLabelBadge label={view.runtime_label} />
+              <ReviewBadge status={view.review_status} />
+              {session && (
+                <Badge tone="muted" title="Your name for this practice">
+                  Learner: {session.learnerName}
+                </Badge>
+              )}
+            </div>
+          )}
+          {!DEBUG && session && (
+            <Badge tone="muted" title="Your name for this practice">
+              Learner: {session.learnerName}
+            </Badge>
+          )}
         </div>
         {session && (
           <div className="flex flex-wrap gap-2">
@@ -153,7 +207,7 @@ function HeroPracticeViewInner({ view, session, onSessionChange, onComplete, onB
       <ErrorNote error={err} />
 
       {!session ? (
-        <Panel kicker="Start" title="Start a practice session">
+        <Panel kicker="Start" title="Start practising">
           <div className="flex flex-col sm:flex-row gap-2 max-w-lg">
             <input
               value={learner}
@@ -163,7 +217,7 @@ function HeroPracticeViewInner({ view, session, onSessionChange, onComplete, onB
               className="flex-1 bg-surface-dim border border-outline rounded-lg px-3 py-2 text-sm outline-none focus:border-caliper-cyan"
             />
             <button onClick={start} className={btn.primary}>
-              <Play className="w-3.5 h-3.5" /> Start session
+              <Play className="w-3.5 h-3.5" /> Start practising
             </button>
           </div>
           <div className="mt-4">
@@ -175,11 +229,11 @@ function HeroPracticeViewInner({ view, session, onSessionChange, onComplete, onB
           {canSubmit && showCapture && (
             <div ref={captureRef}>
               <Panel
-                kicker={stage === 'baseline' ? 'Attempt 1 · baseline' : 'Attempt 2 · retry (full task)'}
+                kicker={n === 0 ? 'First try' : 'Second try (the whole task again)'}
                 title={view.task.title}
                 right={<Badge tone="muted">{view.task.constraints.map((c) => c.description).join(' · ')}</Badge>}
               >
-                <details className="mb-4" open={stage === 'baseline'}>
+                <details className="mb-4" open={n === 0}>
                   <summary className="cursor-pointer text-sm font-semibold text-on-surface">Task steps</summary>
                   <div className="mt-2">
                     <TaskInstructions text={view.task.instructions} claims={view.package.claims} />
@@ -189,6 +243,8 @@ function HeroPracticeViewInner({ view, session, onSessionChange, onComplete, onB
                 <div className="mt-4">
                   <PhaseStatus phase={phase} />
                 </div>
+                {/* Sample picker (WI-3.1) */}
+                <SamplePicker caseId={view.case_id} tryLabel={tryLabel} noSubmitsYet={n === 0} onUseSample={submitSample} busy={phase.kind !== 'idle'} />
               </Panel>
             </div>
           )}
@@ -201,7 +257,7 @@ function HeroPracticeViewInner({ view, session, onSessionChange, onComplete, onB
                   onClick={() => setSelected(i)}
                   className={`px-3 py-1 rounded-md border text-[11px] font-mono ${a === shown ? 'border-cadmium-amber text-cadmium-amber bg-cadmium-amber/10' : 'border-outline text-on-surface-variant'}`}
                 >
-                  {a.result.attempt.attempt_type.toUpperCase()} · {a.result.evaluation.total_score.toFixed(1)}
+                  {attemptLabel(i + 1)} · {a.result.evaluation.total_score.toFixed(1)}
                 </button>
               ))}
               {canSubmit && !showCapture && (
@@ -220,6 +276,65 @@ function HeroPracticeViewInner({ view, session, onSessionChange, onComplete, onB
         </>
       )}
     </div>
+  );
+}
+
+/** Sample attempt picker: "No materials? Try a sample attempt" */
+function SamplePicker({ caseId, tryLabel, noSubmitsYet, onUseSample, busy }: { caseId: string; tryLabel: string; noSubmitsYet: boolean; onUseSample: (sampleId: string) => void; busy: boolean }) {
+  const [samples, setSamples] = useState<SampleAttempt[] | null>(null);
+  const [err, setErr] = useState<unknown>(null);
+
+  useEffect(() => {
+    api.listSamples(caseId).then(setSamples).catch(setErr);
+  }, [caseId]);
+
+  if (!samples || samples.length === 0) return null;
+
+  return (
+    <details className="mt-4" open={noSubmitsYet}>
+      <summary className="cursor-pointer text-sm text-on-surface-variant font-semibold select-none">
+        No materials? Try a sample attempt
+      </summary>
+      <div className="mt-3 space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {samples.map((s) => (
+            <div key={s.sample_id} className="p-3 rounded-lg border border-outline bg-surface-dim space-y-2">
+              <div className="flex flex-wrap items-start gap-2">
+                <span className="font-semibold text-sm text-on-surface flex-1">{s.label}</span>
+                {s.synthetic && <Badge tone="crimson">Synthetic sample</Badge>}
+              </div>
+              <p className="text-xs text-on-surface-variant" data-plain-exempt>{s.description}</p>
+              {s.credit && <p className="text-xs text-on-surface-variant" data-plain-exempt>{s.credit}</p>}
+              {s.preview_url && (
+                <div className="mt-1">
+                  {s.attempt_kind === 'image' && (
+                    <img src={`${API_BASE}${s.preview_url}`} alt={s.label} className="max-h-32 rounded border border-outline" />
+                  )}
+                  {s.attempt_kind === 'audio' && (
+                    <audio controls src={`${API_BASE}${s.preview_url}`} className="w-full" aria-label={s.label} />
+                  )}
+                  {s.attempt_kind === 'video' && (
+                    <video controls src={`${API_BASE}${s.preview_url}`} className="w-full max-h-32 rounded border border-outline bg-black" aria-label={s.label} />
+                  )}
+                </div>
+              )}
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => onUseSample(s.sample_id)}
+                className={btn.secondary}
+              >
+                Use this as my {tryLabel}
+              </button>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs text-on-surface-variant">
+          Samples let you see the feedback without your own materials. Your real practice counts more.
+        </p>
+        <ErrorNote error={err} />
+      </div>
+    </details>
   );
 }
 
@@ -316,7 +431,7 @@ function KolamCapture({ view, busy, onSubmit }: { view: CaseView; busy: boolean;
             >
               <Send className="w-3.5 h-3.5" /> Submit photo
             </button>
-            <p className="text-[10px] text-cadmium-amber">A photo shows only the final state: continuity and first-divergence-in-time become UNCERTAIN.</p>
+            <p className="text-[10px] text-cadmium-amber">A photo shows only the finished drawing, so we can't tell whether the line was continuous or where it first went off track. Drawing on screen gives fuller feedback.</p>
           </div>
         )}
         <div className="space-y-1.5">
@@ -359,7 +474,7 @@ function OrigamiCapture({ view, busy, onSubmit }: { view: CaseView; busy: boolea
         {ui.states.map((s) => (
           <div key={s.index} className="shrink-0 w-20">
             {s.keyframe_asset && <img src={api.goalAssetUrl(view.case_id, s.keyframe_asset)} alt={s.name} className="w-full aspect-square object-cover rounded border border-outline bg-surface-dim" />}
-            <div className="text-[9px] font-mono text-on-surface-variant mt-0.5 leading-tight">R{s.index} {s.name}</div>
+            <div className="text-[11px] font-mono text-on-surface-variant mt-0.5 leading-tight">R{s.index} {s.name}</div>
           </div>
         ))}
       </div>

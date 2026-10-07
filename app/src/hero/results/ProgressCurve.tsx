@@ -41,7 +41,7 @@ export function ProgressCurve({ series, kind, firstDivergence, height = 220, onS
   const xticks = Array.from({ length: 6 }, (_, i) => xMin + ((xMax - xMin) * i) / 5);
 
   if (!all.length) {
-    return <div className="text-[11px] font-mono text-on-surface-variant p-4 border border-outline rounded-lg">No trajectory points returned.</div>;
+    return <div className="text-[11px] font-mono text-on-surface-variant p-4 border border-outline rounded-lg">No progress points to show for this try.</div>;
   }
 
   return (
@@ -79,7 +79,7 @@ export function ProgressCurve({ series, kind, firstDivergence, height = 220, onS
               fontFamily="JetBrains Mono, monospace"
               fontWeight={700}
             >
-              FIRST DIVERGENCE
+              WENT OFF TRACK
             </text>
           </g>
         )}
@@ -126,7 +126,7 @@ export function ProgressCurve({ series, kind, firstDivergence, height = 220, onS
             {s.label}
           </span>
         ))}
-        <span className="flex items-center gap-1"><span className="text-divergence-crimson">▼</span> material divergence</span>
+        <span className="flex items-center gap-1"><span className="text-divergence-crimson">▼</span> went off track</span>
         <span className="flex items-center gap-1"><span className="text-[#f39c12]">▼</span> minor</span>
       </div>
     </div>
