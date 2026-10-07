@@ -18,6 +18,8 @@ Judging weights: Technical and Gen AI 40 %, Problem and Impact 25 %, Innovation 
 - Not yet done: the Cloud Run deployment, a public repo, the demo video, the deck and team registration.
 - **Update (2026-10-07, later):** the whole engineering backlog in §4 is done, except the live smoke test on the deployed URL (it needs the URL) and the deliberately deferred crop. An end-to-end browser walk-through found and fixed real bugs (E7 in `docs/validation/experiments.md`). 449 non-live tests pass.
 
+- **Judges-panel review (2026-10-07):** findings J-01…J-21 in `docs/research/judges-panel-review-2026-10-07.md`; the detailed update plan (WS1–WS8, schedule, decisions D4–D8) is `docs/plans/technical-panel-plan-2026-10-07.md` (PROPOSED). It supersedes the schedule in §1 for steps 2–7 where they differ.
+
 ## 1. Critical path (blocking; owner = Jim unless noted)
 
 | # | Step | By | Done when | Risk if skipped |
