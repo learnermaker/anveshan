@@ -27,7 +27,7 @@ function Side({ label, tone, children, caption }: { label: string; tone: 'crimso
         <Badge tone={tone}>{label}</Badge>
       </div>
       {children}
-      {caption && <div className="text-[11px] font-mono text-on-surface-variant">{caption}</div>}
+      {caption && <div className="text-[11px] text-on-surface-variant">{caption}</div>}
     </div>
   );
 }

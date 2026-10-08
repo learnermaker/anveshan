@@ -175,11 +175,7 @@ function HeroPracticeViewInner({ view, session, onSessionChange, onComplete, onB
               )}
             </div>
           )}
-          {!DEBUG && session && (
-            <Badge tone="muted" title="Your name for this practice">
-              Learner: {session.learnerName}
-            </Badge>
-          )}
+
         </div>
         {session && (
           <div className="flex flex-wrap gap-2">
