@@ -24,6 +24,7 @@
 - Service: `.venv/Scripts/python -m uvicorn anveshan_service.main:app --app-dir service --reload --port 8080`
 
 ## Codebase map
+- Token tools for coding agents (Graphify, RTK, Ponytail; setup: `tools/setup-agent-tools.ps1`): `docs/architecture/agent-tools.md`.
 - A graphify code graph can be built locally: `graphify extract . --code-only` → `graphify-out/graph.json` (gitignored). Query with `graphify query "<question>"`, `graphify explain "<symbol>"`, `graphify god-nodes`. Rebuild after large changes (`graphify update .`).
 
 ## Project skills

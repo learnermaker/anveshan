@@ -142,7 +142,7 @@ docs/             Product vision, architecture, validation log, and plans
 tools/            CLI tools: fetch media, smoke test, stability runs, sample generation, token report, repeated-text report
 ```
 
-**Contributing.** Read [`AGENTS.md`](AGENTS.md) first. Each file and each rule has one canonical home; link to it instead of copying (`.github/scripts/check_duplicates.py` runs in CI).
+**Contributing.** Read [`AGENTS.md`](AGENTS.md) first. Each file and each rule has one canonical home; link to it instead of copying (`.github/scripts/check_duplicates.py` runs in CI). Coding-agent token tools (Graphify, RTK, Ponytail): [docs/architecture/agent-tools.md](docs/architecture/agent-tools.md).
 
 ---
 
