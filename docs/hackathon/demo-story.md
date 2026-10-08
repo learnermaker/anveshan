@@ -55,6 +55,6 @@ Avoid dashboards, agent-count slides, generic chatbot screens, unsupported impac
 - The source Kolam image: `tracks/cases/kolam/source/` (Wikimedia Commons, CC-licensed).
 - The flawed sample attempt: `tracks/cases/kolam/samples/flawed/`.
 - The good sample attempt: `tracks/cases/kolam/samples/good/`.
-- The app must be running in recorded mode; no live API call is needed for the demo. [VERIFY: confirm all screens work end-to-end in recorded mode before recording the video]
+- Sample attempts replay committed recordings (no live call, same result every time). Only the composer step calls Gemini live; record it once and keep the take.
 - Screen recording at 1080p minimum; phone view at 390 px width for mobile shots.
 - No voiceover improvisation; use the script word for word except where `[VERIFY]` notes require update.

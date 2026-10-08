@@ -3,14 +3,14 @@
 %% Update both files when you change the diagram.
 
 flowchart TD
-    A["Creator uploads demo\nphoto · video · audio"] --> B["Gemini 3.5 Flash Lite\nperceives frames & audio"]
-    B --> C["Skill model\nsteps · checks · rubric\ngrounded in source"]
-    C --> D["Creator reviews\n& publishes"]
-    D --> E["Learner uploads attempt\nphoto · video"]
-    E --> F["Gemini 3.5 Flash Lite\nperceives attempt"]
-    F --> G["Fixed rules score\neach check\n— no model judges"]
-    G --> H["First off-track point:\nGemini words the tip,\nciting source moment"]
-    H --> I["Retry → same checks run\nmeasured change recorded\nlineage preserved"]
+    A["Creator uploads demo<br/>photo · video · audio"] --> B["Gemini 3.5 Flash Lite<br/>perceives frames & audio"]
+    B --> C["Skill model<br/>steps · checks · rubric<br/>grounded in source"]
+    C --> D["Creator reviews<br/>& publishes"]
+    D --> E["Learner's attempt<br/>photo · video · audio · drawing"]
+    E --> F["Gemini 3.5 Flash Lite<br/>perceives attempt"]
+    F --> G["Fixed rules score<br/>each check<br/>— no model judges"]
+    G --> H["First off-track point:<br/>Gemini words the tip,<br/>citing source moment"]
+    H --> I["Retry → same checks run<br/>measured change recorded<br/>lineage preserved"]
     I -->|"next attempt"| F
 
     subgraph cloud["Cloud Run · anveshan-service"]

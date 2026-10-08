@@ -118,7 +118,7 @@ The hero case (Kolam) uses real source media from Wikimedia Commons, not synthet
 
 ### 9. "What is your evidence that it works?"
 
-The current evidence is engineering evidence only: 566 non-live tests; 100% consistency on Kolam and Tabla across 3 runs per sample type (good/flawed/unrelated); 89% consistency on origami crane. No study with real learners or experts has been run yet. The test suite shows the system behaves as designed; it does not show that learners improve or that experts endorse the skill models. We say this plainly. [VERIFY: update with pilot results if available before submission]
+The current evidence is engineering evidence only: 568 non-live tests; 100% consistency on Kolam, Tabla and the origami crane across 3 runs per sample type (good/flawed/unrelated; the crane runs were live Gemini calls). No study with real learners or experts has been run yet. The test suite shows the system behaves as designed; it does not show that learners improve or that experts endorse the skill models. We say this plainly. [VERIFY: update with pilot results if available before submission]
 
 ### 10. "Why not an existing enterprise tool like DeepHow?"
 

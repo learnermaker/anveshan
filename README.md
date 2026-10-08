@@ -13,18 +13,18 @@ Anveshan passes on skills of the physical world from one person to another: lear
 
 ## How it works
 
-A creator uploads a real demonstration. The configured vision model structures the skill into steps, checks and source-grounded evidence. A learner submits their attempt; **deterministic rules score each check — no model decides pass or fail**. The first place the attempt diverges triggers a Gemini-worded tip pointing back to the exact source moment. On the retry, the same checks run and the measured change is recorded.
+A creator uploads a real demonstration. Gemini structures the skill into steps, checks and source-grounded evidence. A learner submits their attempt; **deterministic rules score each check — no model decides pass or fail**. The first place the attempt diverges triggers a Gemini-worded tip pointing back to the exact source moment. On the retry, the same checks run and the measured change is recorded.
 
 ```mermaid
 flowchart TD
-    A["Creator uploads demo\nphoto · video · audio"] --> B["Gemini 3.5 Flash Lite\nperceives frames & audio"]
-    B --> C["Skill model\nsteps · checks · rubric\ngrounded in source"]
-    C --> D["Creator reviews\n& publishes"]
-    D --> E["Learner uploads attempt\nphoto · video"]
-    E --> F["Gemini 3.5 Flash Lite\nperceives attempt"]
-    F --> G["Fixed rules score\neach check\n— no model judges"]
-    G --> H["First off-track point:\nGemini words the tip,\nciting source moment"]
-    H --> I["Retry → same checks run\nmeasured change recorded\nlineage preserved"]
+    A["Creator uploads demo<br/>photo · video · audio"] --> B["Gemini 3.5 Flash Lite<br/>perceives frames & audio"]
+    B --> C["Skill model<br/>steps · checks · rubric<br/>grounded in source"]
+    C --> D["Creator reviews<br/>& publishes"]
+    D --> E["Learner's attempt<br/>photo · video · audio · drawing"]
+    E --> F["Gemini 3.5 Flash Lite<br/>perceives attempt"]
+    F --> G["Fixed rules score<br/>each check<br/>— no model judges"]
+    G --> H["First off-track point:<br/>Gemini words the tip,<br/>citing source moment"]
+    H --> I["Retry → same checks run<br/>measured change recorded<br/>lineage preserved"]
     I -->|"next attempt"| F
 
     subgraph cloud["Cloud Run · anveshan-service"]
@@ -78,7 +78,7 @@ Live URL: `https://<cloud-run-url>` (added at deployment)
 
 ---
 
-## How it works
+## The lifecycle and the evaluation core
 
 Every skill flows through one lifecycle:
 
@@ -111,7 +111,8 @@ See [`docs/plans/evaluation-core.md`](docs/plans/evaluation-core.md) and [`docs/
 All evidence to date is engineering and capability evidence on internet-licensed and synthetic data.
 
 - Experiment log (E1-E9): [`docs/validation/experiments.md`](docs/validation/experiments.md)
-- Non-live test suite: **566 tests** as of 2026-10-07 (`pytest -m "not live"`)
+- Non-live test suite: **568 tests** as of 2026-10-08 (`pytest -m "not live"`)
+- Stability: every sample attempt of Kolam, Tabla and the origami crane gives the same outcome across 3 runs (crane runs were live Gemini calls): [`app/public/evidence.json`](app/public/evidence.json)
 - Judges-panel review: [`docs/research/judges-panel-review-2026-10-07.md`](docs/research/judges-panel-review-2026-10-07.md)
 
 **No study with real learners or experts has been run yet.**
@@ -120,7 +121,7 @@ All evidence to date is engineering and capability evidence on internet-licensed
 
 ## Limits
 
-- **Recorded vs live mode.** The service runs in recorded mode by default; model responses are replayed deterministically from golden runs. Live mode requires a Gemini API key and may return different results between runs (see E6, E7).
+- **Recorded runs first, live for new uploads.** On Cloud Run the service runs in live mode: anything already recorded (all sample attempts) is replayed from committed golden runs, so it is free and gives the same result every time; new uploads call Gemini within a daily budget and may vary slightly between runs (see E6, E7). Locally the default is recorded mode, which needs no key.
 - **Demo storage is temporary.** Uploaded media and composed skills are kept in memory; data is retained for about 6 hours; published skills persist until the service restarts.
 - **No accounts.** Ownership is tracked per browser session.
 - **Internet sources are not verified experts.** Hero case media comes from Wikimedia Commons under open licences. It is labelled INTERNET REFERENCE in the UI; the photographer or uploader is not an Anveshan expert.

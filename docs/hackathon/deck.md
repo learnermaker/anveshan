@@ -105,7 +105,7 @@
 **Bullets:**
 - 566 non-live tests as of 2026-10-07 (`pytest -m "not live"`)
 - Kolam and Tabla: 100% consistency across 3 runs per sample (good/flawed/unrelated)
-- Origami crane: 89% consistency — known weak case; swapped-order mistakes not always caught in video [VERIFY: confirm these numbers against evidence.json]
+- Origami crane (video, Gemini perception): 100% consistency across 3 live runs per sample (good passed, flawed caught, unrelated refused); source: `app/public/evidence.json`
 - Expert and learner study: not yet run [VERIFY: add pilot results if available before submission]
 
 **Speaker note:** Be honest. "No user study yet" is a strength if said plainly — judges can tell when evidence is fabricated. Label what is synthetic, label what is engineering-only. The rubric works. The study is next.
