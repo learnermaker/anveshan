@@ -1,7 +1,7 @@
 name: k10-review
 description: >
   K10 observe-only review of the whole Anveshan app as a hackathon jury and first-time users would see it:
-  setup a production-like server, then 7 sequential Playwright browser walks in parallel with 3 static checks,
+  setup a production-like server, then 8 sequential Playwright browser walks (W8 = judge path and demo storyboard) in parallel with 4 static checks,
   then a jury step and a compiled REPORT.md for Claude Code. No product code changes.
   Spec: docs/kiro/specs/K10-REVIEW.md.
 inputs: {}
@@ -71,6 +71,14 @@ steps:
               You are K10 walk W7. Follow docs/kiro/specs/K10-REVIEW.md sections 2, 4 and 6.8 (keyboard-only walk,
               375 px sweep of every view, small text and contrast, visual coherence). Observe only. Write
               .kiro/k10-run/obs/W7.md and screenshots; keep STATUS.md current.
+          - type: step
+            id: w8
+            agent: wf-coder
+            prompt: >
+              You are K10 walk W8. Follow docs/kiro/specs/K10-REVIEW.md sections 2, 4 and 6.9 (the judge's first
+              60 seconds, the single most impressive moment, Gen AI visibility, the 3-minute demo video storyboard,
+              reliability). Observe only. Write .kiro/k10-run/obs/W8.md, obs/W8-storyboard.md and screenshots;
+              keep STATUS.md current.
 
       - type: sequence
         id: static
@@ -95,6 +103,13 @@ steps:
               You are K10 static check S3. Follow docs/kiro/specs/K10-REVIEW.md sections 2, 4.1 and 7 "S3" (tests,
               smoke test, timings, bundle size, service log). No browser MCP. Observe only. Write
               .kiro/k10-run/obs/S3.md; keep STATUS.md current.
+          - type: step
+            id: s4
+            agent: wf-coder
+            prompt: >
+              You are K10 static check S4. Follow docs/kiro/specs/K10-REVIEW.md sections 2, 4.1 and 7 "S4" (README as
+              judges see it on GitHub, architecture diagram, the competitive bar for first prize). No browser MCP.
+              Observe only. Write .kiro/k10-run/obs/S4.md; keep STATUS.md current.
 
   - type: step
     id: jury

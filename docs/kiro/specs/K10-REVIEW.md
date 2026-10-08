@@ -1,12 +1,21 @@
 # K10: first-time-user and jury review of the whole app (observe only)
 
-**What K10 is.** Before submission (2026-10-18), Kiro walks through the whole app the way a hackathon judge and a first-time user would: in a real browser through the Playwright MCP, on desktop and on phone, in every role. It records everything it sees in one structured report. **Kiro changes no product code in K10.** Claude Code reads the report, analyses it and writes the fixes (K11). The aim: after K11 the app is ready to submit. A first-time visitor understands it, can use it, and sees why it is new. Nothing looks like an afterthought or AI filler, and the core ideas show without being oversold.
+**The goal is first prize** in the Google Cloud AI Builder Cup 2026, not a passable entry. So review everything against one question: *what would the winning entry have that we don't?* "It works" and "it's fine" count as findings, not as passes. Where a screen is merely adequate, say what would make it memorable.
+
+**What K10 is.** Before submission (2026-10-18), Kiro walks through the whole app the way a hackathon judge and a first-time user would: in a real browser through the Playwright MCP, on desktop and on phone, in every role. It records everything it sees in one structured report. **Kiro changes no product code in K10.** Claude Code reads the report, analyses it and writes the fixes (K11).
+
+The aim is that after K11 the entry is a winner:
+- a judge gets the "wow" within the first minute;
+- the judge sees that Gemini does real multimodal work and isn't a thin wrapper;
+- a first-time visitor understands the app and can use it;
+- nothing looks like an afterthought or AI filler;
+- the core ideas show without being oversold.
 
 **How it runs.** One Kiro session (the parent chat) launches one workflow: `.kiro/workflows/k10-review.workflow.yaml`. Only one Playwright browser exists, so the browser walks run **one after another** in one branch. A second branch runs the checks that need no browser **in parallel**. A jury step and a compile step finish.
 
 ```
-setup ─┬─ browser branch: W1 → W2 → W3 → W4 → W5 → W6 → W7   (Playwright, sequential)
-       └─ static branch:  S1 → S2 → S3                          (no browser)
+setup ─┬─ browser branch: W1 → W2 → W3 → W4 → W5 → W6 → W7 → W8   (Playwright, sequential)
+       └─ static branch:  S1 → S2 → S3 → S4                         (no browser)
      → jury → compile → REPORT.md
 ```
 
@@ -195,6 +204,8 @@ For each idea, every walk notes: where it shows (URL and element), how many clic
 | K8 | Credit, consent and review: creator credit, steward review queue, licences | visible in the creator and steward flows; one credit line for learners |
 | K9 | Uses Gemini meaningfully (multimodal perception and coaching wording) on Google Cloud | apparent to a judge without reading code; not buzzword-heavy |
 
+**Tension to watch (record it wherever you see it).** In K9 we hid the machinery from learners: claim IDs, confidence numbers, provenance. Judges are not learners. 40% of the score is "meaningful use of Gen AI" and 25% is innovation. If a judge can't *see* what Gemini perceived and how the rules turned it into feedback, they will assume a wrapper. Note every place where the judge path has the AI depth available within one click but still calm, and every place where it is missing.
+
 ### 4.6 Things to check on every screen (quick checklist, record only failures)
 - **One** obvious primary button. A one-sentence purpose at the top.
 - No raw IDs, file names (`.ogv`, `.json`), enums, hashes, `undefined`, `null`, `NaN`, `[object Object]`, `TODO`, "lorem", or "coming soon".
@@ -333,6 +344,28 @@ Desktop.
    - List screens that look like a different app or an older version.
 5. **Dark/light:** if the app has only one theme, note it (no action). If it follows `prefers-color-scheme`, check both.
 
+### 6.9 W8: the judge's path, the "wow" moment, and the demo video
+**Persona:** a Google Cloud judge. They have about 40 entries to score, give each 3–5 minutes, and have already seen many Gemini chat apps today. Desktop, fresh context. Read `obs\W1.md` to `obs\W7.md` first.
+1. **The first 60 seconds.** Start a stopwatch at page load, then do what a hurried judge does: read the headline and click the most prominent thing. Record what you understand and what impresses you at 10 s, 30 s and 60 s. Is there a "wow" before 60 s? What is it, or what blocks it?
+2. **Find the single most impressive moment** in the whole app. Candidates:
+   - the first divergence shown on the learner's own video frame next to the source moment;
+   - the composer turning one photo or video into steps and checks;
+   - the retry showing the measured change.
+
+   Record the clicks and seconds it takes to reach it from `/`, whether it works every time (try it 3 times), and what would make it hit harder.
+3. **Gen AI visibility.** From the judge's path, can you see in at most one click what Gemini actually perceived (from your upload) and how fixed rules turned that into the score and feedback? Record exactly what is visible and what is missing. Compare with a judge's likely dismissal: "this is a Gemini prompt with a nice UI".
+4. **Demo video storyboard.** Write `obs\W8-storyboard.md`, a 3-minute video plan using only what works today:
+
+   | Time | Screen (URL) | Action | Narration (one line, plain) | Why it scores (criterion) |
+   |---|---|---|---|---|
+
+   Rules for the storyboard:
+   - Problem in the first 20 s, the wow by 60 s, Gen AI depth by 2:00, impact and the creator/steward loop by 2:40, close by 3:00.
+   - Time each segment by actually performing it once.
+   - Mark any segment that needed a workaround or a retry.
+5. **Reliability for a live demo.** Run the storyboard path twice more in fresh contexts. Record any step that varies, is slow (over 5 s), or fails.
+6. End-of-walk answers.
+
 ## 7. Static checks (branch `static`, no browser; can run while the walks run)
 
 ### S1: copy and content inventory
@@ -368,6 +401,21 @@ Desktop.
 6. Finally, go back to `obs\S2.md` and replace each `pending W<n>` with the verdict, once the walk files exist. If the walks are not yet done, the jury step does this.
 7. Write `obs\S3.md`.
 
+### S4: the repository and the competitive bar
+1. **Repo first impression.** The repo goes public for judging, and judges open `README.md` on GitHub. Read only what shows on GitHub's first two screens of the README, and answer:
+   - What is it?
+   - Is there a live link, a screenshot or GIF, and a 3-line "how it works"?
+   - Is the Google Cloud and Gemini use stated concretely, with which models do what?
+   - How do I run it?
+
+   Record every observation as `S4-nn`.
+2. **Architecture legibility.** Is there one diagram a judge can understand in 20 s, showing the pipeline from upload to Gemini perception to the skill model to the deterministic checks to feedback? Where is it, and is it linked from the README? Check `docs/diagrams/` and `docs/architecture/`.
+3. **Competitive bar.** Read `docs/research/competitive-landscape.md` and `docs/research/judges-panel-review-2026-10-07.md`. List the 5 things a likely top competitor in this cup would show. Typical candidates: a polished Gemini multimodal app, a live Cloud Run link, a clear social-impact story, real user evidence, a crisp video. For each one:
+   - say whether Anveshan shows it today, citing observations;
+   - say what the gap is;
+   - mark gaps that need humans (a real expert review, pilot users, deployment, recording the video) as `human`.
+4. Write `obs\S4.md`.
+
 ## 8. Jury and compile
 
 ### 8.1 Jury step (after both branches finish)
@@ -381,10 +429,13 @@ Read every `obs\*.md` file. Look at the screenshots behind S0 and S1 observation
 | J4 Product designer | UX (10%): usability, accessibility, cohesion |
 | U1 Priya (learner), U2 Lakshmi (creator), U3 Dr. Rao (steward) | Could I use it? What did I get? Would I come back? |
 
-Each judge gives:
+Each judge scores **against the likely winner, not against an average entry**: 10 means "this would win the category". Each judge gives:
 - a score out of 10 for their criterion;
 - the three observations that cost the most points;
-- the one change that would raise the score most.
+- the one change that would raise the score most;
+- one sentence: "The winning entry would have ___; Anveshan has ___."
+
+Then compute the **weighted total**: J1×0.40 + J2×0.25 + J3×0.25 + J4×0.10, out of 10.
 
 Then add:
 - a **key ideas table**: K1–K9 × {visible?, understood?, overdone?, best place it shows, observation IDs};
@@ -397,10 +448,11 @@ Then add:
 3. **All S0 and S1**, sorted by severity and then by screen, as full blocks copied from the `obs` files. Merge duplicates (keep one, list the others under `also:`).
 4. **S2 and S3:** one line each (`ID · severity · category · where · one-line saw`).
 5. **Per-screen index:** screen → observation IDs → screenshot files.
-6. **Jury summary:** the scores table and the top 10 changes by expected score gain, citing IDs.
-7. **Claims table** (from S2, with verdicts filled in).
-8. **First-impression answers** from every walk, side by side.
-9. **Open questions** for Claude Code: things Kiro could not decide.
+6. **Jury summary:** the scores table and the weighted total.
+7. **Path to first prize:** the top 15 changes ranked by expected weighted-score gain. For each, give the cited IDs, the effort (S under 1 h, M under half a day, L longer), and whether Claude, Kiro or a human (`human`) must do it. Then add the W8 storyboard and the S4 competitive gaps.
+8. **Claims table** (from S2, with verdicts filled in).
+9. **First-impression answers** from every walk, side by side.
+10. **Open questions** for Claude Code: things Kiro could not decide.
 
 Then update `STATUS.md` to all `DONE`. Call `send_message` (success) with: "K10 done: REPORT.md has N observations (S0 a, S1 b, S2 c, S3 d)." Leave the service running.
 
@@ -412,4 +464,4 @@ Then update `STATUS.md` to all `DONE`. Call `send_message` (success) with: "K10 
 5. If a step can't finish within 75 minutes, write what you have, mark the step `DONE (partial)`, and continue.
 
 ## 10. Manual fallback (if workflows are unavailable)
-In the parent chat, run in this order: setup (§3), W1 to W7 (§6), S1 to S3 (§7), jury (§8.1), compile (§8.2). Write the same files.
+In the parent chat, run in this order: setup (§3), W1 to W8 (§6), S1 to S4 (§7), jury (§8.1), compile (§8.2). Write the same files.
