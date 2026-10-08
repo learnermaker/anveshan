@@ -51,6 +51,9 @@ function SeekVideo({ url, time, className = '' }: { url?: string; time: number |
   return <video ref={ref} src={url} controls muted className={`w-full rounded-lg border border-outline bg-black ${className}`} preload="metadata" />;
 }
 
+// the three hero skills have specialist layouts; universal skills show the plain evidence cue instead of the metric line
+const SPECIALIST_MODALITIES = ['kolam_image', 'origami_video', 'tabla_audio'];
+
 function regionOf(ev: EvidenceRef | null | undefined) {
   return ev ? parseLocator(ev.source_id).region ?? null : null;
 }
@@ -144,6 +147,25 @@ export function FirstDivergenceCard({ view, result, media }: Props) {
         )}
       </div>
     );
+  } else if (fd.learner_evidence && fd.expert_evidence && (media.kind === 'video' || media.kind === 'audio' || media.kind === 'image')) {
+    // universal skills: the learner's own capture at the divergence, beside the demonstration
+    const le = fd.learner_evidence;
+    const ee = fd.expert_evidence;
+    const src = api.mediaUrl(view.case_id, parseLocator(ee.source_id).source);
+    comparison = (
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Side label="Your attempt" tone="crimson" caption={fd.position != null ? `at ${fmtPosition(fd.position, fd.position_kind)}` : undefined}>
+          {media.kind === 'video' ? <SeekVideo url={media.url} time={fd.position ?? le.start_sec ?? null} />
+            : media.kind === 'audio' ? (media.url ? <audio src={media.url} controls className="w-full" /> : null)
+            : media.url ? <img src={media.url} alt="Your attempt" className="w-full rounded-lg border border-outline" /> : null}
+        </Side>
+        <Side label="The demonstration" tone="emerald" caption={ee.cue_excerpt}>
+          {ee.modality === 'video' ? <SeekVideo url={src} time={ee.start_sec ?? null} />
+            : ee.modality === 'audio' ? <audio src={src} controls className="w-full" />
+            : <img src={src} alt="The demonstration" className="w-full rounded-lg border border-outline" />}
+        </Side>
+      </div>
+    );
   }
 
   return (
@@ -164,7 +186,7 @@ export function FirstDivergenceCard({ view, result, media }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
           <div className="p-3 rounded-lg bg-surface-dim border border-outline/60">
             <div className="text-[11px] font-mono uppercase text-divergence-crimson font-bold mb-1">What we saw</div>
-            <p className="text-on-surface leading-relaxed" data-plain-exempt>{fd.observed_finding}</p>
+            <p className="text-on-surface leading-relaxed" data-plain-exempt>{(!SPECIALIST_MODALITIES.includes(view.modality) && fd.learner_evidence?.cue_excerpt) || fd.observed_finding}</p>
           </div>
           <div className="p-3 rounded-lg bg-surface-dim border border-outline/60">
             <div className="text-[11px] font-mono uppercase text-transmission-emerald font-bold mb-1">Why it matters</div>
