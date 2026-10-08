@@ -79,7 +79,7 @@ export function friendlyError(error: unknown): FriendlyError {
       return { title: 'This file or input cannot be used', message: raw, technical };
     }
     case 'MISSING_EVIDENCE':
-      return { title: 'Not found', message: `${raw}. It may have expired (uploads are kept for a few hours) or belong to another visitor.`, technical };
+      return { title: 'Not found', message: "This wasn't found. The link may be wrong, or a shared upload may have expired (uploads are kept for a few hours).", technical };
     case 'HUMAN_REVIEW_REQUIRED':
     case 'AMBIGUOUS_EVIDENCE':
     case 'UNSUPPORTED_CLAIM':
