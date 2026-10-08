@@ -440,7 +440,8 @@ class TestRelevanceGate:
         with pytest.raises(AnveshanFailure) as exc:
             evaluate(goal, attempt, FakeCtxRel())
         assert exc.value.category == FailureCategory.INVALID_INPUT
-        assert "similarity" in str(exc.value).lower()
+        # the number stays in the details, out of the learner-facing message
+        assert "similarity" in exc.value.details and "similarity" not in str(exc.value).lower()
 
     def test_above_min_similarity_passes(self, tmp_path, monkeypatch):
         """Similarity above min_similarity passes gate."""
