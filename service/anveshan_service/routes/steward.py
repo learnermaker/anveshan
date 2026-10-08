@@ -309,7 +309,8 @@ def steward_consent(settings: Settings = Depends(get_settings)) -> Any:
             "collection": rec.collection,
             "library_status": rec.status,
             "credit_name": rec.credit_name,
-            "licence": rec.licence,
+            # curated skills have no library licence of their own: show their source's licence
+            "licence": rec.licence or next((x["license"] for x in sources if x["license"]), None),
             "consent_scope": rec.consent_scope,
             "rights_confirmed": rec.rights_confirmed,
             "rights_confirmed_at": rec.rights_confirmed_at,
