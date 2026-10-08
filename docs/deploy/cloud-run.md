@@ -47,7 +47,6 @@ gcloud run deploy $SERVICE --source . \
   --allow-unauthenticated \
   --max-instances 1 --min-instances 0 \
   --memory 2Gi --cpu 2 --timeout 300 --concurrency 20 \
-  --set-secrets GEMINI_API_KEY=gemini-api-key:latest \
   --set-env-vars ANVESHAN_MODE=live,ANVESHAN_TEXT_IMAGE_MODEL=gemini-3.5-flash-lite,ANVESHAN_VIDEO_FRAMES_MODEL=gemini-3.5-flash-lite,ANVESHAN_AUDIO_MODEL=gemini-3.5-flash-lite,ANVESHAN_MAX_UPLOAD_MB=30,ANVESHAN_DATA_DIR=/tmp/anveshan
 ```
 
@@ -58,7 +57,6 @@ IMAGE=$REGION-docker.pkg.dev/$PROJECT_ID/$REPO/$SERVICE:$(git rev-parse --short 
 gcloud builds submit --tag $IMAGE --timeout=1800s .
 gcloud run deploy $SERVICE --image $IMAGE \
   --allow-unauthenticated --max-instances 1 --memory 2Gi --cpu 2 --timeout 300 --concurrency 20 \
-  --set-secrets GEMINI_API_KEY=gemini-api-key:latest \
   --set-env-vars ANVESHAN_MODE=live,ANVESHAN_TEXT_IMAGE_MODEL=gemini-3.5-flash-lite,ANVESHAN_VIDEO_FRAMES_MODEL=gemini-3.5-flash-lite,ANVESHAN_AUDIO_MODEL=gemini-3.5-flash-lite,ANVESHAN_MAX_UPLOAD_MB=30
 ```
 

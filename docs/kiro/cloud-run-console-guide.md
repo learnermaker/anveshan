@@ -1,7 +1,9 @@
 # Cloud Run Deployment Guide — GCP Web Console
 
 **Written:** 2026-10-06  
-**Audience:** Jim (no local gcloud CLI install)  
+**Audience:** Jim (no local gcloud CLI install)
+
+> **2026-10-08: no server key.** The service never uses a Gemini key of its own; visitors add theirs in the app. Skip every `gemini-api-key` secret step below. Canonical settings: [DEPLOY-CHECKLIST.md](../deploy/DEPLOY-CHECKLIST.md).  
 **Source of truth:** `docs/deploy/cloud-run.md` and the repo `Dockerfile`  
 **Prerequisite:** a Google account with billing access to the project
 
@@ -111,7 +113,6 @@ Use this if the GitHub App install is blocked or the continuous-deploy option is
      --allow-unauthenticated \
      --max-instances 1 --min-instances 0 \
      --memory 2Gi --cpu 2 --timeout 300 --concurrency 20 \
-     --set-secrets GEMINI_API_KEY=gemini-api-key:latest \
      --set-env-vars ANVESHAN_MODE=live,ANVESHAN_TEXT_IMAGE_MODEL=gemini-3.5-flash-lite,ANVESHAN_VIDEO_FRAMES_MODEL=gemini-3.5-flash-lite,ANVESHAN_AUDIO_MODEL=gemini-3.5-flash-lite,ANVESHAN_MAX_UPLOAD_MB=30,ANVESHAN_DATA_DIR=/tmp/anveshan
    ```
 4. Cloud Shell has gcloud pre-installed and already authenticated to your GCP account.
