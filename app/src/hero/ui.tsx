@@ -197,8 +197,8 @@ export function ProgressBar({ value, label }: { value: number; label?: string })
 
 export const btn = {
   primary:
-    'inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-cadmium-amber hover:bg-cadmium-amber/90 text-background font-mono font-bold text-[11px] uppercase tracking-wider transition-colors disabled:opacity-40 disabled:cursor-not-allowed',
+    'inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-cadmium-amber hover:bg-cadmium-amber/90 text-background font-mono font-bold text-xs uppercase tracking-wider transition-colors disabled:opacity-40 disabled:cursor-not-allowed',
   secondary:
-    'inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg border border-outline bg-surface-dim hover:border-cadmium-amber text-on-surface font-mono text-[11px] uppercase tracking-wider transition-colors disabled:opacity-40 disabled:cursor-not-allowed',
-  ghost: 'inline-flex items-center gap-1 text-[11px] font-mono text-on-surface-variant hover:text-on-surface transition-colors disabled:opacity-40',
+    'inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg border border-outline bg-surface-dim hover:border-cadmium-amber text-on-surface font-mono text-xs uppercase tracking-wider transition-colors disabled:opacity-40 disabled:cursor-not-allowed',
+  ghost: 'inline-flex items-center gap-1 text-xs font-mono text-on-surface-variant hover:text-on-surface transition-colors disabled:opacity-40',
 };
