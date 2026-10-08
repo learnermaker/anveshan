@@ -1,0 +1,101 @@
+name: k10-sprint-resume
+description: >
+  Resumes K10 sprint after setup/B are done and a-w2 failed on image size.
+  Track A (W2→W45→W7) and Track C (fix loop until FREEZE) run in parallel.
+  Then compile, then final-gate.
+inputs: {}
+steps:
+  - type: parallel
+    id: tracks-ac
+    joinPolicy: allSettled
+    branches:
+      - type: sequence
+        id: track-a
+        steps:
+          - type: step
+            id: a-w2
+            agent: wf-coder
+            prompt: >
+              K10 sprint track A, item W2 (35 min box). Follow K10-SPRINT.md sections 1 and 3 and K10-REVIEW.md
+              sections 2, 4 and 6.2 (phone 375x812, paper crane video). The service is already running at
+              http://localhost:8080. Observe only. Stream S0/S1 to .kiro/k10-run/HOT.md. Write .kiro/k10-run/obs/W2.md.
+
+              CRITICAL SCREENSHOT RULE — the previous W2 run failed because screenshots exceeded 2000 px.
+              For EVERY screenshot you take: (1) use mcp_playwright_browser_take_screenshot with scale="css" only,
+              NEVER scale="device"; (2) NEVER use fullPage:true; (3) when saving a file with browser_run_code use
+              page.screenshot({path:..., fullPage:false, scale:"css"}) — or omit scale entirely (css is default).
+              This hard limit keeps all images under 1440 px wide.
+
+          - type: step
+            id: a-w45
+            agent: wf-coder
+            prompt: >
+              K10 sprint track A, item W4+W5 (50 min box). Follow K10-SPRINT.md section 3 row 4 and K10-REVIEW.md
+              sections 2, 4, 6.4 steps 1-3 and 6, and 6.5 steps 1-3 and 5. The service is at http://localhost:8080.
+              Steward code is local-test-code. Observe only. Stream S0/S1 to .kiro/k10-run/HOT.md.
+              Write .kiro/k10-run/obs/W4.md and .kiro/k10-run/obs/W5.md.
+
+              CRITICAL SCREENSHOT RULE: use scale="css" only, NEVER scale="device", NEVER fullPage:true.
+
+          - type: step
+            id: a-w7
+            agent: wf-coder
+            prompt: >
+              K10 sprint track A, item W7-lite (25 min box). Follow K10-SPRINT.md section 3 row 5:
+              keyboard walk through the Kolam path; 375px sweep of every view (K10-REVIEW.md §6.0 URLs);
+              deep links /?view=source&case=nope and /?view=steward while signed out.
+              Observe only. Stream S0/S1 to .kiro/k10-run/HOT.md.
+              Write .kiro/k10-run/obs/W7.md. Also write .kiro/k10-run/obs/W3-skipped.md (one line: W3 skipped per sprint spec).
+
+              CRITICAL SCREENSHOT RULE: use scale="css" only, NEVER scale="device", NEVER fullPage:true.
+
+      - type: sequence
+        id: track-c
+        steps:
+          - type: repeat
+            id: c-loop
+            maxIterations: 50
+            onMaxIterations: continue
+            stopCondition:
+              fileCheck:
+                path: ".kiro/k10-run/freeze.json"
+                jsonPath: state
+                value: FREEZE
+            steps:
+              - type: step
+                id: c-fix
+                agent: wf-coder
+                prompt: >
+                  K10 sprint track C, one fix-loop iteration. Follow K10-SPRINT.md section 5 "C-loop" exactly,
+                  in .worktrees/k10-fixes on branch kiro/k10-fixes.
+                  Apply only INBOX entries addressed to FIX that .kiro/k10-run/obs/FIX.md has not acknowledged yet.
+                  If there are none, wait 240 seconds (Start-Sleep -Seconds 240) and end.
+                  The loop stops when .kiro/k10-run/freeze.json contains {"state":"FREEZE"}.
+
+  - type: step
+    id: a-compile
+    agent: wf-coder
+    prompt: >
+      K10 sprint track A, compile (20 min box). Follow K10-SPRINT.md section 3 row 6 and K10-REVIEW.md section 8.
+      Read ALL obs/*.md files in .kiro/k10-run/obs/. Also read .kiro/k10-run/HOT.md and the W8-storyboard at
+      .kiro/k10-run/obs/W8-storyboard.md.
+      Write the jury content (four judges J1-J4, three user voices U1-U3, weighted score, key ideas K1-K9 table)
+      inside REPORT.md sections 6 and 7 per K10-REVIEW.md §8.1.
+      Write the full .kiro/k10-run/REPORT.md per K10-REVIEW.md §8.2 (header, totals, all S0+S1 full blocks,
+      S2+S3 one-liners, per-screen index, jury summary, path to first prize top 15, claims table, first-impression answers,
+      open questions for Claude Code). Update .kiro/k10-run/STATUS.md to all DONE. Call send_message severity success
+      with observation counts.
+
+  - type: step
+    id: final-gate
+    agent: wf-coder
+    prompt: >
+      K10 sprint final gate. Follow K10-SPRINT.md section 6 exactly:
+      1. In main folder run git pull. Rebuild app/dist: npm --prefix app run build.
+      2. Restart the service per K10-REVIEW.md §3.2 (stop existing, rerun start-svc.ps1).
+      3. Run .venv\Scripts\python tools/smoke_deployed.py against http://localhost:8080.
+      4. Re-run W8 steps 1, 2 and 5 (first 60s, wow moment, reliability x2) with browser at http://localhost:8080.
+      5. Write .kiro/k10-run/obs/GATE.md, append a "Freeze gate" section to .kiro/k10-run/REPORT.md.
+      6. Call send_message with severity success if PASS or error if FAIL: "K10 sprint done: gate PASS/FAIL, N open S0/S1."
+
+      CRITICAL SCREENSHOT RULE: use scale="css" only, NEVER scale="device", NEVER fullPage:true.
