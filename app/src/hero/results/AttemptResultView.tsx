@@ -200,7 +200,7 @@ function DrillCard({ view, drill }: { view: CaseView; drill: NonNullable<Attempt
     >
       <div className="space-y-2 text-sm">
         <p className="text-on-surface leading-relaxed" data-plain-exempt>{drill.instruction ?? drill.instructions ?? drill.drill_hint ?? 'Repeat the step where you first went off track, slowly, before the retry.'}</p>
-        {drill.success_hint && (
+        {DEBUG && drill.success_hint && (
           <p className="text-on-surface-variant">
             <span className="text-[11px] font-mono uppercase mr-1">You have it when</span>
             <span data-plain-exempt>{drill.success_hint}</span>

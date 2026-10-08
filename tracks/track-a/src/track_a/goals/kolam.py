@@ -173,7 +173,7 @@ def build(source_path: Path, source: SourceRecord, ctx: Any, *, case_id: str, ve
     c_curves = add(ClaimType.CONDITION,
                    f"The line work forms {k} continuous line{'s' if k != 1 else ''} ({closed_txt}) when every "
                    f"one of the {f.n_crossings} crossings is read as two lines passing straight through.",
-                   whole, f"{k} curve(s), {f.n_crossings} crossings (computed)", True)
+                   whole, f"{'1 continuous line' if k == 1 else f'{k} continuous lines'}, {f.n_crossings} crossings", True)
     if sym.rotation_order >= 2:
         sym_txt = f"The pattern has {sym.rotation_order}-fold rotational symmetry about its centre"
     else:

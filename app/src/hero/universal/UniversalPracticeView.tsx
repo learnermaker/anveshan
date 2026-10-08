@@ -152,11 +152,7 @@ export function UniversalPracticeView({ view, session, onSessionChange, onComple
               {session && <Badge tone="muted" title={`Session ${session.sessionId}`}>Learner: {session.learnerName}</Badge>}
             </div>
           )}
-          {!DEBUG && session && (
-            <Badge tone="muted" title="Your name for this practice">
-              Learner: {session.learnerName}
-            </Badge>
-          )}
+
         </div>
         {session && (
           <div className="flex flex-wrap gap-2">
