@@ -1,0 +1,433 @@
+{
+  "draft_id": "e056e713acfe01a3",
+  "source_path": "C:\\Users\\JIMSEE~1\\AppData\\Local\\Temp\\anv8090h\\drafts\\e056e713acfe01a3\\source.mp4",
+  "intake": {
+    "safety": {
+      "decision": "ok",
+      "notices": [],
+      "ignored_categories": [],
+      "policy": "policy_v1"
+    },
+    "teachable": "yes",
+    "teachable_reason": "Clear step-by-step tutorial on how to fold an origami crane.",
+    "skill_kind": "origami"
+  },
+  "probe": {
+    "modality": "video",
+    "mime_type": "video/mp4",
+    "bytes": 588379,
+    "sha256": "e056e713acfe01a31c90e58f5513e39f1ea43fa5153f93c61620ab597e008ceb",
+    "width": 320,
+    "height": 240,
+    "duration_sec": 67.4,
+    "has_audio": false,
+    "metrics": {},
+    "structures_available": [
+      "final_state",
+      "procedure"
+    ],
+    "specialists_available": [
+      "procedure_states"
+    ],
+    "reasons": {
+      "rhythm": "onset_rate 0.00 < 1.5/s; percussive_contrast 0.00 < 1.5",
+      "procedure_states": ">=2 visually distinct still segments found",
+      "final_state": "video has stable still segment for final state",
+      "procedure": "video has 16 time segments",
+      "temporal_pattern": "onset_rate 0.00 < 1.5/s; percussive_contrast 0.00 < 1.5",
+      "utterance": "no speech in video audio track"
+    }
+  },
+  "proposal": {
+    "schema_version": "2.0",
+    "case_id": "folding-a-paper-crane~e056e713acfe",
+    "title": "Folding a paper crane",
+    "skill_summary": "Learn the step-by-step procedure to fold a flat sheet of paper into a traditional origami crane, following creases and folds to create the final bird base, wings, head, and tail.",
+    "domain": "origami",
+    "transmission_mode": "forward",
+    "learner_input_kinds": [
+      "video",
+      "image"
+    ],
+    "vocabulary": {},
+    "goal_hint": null,
+    "probe": {
+      "modality": "video",
+      "mime_type": "video/mp4",
+      "bytes": 588379,
+      "sha256": "e056e713acfe01a31c90e58f5513e39f1ea43fa5153f93c61620ab597e008ceb",
+      "width": 320,
+      "height": 240,
+      "duration_sec": 67.4,
+      "has_audio": false,
+      "metrics": {},
+      "structures_available": [
+        "final_state",
+        "procedure"
+      ],
+      "specialists_available": [
+        "procedure_states"
+      ],
+      "reasons": {
+        "rhythm": "onset_rate 0.00 < 1.5/s; percussive_contrast 0.00 < 1.5",
+        "procedure_states": ">=2 visually distinct still segments found",
+        "final_state": "video has stable still segment for final state",
+        "procedure": "video has 16 time segments",
+        "temporal_pattern": "onset_rate 0.00 < 1.5/s; percussive_contrast 0.00 < 1.5",
+        "utterance": "no speech in video audio track"
+      }
+    },
+    "intake": {
+      "safety": {
+        "decision": "ok",
+        "notices": [],
+        "ignored_categories": [],
+        "policy": "policy_v1"
+      },
+      "teachable": "yes",
+      "teachable_reason": "Clear step-by-step tutorial on how to fold an origami crane.",
+      "skill_kind": "origami"
+    },
+    "skill_model": {
+      "schema_version": "1.0",
+      "skill_title": "Folding a Paper Crane",
+      "summary": "Learn the step-by-step procedure to fold a flat sheet of paper into a traditional origami crane, following creases and folds to create the final bird base, wings, head, and tail.",
+      "source_modality": "video",
+      "structures": [
+        "procedure"
+      ],
+      "goal_state": [
+        {
+          "prop_id": "prop-01",
+          "statement": "finished origami paper crane lying on white surface",
+          "region": null,
+          "evidence": [
+            "obs-118"
+          ],
+          "certainty": "inferred",
+          "keep": true
+        },
+        {
+          "prop_id": "prop-02",
+          "statement": "Final completed shape.",
+          "region": null,
+          "evidence": [
+            "obs-119"
+          ],
+          "certainty": "inferred",
+          "keep": true
+        }
+      ],
+      "steps": [
+        {
+          "step_id": "step-01",
+          "index": 0,
+          "name": "flat square paper",
+          "state_after": "flat square paper",
+          "action": null,
+          "start_sec": 0.0,
+          "end_sec": 1.0,
+          "keyframe_asset": "kf_seg-001.jpg",
+          "segment_id": "seg-001",
+          "evidence": [
+            "obs-020"
+          ],
+          "certainty": "inferred",
+          "source_established": true,
+          "critical": false
+        },
+        {
+          "step_id": "step-02",
+          "index": 1,
+          "name": "folded paper in half",
+          "state_after": "folded paper in half",
+          "action": "folding paper in half",
+          "start_sec": 2.0,
+          "end_sec": 7.0,
+          "keyframe_asset": "kf_seg-002.jpg",
+          "segment_id": "seg-002",
+          "evidence": [
+            "obs-026",
+            "obs-027"
+          ],
+          "certainty": "inferred",
+          "source_established": true,
+          "critical": false
+        },
+        {
+          "step_id": "step-03",
+          "index": 2,
+          "name": "diagonal creases formed",
+          "state_after": "diagonal creases formed",
+          "action": "pressing crease",
+          "start_sec": 8.0,
+          "end_sec": 14.0,
+          "keyframe_asset": "kf_seg-003.jpg",
+          "segment_id": "seg-003",
+          "evidence": [
+            "obs-033",
+            "obs-034"
+          ],
+          "certainty": "inferred",
+          "source_established": true,
+          "critical": false
+        },
+        {
+          "step_id": "step-04",
+          "index": 3,
+          "name": "square base origami shape",
+          "state_after": "square base origami shape",
+          "action": null,
+          "start_sec": 15.0,
+          "end_sec": 19.0,
+          "keyframe_asset": "kf_seg-005.jpg",
+          "segment_id": "seg-005",
+          "evidence": [
+            "obs-045"
+          ],
+          "certainty": "inferred",
+          "source_established": true,
+          "critical": false
+        },
+        {
+          "step_id": "step-05",
+          "index": 4,
+          "name": "flaps folded inward",
+          "state_after": "flaps folded inward",
+          "action": "folding edges inward",
+          "start_sec": 20.0,
+          "end_sec": 29.0,
+          "keyframe_asset": "kf_seg-006.jpg",
+          "segment_id": "seg-006",
+          "evidence": [
+            "obs-051",
+            "obs-052"
+          ],
+          "certainty": "inferred",
+          "source_established": true,
+          "critical": false
+        },
+        {
+          "step_id": "step-06",
+          "index": 5,
+          "name": "petals folded and lifted",
+          "state_after": "petals folded and lifted",
+          "action": "lifting and folding flap upward",
+          "start_sec": 30.0,
+          "end_sec": 35.0,
+          "keyframe_asset": "kf_seg-008.jpg",
+          "segment_id": "seg-008",
+          "evidence": [
+            "obs-064",
+            "obs-065"
+          ],
+          "certainty": "inferred",
+          "source_established": true,
+          "critical": false
+        },
+        {
+          "step_id": "step-07",
+          "index": 6,
+          "name": "elongated diamond bird base",
+          "state_after": "elongated diamond bird base",
+          "action": null,
+          "start_sec": 36.0,
+          "end_sec": 49.0,
+          "keyframe_asset": "kf_seg-010.jpg",
+          "segment_id": "seg-010",
+          "evidence": [
+            "obs-078"
+          ],
+          "certainty": "inferred",
+          "source_established": true,
+          "critical": false
+        },
+        {
+          "step_id": "step-08",
+          "index": 7,
+          "name": "head and tail sections folded",
+          "state_after": "head and tail sections folded",
+          "action": "pulling and folding inner layer",
+          "start_sec": 50.0,
+          "end_sec": 63.0,
+          "keyframe_asset": "kf_seg-012.jpg",
+          "segment_id": "seg-012",
+          "evidence": [
+            "obs-090",
+            "obs-091"
+          ],
+          "certainty": "inferred",
+          "source_established": true,
+          "critical": true
+        },
+        {
+          "step_id": "step-09",
+          "index": 8,
+          "name": "completed origami crane",
+          "state_after": "completed origami crane",
+          "action": null,
+          "start_sec": 66.0,
+          "end_sec": 67.0,
+          "keyframe_asset": "kf_seg-016.jpg",
+          "segment_id": "seg-016",
+          "evidence": [
+            "obs-117"
+          ],
+          "certainty": "inferred",
+          "source_established": true,
+          "critical": false
+        }
+      ],
+      "order": "strict",
+      "constraints": [],
+      "temporal": null,
+      "utterance": null,
+      "specialists": {},
+      "relevance": {
+        "expected_kinds": [
+          "video",
+          "image"
+        ],
+        "min_similarity": 0.7,
+        "ambiguous_band": 0.08,
+        "reference_segment_ids": [
+          "seg-001",
+          "seg-002",
+          "seg-003",
+          "seg-004",
+          "seg-005",
+          "seg-006",
+          "seg-007",
+          "seg-008",
+          "seg-009",
+          "seg-010",
+          "seg-011",
+          "seg-012",
+          "seg-013",
+          "seg-014",
+          "seg-015",
+          "seg-016"
+        ]
+      },
+      "checks": [
+        {
+          "check_id": "CHK-PR-COV",
+          "kind": "step_coverage",
+          "name": "Step Coverage",
+          "observable_indicator": "Complete all folding steps from the initial flat square paper to the final crane shape.",
+          "targets": [
+            "step-01",
+            "step-02",
+            "step-03",
+            "step-04",
+            "step-05",
+            "step-06",
+            "step-07",
+            "step-08",
+            "step-09"
+          ],
+          "metric_id": "u.step_coverage",
+          "method": "deterministic",
+          "params": {},
+          "weight": 3.0,
+          "required": true,
+          "process": true,
+          "enabled": true
+        },
+        {
+          "check_id": "CHK-PR-ORD",
+          "kind": "step_order",
+          "name": "Folding Sequence",
+          "observable_indicator": "Follow the correct order of folds, including half folds, diagonal creases, square base, and bird base.",
+          "targets": [
+            "step-01",
+            "step-02",
+            "step-03",
+            "step-04",
+            "step-05",
+            "step-06",
+            "step-07",
+            "step-08",
+            "step-09"
+          ],
+          "metric_id": "u.step_order",
+          "method": "deterministic",
+          "params": {},
+          "weight": 2.0,
+          "required": true,
+          "process": true,
+          "enabled": true
+        },
+        {
+          "check_id": "CHK-PR-OFF",
+          "kind": "off_path",
+          "name": "Accuracy of Folds",
+          "observable_indicator": "Ensure flaps are folded inward accurately and petals are folded and lifted correctly.",
+          "targets": [],
+          "metric_id": "u.off_path",
+          "method": "deterministic",
+          "params": {},
+          "weight": 1.0,
+          "required": false,
+          "process": true,
+          "enabled": true
+        },
+        {
+          "check_id": "CHK-PR-FIN",
+          "kind": "final_property",
+          "name": "Completion",
+          "observable_indicator": "Finish folding the head and tail sections to produce the completed origami crane.",
+          "targets": [
+            "step-09"
+          ],
+          "metric_id": "u.final_state_match",
+          "method": "model_status",
+          "params": {},
+          "weight": 3.0,
+          "required": true,
+          "process": false,
+          "enabled": true
+        },
+        {
+          "check_id": "CHK-PR-Q01",
+          "kind": "step_quality",
+          "name": "Final Appearance",
+          "observable_indicator": "Verify that the finished origami paper crane lies complete on the surface.",
+          "targets": [
+            "step-08"
+          ],
+          "metric_id": "u.step_quality.step-08",
+          "method": "model_status",
+          "params": {},
+          "weight": 2.0,
+          "required": false,
+          "process": true,
+          "enabled": true
+        }
+      ],
+      "perception_file": null,
+      "vocabulary": {
+        "state_noun": "paper",
+        "object_noun": "origami crane",
+        "unit_noun": "step",
+        "action_verb": "fold"
+      },
+      "warnings": []
+    },
+    "perception_file": "perception_source.json",
+    "model_proposal": {
+      "structures": [
+        "procedure"
+      ],
+      "specialists": [],
+      "wording_model": true
+    },
+    "model_run_keys": [],
+    "confirmed_by_user": false,
+    "confirmed_at": null,
+    "warnings": []
+  },
+  "refused": false,
+  "refusal_message": null,
+  "warnings": []
+}
