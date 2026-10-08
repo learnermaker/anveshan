@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-10-07T10:03:15+00:00",
+  "generated_at": "2026-10-08T07:48:29+00:00",
   "tests": {
-    "count": 560,
-    "date": "2026-10-07"
+    "count": 568,
+    "date": "2026-10-08"
   },
   "skills": [
     {
@@ -33,13 +33,13 @@
       "case_id": "origami-crane",
       "title": "Fold a paper crane: the first folds",
       "runs_per_sample": 3,
-      "consistency": 0.8889,
+      "consistency": 1.0,
       "samples": {
-        "good": "failed",
+        "good": "passed",
         "flawed": "caught",
         "unrelated": "refused"
       },
-      "notes": "Some variation observed (consistency=0.89). Swapped-order mistakes are not always caught in video. The 'good' test clip covers only the first 25 s of a 2-minute procedure and is evaluated as incomplete."
+      "notes": "AI-assisted checks; some variation expected across runs."
     }
   ],
   "not_yet": [

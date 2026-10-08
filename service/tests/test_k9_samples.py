@@ -469,6 +469,11 @@ class TestAnalyzeSampleSource:
         assert "draft_id" in data
         assert len(self.owned) == 1
 
+    def test_canonical_path_source_returns_200(self):
+        """tabla-rhythm points at the committed tabla sample via canonical_path (no copy)."""
+        r = self.client.post("/api/compose/sample/tabla-rhythm")
+        assert r.status_code == 200, r.text
+
     def test_unknown_source_returns_404(self):
         r = self.client.post("/api/compose/sample/no-such-source")
         assert r.status_code == 404

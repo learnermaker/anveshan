@@ -54,7 +54,7 @@ gcloud run deploy $SERVICE --source . \
   --max-instances 1 --min-instances 0 \
   --memory 2Gi --cpu 2 --timeout 300 --concurrency 20 \
   --set-secrets GEMINI_API_KEY=gemini-api-key:latest \
-  --set-env-vars ANVESHAN_MODE=recorded,ANVESHAN_TEXT_IMAGE_MODEL=gemma-4-26b-a4b-it,ANVESHAN_VIDEO_FRAMES_MODEL=gemma-4-26b-a4b-it,ANVESHAN_AUDIO_MODEL=,ANVESHAN_MAX_UPLOAD_MB=30,ANVESHAN_DATA_DIR=/tmp/anveshan
+  --set-env-vars ANVESHAN_MODE=live,ANVESHAN_TEXT_IMAGE_MODEL=gemini-3.5-flash-lite,ANVESHAN_VIDEO_FRAMES_MODEL=gemini-3.5-flash-lite,ANVESHAN_AUDIO_MODEL=gemini-3.5-flash-lite,ANVESHAN_MAX_UPLOAD_MB=30,ANVESHAN_DATA_DIR=/tmp/anveshan
 ```
 
 ### Option B: explicit build, then deploy the image
@@ -65,7 +65,7 @@ gcloud builds submit --tag $IMAGE --timeout=1800s .
 gcloud run deploy $SERVICE --image $IMAGE \
   --allow-unauthenticated --max-instances 1 --memory 2Gi --cpu 2 --timeout 300 --concurrency 20 \
   --set-secrets GEMINI_API_KEY=gemini-api-key:latest \
-  --set-env-vars ANVESHAN_MODE=recorded,ANVESHAN_MAX_UPLOAD_MB=30
+  --set-env-vars ANVESHAN_MODE=live,ANVESHAN_TEXT_IMAGE_MODEL=gemini-3.5-flash-lite,ANVESHAN_VIDEO_FRAMES_MODEL=gemini-3.5-flash-lite,ANVESHAN_AUDIO_MODEL=gemini-3.5-flash-lite,ANVESHAN_MAX_UPLOAD_MB=30
 ```
 
 Local equivalent (needs Docker): `docker build -t anveshan . && docker run --rm -p 8080:8080 -e GEMINI_API_KEY anveshan`.
@@ -74,9 +74,9 @@ Local equivalent (needs Docker): `docker build -t anveshan . && docker run --rm 
 
 | Variable | Container default | Notes |
 |---|---|---|
-| `ANVESHAN_MODE` | `recorded` | Default mode; any request can override with `?mode=live\|recorded`. |
-| `ANVESHAN_TEXT_IMAGE_MODEL`, `ANVESHAN_VIDEO_FRAMES_MODEL` | `gemma-4-26b-a4b-it` | Model registry (see `.claude/skills/model-gateway`). |
-| `ANVESHAN_AUDIO_MODEL` | empty (disabled) | Paid audio model; empty keeps tabla bol criteria UNCERTAIN. |
+| `ANVESHAN_MODE` | `live` | Live mode replays committed recordings first (samples cost nothing) and calls Gemini only for new uploads, within `ANVESHAN_DAILY_CALL_BUDGET`. Canonical settings: [DEPLOY-CHECKLIST.md](DEPLOY-CHECKLIST.md). |
+| `ANVESHAN_TEXT_IMAGE_MODEL`, `ANVESHAN_VIDEO_FRAMES_MODEL` | `gemini-3.5-flash-lite` on Cloud Run | The code default (Gemma 4 26B, ~43 s/image) is for offline builds only. |
+| `ANVESHAN_AUDIO_MODEL` | `gemini-3.5-flash-lite` on Cloud Run | Empty disables it and keeps tabla bol criteria UNCERTAIN. |
 | `ANVESHAN_CASES_ROOT` | `/app/tracks/cases` | Baked case packs. |
 | `ANVESHAN_DATA_DIR` | `/tmp/anveshan` | Uploads, sessions, derived upload cases, ad-hoc live runs. |
 | `ANVESHAN_MAX_UPLOAD_MB` | `30` | Per-file limit (413 above it). Keep below Cloud Run's 32 MiB request cap. |
@@ -100,7 +100,7 @@ Local equivalent (needs Docker): `docker build -t anveshan . && docker run --rm 
 ```bash
 URL=$(gcloud run services describe $SERVICE --format='value(status.url)')
 curl -s $URL/api/health
-# {"ok":true,"mode":"recorded","models":{"text_image":"gemma-4-26b-a4b-it","video_frames":"gemma-4-26b-a4b-it","audio_enabled":false}}
+# {"ok":true,"mode":"live", ...}
 curl -s $URL/api/cases | head -c 400; echo
 curl -s -o /dev/null -w '%{http_code} %{content_type}\n' $URL/api/media/kolam/src.kolam.target.v1      # 200 image/jpeg
 curl -s -o /dev/null -w '%{http_code}\n' $URL/api/media/kolam/src.kolam.direction_diagram.v1           # 404 (held out)
@@ -119,7 +119,7 @@ A route that needs a track not present in the build returns `503 SERVICE_UNAVAIL
   per day; turn it on only for judging windows.
 - Cloud Build: about 120 free build-minutes per day; one image build is ~5–10 min (npm ci, pip, ~50 MB media download).
 - Artifact Registry: ~0.5 GB free storage; delete old image tags (`gcloud artifacts docker images list`).
-- Gemma 4 on AI Studio is free (rate-limited); recorded mode makes no model calls. `ANVESHAN_AUDIO_MODEL` is paid and off by default.
+- Live mode calls gemini-3.5-flash-lite (about $0.0003 per call) only for new uploads, capped by `ANVESHAN_DAILY_CALL_BUDGET`; samples replay committed recordings for free.
 - Set a budget alert: `gcloud billing budgets create --billing-account=<ID> --display-name=anveshan --budget-amount=20USD`.
 
 ## 6. Rollback

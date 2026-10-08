@@ -192,6 +192,12 @@ def list_sample_sources(settings: Settings = Depends(get_settings)) -> List[dict
 # GET /api/compose/samples/{sample_id}/file
 # ---------------------------------------------------------------------------
 
+def _source_file(raw_entry: Dict[str, Any]) -> Path:
+    """An example source's file: ``canonical_path`` (repo-root-relative, single-copy rule; AGENTS.md) or ``file``."""
+    canonical = raw_entry.get("canonical_path", "")
+    return REPO_ROOT / canonical if canonical else _SOURCES_DIR / raw_entry.get("file", "")
+
+
 @router.get("/api/compose/samples/{sample_id}/file")
 def get_sample_source_file(sample_id: str) -> Any:
     """Serve the source file for a composer example."""
@@ -200,14 +206,8 @@ def get_sample_source_file(sample_id: str) -> Any:
     if raw_entry is None:
         raise not_found(f"sample source {sample_id!r} not found", sample_id=sample_id)
 
-    file_name = raw_entry.get("file", "")
-    # Support canonical_path: a repo-root-relative path (single-copy rule; AGENTS.md).
-    canonical = raw_entry.get("canonical_path", "")
-    if canonical:
-        file_path = REPO_ROOT / canonical
-        file_name = file_path.name
-    else:
-        file_path = _SOURCES_DIR / file_name
+    file_path = _source_file(raw_entry)
+    file_name = file_path.name
     if not file_path.is_file():
         raise not_found(f"source file for {sample_id!r} not found", sample_id=sample_id)
 
@@ -236,8 +236,7 @@ def analyze_sample_source(
     if raw_entry is None:
         raise not_found(f"sample source {sample_id!r} not found", sample_id=sample_id)
 
-    file_name = raw_entry.get("file", "")
-    file_path = _SOURCES_DIR / file_name
+    file_path = _source_file(raw_entry)
     if not file_path.is_file():
         raise not_found(f"source file for {sample_id!r} not found", sample_id=sample_id)
 

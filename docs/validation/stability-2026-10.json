@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-07T10:03:15+00:00",
+  "generated_at": "2026-10-08T07:48:29+00:00",
   "runs_per_sample": 3,
   "live_cache_disabled": true,
-  "total_live_calls": 40,
-  "live_call_budget": 60,
+  "total_live_calls": 45,
+  "live_call_budget": 80,
   "models": {
     "kolam": "deterministic (no model calls)",
     "tabla": "deterministic (no model calls)",
@@ -347,53 +347,53 @@
           "quality": "good",
           "runs": [
             {
-              "passed": false,
-              "total_score": 0.4,
+              "passed": true,
+              "total_score": 1.0,
               "criterion_statuses": {
-                "CRIT-U-CHK-PR-COV": "not_satisfied",
+                "CRIT-U-CHK-PR-COV": "satisfied",
                 "CRIT-U-CHK-PR-ORD": "satisfied",
                 "CRIT-U-CHK-PR-OFF": "satisfied",
-                "CRIT-U-CHK-PR-FIN": "not_satisfied",
-                "CRIT-U-CHK-PR-Q01": "not_satisfied"
+                "CRIT-U-CHK-PR-FIN": "satisfied",
+                "CRIT-U-CHK-PR-Q01": "satisfied"
               },
-              "first_divergence_criterion": "CRIT-U-CHK-PR-COV",
+              "first_divergence_criterion": null,
               "refused": false,
-              "live_calls": 6,
+              "live_calls": 7,
               "error": null
             },
             {
-              "passed": false,
-              "total_score": 0.4,
+              "passed": true,
+              "total_score": 1.0,
               "criterion_statuses": {
-                "CRIT-U-CHK-PR-COV": "not_satisfied",
+                "CRIT-U-CHK-PR-COV": "satisfied",
                 "CRIT-U-CHK-PR-ORD": "satisfied",
                 "CRIT-U-CHK-PR-OFF": "satisfied",
-                "CRIT-U-CHK-PR-FIN": "not_satisfied",
-                "CRIT-U-CHK-PR-Q01": "not_satisfied"
+                "CRIT-U-CHK-PR-FIN": "satisfied",
+                "CRIT-U-CHK-PR-Q01": "satisfied"
               },
-              "first_divergence_criterion": "CRIT-U-CHK-PR-COV",
+              "first_divergence_criterion": null,
               "refused": false,
-              "live_calls": 6,
+              "live_calls": 7,
               "error": null
             },
             {
-              "passed": false,
-              "total_score": 0.3,
+              "passed": true,
+              "total_score": 1.0,
               "criterion_statuses": {
-                "CRIT-U-CHK-PR-COV": "not_satisfied",
+                "CRIT-U-CHK-PR-COV": "satisfied",
                 "CRIT-U-CHK-PR-ORD": "satisfied",
-                "CRIT-U-CHK-PR-OFF": "partially_satisfied",
-                "CRIT-U-CHK-PR-FIN": "not_satisfied",
-                "CRIT-U-CHK-PR-Q01": "not_satisfied"
+                "CRIT-U-CHK-PR-OFF": "satisfied",
+                "CRIT-U-CHK-PR-FIN": "satisfied",
+                "CRIT-U-CHK-PR-Q01": "satisfied"
               },
-              "first_divergence_criterion": "CRIT-U-CHK-PR-OFF",
+              "first_divergence_criterion": null,
               "refused": false,
-              "live_calls": 6,
+              "live_calls": 7,
               "error": null
             }
           ],
-          "consistency": 0.6667,
-          "outcome": "failed",
+          "consistency": 1.0,
+          "outcome": "passed",
           "budget_exceeded": false
         },
         "flawed": {
@@ -401,12 +401,12 @@
           "runs": [
             {
               "passed": false,
-              "total_score": 0.6,
+              "total_score": 0.4,
               "criterion_statuses": {
                 "CRIT-U-CHK-PR-COV": "not_satisfied",
                 "CRIT-U-CHK-PR-ORD": "satisfied",
                 "CRIT-U-CHK-PR-OFF": "satisfied",
-                "CRIT-U-CHK-PR-FIN": "satisfied",
+                "CRIT-U-CHK-PR-FIN": "not_satisfied",
                 "CRIT-U-CHK-PR-Q01": "not_satisfied"
               },
               "first_divergence_criterion": "CRIT-U-CHK-PR-COV",
@@ -416,32 +416,32 @@
             },
             {
               "passed": false,
-              "total_score": 0.6,
+              "total_score": 0.4,
               "criterion_statuses": {
                 "CRIT-U-CHK-PR-COV": "not_satisfied",
                 "CRIT-U-CHK-PR-ORD": "satisfied",
                 "CRIT-U-CHK-PR-OFF": "satisfied",
-                "CRIT-U-CHK-PR-FIN": "satisfied",
+                "CRIT-U-CHK-PR-FIN": "not_satisfied",
                 "CRIT-U-CHK-PR-Q01": "not_satisfied"
               },
               "first_divergence_criterion": "CRIT-U-CHK-PR-COV",
               "refused": false,
-              "live_calls": 5,
+              "live_calls": 6,
               "error": null
             },
             {
               "passed": false,
-              "total_score": 0.6,
+              "total_score": 0.4,
               "criterion_statuses": {
                 "CRIT-U-CHK-PR-COV": "not_satisfied",
                 "CRIT-U-CHK-PR-ORD": "satisfied",
                 "CRIT-U-CHK-PR-OFF": "satisfied",
-                "CRIT-U-CHK-PR-FIN": "satisfied",
+                "CRIT-U-CHK-PR-FIN": "not_satisfied",
                 "CRIT-U-CHK-PR-Q01": "not_satisfied"
               },
               "first_divergence_criterion": "CRIT-U-CHK-PR-COV",
               "refused": false,
-              "live_calls": 5,
+              "live_calls": 6,
               "error": null
             }
           ],
@@ -485,7 +485,7 @@
           "budget_exceeded": false
         }
       },
-      "consistency": 0.8889
+      "consistency": 1.0
     }
   }
 }

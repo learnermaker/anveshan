@@ -112,7 +112,7 @@ Use this if the GitHub App install is blocked or the continuous-deploy option is
      --max-instances 1 --min-instances 0 \
      --memory 2Gi --cpu 2 --timeout 300 --concurrency 20 \
      --set-secrets GEMINI_API_KEY=gemini-api-key:latest \
-     --set-env-vars ANVESHAN_MODE=recorded,ANVESHAN_TEXT_IMAGE_MODEL=gemma-4-26b-a4b-it,ANVESHAN_VIDEO_FRAMES_MODEL=gemma-4-26b-a4b-it,ANVESHAN_AUDIO_MODEL=,ANVESHAN_MAX_UPLOAD_MB=30,ANVESHAN_DATA_DIR=/tmp/anveshan
+     --set-env-vars ANVESHAN_MODE=live,ANVESHAN_TEXT_IMAGE_MODEL=gemini-3.5-flash-lite,ANVESHAN_VIDEO_FRAMES_MODEL=gemini-3.5-flash-lite,ANVESHAN_AUDIO_MODEL=gemini-3.5-flash-lite,ANVESHAN_MAX_UPLOAD_MB=30,ANVESHAN_DATA_DIR=/tmp/anveshan
    ```
 4. Cloud Shell has gcloud pre-installed and already authenticated to your GCP account.
 5. Build time is approximately 5–15 minutes (npm ci + pip install + ~50 MB media fetch).
@@ -150,10 +150,10 @@ Click **+ Add variable** for each row (under "Container → Variables & Secrets"
 
 | Name | Value |
 |---|---|
-| `ANVESHAN_MODE` | `recorded` |
-| `ANVESHAN_TEXT_IMAGE_MODEL` | `gemma-4-26b-a4b-it` |
-| `ANVESHAN_VIDEO_FRAMES_MODEL` | `gemma-4-26b-a4b-it` |
-| `ANVESHAN_AUDIO_MODEL` | *(leave empty)* |
+| `ANVESHAN_MODE` | `live` |
+| `ANVESHAN_TEXT_IMAGE_MODEL` | `gemini-3.5-flash-lite` |
+| `ANVESHAN_VIDEO_FRAMES_MODEL` | `gemini-3.5-flash-lite` |
+| `ANVESHAN_AUDIO_MODEL` | `gemini-3.5-flash-lite` |
 | `ANVESHAN_MAX_UPLOAD_MB` | `30` |
 | `ANVESHAN_DATA_DIR` | `/tmp/anveshan` |
 
@@ -189,7 +189,7 @@ Open these URLs in your browser:
 
 | URL | Expected response |
 |---|---|
-| `<SERVICE_URL>/api/health` | `{"ok":true,"mode":"recorded","models":{...}}` |
+| `<SERVICE_URL>/api/health` | `{"ok":true,"mode":"live",...}` |
 | `<SERVICE_URL>/api/cases` | JSON array of case objects |
 | `<SERVICE_URL>/` | The React app (should load the Anveshan UI) |
 
