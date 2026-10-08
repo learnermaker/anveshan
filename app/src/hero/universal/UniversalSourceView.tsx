@@ -58,7 +58,7 @@ function SourceMedia({ caseId, sources }: { caseId: string; sources: SourceRecor
           <div key={s.source_id} className="space-y-1">
             {mime.startsWith('image/') && <img src={url} alt={`Source ${s.source_id}`} className="max-h-80 w-auto rounded border border-outline bg-surface-dim" />}
             {mime.startsWith('audio/') && <audio controls src={url} className="w-full" aria-label={`Source audio ${s.source_id}`} />}
-            {mime.startsWith('video/') && <SeekableVideo src={url} label={`Source video ${s.source_id}`} />}
+            {mime.startsWith('video/') && <SeekableVideo src={url} label="The demonstration video" />}
             {DEBUG && <div className="text-[11px] font-mono text-on-surface-variant">{s.source_id} · {mime}</div>}
           </div>
         );

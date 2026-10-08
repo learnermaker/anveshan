@@ -72,7 +72,7 @@ def perceive(
         from tracks.common.models import AnveshanFailure, FailureCategory
         raise AnveshanFailure(
             FailureCategory.INVALID_INPUT,
-            f"unsupported mime type for perception: {mime}",
+            "This kind of file can't be used. Try a photo (JPG or PNG), a video (MP4 or WebM) or a sound recording (WAV or MP3).",
             {"mime": mime},
         )
 

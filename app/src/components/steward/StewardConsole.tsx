@@ -57,7 +57,7 @@ export function StewardConsole({ health, onOpenSkill, onLibraryChanged }: Props)
   const handle401 = (e: unknown) => {
     if (e instanceof ApiError && e.status === 401) {
       clearStewardToken();
-      setSignedOutMsg('Your steward session ended. Enter the code again.');
+      setSignedOutMsg("That code didn't work, or your session ended. Enter the steward code again.");
       return true;
     }
     return false;
