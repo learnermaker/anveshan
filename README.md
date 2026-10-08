@@ -4,8 +4,7 @@ Anveshan passes on skills of the physical world from one person to another: lear
 
 [Live demo](https://anveshan-VERIFY.run.app) <!-- [VERIFY: Cloud Run URL] -->
 
-<!-- [VERIFY: add hero screenshot at docs/hackathon/img/hero.png] -->
-<!-- ![Learner feedback screen showing Kolam attempt with source-linked tips](docs/hackathon/img/hero.png) -->
+![After two tries of the Kolam drawing: score 6.5 to 10, where the first try went off track, and the second try reaching the goal](app/public/assets/results-first-vs-second-try.jpg)
 
 **Hackathon:** Google Cloud AI Builder Cup 2026
 

@@ -83,6 +83,21 @@ export function DiscoveryView({ heroCases, heroError, heroLoading, onRefreshHero
         ))}
       </section>
 
+      {/* What a learner gets, shown rather than described */}
+      <figure className="space-y-2">
+        <img
+          src="/assets/results-first-vs-second-try.jpg"
+          width={1200}
+          height={441}
+          loading="lazy"
+          alt="Results after two tries of the Kolam drawing: the score rose from 6.5 to 10, the check where the first try went off track changed from partly met to met, and the second try's progress line passes that point and reaches the goal."
+          className="w-full h-auto rounded-xl border border-outline"
+        />
+        <figcaption className="text-sm text-on-surface-variant text-center">
+          After two tries of the Kolam drawing: where the first try went off track, and what changed on the retry.
+        </figcaption>
+      </figure>
+
       {/* How it works */}
       <section aria-labelledby="how-title" className="space-y-3">
         <h2 id="how-title" className="text-xs font-mono uppercase tracking-widest text-on-surface-variant font-bold">
