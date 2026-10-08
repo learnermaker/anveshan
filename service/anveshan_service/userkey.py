@@ -14,8 +14,9 @@ import re
 from typing import Optional
 
 HEADER = b"x-gemini-api-key"
-# Google API keys are URL-safe tokens; accept a generous shape and reject anything else outright.
-_KEY_RE = re.compile(r"^[A-Za-z0-9_\-]{20,128}$")
+# Same shape as app/src/api/userKey.ts looksLikeKey: "AIza..." keys and the newer "AQ." keys
+# (base64url with dots). Anything else is rejected outright.
+_KEY_RE = re.compile(r"^[A-Za-z0-9_.+/=\-]{20,250}$")
 
 current_key: contextvars.ContextVar[Optional[str]] = contextvars.ContextVar("anveshan_user_key", default=None)
 

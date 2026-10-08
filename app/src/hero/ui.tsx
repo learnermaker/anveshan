@@ -131,7 +131,7 @@ export function ErrorNote({ error }: { error: unknown }) {
         <div>{f.message}</div>
         {f.suggestKey && (
           <button type="button" onClick={requestKeyDialog} className="text-sm text-caliper-cyan underline">
-            Use your own Gemini API key instead
+            Add your Gemini API key
           </button>
         )}
         <details className="text-xs text-on-surface-variant">
@@ -145,7 +145,7 @@ export function ErrorNote({ error }: { error: unknown }) {
 
 /**
  * Shown next to every live upload: checking a new photo, video or recording uses Gemini. The visitor can
- * use the shared demo allowance or their own key (kept in this browser, sent only to this app's service).
+ * add their own key (kept in this browser, sent only to this app's service).
  */
 export function KeyHint() {
   const [key, setKey] = useState<string | null>(() => getUserKey());
@@ -161,8 +161,8 @@ export function KeyHint() {
         </>
       ) : (
         <>
-          Checking a new upload uses Gemini AI, from a small shared daily allowance.{' '}
-          <button type="button" onClick={requestKeyDialog} className="text-caliper-cyan underline">Use your own Gemini API key</button>{' '}
+          Checking a new upload needs your own Gemini API key.{' '}
+          <button type="button" onClick={requestKeyDialog} className="text-caliper-cyan underline">Add your Gemini API key</button>{' '}
           (free from Google AI Studio; it stays in this browser). Sample attempts need no key.
         </>
       )}

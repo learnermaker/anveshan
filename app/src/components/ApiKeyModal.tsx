@@ -75,8 +75,8 @@ export function ApiKeyModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
         </div>
         <div className="p-5 space-y-4 text-sm">
           <p className="text-on-surface-variant leading-relaxed">
-            Optional. The demo has a shared daily AI budget. With your own key, AI calls (perceiving uploads, judging checks, coaching wording) run on your quota
-            instead, without the shared limit. Get a free key at{' '}
+            Every live AI call (perceiving uploads, judging checks, coaching wording) runs on your own Gemini key; the server has no key of its own.
+            Sample attempts need no key. Get a free key at{' '}
             <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" className="text-caliper-cyan underline">
               aistudio.google.com/apikey
             </a>

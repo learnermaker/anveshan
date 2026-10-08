@@ -22,7 +22,7 @@ export interface FriendlyError {
   message: string;
   /** Category, HTTP status and the raw service message, shown only under "Technical details". */
   technical: string;
-  /** offer the "use your own API key" dialog (shared budget, rate limit or replay-only server) */
+  /** offer the "use your own API key" dialog (no key yet, replay-only request or used-up quota) */
   suggestKey?: boolean;
 }
 
@@ -53,6 +53,9 @@ export function friendlyError(error: unknown): FriendlyError {
       return { title: 'Cannot reach the service', message: 'The Anveshan service did not answer. Check your connection and try again in a moment.', technical };
     case 'MODEL_FAILURE':
     case 'MODEL_TIMEOUT':
+      if (details.reason === 'key_required') {
+        return { title: 'Add your Gemini API key', message: 'Checking something new uses Gemini AI with your own API key. Add it once (free from Google AI Studio); it stays in this browser.', technical, suggestKey: true };
+      }
       if (details.reason === 'daily_budget') return { title: "Today's live AI budget is used up", message: raw, technical, suggestKey: true };
       return {
         title: 'The AI model did not answer',

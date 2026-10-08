@@ -196,7 +196,7 @@ export const Header: React.FC<HeaderProps> = ({
                   ? 'border-transmission-emerald/50 text-transmission-emerald'
                   : 'border-outline text-on-surface hover:border-cadmium-amber'
               }`}
-              title={hasUserKey ? 'AI calls use your own Gemini key' : 'Optional: use your own Gemini API key'}
+              title={hasUserKey ? 'AI calls use your own Gemini key' : 'Add your Gemini API key (needed for live AI)'}
             >
               <KeyRound className="w-3.5 h-3.5" aria-hidden="true" />
               <span className="hidden sm:inline">{hasUserKey ? 'Your key' : 'AI key'}</span>

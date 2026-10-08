@@ -363,11 +363,33 @@ def test_user_key_is_request_scoped_and_forces_live(tmp_path, monkeypatch):
     assert current_key.get() is None
 
 
+def test_server_key_is_never_used(tmp_path, monkeypatch):
+    """Keys come only from the browser: the app drops any server key, and live AI without a user key
+    fails with a key_required error instead of falling back."""
+    from anveshan_service import adapters
+    from tracks.common.models import ModelError
+
+    monkeypatch.setenv("GEMINI_API_KEY", "AIzaSERVERKEY_should_never_be_used")
+    monkeypatch.setenv("GOOGLE_API_KEY", "AIzaSERVERKEY_should_never_be_used")
+    s = _settings(tmp_path)
+    create_app(s)
+    assert "GEMINI_API_KEY" not in os.environ and "GOOGLE_API_KEY" not in os.environ
+    with pytest.raises(ModelError) as exc:
+        adapters.run_context(s, tmp_path, "live").gateway._get_client()
+    assert exc.value.details == {"reason": "key_required"}
+
+
+def test_new_style_key_shape_is_accepted():
+    from anveshan_service.userkey import valid_shape
+
+    assert valid_shape("AQ.Ab8RN6Kx-abcdefghij_klmnop.qrstuv")
+
+
 def test_malformed_key_header_is_ignored(tmp_path):
     from anveshan_service.userkey import valid_shape
 
     assert valid_shape(USER_KEY)
-    assert not valid_shape("short") and not valid_shape("has spaces in it 1234567890") and not valid_shape("x" * 200)
+    assert not valid_shape("short") and not valid_shape("has spaces in it 1234567890") and not valid_shape("x" * 300)
 
 
 def test_key_check_without_key_is_400(tmp_path):

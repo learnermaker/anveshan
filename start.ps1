@@ -25,7 +25,7 @@ Write-Host "  Anveshan — local launcher" -ForegroundColor White
 if (-not $Mode) {
     Write-Host ""
     Write-Host "  mock  UI only, recorded responses, no API key needed  (port 5174)" -ForegroundColor Gray
-    Write-Host "  full  UI + backend service, .env with GEMINI_API_KEY  (UI :5173, API :8080)" -ForegroundColor Gray
+    Write-Host "  full  UI + backend service (API key entered in the app)  (UI :5173, API :8080)" -ForegroundColor Gray
     Write-Host ""
     $Mode = (Read-Host "  Mode [mock]").Trim().ToLower()
     if (-not $Mode) { $Mode = "mock" }
@@ -55,15 +55,10 @@ Write-Ok "node_modules  app\node_modules"
 
 if ($Mode -eq "full") {
     if (-not (Test-Path "$Root\.env")) {
-        Write-Err ".env not found. Copy .env.example to .env and fill in GEMINI_API_KEY."
+        Write-Err ".env not found. Copy .env.example to .env."
         exit 1
     }
-    $envContent = Get-Content "$Root\.env" -Raw -ErrorAction SilentlyContinue
-    if ($envContent -notmatch 'GEMINI_API_KEY\s*=\s*\S') {
-        Write-Warn "GEMINI_API_KEY appears empty in .env — live model calls will fail."
-    } else {
-        Write-Ok ".env  GEMINI_API_KEY present"
-    }
+    Write-Ok "API key: add yours in the app (key button); the service never uses a .env key"
     if (-not (Test-Path "$Root\var")) {
         New-Item -ItemType Directory -Path "$Root\var" | Out-Null
         Write-Ok "Created var/  (session and upload data)"

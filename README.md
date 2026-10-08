@@ -160,7 +160,7 @@ cd app && npm run dev
 
 **Mock mode (no service required):** `cd app && npm run dev:mock` → http://localhost:5174
 
-**Live model calls:** copy `.env.example` to `.env`, set `GEMINI_API_KEY`, and set `ANVESHAN_MODE=live`. Never commit `.env`.
+**Live model calls:** set `ANVESHAN_MODE=live` and add your Gemini API key in the app (key button in the header). The service never uses a server key, locally or on Cloud Run; `GEMINI_API_KEY` in `.env` is read only by offline CLI tools. Never commit `.env`.
 
 ---
 
