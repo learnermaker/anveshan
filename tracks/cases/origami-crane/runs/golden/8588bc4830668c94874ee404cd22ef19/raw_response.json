@@ -1,0 +1,9 @@
+{
+  "text": "{\"matches\": [\n  {\"segment_id\": \"seg-001\", \"step\": 0, \"confidence\": \"high\"},\n  {\"segment_id\": \"seg-002\", \"step\": 1, \"confidence\": \"high\"},\n  {\"segment_id\": \"seg-003\", \"step\": 2, \"confidence\": \"high\"},\n  {\"segment_id\": \"seg-004\", \"step\": 3, \"confidence\": \"high\"},\n  {\"segment_id\": \"seg-005\", \"step\": 4, \"confidence\": \"high\"},\n  {\"segment_id\": \"seg-006\", \"step\": 4, \"confidence\": \"medium\"},\n  {\"segment_id\": \"seg-007\", \"step\": 5, \"confidence\": \"high\"},\n  {\"segment_id\": \"seg-008\", \"step\": 5, \"confidence\": \"high\"},\n  {\"segment_id\": \"seg-009\", \"step\": 6, \"confidence\": \"high\"},\n  {\"segment_id\": \"seg-010\", \"step\": 6, \"confidence\": \"high\"},\n  {\"segment_id\": \"seg-011\", \"step\": 5, \"confidence\": \"medium\"},\n  {\"segment_id\": \"seg-012\", \"step\": 7, \"confidence\": \"medium\"},\n  {\"segment_id\": \"seg-013\", \"step\": 7, \"confidence\": \"high\"},\n  {\"segment_id\": \"seg-014\", \"step\": 7, \"confidence\": \"high\"},\n  {\"segment_id\": \"seg-015\", \"step\": 8, \"confidence\": \"high\"},\n  {\"segment_id\": \"seg-016\", \"step\": 8, \"confidence\": \"high\"}\n]}",
+  "usage": {
+    "cached_content_token_count": 4032,
+    "candidates_token_count": 422,
+    "prompt_token_count": 9580,
+    "total_token_count": 10002
+  }
+}

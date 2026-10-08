@@ -1,0 +1,8 @@
+{
+  "text": "{\n  \"items\": [\n    {\n      \"criterion_id\": \"CRIT-U-CHK-PR-ORD\",\n      \"coaching\": \"Watch the video again to check the correct sequence, starting with the flat sheet and ending with the completed crane. (CLM-04)\"\n    }\n  ]\n}",
+  "usage": {
+    "candidates_token_count": 72,
+    "prompt_token_count": 476,
+    "total_token_count": 548
+  }
+}

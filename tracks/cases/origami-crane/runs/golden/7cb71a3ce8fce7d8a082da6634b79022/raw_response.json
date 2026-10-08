@@ -1,0 +1,8 @@
+{
+  "text": "{\n  \"status\": \"met\",\n  \"finding\": \"The completed origami crane matches the reference image.\"\n}",
+  "usage": {
+    "candidates_token_count": 26,
+    "prompt_token_count": 1652,
+    "total_token_count": 1678
+  }
+}
