@@ -176,7 +176,7 @@ export function StepUpload({ onSubmit, onAnalyzeSample, onCancel, error }: Props
                 <div className="font-semibold text-sm text-on-surface">{s.label}</div>
                 <p className="text-[11px] text-on-surface-variant">{s.description}</p>
                 <p data-plain-exempt className="text-[11px] font-mono text-on-surface-variant">
-                  Example provided with Anveshan ({s.licence})
+                  {s.credit} ({s.licence})
                 </p>
                 <button
                   onClick={() => {
