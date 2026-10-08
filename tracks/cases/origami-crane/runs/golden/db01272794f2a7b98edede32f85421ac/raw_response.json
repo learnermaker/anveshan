@@ -1,0 +1,8 @@
+{
+  "text": "{\n  \"results\": [\n    {\n      \"check_id\": \"CHK-PR-FIN\",\n      \"status\": \"met\",\n      \"finding\": \"The origami crane is fully formed and matches the reference final state.\",\n      \"region\": [\n        138,\n        286,\n        783,\n        711\n      ]\n    }\n  ]\n}",
+  "usage": {
+    "candidates_token_count": 91,
+    "prompt_token_count": 1220,
+    "total_token_count": 1311
+  }
+}

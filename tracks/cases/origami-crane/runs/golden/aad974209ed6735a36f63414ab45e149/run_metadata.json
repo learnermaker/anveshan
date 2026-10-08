@@ -1,0 +1,22 @@
+{
+  "expected_behavior": "judge final properties of the attempt",
+  "input_digests": [
+    "ImagePart:d2ed570db70102d847d58ed9c90c94a1e0ea1081f2190aa53d7505afd538f28f",
+    "ImagePart:084658914f337316773d3997c50c06c8b0fb459a753b31be190503cb89c3a0ac",
+    "text:46e90a1b83d01bb751384cae5d3f86a89e8125bdb36d556e2b5aec68d91a13b5"
+  ],
+  "latency_ms": 2796,
+  "model_id": "gemini-3.5-flash-lite",
+  "model_key": "vision_fast",
+  "notes": [
+    "media_resolution=low,medium"
+  ],
+  "prompt_id": "judge_final",
+  "prompt_sha256": "46e90a1b83d01bb751384cae5d3f86a89e8125bdb36d556e2b5aec68d91a13b5",
+  "prompt_version": "v2",
+  "provider": "google-genai",
+  "replay_key": "aad974209ed6735a36f63414ab45e149",
+  "run_id": "run.judge_final.20261008T074148.b77779",
+  "runtime_class": "LIVE",
+  "started_at": "2026-10-08T07:41:45.897325+00:00"
+}

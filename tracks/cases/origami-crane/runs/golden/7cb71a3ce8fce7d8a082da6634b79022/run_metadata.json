@@ -1,0 +1,24 @@
+{
+  "expected_behavior": "judge quality of critical step",
+  "input_digests": [
+    "ImagePart:fbfc5890df889f904bfc4134f07501c7b758794ee7b906c33e19261eaab17c86",
+    "ImagePart:ca39b311a99085dae00c747e7a448f1d61198a42bf04aaf17f767c49ba816c04",
+    "ImagePart:d2ed570db70102d847d58ed9c90c94a1e0ea1081f2190aa53d7505afd538f28f",
+    "ImagePart:084658914f337316773d3997c50c06c8b0fb459a753b31be190503cb89c3a0ac",
+    "text:7e259fab7cb86f2572cfa1091b95c7fe6ebd820d5ca787d998711873cff3667a"
+  ],
+  "latency_ms": 5386,
+  "model_id": "gemini-3.5-flash-lite",
+  "model_key": "vision_fast",
+  "notes": [
+    "media_resolution=low,medium"
+  ],
+  "prompt_id": "judge_step",
+  "prompt_sha256": "7e259fab7cb86f2572cfa1091b95c7fe6ebd820d5ca787d998711873cff3667a",
+  "prompt_version": "v2",
+  "provider": "google-genai",
+  "replay_key": "7cb71a3ce8fce7d8a082da6634b79022",
+  "run_id": "run.judge_step.20261008T074154.16001e",
+  "runtime_class": "LIVE",
+  "started_at": "2026-10-08T07:41:48.980369+00:00"
+}

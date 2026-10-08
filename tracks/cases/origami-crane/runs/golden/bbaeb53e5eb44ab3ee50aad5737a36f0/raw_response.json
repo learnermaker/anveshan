@@ -1,0 +1,8 @@
+{
+  "text": "{\n  \"items\": [\n    {\n      \"criterion_id\": \"CRIT-U-CHK-PR-COV\",\n      \"coaching\": \"Repeat the full task to confirm it is consistent. Why it matters: All folding steps from the flat sheet to the finished crane are performed. (CLM-04)\"\n    }\n  ]\n}",
+  "usage": {
+    "candidates_token_count": 79,
+    "prompt_token_count": 437,
+    "total_token_count": 516
+  }
+}

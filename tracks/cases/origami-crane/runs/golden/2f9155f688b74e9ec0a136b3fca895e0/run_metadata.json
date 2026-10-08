@@ -1,0 +1,36 @@
+{
+  "expected_behavior": "one entry per keyframe with a non-decreasing stage grouping",
+  "input_digests": [
+    "ImagePart:047e8fa8531a5e6184f124dc2316de9a9b56ab88071dfdf36f0f10a4d9f07f94",
+    "ImagePart:61da30dbf509cd8173df1ff10618221d6991cf33a804f77392467615f15adedf",
+    "ImagePart:25e29fa59834d9af1bf4fa9d9bc29b87479fe989e3b7867b2b44e0fa8046f2b5",
+    "ImagePart:4ddb17844df559165d5b79fd0afc6f5aad3b6e40c9ea4f1cab36d764170a927a",
+    "ImagePart:309b8146f1ef68bffa0a3564de6bca41b42cb0bf959bec81499400731bc4131b",
+    "ImagePart:3c2d92d913240787d756f021b1394e0f70b625db2a510613e7a3e1c939d8264f",
+    "ImagePart:1786a8fe99e75df12d3d14f8204cf3749367362dadd3664848168eeb0ff2ea1c",
+    "ImagePart:aa31fe4750feae223ccfef589d08753822648940e112e945dbd8b77ef93bdc31",
+    "ImagePart:cce1f9fa53f51e349778d7379ac368447bb782213cb2def963fdaf4a23dc194a",
+    "ImagePart:52b42f103ca0879267346b0c94e42f9eb819ae0cb8844e61d73e56ab168b7e83",
+    "ImagePart:12185bd212c5247f3a6367563911b35fd4fbc894486636b57557be832ef4afac",
+    "ImagePart:7498241cef76f298642f1c5306751ad4a9feb8d7ff8dbabb4d28b20e84736568",
+    "ImagePart:6e69aa3afa1304f585f7788f3eab367edbc03f79c034a6eee022b354530d250c",
+    "ImagePart:caf13521cde7d14e8aef4c91a0de3f7a2f8aaca570caf9131395d033e632bb8e",
+    "ImagePart:239fb1ce117ae0cc7df6349e17f07625e76cf4de377ac2f3b97669a6521d6f46",
+    "ImagePart:4b471aa9a800065cfa4441ed2bb9d368906e91bc5ea839bff62698e01d92781e",
+    "text:63199f925202fc64cf919a82d3c6f2d4f238d917fde113d3adbe3044543a9e80"
+  ],
+  "latency_ms": 7019,
+  "model_id": "gemini-3.5-flash-lite",
+  "model_key": "vision_fast",
+  "notes": [
+    "media_resolution=low"
+  ],
+  "prompt_id": "perceive_frames",
+  "prompt_sha256": "63199f925202fc64cf919a82d3c6f2d4f238d917fde113d3adbe3044543a9e80",
+  "prompt_version": "v2",
+  "provider": "google-genai",
+  "replay_key": "2f9155f688b74e9ec0a136b3fca895e0",
+  "run_id": "run.perceive_frames.20261008T074315.e9981f",
+  "runtime_class": "LIVE",
+  "started_at": "2026-10-08T07:43:08.672406+00:00"
+}
