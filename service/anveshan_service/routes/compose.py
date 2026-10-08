@@ -13,12 +13,13 @@ import re
 from typing import Any, Optional
 
 from fastapi import APIRouter, Body, Depends, File, Form, UploadFile
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 from anveshan_service import adapters
 from anveshan_service.deps import get_mode, get_settings
 from anveshan_service.errors import ServiceError, invalid, not_found
-from anveshan_service.paths import store_upload
+from anveshan_service.paths import check_asset, content_type, store_upload, within
 from anveshan_service.settings import Settings
 from anveshan_service.visitors import add_owner, visible
 
@@ -121,6 +122,17 @@ def get_draft(
     with adapters.translated():
         draft = composer.load_draft(settings.data_dir, draft_id)
     return draft.to_view()
+
+
+@router.get("/{draft_id}/assets/{asset}")
+def draft_asset(draft_id: str, asset: str, settings: Settings = Depends(get_settings)) -> FileResponse:
+    """A keyframe the perception step extracted from the visitor's own upload (shown on the proposal screen)."""
+    _check_draft_id(draft_id, settings)
+    check_asset(asset)
+    path = settings.data_dir / "drafts" / draft_id / "assets" / asset
+    if not within(path, settings.data_dir) or not path.is_file():
+        raise not_found(f"no asset {asset} in draft {draft_id}", draft_id=draft_id)
+    return FileResponse(path, media_type=content_type(path, None))
 
 
 @router.post("/{draft_id}/refine")

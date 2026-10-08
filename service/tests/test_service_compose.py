@@ -255,6 +255,19 @@ def test_get_draft_not_found(client, tmp_path, monkeypatch):
     assert response.status_code == 404
 
 
+def test_draft_keyframe_served_and_paths_guarded(client, tmp_path):
+    """The proposal screen shows the keyframes perception extracted; nothing outside the draft's assets."""
+    assets = tmp_path / "data" / "drafts" / "abcd1234abcd1234" / "assets"
+    assets.mkdir(parents=True)
+    (assets / "kf_seg-001.jpg").write_bytes(b"\xff\xd8\xff\xe0jpeg")
+    (tmp_path / "data" / "secret.json").write_text("{}", encoding="utf-8")
+    r = client.get("/api/compose/abcd1234abcd1234/assets/kf_seg-001.jpg")
+    assert r.status_code == 200 and r.headers["content-type"] == "image/jpeg"
+    assert client.get("/api/compose/abcd1234abcd1234/assets/kf_seg-099.jpg").status_code == 404
+    assert client.get("/api/compose/abcd1234abcd1234/assets/..secret.json").status_code == 400
+    assert client.get("/api/compose/abcd1234abcd1234/assets/..%2F..%2Fsecret.json").status_code in (400, 404)
+
+
 def test_get_draft_invalid_id(client, tmp_path, monkeypatch):
     """GET with invalid draft_id format returns 400."""
     fake_composer = _fake_composer_module()

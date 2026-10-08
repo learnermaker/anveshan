@@ -13,6 +13,8 @@
 import React, { useState } from 'react';
 import type { CaseProfile, DraftView, SkillCheck, SkillConstraint, SkillModel, SkillStep, TargetProperty } from '../../api/types';
 import { Badge, ErrorNote, Panel } from '../../hero/ui';
+import { API_BASE } from '../../api/runtime';
+import { DEBUG } from '../../api/debug';
 
 interface Props {
   draft: DraftView;
@@ -29,7 +31,7 @@ function AvailabilityRow({ label, available, reason }: { label: string; availabl
     <li className="flex items-start gap-2 text-[11px]">
       <span className={`font-mono font-bold shrink-0 ${available ? 'text-transmission-emerald' : 'text-on-surface-variant'}`}>{available ? '✓' : '✗'}</span>
       <span className={available ? 'text-on-surface' : 'text-on-surface-variant'}>{label}</span>
-      {reason && <span className="text-on-surface-variant ml-1">— {reason}</span>}
+      {DEBUG && reason && <span className="text-on-surface-variant ml-1">— {reason}</span>}
     </li>
   );
 }
@@ -143,32 +145,25 @@ function ColInferred({ draft, sourceUrl }: { draft: DraftView; sourceUrl?: strin
   if (probe.modality === 'video' && proposal) {
     const sm = proposal.skill_model;
     const steps = sm.steps ?? [];
-    const segs = draft.perception.segments.filter((s) => s.kind === 'time' && s.keyframe_asset);
     return (
       <div className="space-y-4">
         <div className="text-[11px] font-mono uppercase tracking-wider text-cadmium-amber font-bold mb-2">What the AI understood <InferredBadge /></div>
+        <p className="text-xs text-on-surface-variant">Gemini watched your video and picked one moment for each step it saw.</p>
         <div className="flex gap-2 overflow-x-auto pb-1">
-          {segs.map((seg, i) => (
-            <div key={seg.segment_id} className="shrink-0 w-20">
-              <div className="w-full aspect-video bg-surface-dim border border-outline rounded text-[11px] font-mono text-on-surface-variant flex items-center justify-center">
-                {steps[i]?.name ? steps[i].name.slice(0, 10) : `Seg ${i + 1}`}
-              </div>
-              <div className="text-[11px] font-mono text-on-surface-variant mt-0.5">
-                {seg.start_sec?.toFixed(0)}–{seg.end_sec?.toFixed(0)}s
-              </div>
-            </div>
+          {steps.filter((s) => s.keyframe_asset).map((s) => (
+            <figure key={s.step_id} className="shrink-0 w-28">
+              <img
+                src={`${API_BASE}/api/compose/${draft.draft_id}/assets/${s.keyframe_asset}`}
+                alt={`Step ${s.index + 1}: ${s.name}`}
+                className="w-full aspect-video object-cover rounded border border-outline bg-surface-dim"
+                loading="lazy"
+              />
+              <figcaption className="text-[11px] text-on-surface-variant mt-0.5 leading-tight">
+                <span className="font-mono">{s.start_sec != null ? `${s.start_sec.toFixed(0)} s` : ''}</span> {s.name}
+              </figcaption>
+            </figure>
           ))}
         </div>
-        <ul className="space-y-1">
-          {steps.slice(0, 8).map((s) => (
-            <li key={s.step_id} className="flex items-center gap-2 text-[11px]">
-              <InferredBadge />
-              <span className="font-mono text-on-surface-variant">Step {s.index + 1}:</span>
-              <span className="text-on-surface">{s.name}</span>
-              {s.critical && <Badge tone="crimson">CRITICAL</Badge>}
-            </li>
-          ))}
-        </ul>
       </div>
     );
   }
@@ -361,9 +356,9 @@ function SkillModelEditor({ proposal: _proposal, model, onChange, validationErro
               <tr className="border-b border-outline text-on-surface-variant">
                 <th className="text-left py-1 pr-2 font-mono font-normal">On</th>
                 <th className="text-left py-1 pr-2 font-mono font-normal">Name</th>
-                <th className="text-left py-1 pr-2 font-mono font-normal">W</th>
-                <th className="text-left py-1 pr-2 font-mono font-normal">Req</th>
-                <th className="text-left py-1 font-mono font-normal">Method</th>
+                <th className="text-left py-1 pr-2 font-mono font-normal">Weight</th>
+                <th className="text-left py-1 pr-2 font-mono font-normal">Required</th>
+                <th className="text-left py-1 font-mono font-normal">How it is checked</th>
               </tr>
             </thead>
             <tbody>
