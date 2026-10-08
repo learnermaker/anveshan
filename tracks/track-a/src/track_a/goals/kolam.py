@@ -203,6 +203,7 @@ def build(source_path: Path, source: SourceRecord, ctx: Any, *, case_id: str, ve
             if txt:
                 instr_by_stage[si.stage_id] = txt
     step_ids: List[str] = []
+    step_how: List[str] = []  # the drawing direction of each stage, for the task text
     n_stages = len(stages_flat)
     dot_pos = {d.id: (d.x, d.y) for d in goal.dots}
     for idx, (c, s) in enumerate(stages_flat):
@@ -213,8 +214,10 @@ def build(source_path: Path, source: SourceRecord, ctx: Any, *, case_id: str, ve
         b = pts[end % len(pts)] if c.closed else seg[-1]
         on = [i for i in c.dot_ids if np.min(np.hypot(seg[:, 0] - dot_pos[i][0], seg[:, 1] - dot_pos[i][1])) <= 3.0]
         via = f", passing through {len(on)} dots" if on else ""
+        how = f"without lifting, draw from {_pct(a, size)} to {_pct(b, size)}{via}"
+        step_how.append(how)
         stmt = (f"Suggested stage {idx + 1} of {n_stages} (one possible way, inferred from the final image; "
-                f"line {c.id}): without lifting, draw from {_pct(a, size)} to {_pct(b, size)}{via}.")
+                f"line {c.id}): {how}.")
         if s.id in instr_by_stage:
             stmt += f" Model wording (inferred): {instr_by_stage[s.id]}"
         step_ids.append(add(ClaimType.STEP, stmt, _pct_region(sid, seg, size, tau),
@@ -289,14 +292,14 @@ def build(source_path: Path, source: SourceRecord, ctx: Any, *, case_id: str, ve
         f"3. Pass through every dot the target line passes through, and keep dots the line leaves free untouched [{c_rel}].",
     ]
     n = 4
-    for (c, s), clm in zip(stages_flat, step_ids):
-        lines.append(f"{n}. Stage {s.id} - one suggested way (inferred), not the original drawing order: follow [{clm}].")
+    for i, clm in enumerate(step_ids):
+        lines.append(f"{n}. Stage {i + 1} of {len(step_ids)} (a suggested order, not necessarily the original): {step_how[i]} [{clm}].")
         n += 1
     lines.append(f"{n}. Check the finished drawing against the {sym.rotation_order}-fold symmetry of the target [{c_sym}].")
     task_instructions = "\n".join(lines)
     constraints = [
-        TaskConstraint(constraint_type="tool_spec", description="Draw on the app canvas over the target dots (goal-image pixel coordinates).", value=f"{size[0]}x{size[1]} px"),
-        TaskConstraint(constraint_type="material_spec", description="Continuous lines preferred: draw each line without lifting.", value=f"{k} line(s)"),
+        TaskConstraint(constraint_type="tool_spec", description="Draw on the canvas over the dots.", value=f"{size[0]}x{size[1]} px"),
+        TaskConstraint(constraint_type="material_spec", description="Draw each line without lifting your finger or pen.", value=f"{k} line(s)"),
     ]
 
     built_with.update({"model_runs": run_keys, "prompt": f"{PROMPT_ID}@v1" if run_keys else None, "case_id": case_id, "version": version})

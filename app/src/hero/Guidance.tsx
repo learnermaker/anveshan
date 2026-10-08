@@ -8,6 +8,12 @@ import { DEBUG } from '../api/debug';
 
 const CLAIM_REF = /\[((?:CLM-[A-Za-z0-9-]+)(?:\s*,\s*CLM-[A-Za-z0-9-]+)*)\]/g;
 
+/** Server feedback text cites claims as [CLM-02] or (CLM-02); learners never see ids (DEBUG keeps them). */
+export function plainRefs(text?: string | null): string {
+  if (!text || DEBUG) return text ?? '';
+  return text.replace(/\s*[[(]CLM-[A-Za-z0-9-]+(?:\s*,\s*CLM-[A-Za-z0-9-]+)*[\])]/g, '').replace(/\s{2,}/g, ' ').trim();
+}
+
 /** Split "1. foo 2. bar" into items; text without numbering stays one item. */
 export function splitNumbered(text: string): string[] {
   const parts = text

@@ -13,6 +13,7 @@ import { DEBUG } from '../../api/debug';
 import { attemptLabel, STATUS_PLAIN } from '../../copy/plain';
 import { WhyThisFeedback } from '../WhyThisFeedback';
 import { HowChecked } from './HowChecked';
+import { plainRefs } from '../Guidance';
 
 interface Props {
   view: CaseView;
@@ -136,7 +137,7 @@ export function AttemptResultView({ view, result, media }: Props) {
       {result.feedback && (
         <Panel
           kicker="What to change next time"
-          title={<span className="flex items-center gap-2"><MessageSquareText className="w-4 h-4 text-cadmium-amber" aria-hidden="true" />{result.feedback.summary}</span>}
+          title={<span className="flex items-center gap-2"><MessageSquareText className="w-4 h-4 text-cadmium-amber" aria-hidden="true" />{plainRefs(result.feedback.summary)}</span>}
           right={
             aiWorded ? (
               <span className="flex items-center gap-2">
@@ -168,8 +169,8 @@ export function AttemptResultView({ view, result, media }: Props) {
                     </div>
                   )}
                   <p><span className="text-[11px] font-mono uppercase text-on-surface-variant mr-1">What we saw</span><span data-plain-exempt>{it.what_was_observed}</span></p>
-                  <p><span className="text-[11px] font-mono uppercase text-on-surface-variant mr-1">Gap</span><span data-plain-exempt>{it.what_differed}</span></p>
-                  <p className="text-cadmium-amber"><span className="text-[11px] font-mono uppercase text-on-surface-variant mr-1">Try</span><span data-plain-exempt>{showTemplate ? result.coaching?.template_advice?.[it.criterion_id] ?? it.corrective_advice : it.corrective_advice}</span></p>
+                  <p><span className="text-[11px] font-mono uppercase text-on-surface-variant mr-1">Gap</span><span data-plain-exempt>{plainRefs(it.what_differed)}</span></p>
+                  <p className="text-cadmium-amber"><span className="text-[11px] font-mono uppercase text-on-surface-variant mr-1">Try</span><span data-plain-exempt>{plainRefs(showTemplate ? result.coaching?.template_advice?.[it.criterion_id] ?? it.corrective_advice : it.corrective_advice)}</span></p>
                   <WhyThisFeedback
                     view={view}
                     claimIds={map?.source_claim_ids ?? []}

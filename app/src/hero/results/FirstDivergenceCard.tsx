@@ -12,6 +12,7 @@ import { evidenceTime, fmtPosition, fmtTime, parseLocator } from '../locators';
 import { Badge, Panel, StatusBadge } from '../ui';
 import { DEBUG } from '../../api/debug';
 import { WhyThisFeedback } from '../WhyThisFeedback';
+import { plainRefs } from '../Guidance';
 
 interface Props {
   view: CaseView;
@@ -167,7 +168,7 @@ export function FirstDivergenceCard({ view, result, media }: Props) {
           </div>
           <div className="p-3 rounded-lg bg-surface-dim border border-outline/60">
             <div className="text-[11px] font-mono uppercase text-transmission-emerald font-bold mb-1">Why it matters</div>
-            <p className="text-on-surface leading-relaxed">{fd.why_it_matters || '—'}</p>
+            <p className="text-on-surface leading-relaxed">{plainRefs(fd.why_it_matters) || '—'}</p>
             {DEBUG && fd.source_claim_ids.length > 0 && (
               <div className="mt-1.5 flex flex-wrap gap-1">
                 {fd.source_claim_ids.map((id) => {
