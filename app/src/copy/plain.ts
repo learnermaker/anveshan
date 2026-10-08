@@ -36,10 +36,10 @@ export const SOURCE_LABEL: Record<string, string> = {
 
 /** review_status -> has a person checked the steps (library and learner view) */
 export const REVIEW_LABEL: Record<string, string> = {
-  approved: 'Checked by an expert',
-  revised: 'Checked and corrected by an expert',
+  approved: 'Steps checked by a person',
+  revised: 'Steps checked and corrected by a person',
   pending: 'Not yet checked by an expert',
-  rejected: 'Withdrawn after expert review',
+  rejected: 'Withdrawn after review',
 };
 
 /** review_status as the creator sees it on their own skill */
