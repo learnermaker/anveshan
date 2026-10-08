@@ -92,24 +92,33 @@ All evidence to date is engineering and capability evidence on internet-licensed
 
 ## Run locally
 
+**Quickest start (Windows):**
+
+```powershell
+.\start.ps1 mock   # UI only, no API key needed  → http://localhost:5174
+.\start.ps1 full   # UI + backend service         → http://localhost:5173
+```
+
+`start.ps1` checks prerequisites, starts each process in its own terminal window, and prints the URLs. Run without arguments for an interactive prompt.
+
+**Manual setup:**
+
 ```bash
-# Python environment
+# Python environment (first time)
 python -m venv .venv
-source .venv/bin/activate         # Windows: .venv\Scripts\activate
 pip install -r requirements-dev.txt
 python tools/fetch_media.py       # downloads licensed media from Wikimedia Commons
 
-# Service (recorded mode, no API key required)
+# Service — recorded mode, no API key required (port 8080)
 .venv/Scripts/python -m uvicorn anveshan_service.main:app --app-dir service --reload --port 8080
 
-# App dev server (separate terminal)
-cd app && npm install && npm run dev
-# Open http://localhost:5173
+# UI dev server — separate terminal (port 5173, proxies /api → :8080)
+cd app && npm run dev
 ```
 
-**Mock mode (no service required):** `cd app && npm run build:mock`
+**Mock mode (no service required):** `cd app && npm run dev:mock` → http://localhost:5174
 
-**Live model calls:** copy `.env.example` to `.env`, set `GEMINI_API_KEY`, and pass `?mode=live` or set `ANVESHAN_MODE=live`. Never commit `.env`.
+**Live model calls:** copy `.env.example` to `.env`, set `GEMINI_API_KEY`, and set `ANVESHAN_MODE=live`. Never commit `.env`.
 
 ---
 

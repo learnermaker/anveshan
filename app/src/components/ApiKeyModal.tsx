@@ -34,7 +34,7 @@ export function ApiKeyModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
     setErr(null);
     setOk(null);
     if (!looksLikeKey(k)) {
-      setErr(new Error('That does not look like a Google API key (letters, numbers, - and _, usually starting with "AIza").'));
+      setErr(new Error('That does not look like a Google API key. New keys (from AI Studio, May 2026+) start with "AQ.Ab"; older keys start with "AIza".'));
       return;
     }
     const previous = getUserKey();
@@ -118,7 +118,7 @@ export function ApiKeyModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
                   type={show ? 'text' : 'password'}
                   autoComplete="off"
                   spellCheck={false}
-                  placeholder="AIza…"
+                  placeholder="AQ.Ab…"
                   className="flex-1 min-w-0 bg-surface-dim border border-outline rounded-lg px-3 py-2 font-mono text-sm outline-none focus:border-caliper-cyan"
                 />
                 <button type="button" onClick={() => setShow((v) => !v)} className={btn.secondary} aria-label={show ? 'Hide key' : 'Show key'}>

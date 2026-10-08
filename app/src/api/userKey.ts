@@ -56,9 +56,13 @@ export function subscribeUserKey(fn: (k: string | null) => void): () => void {
   return () => listeners.delete(fn);
 }
 
-/** Loose client-side shape check (the server checks again); Gemini keys usually start with "AIza". */
+/**
+ * Loose client-side shape check (the server validates for real).
+ * New Gemini auth keys (issued from May 2026) start with "AQ." and contain base64url characters
+ * including dots. Older standard keys start with "AIza" and use only letters, digits, - and _.
+ */
 export function looksLikeKey(key: string): boolean {
-  return /^[A-Za-z0-9_-]{20,128}$/.test(key.trim());
+  return /^[A-Za-z0-9_.+/=\-]{20,250}$/.test(key.trim());
 }
 
 export function maskKey(key: string): string {
