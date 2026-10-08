@@ -208,6 +208,13 @@ def _seed_example_draft(settings: Settings, file_path: Path) -> None:
     if not shipped.is_dir() or (dst / "draft.json").exists():
         return
     shutil.copytree(shipped, dst, dirs_exist_ok=True)
+    for ref in dst.rglob("*.ref.json"):  # pointers to canonical files (single-copy rule), verified by sha256
+        pin = json.loads(ref.read_text(encoding="utf-8"))
+        data = (REPO_ROOT / pin["path"]).read_bytes()
+        if hashlib.sha256(data).hexdigest() != pin["sha256"]:
+            raise RuntimeError(f"pinned file changed: {pin['path']}")
+        ref.with_name(ref.name[: -len(".ref.json")]).write_bytes(data)
+        ref.unlink()
     source = dst / ("source" + file_path.suffix)
     shutil.copyfile(file_path, source)
     data = json.loads((dst / "draft.json").read_text(encoding="utf-8"))
