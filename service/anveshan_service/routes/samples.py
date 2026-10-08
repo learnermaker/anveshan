@@ -198,6 +198,15 @@ def _source_file(raw_entry: Dict[str, Any]) -> Path:
     return REPO_ROOT / canonical if canonical else _SOURCES_DIR / raw_entry.get("file", "")
 
 
+def _has_proposal(draft_json: Path) -> bool:
+    """True when a draft exists and proposes steps or a goal (an empty one came from a failed AI run)."""
+    try:
+        sm = (json.loads(draft_json.read_text(encoding="utf-8")).get("proposal") or {}).get("skill_model") or {}
+    except (OSError, ValueError):
+        return False
+    return bool(sm.get("steps") or sm.get("goal_state"))
+
+
 def _seed_example_draft(settings: Settings, file_path: Path) -> None:
     """Composer examples ship their finished draft (tracks/samples/sources/drafts/<id>), so they open at
     once and need no visitor key; create_draft then returns it unchanged. A new upload still needs the
@@ -205,8 +214,8 @@ def _seed_example_draft(settings: Settings, file_path: Path) -> None:
     draft_id = hashlib.sha256(file_path.read_bytes()).hexdigest()[:16]
     shipped = _SOURCES_DIR / "drafts" / draft_id
     dst = settings.data_dir / "drafts" / draft_id
-    if not shipped.is_dir() or (dst / "draft.json").exists():
-        return
+    if not shipped.is_dir() or _has_proposal(dst / "draft.json"):
+        return  # keep a good existing draft (it may carry the creator's edits); replace an empty one
     shutil.copytree(shipped, dst, dirs_exist_ok=True)
     for ref in dst.rglob("*.ref.json"):  # pointers to canonical files (single-copy rule), verified by sha256
         pin = json.loads(ref.read_text(encoding="utf-8"))
