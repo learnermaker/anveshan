@@ -42,8 +42,8 @@ export function DiscoveryView({ heroCases, heroError, heroLoading, onRefreshHero
   // Featured skills: curated, published (or no access field = legacy)
   const featured = allCases.filter((c) => c.hero && ((c.access?.library_status ?? 'published') === 'published'));
 
-  // Shared by community: composed, published, not owned by the visitor
-  const community = allCases.filter((c) => c.composed && c.access?.library_status === 'published' && !c.access?.owner);
+  // Shared by community: composed, published, not featured, not owned by the visitor
+  const community = allCases.filter((c) => c.composed && !c.hero && c.access?.library_status === 'published' && !c.access?.owner);
 
   // Owned skills count
   const ownedSkills = allCases.filter((c) => c.access?.owner);

@@ -33,6 +33,21 @@ INFERRED_CONFIDENCE = 0.5
 # Helpers
 # ---------------------------------------------------------------------------
 
+
+CAPTURE_ASK = {
+    "video": "film your hands doing it",
+    "image": "take a photo of what you made",
+    "audio": "record yourself playing",
+}
+
+
+def capture_instruction(kinds: List[str]) -> str:
+    """Ask for the attempt in physical-world terms ("film your hands"), not "upload a file"."""
+    asks = [CAPTURE_ASK.get(k, f"share a {k}") for k in kinds] or ["share your attempt"]
+    text = " or ".join(asks)
+    return f"When you have tried it, {text}."
+
+
 def _modality_enum(mime_type: str) -> Modality:
     prefix = mime_type.split("/", 1)[0].lower()
     if prefix == "image":
@@ -659,10 +674,10 @@ def build(
     inst_lines: List[str] = []
     n = 1
     if skill.steps:
-        inst_lines.append(f"Follow these steps:")
+        inst_lines.append("Work through these stages; each is what your work should look like at that point:")
         for step in skill.steps:
             claim_ref = f" [{claim_id_map.get(step.step_id, '')}]" if step.step_id in claim_id_map else ""
-            inst_lines.append(f"{n}. {step.name}{claim_ref}")
+            inst_lines.append(f"{n}. {step.name[:1].upper()}{step.name[1:]}{claim_ref}")
             n += 1
     elif skill.goal_state:
         inst_lines.append("Achieve these properties:")
@@ -674,7 +689,7 @@ def build(
 
     # Add upload instruction
     accepted_kinds = skill.relevance.expected_kinds
-    inst_lines.append(f"{n}. Upload your attempt as: {', '.join(accepted_kinds)}.")
+    inst_lines.append(f"{n}. {capture_instruction(accepted_kinds)}")
     task_instructions = "\n".join(inst_lines)
 
     goal_payload = skill.model_dump(mode="json")

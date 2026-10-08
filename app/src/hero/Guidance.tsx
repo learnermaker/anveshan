@@ -4,7 +4,6 @@ import React from 'react';
 import { ArrowRight, Check, RotateCcw } from 'lucide-react';
 import type { KnowledgeClaim as Claim } from '../types/contracts';
 import { btn } from './ui';
-import { trustLine } from '../copy/plain';
 import { DEBUG } from '../api/debug';
 
 const CLAIM_REF = /\[((?:CLM-[A-Za-z0-9-]+)(?:\s*,\s*CLM-[A-Za-z0-9-]+)*)\]/g;
@@ -145,13 +144,13 @@ export function AttemptProgress({ attempts, started, completing, onRetry, onComp
 }
 
 /** The honest status line for packages no expert has reviewed. */
-export function ReviewNote({ status, runtimeLabel = 'INTERNET_REFERENCE' }: { status: string; runtimeLabel?: string }) {
+export function ReviewNote({ status }: { status: string }) {
   if (status === 'approved' || status === 'revised') return null;
-  const line = trustLine({ runtime_label: runtimeLabel, review_status: status });
+  // the trust line itself is already shown just above (TrustLine); don't repeat it here
   return (
     <p className="text-sm text-on-surface-variant">
       <span className="text-cadmium-amber font-semibold">Not yet checked by an expert.</span>{' '}
-      You can practise normally. {line} Treat results as practice feedback, not a certificate.
+      You can practise normally; treat results as practice feedback, not a certificate.
     </p>
   );
 }
