@@ -2,9 +2,51 @@
 
 Anveshan passes on skills of the physical world from one person to another: learned from a real demonstration, practised with real hands, and checked against a photo, video or recording of the learner's real attempt.
 
-Folding, drawing, drumming, repairing: skills a chat tutor cannot see. Every tip points back to the moment in the real demonstration, and the app says plainly what a camera cannot sense. Why this matters and how it differs: [positioning](docs/product/novelty-boundary.md#skills-of-the-physical-world-positioning-decided-2026-10-07).
+[Live demo](https://anveshan-VERIFY.run.app) <!-- [VERIFY: Cloud Run URL] -->
+
+<!-- [VERIFY: add hero screenshot at docs/hackathon/img/hero.png] -->
+<!-- ![Learner feedback screen showing Kolam attempt with source-linked tips](docs/hackathon/img/hero.png) -->
 
 **Hackathon:** Google Cloud AI Builder Cup 2026
+
+---
+
+## How it works
+
+A creator uploads a real demonstration. The configured vision model structures the skill into steps, checks and source-grounded evidence. A learner submits their attempt; **deterministic rules score each check — no model decides pass or fail**. The first place the attempt diverges triggers a Gemini-worded tip pointing back to the exact source moment. On the retry, the same checks run and the measured change is recorded.
+
+```mermaid
+flowchart TD
+    A["Creator uploads demo\nphoto · video · audio"] --> B["Gemini 3.5 Flash Lite\nperceives frames & audio"]
+    B --> C["Skill model\nsteps · checks · rubric\ngrounded in source"]
+    C --> D["Creator reviews\n& publishes"]
+    D --> E["Learner uploads attempt\nphoto · video"]
+    E --> F["Gemini 3.5 Flash Lite\nperceives attempt"]
+    F --> G["Fixed rules score\neach check\n— no model judges"]
+    G --> H["First off-track point:\nGemini words the tip,\nciting source moment"]
+    H --> I["Retry → same checks run\nmeasured change recorded\nlineage preserved"]
+    I -->|"next attempt"| F
+
+    subgraph cloud["Cloud Run · anveshan-service"]
+        B
+        C
+        F
+        G
+        H
+    end
+```
+
+**Built with Gemini on Google Cloud.** Perception (frames & audio): Gemini 3.5 Flash Lite [VERIFY: confirm model in production config]. Source alignment embeddings: Gemini Embedding 2. Coaching tip wording: Gemini 3.5 Flash Lite. Pass/fail scoring: fixed deterministic rules, no model. Hosted on Cloud Run.
+
+Scores come from a fixed rubric, not from a model judgment. See [where Gen AI is used](#where-gen-ai-is-used-and-where-it-is-not).
+
+**Quick start**
+
+```powershell
+git clone https://github.com/learnermaker/anveshan
+cd anveshan
+.\start.ps1 mock   # UI only, no API key needed → http://localhost:5174
+```
 
 ---
 

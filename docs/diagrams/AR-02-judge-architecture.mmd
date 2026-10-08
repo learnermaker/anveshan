@@ -1,0 +1,22 @@
+%%{init: {"theme": "default"}}%%
+%% Mirror: this block is embedded verbatim in README.md "How it works".
+%% Update both files when you change the diagram.
+
+flowchart TD
+    A["Creator uploads demo\nphoto · video · audio"] --> B["Gemini 3.5 Flash Lite\nperceives frames & audio"]
+    B --> C["Skill model\nsteps · checks · rubric\ngrounded in source"]
+    C --> D["Creator reviews\n& publishes"]
+    D --> E["Learner uploads attempt\nphoto · video"]
+    E --> F["Gemini 3.5 Flash Lite\nperceives attempt"]
+    F --> G["Fixed rules score\neach check\n— no model judges"]
+    G --> H["First off-track point:\nGemini words the tip,\nciting source moment"]
+    H --> I["Retry → same checks run\nmeasured change recorded\nlineage preserved"]
+    I -->|"next attempt"| F
+
+    subgraph cloud["Cloud Run · anveshan-service"]
+        B
+        C
+        F
+        G
+        H
+    end
