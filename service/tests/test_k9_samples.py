@@ -479,8 +479,8 @@ class TestAnalyzeSampleSource:
         assert len(self.owned) == 1
 
     def test_canonical_path_source_returns_200(self):
-        """tabla-rhythm points at the committed tabla sample via canonical_path (no copy)."""
-        r = self.client.post("/api/compose/sample/tabla-rhythm")
+        """crane-video points at the committed crane sample via canonical_path (no copy)."""
+        r = self.client.post("/api/compose/sample/crane-video")
         assert r.status_code == 200, r.text
 
     def test_unknown_source_returns_404(self):

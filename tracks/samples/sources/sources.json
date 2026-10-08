@@ -10,13 +10,13 @@
       "licence": "CC0-1.0"
     },
     {
-      "sample_id": "tabla-rhythm",
-      "label": "A short tabla rhythm (audio)",
-      "description": "A synthetic tabla rhythm matching the goal pattern.",
-      "canonical_path": "tracks/cases/tabla/samples/good.wav",
-      "mime_type": "audio/wav",
-      "credit": "Synthesized for the demo",
-      "licence": "CC0-1.0"
+      "sample_id": "crane-video",
+      "label": "Folding a paper crane (video)",
+      "description": "About a minute of hands folding a crane, sped up. Gemini watches it and proposes the folding steps.",
+      "canonical_path": "tracks/cases/origami-crane/samples/good.mp4",
+      "mime_type": "video/mp4",
+      "credit": "Crane.ogv by Tavin, CC BY 3.0, via Wikimedia Commons",
+      "licence": "CC BY 3.0"
     }
   ]
 }
