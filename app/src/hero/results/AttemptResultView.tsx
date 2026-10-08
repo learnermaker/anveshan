@@ -12,6 +12,7 @@ import { OriginBadge, StepStrip, criterionMetricIds, isUniversalView } from '../
 import { DEBUG } from '../../api/debug';
 import { attemptLabel, STATUS_PLAIN } from '../../copy/plain';
 import { WhyThisFeedback } from '../WhyThisFeedback';
+import { HowChecked } from './HowChecked';
 
 interface Props {
   view: CaseView;
@@ -71,7 +72,7 @@ export function AttemptResultView({ view, result, media }: Props) {
             )}
           </ul>
         )}
-        {result.warnings.length > 0 && (
+        {DEBUG && result.warnings.length > 0 && (
           <ul className="mt-3 text-[11px] font-mono text-cadmium-amber space-y-0.5">
             {result.warnings.map((w, i) => <li key={i}>⚠ {w}</li>)}
           </ul>
@@ -183,6 +184,8 @@ export function AttemptResultView({ view, result, media }: Props) {
       )}
 
       {result.drill && <DrillCard view={view} drill={result.drill} />}
+
+      <HowChecked view={view} result={result} media={media} />
     </div>
   );
 }

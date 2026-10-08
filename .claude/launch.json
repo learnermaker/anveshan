@@ -52,6 +52,23 @@
       ],
       "port": 5199,
       "cwd": "app"
+    },
+    {
+      "name": "app-8090",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "exec",
+        "--",
+        "vite",
+        "--port",
+        "5180",
+        "--strictPort"
+      ],
+      "port": 5180,
+      "cwd": "app",
+      "env": {
+        "ANVESHAN_API_PROXY": "http://localhost:8090"
+      }
     }
   ]
 }
