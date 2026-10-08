@@ -1,0 +1,8 @@
+{
+  "text": "{\n \"items\": [\n  {\n   \"criterion_id\": \"CRIT-TABLA-BOLS\",\n   \"coaching\": \"Recite the bols aloud along with the source, then play them one cycle at a time. This helps align your strokes because an audio model labelled the source strokes with specific bols (CLM-06).\"\n  },\n  {\n   \"criterion_id\": \"CRIT-TABLA-STROKES\",\n   \"coaching\": \"Isolate each stroke and practise until your sound matches the source. This is important because the source has 3 distinct stroke timbres (silhouette 0.25, CLM-07).\"\n  }\n ]\n}",
+  "usage": {
+    "candidates_token_count": 151,
+    "prompt_token_count": 680,
+    "total_token_count": 831
+  }
+}

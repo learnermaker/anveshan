@@ -1,0 +1,8 @@
+{
+  "text": "{\n  \"items\": [\n    {\n      \"criterion_id\": \"CRIT-KOLAM-COVERAGE\",\n      \"coaching\": \"Trace the entire pattern again to keep your line consistent. Remember that the finished pattern is made of 1 continuous line through the dots (CLM-02), so checking your work ensures the figure stays fully closed.\"\n    }\n  ]\n}",
+  "usage": {
+    "candidates_token_count": 86,
+    "prompt_token_count": 493,
+    "total_token_count": 579
+  }
+}

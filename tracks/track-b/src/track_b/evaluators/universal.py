@@ -153,7 +153,7 @@ def combine_matches(first: _MatchMap, second: _MatchMap) -> _MatchMap:
 def _match_dto():
     """Lenient DTO for the matcher: tolerates "2", "Expert step 2", "null" and missing confidence."""
     import re as _re
-    from pydantic import BaseModel, field_validator
+    from pydantic import BaseModel, field_validator, model_validator
 
     class _M(BaseModel):
         segment_id: str = ""
@@ -178,6 +178,11 @@ def _match_dto():
 
     class _MatchDTO(BaseModel):
         matches: List[_M] = []
+
+        @model_validator(mode="before")
+        @classmethod
+        def _bare_list(cls, v: Any) -> Any:
+            return {"matches": v} if isinstance(v, list) else v  # the model sometimes drops the wrapper object
 
     return _MatchDTO
 
@@ -1466,8 +1471,6 @@ def evaluate(goal: GoalModel, attempt: AttemptMedia, ctx: Any = None) -> Traject
     artifacts: Dict[str, Any] = {
         "relevance": similarity if similarity >= 0 else None,
     }
-    if attempt_record and asset_dir:
-        artifacts["attempt_perception"] = str(asset_dir / "perception.json")
 
     return TrajectoryResult(
         metrics=all_metrics,

@@ -1,0 +1,8 @@
+{
+  "text": "{\n  \"items\": [\n    {\n      \"criterion_id\": \"CRIT-KOLAM-COVERAGE\",\n      \"coaching\": \"Trace stage C1.S4 carefully, then redraw the missing parts to complete the figure. Why it matters: The finished pattern is made of 1 continuous line through the dots (CLM-02); a missing section leaves the figure open.\"\n    },\n    {\n      \"criterion_id\": \"CRIT-KOLAM-CURVES\",\n      \"coaching\": \"Extend the line where it stopped until it joins the next section and closes. Why it matters: Each of the 1 line closes on itself (CLM-02); an unfinished line breaks the loop.\"\n    }\n  ]\n}",
+  "usage": {
+    "candidates_token_count": 165,
+    "prompt_token_count": 681,
+    "total_token_count": 846
+  }
+}

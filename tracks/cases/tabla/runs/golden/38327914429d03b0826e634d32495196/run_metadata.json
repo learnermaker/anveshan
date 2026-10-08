@@ -1,0 +1,18 @@
+{
+  "expected_behavior": "Rewrite advice only; keep claim ids; no new numbers; no verdicts.",
+  "input_digests": [
+    "text:3cba0105a0fc7cd0e1b05aa1f790e1e70307ca5afbe36f4e3c7434337825bdee"
+  ],
+  "latency_ms": 1840,
+  "model_id": "gemini-3.5-flash-lite",
+  "model_key": "vision_fast",
+  "notes": [],
+  "prompt_id": "coach_feedback",
+  "prompt_sha256": "3cba0105a0fc7cd0e1b05aa1f790e1e70307ca5afbe36f4e3c7434337825bdee",
+  "prompt_version": "v1",
+  "provider": "google-genai",
+  "replay_key": "38327914429d03b0826e634d32495196",
+  "run_id": "run.coach_feedback.20261008T072535.4b1833",
+  "runtime_class": "LIVE",
+  "started_at": "2026-10-08T07:25:33.987002+00:00"
+}

@@ -1,0 +1,8 @@
+{
+  "text": "{\n  \"items\": [\n    {\n      \"criterion_id\": \"CRIT-TABLA-COMPLETE\",\n      \"coaching\": \"Play one cycle at half speed and count your strokes out loud against the reference count. The source segment contains 53 strokes on a fixed grid (CLM-02), so staying on track prevents breaking the phrase.\"\n    },\n    {\n      \"criterion_id\": \"CRIT-TABLA-BAYAN\",\n      \"coaching\": \"Speak the pattern aloud while playing only your bayan strokes before adding your right hand. The source sounds the bayan on 21 of 53 strokes in a fixed pattern (BBB--.B---B-) (CLM-04) to give the cycle its shape.\"\n    },\n    {\n      \"criterion_id\": \"CRIT-TABLA-BOLS\",\n      \"coaching\": \"Recite the bols aloud with the source, then play them one cycle at a time. An audio model labelled the source strokes with specific bols (CLM-06), though this is a model inference rather than expert confirmation.\"\n    },\n    {\n      \"criterion_id\": \"CRIT-TABLA-STROKES\",\n      \"coaching\": \"Isolate each class of strokes and practise until your sound matches the source. The source has 3 distinct stroke timbres (silhouette 0.25, CLM-07) that require matching articulation and technique.\"\n    }\n  ]\n}",
+  "usage": {
+    "candidates_token_count": 320,
+    "prompt_token_count": 1029,
+    "total_token_count": 1349
+  }
+}
