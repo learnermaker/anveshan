@@ -131,9 +131,8 @@ def load_pack(case_dir: Path) -> List[Sample]:
 
 def public_view(case_id: str, s: Sample) -> dict:
     """Convert an internal Sample to the SampleAttempt wire shape."""
-    preview_url = None
-    if s.preview is not None:
-        preview_url = f"/api/cases/{case_id}/samples/{s.sample_id}/preview"
+    # every sample has a file; without a separate preview the file itself is the preview
+    preview_url = f"/api/cases/{case_id}/samples/{s.sample_id}/preview"
     return {
         "sample_id": s.sample_id,
         "label": s.label,

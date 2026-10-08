@@ -11,6 +11,7 @@ import { KolamTeach } from './kolam/KolamTeach';
 import { BeatTimeline } from './tabla/BeatTimeline';
 import { AttemptResultView } from './results/AttemptResultView';
 import type { HeroSession, LocalAttemptMedia } from './session';
+import { sampleMedia } from './session';
 import { Badge, btn, ErrorNote, KeyHint, Panel, ProgressBar, ReviewBadge, SourceLabelBadge, Spinner } from './ui';
 import { TrustLine } from './TrustLine';
 import { fmtTime } from './locators';
@@ -99,7 +100,7 @@ function HeroPracticeViewInner({ view, session, onSessionChange, onComplete, onB
     }
   };
 
-  const submitSample = async (sampleId: string) => {
+  const submitSample = async (sample: SampleAttempt) => {
     let sid = session?.sessionId;
     let currentSession = session;
     if (!currentSession) {
@@ -117,10 +118,11 @@ function HeroPracticeViewInner({ view, session, onSessionChange, onComplete, onB
     }
     if (!sid) return;
     setErr(null);
-    setPhase({ kind: 'evaluating', since: Date.now(), attemptKind: 'image' });
+    setPhase({ kind: 'evaluating', since: Date.now(), attemptKind: sample.attempt_kind as AttemptKind });
     try {
-      const result = await api.submitSampleAttempt(sid, sampleId);
-      onSessionChange({ ...currentSession!, attempts: [...(currentSession!.attempts), { result, media: { kind: 'image' } }] });
+      const result = await api.submitSampleAttempt(sid, sample.sample_id);
+      const media = await sampleMedia(sample);
+      onSessionChange({ ...currentSession!, attempts: [...(currentSession!.attempts), { result, media }] });
       setShowCapture(false);
     } catch (x) {
       setErr(x);
@@ -280,7 +282,7 @@ function HeroPracticeViewInner({ view, session, onSessionChange, onComplete, onB
 }
 
 /** Sample attempt picker: "No materials? Try a sample attempt" */
-function SamplePicker({ caseId, tryLabel, noSubmitsYet, onUseSample, busy }: { caseId: string; tryLabel: string; noSubmitsYet: boolean; onUseSample: (sampleId: string) => void; busy: boolean }) {
+function SamplePicker({ caseId, tryLabel, noSubmitsYet, onUseSample, busy }: { caseId: string; tryLabel: string; noSubmitsYet: boolean; onUseSample: (sample: SampleAttempt) => void; busy: boolean }) {
   const [samples, setSamples] = useState<SampleAttempt[] | null>(null);
   const [err, setErr] = useState<unknown>(null);
 
@@ -321,7 +323,7 @@ function SamplePicker({ caseId, tryLabel, noSubmitsYet, onUseSample, busy }: { c
               <button
                 type="button"
                 disabled={busy}
-                onClick={() => onUseSample(s.sample_id)}
+                onClick={() => onUseSample(s)}
                 className={btn.secondary}
               >
                 Use this as my {tryLabel}

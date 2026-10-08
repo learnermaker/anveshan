@@ -73,9 +73,7 @@ def get_sample_preview(
     matched = next((s for s in pack if s.sample_id == sample_id), None)
     if matched is None:
         raise not_found(f"sample {sample_id!r} not found", case_id=case_id, sample_id=sample_id)
-    if matched.preview is None:
-        raise not_found("this sample has no preview", case_id=case_id, sample_id=sample_id)
-    preview_path = cdir / "samples" / matched.preview
+    preview_path = cdir / "samples" / (matched.preview or matched.file)
     if not preview_path.is_file():
         raise not_found("preview file missing", case_id=case_id, sample_id=sample_id)
     return FileResponse(preview_path, media_type=content_type(preview_path))

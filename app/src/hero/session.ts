@@ -1,6 +1,8 @@
 /** Client-side session state for a live hero case (lifted into App so 03 TRANSMISSION can read it). */
 
 import type { AttemptKind, AttemptResult, SessionResult } from '../api/types';
+import type { SampleAttempt } from '../api/types-product';
+import { API_BASE } from '../api/runtime';
 import type { Stroke } from './kolam/KolamCanvas';
 
 /** What the learner submitted, kept locally so results can show learner evidence next to expert evidence. */
@@ -20,4 +22,18 @@ export interface HeroSession {
   learnerName: string;
   attempts: { result: AttemptResult; media: LocalAttemptMedia }[];
   result: SessionResult | null;
+}
+
+/** A sample attempt's media, so results can show it next to the source like an upload. */
+export async function sampleMedia(s: SampleAttempt): Promise<LocalAttemptMedia> {
+  const kind = s.attempt_kind as AttemptKind;
+  if (!s.preview_url) return { kind };
+  const url = `${API_BASE}${s.preview_url}`;
+  if (kind !== 'trace') return { kind, url };
+  try {
+    const trace = (await (await fetch(url)).json()) as { strokes: { points: Stroke }[] };
+    return { kind, strokes: trace.strokes.map((st) => st.points) };
+  } catch {
+    return { kind }; // the result still renders; only the drawing beside it is missing
+  }
 }

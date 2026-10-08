@@ -312,6 +312,15 @@ class TestSubmitSampleAttempt:
 # §5.4 Security
 # ---------------------------------------------------------------------------
 
+def test_sample_file_is_its_preview(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    """Without a separate preview, results can still show the sample: its own file is served."""
+    client = _client_with_samples(_settings(tmp_path, REPO_ROOT / "tracks" / "cases"), monkeypatch)
+    listed = client.get("/api/cases/origami-crane/samples").json()
+    assert listed and all(s["preview_url"] for s in listed)
+    r = client.get(listed[0]["preview_url"])
+    assert r.status_code == 200 and r.content
+
+
 def test_bad_sample_id_rejected(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     cases_root = tmp_path / "cases"
     _make_case(cases_root, "kolam")
