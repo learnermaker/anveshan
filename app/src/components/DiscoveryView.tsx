@@ -45,7 +45,7 @@ export function DiscoveryView({ heroCases, heroError, heroLoading, onRefreshHero
       {/* Hero */}
       <section className="text-center max-w-3xl mx-auto space-y-4 pt-4">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cadmium-amber/10 border border-cadmium-amber/30 text-cadmium-amber font-mono text-[11px] font-semibold uppercase tracking-widest">
-          Google Cloud AI Builder Cup 2026 · Prototype
+          Google Cloud AI Builder Cup 2026
         </div>
         <h1 className="font-serif text-4xl sm:text-5xl font-normal tracking-tight leading-[1.15]">{PITCH.headline}</h1>
         <p className="text-base text-on-surface-variant max-w-2xl mx-auto leading-relaxed">{PITCH.lead}</p>
