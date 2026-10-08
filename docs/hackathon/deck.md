@@ -45,9 +45,9 @@
 **Title:** One transmission event
 
 **Bullets:**
-- Source: a Kolam from Wikimedia Commons — a real practitioner's work, not a generated image
-- Attempt: a phone photo of the learner's drawing; four of eight reference dots off-track
-- Retry: the same checks, a different result — seven of eight dots now aligned [VERIFY: confirm sample results match evidence.json]
+- Source: a paper-crane video from Wikimedia Commons (CC BY 3.0); Gemini proposes 9 folding steps, each pinned to a moment
+- Attempt: a video that stops after the first folds scores 2.5 of 11; the result shows where it first went off track, beside the matching moment in the source
+- Retry: the full fold, checked by the same rules, scores 10 of 11 (Kolam: 6.5 then 10 of 10)
 
 **Speaker note:** Show the three screenshots side by side. Let the images do the work. Don't narrate what is already visible.
 

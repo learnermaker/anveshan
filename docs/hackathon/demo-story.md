@@ -1,60 +1,41 @@
-# Demo Story — 3-minute video script and shot list
+# Demo story: 3-minute video script and shot list
 
-**Review checkpoint:** 2026-10-08 (K10 sprint)
+**Review checkpoint:** 2026-10-08 (K10 sprint). This file is the authoritative video script.
 
-This file is the authoritative video script. When `obs/W8-storyboard.md` is available, align to it.
+**Story:** one skill shared from a real video; Gemini turns it into steps; a learner's video attempt is checked against it; the first place it went off track is shown beside the source; the retry is measured.
 
----
+**Facts it uses:** every number below comes from the committed samples, which replay the same result every time.
+- Crane, first try ("stopped after the first folds"): 2.5 of 11.
+- Crane, retry ("all the way to the finished crane"): 10 of 11.
+- Kolam: 6.5 then 10 of 10.
+- Composer, crane video: 9 steps in about 20 s (live Gemini call; record one take).
 
 ## Script table
 
-| Time | Screen | On-screen action | Voice-over | Judging criterion |
+| Time | Screen | On-screen action | Voice-over | Criterion |
 |---|---|---|---|---|
-| 0:00–0:08 | Title card: "Anveshan" | Fade in on the one-liner | "Some skills can only be learned by watching real hands and trying with your own." | Problem / Impact |
-| 0:08–0:20 | The Kolam source: a traditional floor art photo from Wikimedia | Zoom slowly into the source image; highlight the geometric pattern | "This Kolam was drawn by a practitioner. It lives in a photo — not a tutorial, not a chatbot answer. The source." | Problem / Impact |
-| 0:20–0:35 | Anveshan creator flow: skill model screen | The composed steps appear: symmetry, dot alignment, closure | "Gemini reads the source, proposes the key steps and checks. The creator confirms. The rubric is grounded in the actual image — not in generic drawing advice." | Technical Merit / Gen AI |
-| 0:35–1:00 | Learner landing page → Start practising → sample attempt submitted | Click 'Start practising', upload the flawed sample attempt | "A learner opens the app on any phone, submits a photo of their own attempt, and waits — no sensors, no special kit." | UX / Problem Alignment |
-| 1:00–1:20 | Feedback screen: criterion list, first failure highlighted | Camera holds on the first failed criterion: "Dot alignment — 4 of 8 reference dots matched" | "Four of eight reference dots are off. **The score came from counting pixels against the goal model — not from a model judgment.** Here is the exact source region it compared against." | Technical Merit (scoring is deterministic) |
-| 1:20–1:45 | Feedback detail: source moment panel | The source frame or region slides in beside the attempt | "The tip points back to this region in the source. Gemini worded it; the target moment is fixed. [VERIFY: confirm source-frame panel visible in current UI]" | Technical Merit / Innovation |
-| 1:45–2:00 | Retry submission | Learner submits a second attempt (sample 'good') | "The learner adjusts. Same checks, same rubric, fresh measurement." | UX / Problem Alignment |
-| 2:00–2:20 | Retry result: improvement shown | The criterion bar moves; 'Dot alignment' now passes; delta shown | "Seven of eight dots now aligned. The change is measured, not declared. This is the transmission event." | Innovation / Impact |
-| 2:20–2:40 | Creator dashboard / steward review queue | Quick cuts: creator sees attempt count and pass rate; steward sees queue | "The creator sees whether the skill transferred. A steward can approve, withdraw or update the skill model. Every record carries provenance." | Innovation / Impact |
-| 2:40–2:55 | Architecture slide or diagram overlay | AR-02 flowchart animates: source → model → learner → fixed-rules score → tip | "Gemini perceives. Fixed rules judge. Gemini explains. The architecture is not a wrapper — each step has a defined job and the evidence stays." | Technical Merit / Gen AI depth |
-| 2:55–3:00 | Closing title | Fade to: "Anveshan. The skill transfers. The evidence stays." | "Anveshan. Made for skills of the physical world." | Closing |
+| 0:00–0:15 | Home | Headline, then the first-vs-second-try picture | "Folding, drawing, drumming: skills you learn with your hands. A chat tutor can't see your attempt, and a video course never looks back at it." | Problem (25%) |
+| 0:15–0:40 | Share a skill → example "Folding a paper crane (video)" | Proposal screen: one frame per step, with its time | "Someone shares a short video. Gemini watches it and proposes the steps, each pinned to a moment in the video. They check it before anyone else sees it." | Gen AI (40%) |
+| 0:40–0:55 | Kolam → Learn | "Show me" on stage 6 highlights that region of the source photo | "Every step points back to the source, so a learner can see exactly where it comes from." | Innovation (25%) |
+| 0:55–1:25 | Paper crane → Practise → sample "The same video, stopped after the first folds" | Result: where you first went off track, the learner's video beside the moment in the demonstration | "A learner sends a video of their own hands. Anveshan shows the first place it went off track, next to the moment in the demonstration that shows what comes next." | Innovation (25%) |
+| 1:25–1:50 | Same result → "How this result was made" | Hold on the four stages | "Gemini looked at the video and matched each moment to a step. Five checks were scored by fixed rules. Gemini wrote the advice, and a guard rejects any wording that changes a number." | Gen AI (40%) |
+| 1:50–2:10 | Retry with "all the way to the finished crane" → Results | The before-and-after comparison | "On the second try, the same checks run again. The change is measured, not declared." | Impact (25%) |
+| 2:10–2:35 | Steward console → review queue → publish; My skills | Quick cuts | "A steward reviews a shared skill before it goes public. The creator keeps the credit and sees where learners struggle, without names or recordings." | Impact (25%) |
+| 2:35–2:52 | "How we check results" page | Scroll to the stability table | "Every sample gives the same outcome across repeated runs. What a camera can't sense, like pressure, it says it can't." | Technical (40%) |
+| 2:52–3:00 | Home | Fade to the one line | "Anveshan. Skills of the physical world, passed on." | Close |
 
----
+## Recording rules
 
-## Demo rules (from original brief, unchanged)
-
-- one expert source;
-- one skill (Kolam);
-- one learner path;
-- one non-obvious knowledge moment (dot alignment);
-- one learner error;
-- one meaningful feedback item;
-- one visible improvement;
-- one lineage record.
-
-Avoid dashboards, agent-count slides, generic chatbot screens, unsupported impact claims and long architecture narration.
-
----
+- Use the deployed Cloud Run URL. Sample attempts replay committed recordings, so they are instant and identical every take. Only the composer step (0:15) calls Gemini live: record it until one take is clean.
+- 1080p desktop. Optionally one phone shot (390 px) of the crane result.
+- Say only what is on screen. Make no claims about learner studies or expert reviews unless `docs/validation/` records them.
+- Avoid dashboards, agent counts, chatbot screens and long architecture narration.
 
 ## Judging criterion coverage
 
-| Criterion | Where it appears |
+| Criterion | Where |
 |---|---|
-| Technical Merit & Gen AI (40%) | 0:20–0:35 (skill model), 1:00–1:20 (deterministic scoring), 1:20–1:45 (source-linked tip), 2:40–2:55 (architecture) |
-| Problem Alignment & Impact (25%) | 0:00–0:20 (problem), 0:35–1:00 (learner path), 2:00–2:20 (transmission), 2:20–2:40 (creator+steward) |
-| Innovation & Creativity (25%) | 2:00–2:20 (measured transmission), 2:20–2:40 (creator loop), 2:40–2:55 (architecture) |
-| UX & Solution Design (10%) | 0:35–1:00 (learner flow), 1:45–2:00 (retry) |
-
----
-
-## Shot requirements
-
-- The source Kolam image: `tracks/cases/kolam/source/` (Wikimedia Commons, CC-licensed).
-- The flawed sample attempt: `tracks/cases/kolam/samples/flawed/`.
-- The good sample attempt: `tracks/cases/kolam/samples/good/`.
-- Sample attempts replay committed recordings (no live call, same result every time). Only the composer step calls Gemini live; record it once and keep the take.
-- Screen recording at 1080p minimum; phone view at 390 px width for mobile shots.
-- No voiceover improvisation; use the script word for word except where `[VERIFY]` notes require update.
+| Technical Merit & Gen AI (40%) | 0:15–0:40 (Gemini turns a video into steps), 1:25–1:50 (what Gemini did vs fixed rules), 2:35–2:52 (repeatability) |
+| Problem Alignment & Impact (25%) | 0:00–0:15, 1:50–2:10, 2:10–2:35 |
+| Innovation & Creativity (25%) | 0:40–0:55 (source-linked steps), 0:55–1:25 (first divergence beside the source) |
+| UX & Solution Design (10%) | the whole learner path, 0:55–2:10 |
