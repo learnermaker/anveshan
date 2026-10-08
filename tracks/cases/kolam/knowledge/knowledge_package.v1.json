@@ -24,7 +24,7 @@
       "evidence_refs": [
         {
           "confidence": 1.0,
-          "cue_excerpt": "1 curve(s), 32 crossings (computed)",
+          "cue_excerpt": "1 continuous line, 32 crossings",
           "end_sec": null,
           "evidence_id": "ev.kolam.clm-02",
           "modality": "image",
