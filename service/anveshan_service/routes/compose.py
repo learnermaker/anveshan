@@ -21,6 +21,7 @@ from anveshan_service.deps import get_mode, get_settings
 from anveshan_service.errors import ServiceError, invalid, not_found
 from anveshan_service.paths import check_asset, content_type, store_upload, within
 from anveshan_service.settings import Settings
+from anveshan_service.userkey import current_key
 from anveshan_service.visitors import add_owner, visible
 
 router = APIRouter(prefix="/api/compose")
@@ -83,6 +84,14 @@ def analyze_upload(
     mode: str = Depends(get_mode),
 ) -> Any:
     """Upload a file and create a draft. Returns 200 even for refused drafts (refused:true)."""
+    if mode == "live" and current_key.get() is None:
+        # The service never uses a server key: without the visitor's key every model call would fail
+        # and the draft would be an empty shell. Ask for the key instead (the app opens its key dialog).
+        raise ServiceError(
+            400, "MODEL_FAILURE",
+            "Analysing your own upload needs your Gemini key. Add it, or try one of the examples (no key needed).",
+            {"reason": "key_required"},
+        )
     composer = _composer()
     stored = store_upload(file, settings, "file")
 

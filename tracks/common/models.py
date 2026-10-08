@@ -413,7 +413,11 @@ class ModelGateway:
         if self._client is None:
             key = self._api_key or os.environ.get("GEMINI_API_KEY")
             if not key:
-                raise ModelError(FailureCategory.MODEL_FAILURE, "GEMINI_API_KEY is not set (live mode)")
+                raise ModelError(
+                    FailureCategory.MODEL_FAILURE,
+                    "A Gemini API key is needed for live AI. Add your own key in the app.",
+                    {"reason": "key_required"},
+                )
             from google import genai
             from google.genai import types
 

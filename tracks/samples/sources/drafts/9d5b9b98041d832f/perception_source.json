@@ -1,0 +1,377 @@
+{
+  "schema_version": "1.0",
+  "media": {
+    "source_id": "upload.9d5b9b98041d",
+    "modality": "image",
+    "sha256": "9d5b9b98041d832f91801aaff2b447fc085ee9ea2d2fe72f48144f11495340f2",
+    "mime_type": "image/png",
+    "duration_sec": null,
+    "width": 504,
+    "height": 511,
+    "has_audio": null
+  },
+  "segments": [
+    {
+      "segment_id": "seg-000",
+      "kind": "whole",
+      "start_sec": null,
+      "end_sec": null,
+      "region": null,
+      "keyframe_sec": null,
+      "keyframe_asset": null,
+      "stability": null
+    },
+    {
+      "segment_id": "seg-001",
+      "kind": "region",
+      "start_sec": null,
+      "end_sec": null,
+      "region": [
+        0.0,
+        0.0,
+        50.0,
+        50.0
+      ],
+      "keyframe_sec": null,
+      "keyframe_asset": null,
+      "stability": null
+    },
+    {
+      "segment_id": "seg-002",
+      "kind": "region",
+      "start_sec": null,
+      "end_sec": null,
+      "region": [
+        50.0,
+        0.0,
+        50.0,
+        50.0
+      ],
+      "keyframe_sec": null,
+      "keyframe_asset": null,
+      "stability": null
+    },
+    {
+      "segment_id": "seg-003",
+      "kind": "region",
+      "start_sec": null,
+      "end_sec": null,
+      "region": [
+        0.0,
+        50.0,
+        50.0,
+        50.0
+      ],
+      "keyframe_sec": null,
+      "keyframe_asset": null,
+      "stability": null
+    },
+    {
+      "segment_id": "seg-004",
+      "kind": "region",
+      "start_sec": null,
+      "end_sec": null,
+      "region": [
+        50.0,
+        50.0,
+        50.0,
+        50.0
+      ],
+      "keyframe_sec": null,
+      "keyframe_asset": null,
+      "stability": null
+    },
+    {
+      "segment_id": "seg-005",
+      "kind": "region",
+      "start_sec": null,
+      "end_sec": null,
+      "region": [
+        3.0,
+        3.0,
+        94.0,
+        94.0
+      ],
+      "keyframe_sec": null,
+      "keyframe_asset": null,
+      "stability": null
+    },
+    {
+      "segment_id": "seg-006",
+      "kind": "region",
+      "start_sec": null,
+      "end_sec": null,
+      "region": [
+        48.0,
+        50.0,
+        4.0,
+        4.0
+      ],
+      "keyframe_sec": null,
+      "keyframe_asset": null,
+      "stability": null
+    },
+    {
+      "segment_id": "seg-007",
+      "kind": "region",
+      "start_sec": null,
+      "end_sec": null,
+      "region": [
+        37.0,
+        37.0,
+        26.0,
+        26.0
+      ],
+      "keyframe_sec": null,
+      "keyframe_asset": null,
+      "stability": null
+    },
+    {
+      "segment_id": "seg-008",
+      "kind": "region",
+      "start_sec": null,
+      "end_sec": null,
+      "region": [
+        3.0,
+        3.0,
+        94.0,
+        94.0
+      ],
+      "keyframe_sec": null,
+      "keyframe_asset": null,
+      "stability": null
+    }
+  ],
+  "observations": [
+    {
+      "obs_id": "obs-000",
+      "segment_id": "seg-000",
+      "kind": "measurement",
+      "label": "width",
+      "detail": null,
+      "value": 504.0,
+      "unit": "px",
+      "certainty": "observed",
+      "producer": "det:image_basic"
+    },
+    {
+      "obs_id": "obs-001",
+      "segment_id": "seg-000",
+      "kind": "measurement",
+      "label": "height",
+      "detail": null,
+      "value": 511.0,
+      "unit": "px",
+      "certainty": "observed",
+      "producer": "det:image_basic"
+    },
+    {
+      "obs_id": "obs-002",
+      "segment_id": "seg-000",
+      "kind": "measurement",
+      "label": "brightness",
+      "detail": null,
+      "value": 0.8973,
+      "unit": null,
+      "certainty": "observed",
+      "producer": "det:image_basic"
+    },
+    {
+      "obs_id": "obs-003",
+      "segment_id": "seg-000",
+      "kind": "measurement",
+      "label": "rms_contrast",
+      "detail": null,
+      "value": 0.2829,
+      "unit": null,
+      "certainty": "observed",
+      "producer": "det:image_basic"
+    },
+    {
+      "obs_id": "obs-004",
+      "segment_id": "seg-000",
+      "kind": "measurement",
+      "label": "blur_score",
+      "detail": null,
+      "value": 0.1363,
+      "unit": null,
+      "certainty": "observed",
+      "producer": "det:image_basic"
+    },
+    {
+      "obs_id": "obs-005",
+      "segment_id": "seg-000",
+      "kind": "measurement",
+      "label": "ink_fraction",
+      "detail": null,
+      "value": 0.1163,
+      "unit": null,
+      "certainty": "observed",
+      "producer": "det:image_basic"
+    },
+    {
+      "obs_id": "obs-006",
+      "segment_id": "seg-000",
+      "kind": "measurement",
+      "label": "otsu_separation",
+      "detail": null,
+      "value": 0.8824,
+      "unit": null,
+      "certainty": "observed",
+      "producer": "det:image_basic"
+    },
+    {
+      "obs_id": "obs-007",
+      "segment_id": "seg-000",
+      "kind": "measurement",
+      "label": "skeleton_length_ratio",
+      "detail": null,
+      "value": 0.1976,
+      "unit": null,
+      "certainty": "observed",
+      "producer": "det:image_basic"
+    },
+    {
+      "obs_id": "obs-008",
+      "segment_id": "seg-000",
+      "kind": "measurement",
+      "label": "component_count",
+      "detail": null,
+      "value": 0.0,
+      "unit": null,
+      "certainty": "observed",
+      "producer": "det:image_basic"
+    },
+    {
+      "obs_id": "obs-009",
+      "segment_id": "seg-000",
+      "kind": "object",
+      "label": "geometric pattern",
+      "detail": null,
+      "value": null,
+      "unit": null,
+      "certainty": "inferred",
+      "producer": "model:vision_fast"
+    },
+    {
+      "obs_id": "obs-010",
+      "segment_id": "seg-000",
+      "kind": "object",
+      "label": "overlapping curved shapes",
+      "detail": null,
+      "value": null,
+      "unit": null,
+      "certainty": "inferred",
+      "producer": "model:vision_fast"
+    },
+    {
+      "obs_id": "obs-011",
+      "segment_id": "seg-005",
+      "kind": "property",
+      "label": "geometric motif",
+      "detail": "A black ink or pencil drawing depicting a symmetrical multi-layered curved star-like rosette pattern with a central point.",
+      "value": null,
+      "unit": null,
+      "certainty": "inferred",
+      "producer": "model:vision_fast"
+    },
+    {
+      "obs_id": "obs-012",
+      "segment_id": "seg-000",
+      "kind": "quality",
+      "label": "avoid: unequal spacing between radial loops",
+      "detail": null,
+      "value": null,
+      "unit": null,
+      "certainty": "inferred",
+      "producer": "model:vision_fast"
+    },
+    {
+      "obs_id": "obs-013",
+      "segment_id": "seg-000",
+      "kind": "quality",
+      "label": "avoid: misalignment of the central star-like polygon",
+      "detail": null,
+      "value": null,
+      "unit": null,
+      "certainty": "inferred",
+      "producer": "model:vision_fast"
+    },
+    {
+      "obs_id": "obs-014",
+      "segment_id": "seg-000",
+      "kind": "quality",
+      "label": "avoid: inconsistent line weight",
+      "detail": null,
+      "value": null,
+      "unit": null,
+      "certainty": "inferred",
+      "producer": "model:vision_fast"
+    },
+    {
+      "obs_id": "obs-015",
+      "segment_id": "seg-006",
+      "kind": "action",
+      "label": "build step 1: Draw a central dot and establish radial symmetry axes (guess)",
+      "detail": null,
+      "value": null,
+      "unit": null,
+      "certainty": "inferred",
+      "producer": "model:vision_fast"
+    },
+    {
+      "obs_id": "obs-016",
+      "segment_id": "seg-007",
+      "kind": "action",
+      "label": "build step 2: Construct the inner central star polygon (guess)",
+      "detail": null,
+      "value": null,
+      "unit": null,
+      "certainty": "inferred",
+      "producer": "model:vision_fast"
+    },
+    {
+      "obs_id": "obs-017",
+      "segment_id": "seg-008",
+      "kind": "action",
+      "label": "build step 3: Add overlapping outer curved petal-like arcs radiating outwards (guess)",
+      "detail": null,
+      "value": null,
+      "unit": null,
+      "certainty": "inferred",
+      "producer": "model:vision_fast"
+    }
+  ],
+  "embeddings_file": "emb_9d5b9b98041d.npy",
+  "embedding_index": {
+    "seg-000": 0,
+    "seg-001": 1,
+    "seg-002": 2,
+    "seg-003": 3,
+    "seg-004": 4
+  },
+  "embedding_model": null,
+  "specialists": {},
+  "gates": {
+    "intake": {
+      "artefact_kind": "line drawing",
+      "skill_kind": "visual art",
+      "teachable": "yes",
+      "teachable_reason": "The geometric line drawing can be analyzed and reproduced through systematic construction steps and radial symmetry.",
+      "safety_categories": [
+        "none"
+      ],
+      "safety": {
+        "decision": "ok",
+        "notices": [],
+        "ignored_categories": [],
+        "policy": "policy_v1"
+      }
+    }
+  },
+  "runs": [
+    "01f240d8ce4ca4e6bc9dd9d20750104c",
+    "9e2bcd10da245a666ffe9e568ed4c535"
+  ],
+  "warnings": []
+}

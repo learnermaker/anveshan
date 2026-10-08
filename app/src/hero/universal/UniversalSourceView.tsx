@@ -6,7 +6,7 @@
  * All AI-perceived elements are labelled with plain language in learner mode.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, Pencil, RefreshCw, Search, X } from 'lucide-react';
 import type { KnowledgeClaim } from '../../types/contracts';
 import type { CaseView, ReviewAction, SourceRecord, UniversalUiView } from '../../api/types';
@@ -28,6 +28,24 @@ interface Props {
   ownerSlot?: React.ReactNode;
 }
 
+/** The source video; a step's "Show me" jumps it to that step (anveshan:seek-source carries the time in seconds). */
+function SeekableVideo({ src, label }: { src: string; label: string }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const seek = (e: Event) => {
+      const el = ref.current;
+      const t = (e as CustomEvent<number>).detail;
+      if (!el || typeof t !== 'number') return;
+      el.currentTime = t;
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      void el.play().catch(() => undefined);
+    };
+    window.addEventListener('anveshan:seek-source', seek);
+    return () => window.removeEventListener('anveshan:seek-source', seek);
+  }, []);
+  return <video ref={ref} controls src={src} preload="metadata" className="w-full max-h-96 rounded border border-outline bg-black" aria-label={label} />;
+}
+
 function SourceMedia({ caseId, sources }: { caseId: string; sources: SourceRecord[] }) {
   const usable = sources.filter((s) => s.used_by_system !== false && s.role !== 'held_out_reference');
   if (usable.length === 0) return null;
@@ -40,7 +58,7 @@ function SourceMedia({ caseId, sources }: { caseId: string; sources: SourceRecor
           <div key={s.source_id} className="space-y-1">
             {mime.startsWith('image/') && <img src={url} alt={`Source ${s.source_id}`} className="max-h-80 w-auto rounded border border-outline bg-surface-dim" />}
             {mime.startsWith('audio/') && <audio controls src={url} className="w-full" aria-label={`Source audio ${s.source_id}`} />}
-            {mime.startsWith('video/') && <video controls src={url} className="w-full max-h-96 rounded border border-outline bg-black" aria-label={`Source video ${s.source_id}`} />}
+            {mime.startsWith('video/') && <SeekableVideo src={url} label="The demonstration video" />}
             {DEBUG && <div className="text-[11px] font-mono text-on-surface-variant">{s.source_id} · {mime}</div>}
           </div>
         );
@@ -53,6 +71,14 @@ function GoalStateSection({ ui, caseId, reviewed }: { ui: UniversalUiView; caseI
   const props = ui.goal_state ?? [];
   const steps = ui.steps ?? [];
   const transcript = ui.transcript;
+
+  if (!transcript && props.length === 0 && steps.length === 0) {
+    return (
+      <p className="text-sm text-on-surface-variant">
+        The AI could not find steps in this source yet. Watch the source above and practise the whole task; your attempt is still compared with it.
+      </p>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -101,7 +127,13 @@ function GoalStateSection({ ui, caseId, reviewed }: { ui: UniversalUiView; caseI
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5">
                     {s.start_sec != null && (
-                      <span className="text-[11px] font-mono text-on-surface-variant">{s.start_sec.toFixed(1)}–{(s.end_sec ?? s.start_sec).toFixed(1)} s</span>
+                      <button
+                        type="button"
+                        className="text-[11px] font-mono text-caliper-cyan hover:underline"
+                        onClick={() => window.dispatchEvent(new CustomEvent('anveshan:seek-source', { detail: s.start_sec }))}
+                      >
+                        Show me at {s.start_sec.toFixed(0)} s
+                      </button>
                     )}
                     {!reviewed && <VerificationBadge state="inferred" />}
                   </div>

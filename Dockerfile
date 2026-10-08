@@ -1,5 +1,5 @@
 # Anveshan: one container for Cloud Run = FastAPI service + built React app + case packs.
-# Build:  docker build -t anveshan .        Run: docker run -p 8080:8080 -e GEMINI_API_KEY=... anveshan
+# Build:  docker build -t anveshan .        Run: docker run -p 8080:8080 anveshan  (no server key: visitors add theirs in the UI)
 # See docs/deploy/cloud-run.md.
 
 # ---------------------------------------------------------------------------

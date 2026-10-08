@@ -11,7 +11,7 @@
 import { API_BASE, IS_MOCK, getRequestedMode } from './runtime';
 import { mockApi } from './mock';
 import { ApiError } from './errors';
-import { getUserKey } from './userKey';
+import { getUserKey, requestKeyDialog } from './userKey';
 import { getStewardToken } from './steward';
 import type {
   ApiErrorBody,
@@ -72,6 +72,8 @@ function stewardHeader(): Record<string, string> {
 
 function toApiError(status: number, body: unknown, fallback: string): ApiError {
   const err = (body as ApiErrorBody | null)?.error;
+  // Live AI needs the visitor's key: ask for it right where it is needed.
+  if ((err?.details as Record<string, unknown> | undefined)?.reason === 'key_required') requestKeyDialog();
   if (err && typeof err.message === 'string') {
     return new ApiError(err.category ?? 'UNKNOWN', err.message, status, err.details ?? null);
   }

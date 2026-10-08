@@ -52,6 +52,15 @@ UNIVERSAL_WARNING = "Universal pipeline: AI-perceived checks are lower confidenc
 # Evidence helpers
 # ---------------------------------------------------------------------------
 
+
+_CAPTURE = {"video": "a video of your hands doing it", "image": "a photo of what you made", "audio": "a recording of you playing"}
+
+
+def _try_again(kinds: List[str]) -> str:
+    """Refusal copy in physical-world terms; the similarity number stays in the error details."""
+    return "Try again with " + " or ".join(_CAPTURE.get(k, f"a {k}") for k in kinds or ["video"]) + "."
+
+
 def _ev(eid: str, source_id: str, modality: Modality, excerpt: str,
         start: Optional[float] = None, end: Optional[float] = None) -> EvidenceRef:
     return EvidenceRef(
@@ -370,8 +379,7 @@ def _relevance_gate(
     if s < min_sim:
         raise AnveshanFailure(
             FailureCategory.INVALID_INPUT,
-            f"This doesn't look like an attempt at {skill.skill_title} (similarity {s:.2f}). "
-            f"Please upload {', '.join(skill.relevance.expected_kinds)}.",
+            f"This doesn't look like an attempt at {skill.skill_title}. {_try_again(skill.relevance.expected_kinds)}",
             {"similarity": s, "min_similarity": min_sim},
         )
 
@@ -436,8 +444,8 @@ def _ambiguous_relevance_check(
     if not result.data.relevant:
         raise AnveshanFailure(
             FailureCategory.INVALID_INPUT,
-            f"This doesn't look like an attempt at {skill.skill_title} (similarity {similarity:.2f}; {result.data.reason}). "
-            f"Please upload {', '.join(skill.relevance.expected_kinds)}.",
+            f"This doesn't look like an attempt at {skill.skill_title}: {result.data.reason.rstrip('.')}. "
+            f"{_try_again(skill.relevance.expected_kinds)}",
             {"similarity": similarity, "reason": result.data.reason},
         )
 

@@ -38,7 +38,6 @@ export interface HealthResponse {
   curated_review_open?: boolean;
   /** the browser may send its own Gemini key (X-Gemini-Api-Key) */
   own_key_supported?: boolean;
-  server_key_configured?: boolean;
   /** the steward console exists on this server (an access code is configured, or it is open) */
   steward_enabled?: boolean;
   /** local development: the steward console needs no access code */
@@ -50,6 +49,7 @@ export interface HealthResponse {
     video_frames: string;
     vision_fast?: string | null;
     embedding?: string | null;
+    audio?: string | null;
     audio_enabled: boolean;
   };
 }

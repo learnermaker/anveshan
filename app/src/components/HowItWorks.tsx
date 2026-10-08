@@ -33,7 +33,7 @@ const STEPS: { icon: React.ReactNode; title: string; text: string }[] = [
 ];
 
 const LABELS: [string, string][] = [
-  ['Checked by an expert', 'A person reviewed the steps and confirmed or corrected them.'],
+  ['Steps checked by a person', 'A person (the creator, a steward or an invited expert) reviewed the steps and confirmed or corrected them.'],
   ['Not yet checked by an expert', 'The steps come from an openly licensed source and the AI. No expert has reviewed them yet.'],
   ["AI's reading", 'The AI perceived this from the source. Useful, but it may be wrong.'],
   ['Synthetic example (made up for the demo)', 'Made-up data used to demonstrate the interface. Nothing is evaluated.'],

@@ -22,7 +22,7 @@ export interface FriendlyError {
   message: string;
   /** Category, HTTP status and the raw service message, shown only under "Technical details". */
   technical: string;
-  /** offer the "use your own API key" dialog (shared budget, rate limit or replay-only server) */
+  /** offer the "use your own API key" dialog (no key yet, replay-only request or used-up quota) */
   suggestKey?: boolean;
 }
 
@@ -53,6 +53,9 @@ export function friendlyError(error: unknown): FriendlyError {
       return { title: 'Cannot reach the service', message: 'The Anveshan service did not answer. Check your connection and try again in a moment.', technical };
     case 'MODEL_FAILURE':
     case 'MODEL_TIMEOUT':
+      if (details.reason === 'key_required') {
+        return { title: 'Add your Gemini API key', message: 'Checking something new uses Gemini AI with your own API key. Add it once (free from Google AI Studio); it stays in this browser.', technical, suggestKey: true };
+      }
       if (details.reason === 'daily_budget') return { title: "Today's live AI budget is used up", message: raw, technical, suggestKey: true };
       return {
         title: 'The AI model did not answer',
@@ -70,13 +73,13 @@ export function friendlyError(error: unknown): FriendlyError {
       if (Array.isArray(blockers) && blockers.length > 0) {
         return { title: 'Not ready to publish yet', message: (blockers as string[]).join(' '), technical };
       }
-      if (raw.startsWith('Google rejected this key')) {
+      if (raw.startsWith('Google rejected this key') || raw.startsWith('No API key was sent')) {
         return { title: 'That key did not work', message: raw, technical, suggestKey: false };
       }
       return { title: 'This file or input cannot be used', message: raw, technical };
     }
     case 'MISSING_EVIDENCE':
-      return { title: 'Not found', message: `${raw}. It may have expired (uploads are kept for a few hours) or belong to another visitor.`, technical };
+      return { title: 'Not found', message: "This wasn't found. The link may be wrong, or a shared upload may have expired (uploads are kept for a few hours).", technical };
     case 'HUMAN_REVIEW_REQUIRED':
     case 'AMBIGUOUS_EVIDENCE':
     case 'UNSUPPORTED_CLAIM':

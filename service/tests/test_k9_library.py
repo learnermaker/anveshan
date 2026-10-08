@@ -311,6 +311,7 @@ def test_owner_can_review_own_skill(tmp_path, monkeypatch):
     a = TestClient(app, cookies={COOKIE: owner})
     r = a.post(f"/api/cases/{CID}/review", json={"action": "approve"})
     assert r.status_code == 200
+    assert r.json()["access"]["owner"] is True  # the creator's panel stays after a review
 
 
 # --- Test 8: housekeeping protection ---------------------------------------------------------

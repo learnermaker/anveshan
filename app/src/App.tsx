@@ -428,7 +428,7 @@ export function App() {
       )}
       <StitchModal isOpen={isStitchOpen} onClose={() => setIsStitchOpen(false)} />
       <GuideModal isOpen={guideOpen} onClose={() => setGuideOpen(false)} />
-      <ApiKeyModal isOpen={keyOpen} onClose={() => setKeyOpen(false)} />
+      <ApiKeyModal isOpen={keyOpen} onClose={() => setKeyOpen(false)} health={health} />
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </div>
   );

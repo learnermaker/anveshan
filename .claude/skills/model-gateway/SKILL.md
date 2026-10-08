@@ -28,7 +28,9 @@ Model ids come from env (`ANVESHAN_TEXT_IMAGE_MODEL`, `ANVESHAN_VIDEO_FRAMES_MOD
 - Tests always use `recorded` or pure deterministic code. Mark real-API tests `@pytest.mark.live`.
 
 ## Keys
-`GEMINI_API_KEY` from `.env` (server only). The browser never sees a key and never calls a model.
+- **Service (local and Cloud Run): the key comes only from the UI.** The visitor's key arrives per request in `X-Gemini-Api-Key` (`service/anveshan_service/userkey.py`) and is passed to the gateway by `adapters.run_context`. `create_app` deletes `GEMINI_API_KEY`/`GOOGLE_API_KEY` from the environment so nothing can fall back to a server key. Never add a server-key path.
+- Offline CLI tools (`tools/`, track `run_*` scripts) may still read `GEMINI_API_KEY` from `.env`.
+- The browser never calls a model; it only sends the key to this app's own service.
 
 ## Token economy
 Read `docs/architecture/token-economy.md` before adding images, frames or long outputs to a call. In short: downsize images first (the gateway picks the Gemini 3 media resolution from image size), keep the output cap, and check `tools/token_report.py` after live runs.

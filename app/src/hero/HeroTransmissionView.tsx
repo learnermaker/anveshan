@@ -30,6 +30,13 @@ const TRANSITION_TONE: Record<string, 'emerald' | 'crimson' | 'cyan' | 'muted' |
   unchanged: 'muted',
 };
 
+const TRANSITION_LABEL: Record<string, string> = {
+  observability_gain: 'now checkable',
+  observability_gained: 'now checkable',
+  observability_loss: "couldn't check this time",
+  observability_lost: "couldn't check this time",
+};
+
 const signed = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(1)}`;
 const scoreTone = (v: number) => (v > 0 ? 'text-transmission-emerald' : v < 0 ? 'text-divergence-crimson' : 'text-on-surface');
 
@@ -186,7 +193,7 @@ export function HeroTransmissionView({ view, session, onBackToPractice, onPracti
                     <td className="py-2 pr-2 text-on-surface-variant" aria-hidden="true">→</td>
                     <td className="py-2 pr-2 whitespace-nowrap">{r && <StatusBadge status={r.status} />}</td>
                     <td className="py-2 text-right">
-                      <Badge tone={TRANSITION_TONE[k] ?? 'muted'}>{k.replace(/_/g, ' ')}</Badge>
+                      <Badge tone={TRANSITION_TONE[k] ?? 'muted'}>{TRANSITION_LABEL[k] ?? k.replace(/_/g, ' ')}</Badge>
                     </td>
                   </tr>
                 );

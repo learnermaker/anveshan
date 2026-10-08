@@ -74,8 +74,7 @@ export function KolamSourcePanel({ view, focus }: SourcePanelProps) {
       <div className="flex flex-wrap gap-3 text-[11px] font-mono text-on-surface-variant justify-center">
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-cadmium-amber" /> dot on the line</span>
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-caliper-cyan" /> dot enclosed</span>
-        <span>τ = {ui.tau ?? '?'} px · canvas {ui.canvas.width}×{ui.canvas.height}</span>
-        <span>direction and start point of curves are arbitrary</span>
+        <span>the drawing order shown is one suggested way, not necessarily the original</span>
       </div>
     </div>
   );

@@ -1,0 +1,276 @@
+{
+  "draft_id": "9d5b9b98041d832f",
+  "source_path": "C:\\Users\\JIMSEE~1\\AppData\\Local\\Temp\\anv8090h\\drafts\\9d5b9b98041d832f\\source.png",
+  "intake": {
+    "safety": {
+      "decision": "ok",
+      "notices": [],
+      "ignored_categories": [],
+      "policy": "policy_v1"
+    },
+    "teachable": "yes",
+    "teachable_reason": "The geometric line drawing can be analyzed and reproduced through systematic construction steps and radial symmetry.",
+    "skill_kind": "visual art"
+  },
+  "probe": {
+    "modality": "image",
+    "mime_type": "image/png",
+    "bytes": 9142,
+    "sha256": "9d5b9b98041d832f91801aaff2b447fc085ee9ea2d2fe72f48144f11495340f2",
+    "width": 504,
+    "height": 511,
+    "duration_sec": null,
+    "has_audio": null,
+    "metrics": {},
+    "structures_available": [
+      "final_state"
+    ],
+    "specialists_available": [],
+    "reasons": {
+      "line_art": "skeleton_ratio 0.20 < 0.5; components 999 > 6",
+      "final_state": "image source",
+      "procedure": "modality image does not support procedure",
+      "temporal_pattern": "rhythm specialist not checked",
+      "utterance": "modality image does not support utterance directly"
+    }
+  },
+  "proposal": {
+    "schema_version": "2.0",
+    "case_id": "a-kolam-drawing-photo~9d5b9b98041d",
+    "title": "A kolam drawing (photo)",
+    "skill_summary": "Create a geometric kolam drawing by establishing a central dot, constructing an inner star polygon, and adding overlapping outer curved arcs using ink or pencil.",
+    "domain": "visual art",
+    "transmission_mode": "goal-conditioned",
+    "learner_input_kinds": [
+      "image",
+      "video"
+    ],
+    "vocabulary": {},
+    "goal_hint": null,
+    "probe": {
+      "modality": "image",
+      "mime_type": "image/png",
+      "bytes": 9142,
+      "sha256": "9d5b9b98041d832f91801aaff2b447fc085ee9ea2d2fe72f48144f11495340f2",
+      "width": 504,
+      "height": 511,
+      "duration_sec": null,
+      "has_audio": null,
+      "metrics": {},
+      "structures_available": [
+        "final_state"
+      ],
+      "specialists_available": [],
+      "reasons": {
+        "line_art": "skeleton_ratio 0.20 < 0.5; components 999 > 6",
+        "final_state": "image source",
+        "procedure": "modality image does not support procedure",
+        "temporal_pattern": "rhythm specialist not checked",
+        "utterance": "modality image does not support utterance directly"
+      }
+    },
+    "intake": {
+      "safety": {
+        "decision": "ok",
+        "notices": [],
+        "ignored_categories": [],
+        "policy": "policy_v1"
+      },
+      "teachable": "yes",
+      "teachable_reason": "The geometric line drawing can be analyzed and reproduced through systematic construction steps and radial symmetry.",
+      "skill_kind": "visual art"
+    },
+    "skill_model": {
+      "schema_version": "1.0",
+      "skill_title": "Draw a geometric kolam design",
+      "summary": "Create a geometric kolam drawing by establishing a central dot, constructing an inner star polygon, and adding overlapping outer curved arcs using ink or pencil.",
+      "source_modality": "image",
+      "structures": [
+        "final_state"
+      ],
+      "goal_state": [
+        {
+          "prop_id": "prop-01",
+          "statement": "geometric motif: A black ink or pencil drawing depicting a symmetrical multi-layered curved star-like rosette pattern with a central point.",
+          "region": [
+            3.0,
+            3.0,
+            94.0,
+            94.0
+          ],
+          "evidence": [
+            "obs-011"
+          ],
+          "certainty": "inferred",
+          "keep": true
+        }
+      ],
+      "steps": [
+        {
+          "step_id": "step-01",
+          "index": 0,
+          "name": "build step 1: Draw a central dot and establish radial symmetry axes (guess)",
+          "state_after": "build step 1: Draw a central dot and establish radial symmetry axes (guess)",
+          "action": "build step 1: Draw a central dot and establish radial symmetry axes (guess)",
+          "start_sec": null,
+          "end_sec": null,
+          "keyframe_asset": null,
+          "segment_id": "seg-006",
+          "evidence": [
+            "obs-015"
+          ],
+          "certainty": "inferred",
+          "source_established": false,
+          "critical": false
+        },
+        {
+          "step_id": "step-02",
+          "index": 1,
+          "name": "build step 2: Construct the inner central star polygon (guess)",
+          "state_after": "build step 2: Construct the inner central star polygon (guess)",
+          "action": "build step 2: Construct the inner central star polygon (guess)",
+          "start_sec": null,
+          "end_sec": null,
+          "keyframe_asset": null,
+          "segment_id": "seg-007",
+          "evidence": [
+            "obs-016"
+          ],
+          "certainty": "inferred",
+          "source_established": false,
+          "critical": false
+        },
+        {
+          "step_id": "step-03",
+          "index": 2,
+          "name": "build step 3: Add overlapping outer curved petal-like arcs radiating outwards (guess)",
+          "state_after": "build step 3: Add overlapping outer curved petal-like arcs radiating outwards (guess)",
+          "action": "build step 3: Add overlapping outer curved petal-like arcs radiating outwards (guess)",
+          "start_sec": null,
+          "end_sec": null,
+          "keyframe_asset": null,
+          "segment_id": "seg-008",
+          "evidence": [
+            "obs-017"
+          ],
+          "certainty": "inferred",
+          "source_established": false,
+          "critical": false
+        }
+      ],
+      "order": "none",
+      "constraints": [
+        {
+          "constraint_id": "con-01",
+          "statement": "avoid: unequal spacing between radial loops",
+          "evidence": [
+            "obs-012"
+          ],
+          "certainty": "inferred",
+          "keep": false
+        },
+        {
+          "constraint_id": "con-02",
+          "statement": "avoid: misalignment of the central star-like polygon",
+          "evidence": [
+            "obs-013"
+          ],
+          "certainty": "inferred",
+          "keep": false
+        },
+        {
+          "constraint_id": "con-03",
+          "statement": "avoid: inconsistent line weight",
+          "evidence": [
+            "obs-014"
+          ],
+          "certainty": "inferred",
+          "keep": false
+        }
+      ],
+      "temporal": null,
+      "utterance": null,
+      "specialists": {},
+      "relevance": {
+        "expected_kinds": [
+          "image",
+          "video"
+        ],
+        "min_similarity": 0.72,
+        "ambiguous_band": 0.08,
+        "reference_segment_ids": [
+          "seg-000"
+        ]
+      },
+      "checks": [
+        {
+          "check_id": "CHK-FS-SIM",
+          "kind": "final_similarity",
+          "name": "Check overall visual similarity",
+          "observable_indicator": "Verify that the final kolam drawing matches the target geometric design structure and overall appearance.",
+          "targets": [],
+          "metric_id": "u.final_similarity",
+          "method": "deterministic",
+          "params": {},
+          "weight": 1.0,
+          "required": false,
+          "process": false,
+          "enabled": true
+        },
+        {
+          "check_id": "CHK-FS-P01",
+          "kind": "final_property",
+          "name": "Check geometric motif property",
+          "observable_indicator": "Verify that the drawing correctly depicts the required black ink or pencil geometric motif.",
+          "targets": [
+            "prop-01"
+          ],
+          "metric_id": "u.final_property.prop-01",
+          "method": "model_status",
+          "params": {},
+          "weight": 2.0,
+          "required": true,
+          "process": false,
+          "enabled": true
+        },
+        {
+          "check_id": "CHK-FS-ALL",
+          "kind": "final_property",
+          "name": "Check completion of all steps",
+          "observable_indicator": "Verify that all construction steps, from the central dot to the outer arcs, are fully completed.",
+          "targets": [],
+          "metric_id": "u.final_property.complete",
+          "method": "model_status",
+          "params": {},
+          "weight": 2.0,
+          "required": true,
+          "process": false,
+          "enabled": true
+        }
+      ],
+      "perception_file": null,
+      "vocabulary": {
+        "state_noun": "drawing",
+        "object_noun": "kolam",
+        "unit_noun": "step",
+        "action_verb": "draw"
+      },
+      "warnings": []
+    },
+    "perception_file": "perception_source.json",
+    "model_proposal": {
+      "structures": [
+        "final_state"
+      ],
+      "specialists": [],
+      "wording_model": true
+    },
+    "model_run_keys": [],
+    "confirmed_by_user": false,
+    "confirmed_at": null,
+    "warnings": []
+  },
+  "refused": false,
+  "refusal_message": null,
+  "warnings": []
+}

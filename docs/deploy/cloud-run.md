@@ -8,7 +8,9 @@ The image bakes in the case packs and the licensed case media (`tools/fetch_medi
 ## 0. Prerequisites
 
 - `gcloud` CLI authenticated (`gcloud auth login`) with a billing-enabled project.
-- A Google AI Studio key for live mode (`GEMINI_API_KEY`). Recorded mode (the default) replays committed golden runs and needs no key.
+- **No server API key.** Every live Gemini call uses the visitor's own key, entered in the app and sent per request
+  in the `X-Gemini-Api-Key` header (never stored). The service deletes `GEMINI_API_KEY`/`GOOGLE_API_KEY` from its
+  environment at startup, so a server key is ignored even if one is set. Samples replay committed runs and need no key.
 
 ```bash
 export PROJECT_ID=<your-project>
@@ -23,26 +25,18 @@ gcloud config set run/region $REGION
 
 ```bash
 gcloud services enable run.googleapis.com cloudbuild.googleapis.com \
-  artifactregistry.googleapis.com secretmanager.googleapis.com
+  artifactregistry.googleapis.com
 
 gcloud artifacts repositories create $REPO --repository-format=docker \
   --location=$REGION --description="Anveshan images"
 ```
 
-## 2. Store the API key in Secret Manager (once)
+## 2. API key: none on the server
 
-```bash
-printf '%s' "$GEMINI_API_KEY" | gcloud secrets create gemini-api-key --data-file=- --replication-policy=automatic
-# rotate later with: printf '%s' "$NEW_KEY" | gcloud secrets versions add gemini-api-key --data-file=-
-
-PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')
-gcloud secrets add-iam-policy-binding gemini-api-key \
-  --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
-  --role=roles/secretmanager.secretAccessor
-```
-
-The key is injected as an env var at runtime only. It never enters the image, the browser, or any API response
-(`/api/health` reports model ids, never keys; error bodies redact the key value).
+Do not create a `gemini-api-key` secret or set `GEMINI_API_KEY` on the service. Visitors add their own key in the
+app (key button in the header); it lives only in their browser and in one request at a time
+(`service/anveshan_service/userkey.py`). If an old deployment still mounts the secret, remove it:
+`gcloud run services update $SERVICE --remove-secrets GEMINI_API_KEY`.
 
 ## 3. Build and deploy
 
@@ -53,7 +47,6 @@ gcloud run deploy $SERVICE --source . \
   --allow-unauthenticated \
   --max-instances 1 --min-instances 0 \
   --memory 2Gi --cpu 2 --timeout 300 --concurrency 20 \
-  --set-secrets GEMINI_API_KEY=gemini-api-key:latest \
   --set-env-vars ANVESHAN_MODE=live,ANVESHAN_TEXT_IMAGE_MODEL=gemini-3.5-flash-lite,ANVESHAN_VIDEO_FRAMES_MODEL=gemini-3.5-flash-lite,ANVESHAN_AUDIO_MODEL=gemini-3.5-flash-lite,ANVESHAN_MAX_UPLOAD_MB=30,ANVESHAN_DATA_DIR=/tmp/anveshan
 ```
 
@@ -64,17 +57,16 @@ IMAGE=$REGION-docker.pkg.dev/$PROJECT_ID/$REPO/$SERVICE:$(git rev-parse --short 
 gcloud builds submit --tag $IMAGE --timeout=1800s .
 gcloud run deploy $SERVICE --image $IMAGE \
   --allow-unauthenticated --max-instances 1 --memory 2Gi --cpu 2 --timeout 300 --concurrency 20 \
-  --set-secrets GEMINI_API_KEY=gemini-api-key:latest \
   --set-env-vars ANVESHAN_MODE=live,ANVESHAN_TEXT_IMAGE_MODEL=gemini-3.5-flash-lite,ANVESHAN_VIDEO_FRAMES_MODEL=gemini-3.5-flash-lite,ANVESHAN_AUDIO_MODEL=gemini-3.5-flash-lite,ANVESHAN_MAX_UPLOAD_MB=30
 ```
 
-Local equivalent (needs Docker): `docker build -t anveshan . && docker run --rm -p 8080:8080 -e GEMINI_API_KEY anveshan`.
+Local equivalent (needs Docker): `docker build -t anveshan . && docker run --rm -p 8080:8080 anveshan`.
 
 ### Settings (env vars; defaults in `.env.example` and the `Dockerfile`)
 
 | Variable | Container default | Notes |
 |---|---|---|
-| `ANVESHAN_MODE` | `live` | Live mode replays committed recordings first (samples cost nothing) and calls Gemini only for new uploads, within `ANVESHAN_DAILY_CALL_BUDGET`. Canonical settings: [DEPLOY-CHECKLIST.md](DEPLOY-CHECKLIST.md). |
+| `ANVESHAN_MODE` | `live` | Live mode replays committed recordings first (samples cost nothing) and calls Gemini only for new uploads, with the visitor's own key. Canonical settings: [DEPLOY-CHECKLIST.md](DEPLOY-CHECKLIST.md). |
 | `ANVESHAN_TEXT_IMAGE_MODEL`, `ANVESHAN_VIDEO_FRAMES_MODEL` | `gemini-3.5-flash-lite` on Cloud Run | The code default (Gemma 4 26B, ~43 s/image) is for offline builds only. |
 | `ANVESHAN_AUDIO_MODEL` | `gemini-3.5-flash-lite` on Cloud Run | Empty disables it and keeps tabla bol criteria UNCERTAIN. |
 | `ANVESHAN_CASES_ROOT` | `/app/tracks/cases` | Baked case packs. |
@@ -119,7 +111,7 @@ A route that needs a track not present in the build returns `503 SERVICE_UNAVAIL
   per day; turn it on only for judging windows.
 - Cloud Build: about 120 free build-minutes per day; one image build is ~5–10 min (npm ci, pip, ~50 MB media download).
 - Artifact Registry: ~0.5 GB free storage; delete old image tags (`gcloud artifacts docker images list`).
-- Live mode calls gemini-3.5-flash-lite (about $0.0003 per call) only for new uploads, capped by `ANVESHAN_DAILY_CALL_BUDGET`; samples replay committed recordings for free.
+- Live mode calls gemini-3.5-flash-lite (about $0.0003 per call) only for new uploads, on the visitor's own key; samples replay committed recordings for free.
 - Set a budget alert: `gcloud billing budgets create --billing-account=<ID> --display-name=anveshan --budget-amount=20USD`.
 
 ## 6. Rollback

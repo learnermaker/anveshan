@@ -14,6 +14,8 @@ See docs/kiro/specs/K9-P4-SAMPLES.md §4.2 for the detailed behaviour contract.
 from __future__ import annotations
 
 import hashlib
+import json
+import shutil
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -196,6 +198,39 @@ def _source_file(raw_entry: Dict[str, Any]) -> Path:
     return REPO_ROOT / canonical if canonical else _SOURCES_DIR / raw_entry.get("file", "")
 
 
+def _has_proposal(draft_json: Path) -> bool:
+    """True when a draft exists and proposes steps or a goal (an empty one came from a failed AI run)."""
+    try:
+        sm = (json.loads(draft_json.read_text(encoding="utf-8")).get("proposal") or {}).get("skill_model") or {}
+    except (OSError, ValueError):
+        return False
+    return bool(sm.get("steps") or sm.get("goal_state"))
+
+
+def _seed_example_draft(settings: Settings, file_path: Path) -> None:
+    """Composer examples ship their finished draft (tracks/samples/sources/drafts/<id>), so they open at
+    once and need no visitor key; create_draft then returns it unchanged. A new upload still needs the
+    visitor's own key. The source file stays at its canonical path; the draft gets a working copy."""
+    draft_id = hashlib.sha256(file_path.read_bytes()).hexdigest()[:16]
+    shipped = _SOURCES_DIR / "drafts" / draft_id
+    dst = settings.data_dir / "drafts" / draft_id
+    if not shipped.is_dir() or _has_proposal(dst / "draft.json"):
+        return  # keep a good existing draft (it may carry the creator's edits); replace an empty one
+    shutil.copytree(shipped, dst, dirs_exist_ok=True)
+    for ref in dst.rglob("*.ref.json"):  # pointers to canonical files (single-copy rule), verified by sha256
+        pin = json.loads(ref.read_text(encoding="utf-8"))
+        data = (REPO_ROOT / pin["path"]).read_bytes()
+        if hashlib.sha256(data).hexdigest() != pin["sha256"]:
+            raise RuntimeError(f"pinned file changed: {pin['path']}")
+        ref.with_name(ref.name[: -len(".ref.json")]).write_bytes(data)
+        ref.unlink()
+    source = dst / ("source" + file_path.suffix)
+    shutil.copyfile(file_path, source)
+    data = json.loads((dst / "draft.json").read_text(encoding="utf-8"))
+    data["source_path"] = str(source)
+    (dst / "draft.json").write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+
 @router.get("/api/compose/samples/{sample_id}/file")
 def get_sample_source_file(sample_id: str) -> Any:
     """Serve the source file for a composer example."""
@@ -251,6 +286,7 @@ def analyze_sample_source(
             "Composer (track_a.composer) is not available in this build"
         ) from exc
 
+    _seed_example_draft(settings, file_path)
     ctx = adapters.run_context(settings, settings.data_dir, mode)
     with adapters.resource_lock("sample_source", sample_id), adapters.translated():
         draft = composer.create_draft(

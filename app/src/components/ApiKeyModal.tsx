@@ -1,13 +1,64 @@
-/** "Use your own Gemini API key" dialog (bring your own key). The key stays in this browser. */
+/** "Your Gemini API key" dialog. Every live AI call uses this key; it stays in this browser. */
 
 import React, { useEffect, useState } from 'react';
 import { Check, Eye, EyeOff, KeyRound, X } from 'lucide-react';
 import { api } from '../api/client';
+import type { HealthResponse } from '../api/types';
 import { clearUserKey, getUserKey, isRemembered, looksLikeKey, maskKey, setUserKey } from '../api/userKey';
 import { ErrorNote, btn } from '../hero/ui';
 import { useEscape } from '../hero/useEscape';
 
-export function ApiKeyModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+type ModelKey = 'vision_fast' | 'video_frames' | 'text_image' | 'embedding' | 'audio';
+
+const USES: [ModelKey, string][] = [
+  ['vision_fast', 'Looks at your photos and video frames, judges each check and words the coaching'],
+  ['video_frames', 'Reads the steps in a demonstration video'],
+  ['text_image', 'Builds a new skill from a source picture'],
+  ['embedding', 'Lines up your attempt with the matching moment of the demonstration'],
+  ['audio', 'Names tabla strokes (shown as an AI guess, never scored)'],
+];
+
+/** Indicative price per call at Google's paid rates (measured 2026-10-06; see docs/deploy/DEPLOY-CHECKLIST.md). */
+function costOf(model: string): string {
+  if (model.startsWith('gemma')) return 'free (rate-limited)';
+  if (model.includes('embedding')) return '≈ $0.00001 per call';
+  if (model.includes('flash-lite')) return '≈ $0.0003 per call';
+  return 'see Google AI pricing';
+}
+
+function ModelUse({ health }: { health: HealthResponse | null }) {
+  const m = health?.models;
+  const rows = USES.map(([k, use]) => [use, (m?.[k] as string | null | undefined) ?? null] as const).filter(([, id]) => id);
+  return (
+    <section aria-labelledby="key-models" className="space-y-2">
+      <h3 id="key-models" className="text-xs font-semibold text-on-surface">What your key is used for</h3>
+      {rows.length > 0 ? (
+        <ul className="space-y-1.5">
+          {rows.map(([use, id]) => (
+            <li key={use} className="p-2 rounded-lg border border-outline bg-surface-dim">
+              <div className="text-on-surface">{use}</div>
+              <div className="text-xs text-on-surface-variant">
+                <code className="font-mono">{id!.replace(/ \(mock\)$/, '')}</code> · {costOf(id!)}
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-xs text-on-surface-variant">Gemini 3.5 Flash-Lite for looking and judging, Gemini Embedding 2 for matching moments.</p>
+      )}
+      <p className="text-xs text-on-surface-variant leading-relaxed">
+        Indicative cost: checking one new attempt makes about 5 to 10 calls, usually under half a US cent in total. Sample attempts and anything
+        already checked are replayed at no cost. Prices are Google's and can change:{' '}
+        <a href="https://ai.google.dev/pricing" target="_blank" rel="noopener noreferrer" className="text-caliper-cyan underline">
+          ai.google.dev/pricing
+        </a>
+        .
+      </p>
+    </section>
+  );
+}
+
+export function ApiKeyModal({ isOpen, onClose, health = null }: { isOpen: boolean; onClose: () => void; health?: HealthResponse | null }) {
   useEscape(isOpen, onClose);
   const [value, setValue] = useState('');
   const [show, setShow] = useState(false);
@@ -23,7 +74,7 @@ export function ApiKeyModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
       setErr(null);
       setOk(null);
       setShow(false);
-      setRemember(isRemembered());
+      setRemember(getUserKey() ? isRemembered() : true);
     }
   }, [isOpen]);
 
@@ -66,7 +117,7 @@ export function ApiKeyModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
       >
         <div className="flex items-center justify-between px-5 py-3 border-b border-outline">
           <h2 id="key-title" className="flex items-center gap-2 font-semibold text-on-surface">
-            <KeyRound className="w-4 h-4 text-cadmium-amber" aria-hidden="true" /> Use your own Gemini API key
+            <KeyRound className="w-4 h-4 text-cadmium-amber" aria-hidden="true" /> Your Gemini API key
           </h2>
           <button onClick={onClose} aria-label="Close" title="Close (Esc)" className="flex items-center gap-1 px-2 py-1 rounded text-on-surface-variant hover:text-on-surface">
             <X className="w-5 h-5" aria-hidden="true" />
@@ -75,13 +126,15 @@ export function ApiKeyModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
         </div>
         <div className="p-5 space-y-4 text-sm">
           <p className="text-on-surface-variant leading-relaxed">
-            Optional. The demo has a shared daily AI budget. With your own key, AI calls (perceiving uploads, judging checks, coaching wording) run on your quota
-            instead, without the shared limit. Get a free key at{' '}
+            Anveshan uses Google's Gemini AI to look at what you upload. Every AI call runs on your own key; this server has none of its own.
+            You add it once: it is remembered on this device. Sample attempts work without a key. Get a key at{' '}
             <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" className="text-caliper-cyan underline">
               aistudio.google.com/apikey
             </a>
             .
           </p>
+
+          <ModelUse health={health} />
 
           {current && (
             <div className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-lg border border-transmission-emerald/40 bg-transmission-emerald/5">
@@ -128,7 +181,7 @@ export function ApiKeyModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
             </label>
             <label className="flex items-start gap-2 text-xs text-on-surface-variant">
               <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="mt-0.5" />
-              <span>Remember on this device. Leave this off on shared computers: the key is then forgotten when you close the tab.</span>
+              <span>Remember on this device, so you are not asked again. Turn this off on a shared computer: the key is then forgotten when you close the tab.</span>
             </label>
             <button type="submit" disabled={busy || !value.trim()} className={btn.primary}>
               {busy ? 'Checking the key…' : 'Check and use this key'}

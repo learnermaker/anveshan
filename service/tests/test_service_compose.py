@@ -255,6 +255,14 @@ def test_get_draft_not_found(client, tmp_path, monkeypatch):
     assert response.status_code == 404
 
 
+def test_live_upload_without_visitor_key_asks_for_key(tmp_path):
+    """Live mode never uses a server key: an own upload without the visitor's key is refused up front."""
+    s = Settings(mode="live", cases_root=tmp_path / "cases", data_dir=tmp_path / "data", max_upload_mb=10.0,
+                 cors_origins=[], static_dir=None)
+    r = TestClient(create_app(s)).post("/api/compose/analyze", files={"file": ("a.png", b"\x89PNG\r\n", "image/png")})
+    assert r.status_code == 400 and r.json()["error"]["details"]["reason"] == "key_required"
+
+
 def test_draft_keyframe_served_and_paths_guarded(client, tmp_path):
     """The proposal screen shows the keyframes perception extracted; nothing outside the draft's assets."""
     assets = tmp_path / "data" / "drafts" / "abcd1234abcd1234" / "assets"

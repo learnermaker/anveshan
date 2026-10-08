@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Optional
 
@@ -9,7 +10,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, Response
 
-from anveshan_service.errors import ServiceError, error_response, install_error_handlers
+from anveshan_service.errors import _SECRET_ENV, ServiceError, error_response, install_error_handlers
 from anveshan_service.housekeeping import SweepEvery
 from anveshan_service.limits import RateLimitMiddleware
 from anveshan_service.paths import within
@@ -80,6 +81,10 @@ def _mount_static(app: FastAPI, static_dir: Path) -> None:
 
 def create_app(settings: Optional[Settings] = None) -> FastAPI:
     settings = settings or Settings.from_env()
+    # Gemini keys come only from the visitor's browser (X-Gemini-Api-Key). Drop any server key so no
+    # code path (gateway env fallback, google-genai's own env lookup) can ever use it.
+    for name in _SECRET_ENV:
+        os.environ.pop(name, None)
     app = FastAPI(title="Anveshan", version="0.1.0", docs_url="/api/docs", openapi_url="/api/openapi.json", redoc_url=None)
     app.state.settings = settings
     install_error_handlers(app)

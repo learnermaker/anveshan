@@ -98,7 +98,7 @@ async function sha12(file: Blob): Promise<string> {
 export const mockApi: Api = {
   async health(_o?: CallOptions): Promise<HealthResponse> {
     await delay(120);
-    return { ok: true, mode: 'recorded', own_key_supported: true, server_key_configured: false, steward_enabled: true, steward_open: false, data_ttl_hours: 6, models: { text_image: 'gemma-4-26b-a4b-it (mock)', video_frames: 'gemma-4-26b-a4b-it (mock)', audio_enabled: false } };
+    return { ok: true, mode: 'recorded', own_key_supported: true, steward_enabled: true, steward_open: false, data_ttl_hours: 6, models: { text_image: 'gemma-4-26b-a4b-it (mock)', video_frames: 'gemma-4-26b-a4b-it (mock)', vision_fast: 'gemini-3.5-flash-lite (mock)', embedding: 'gemini-embedding-2 (mock)', audio_enabled: false } };
   },
 
   async checkKey(_o?: CallOptions): Promise<{ ok: boolean; model: string }> {

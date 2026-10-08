@@ -45,15 +45,13 @@ npm --prefix app run build
 
 ---
 
-## Secret: `gemini-api-key`
+## API key: from the UI only (non-negotiable)
 
-1. In Secret Manager, create a secret named **`gemini-api-key`** containing only your Gemini API key (no spaces or newlines).
-2. In the Cloud Run service definition, mount this secret as an environment variable:
-   - Environment variable name: `GEMINI_API_KEY`
-   - Secret: `gemini-api-key`, version: `latest`
-3. Grant the Cloud Run service account the `Secret Manager Secret Accessor` role on this secret.
-
-**Never set the API key as a plain environment variable or embed it in the Dockerfile.**
+- **Do not** create a `gemini-api-key` secret or set `GEMINI_API_KEY`/`GOOGLE_API_KEY` on the service.
+- Every live AI call uses the key the visitor enters in the app, sent per request as `X-Gemini-Api-Key` and never stored.
+- The service deletes any server key from its environment at startup (`service/anveshan_service/main.py`), so a
+  leftover secret is ignored; remove it anyway: `gcloud run services update anveshan --remove-secrets GEMINI_API_KEY`.
+- Without a key, samples still replay; anything new answers "Add your Gemini API key".
 
 ---
 

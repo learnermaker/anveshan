@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import os
-
 from fastapi import APIRouter, Depends
 
 from tracks.common.models import ModelRegistry
@@ -22,7 +20,6 @@ def health(settings: Settings = Depends(get_settings)) -> dict:
         "mode": settings.mode,
         "mode_override": settings.allow_mode_override,
         "own_key_supported": True,
-        "server_key_configured": bool(os.environ.get("GEMINI_API_KEY")),
         "curated_review_open": settings.curated_review_open or bool(settings.review_token),
         "steward_enabled": settings.steward_enabled,
         "steward_open": settings.steward_open,
@@ -32,6 +29,7 @@ def health(settings: Settings = Depends(get_settings)) -> dict:
             "video_frames": registry.model_id("video_frames"),
             "vision_fast": registry.model_id("vision_fast"),
             "embedding": registry.model_id("embedding"),
+            "audio": registry.model_id("audio") or None,
             "audio_enabled": registry.enabled("audio"),
         },
     }
