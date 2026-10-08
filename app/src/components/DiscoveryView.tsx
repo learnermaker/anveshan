@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Activity, ArrowRight, Compass, Eye, HelpCircle, Layers, Music, PlusCircle, RefreshCw, Scissors, Shield, Sparkles, Wrench } from 'lucide-react';
-import { CAPABILITY_CASES, SHOWCASE_CASE_IDS } from '../data/cases/registry';
+import { ArrowRight, Compass, Eye, HelpCircle, Music, PlusCircle, RefreshCw, Scissors, Shield, Sparkles } from 'lucide-react';
 import type { CaseSummary } from '../api/types';
 import { api } from '../api/client';
 import { IS_MOCK, API_BASE } from '../api/runtime';
@@ -27,13 +26,6 @@ const MODALITY_ICON: Record<string, React.ReactNode> = {
   origami_video: <Scissors className="w-5 h-5 text-cadmium-amber" />,
   tabla_audio: <Music className="w-5 h-5 text-caliper-cyan" />,
   universal: <Sparkles className="w-5 h-5 text-caliper-cyan" />,
-};
-
-const SHOWCASE_ICON: Record<string, React.ReactNode> = {
-  micrometer: <Activity className="w-5 h-5 text-caliper-cyan" />,
-  bicycle_repair: <Wrench className="w-5 h-5 text-cadmium-amber" />,
-  weaving: <Layers className="w-5 h-5 text-caliper-cyan" />,
-  square_knot: <Shield className="w-5 h-5 text-divergence-crimson" />,
 };
 
 export function DiscoveryView({ heroCases, heroError, heroLoading, onRefreshHero, onSelect, selected, onOpenGuide, onOpenMine }: DiscoveryViewProps) {
@@ -207,41 +199,6 @@ export function DiscoveryView({ heroCases, heroError, heroLoading, onRefreshHero
         </div>
       </section>
 
-      {/* Synthetic examples (collapsed) */}
-      <details className="group space-y-4 border-t border-outline pt-4">
-        <summary className="cursor-pointer list-none flex flex-wrap items-center justify-between gap-3">
-          <span>
-            <span className="block text-xs font-mono uppercase tracking-widest text-on-surface-variant font-bold">Design archetypes · synthetic, not evaluated</span>
-            <span className="block text-base font-semibold font-serif text-on-surface">
-              How the workspace could adapt to other kinds of skill <span className="text-sm font-sans text-caliper-cyan group-open:hidden">(show)</span>
-            </span>
-          </span>
-          <span className="text-sm text-on-surface-variant max-w-md sm:text-right">Fixed made-up examples. There is no learner input and nothing is scored.</span>
-        </summary>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {SHOWCASE_CASE_IDS.map((id) => {
-            const c = CAPABILITY_CASES[id];
-            if (!c) return null;
-            const active = selected.kind === 'showcase' && selected.id === id;
-            return (
-              <button
-                key={id}
-                onClick={() => onSelect({ kind: 'showcase', id })}
-                className={`p-4 rounded-xl border text-left transition-colors flex flex-col gap-2 ${
-                  active ? 'border-cadmium-amber bg-surface-container' : 'border-outline bg-surface-container-low hover:border-on-surface-variant'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="w-9 h-9 rounded-lg bg-surface-dim border border-outline flex items-center justify-center">{SHOWCASE_ICON[id]}</div>
-                  <Badge tone="crimson">SYNTHETIC</Badge>
-                </div>
-                <div className="font-semibold text-sm" data-plain-exempt>{c.title}</div>
-                <div className="text-xs font-mono text-on-surface-variant" data-plain-exempt>{c.archetype}</div>
-              </button>
-            );
-          })}
-        </div>
-      </details>
     </div>
   );
 }
