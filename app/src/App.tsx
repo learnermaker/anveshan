@@ -18,7 +18,7 @@ import type { HeroSession } from './hero/session';
 import { ErrorNote, Spinner } from './hero/ui';
 import { GuideModal } from './components/HowItWorks';
 import { ApiKeyModal } from './components/ApiKeyModal';
-import { getUserKey, markPrompted, subscribeUserKey, wasPrompted } from './api/userKey';
+import { getUserKey, subscribeUserKey } from './api/userKey';
 import { getStewardToken, subscribeStewardToken } from './api/steward';
 import type { StepState } from './components/Header';
 import { MySkillsView } from './components/creator/MySkillsView';
@@ -68,13 +68,6 @@ export function App() {
     window.addEventListener('anveshan:open-key-dialog', open);
     return () => window.removeEventListener('anveshan:open-key-dialog', open);
   }, []);
-  // First visit without a key: ask once (any key makes new uploads run live); the key dialog also opens whenever a request needs it.
-  useEffect(() => {
-    if (!IS_MOCK && health && !getUserKey() && !wasPrompted()) {
-      markPrompted();
-      setKeyOpen(true);
-    }
-  }, [health]);
   useEffect(() => {
     const goEvidence = () => setCurrentView('evidence');
     window.addEventListener('anveshan:go-evidence', goEvidence);
