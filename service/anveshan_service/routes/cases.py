@@ -169,4 +169,7 @@ def review_case(
 
     api = adapters.track_a()
     with adapters.resource_lock("case", case_id), adapters.translated():
-        return api.apply_review(cdir, action).to_view()
+        view = api.apply_review(cdir, action).to_view()
+    if isinstance(view, dict):  # same shape as GET, so the creator keeps their panel after a review
+        view["access"] = access_module.access_view(settings, case_id, cdir, view.get("review_status", "pending"))
+    return view

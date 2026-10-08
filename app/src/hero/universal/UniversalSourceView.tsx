@@ -72,6 +72,14 @@ function GoalStateSection({ ui, caseId, reviewed }: { ui: UniversalUiView; caseI
   const steps = ui.steps ?? [];
   const transcript = ui.transcript;
 
+  if (!transcript && props.length === 0 && steps.length === 0) {
+    return (
+      <p className="text-sm text-on-surface-variant">
+        The AI could not find steps in this source yet. Watch the source above and practise the whole task; your attempt is still compared with it.
+      </p>
+    );
+  }
+
   return (
     <div className="space-y-4">
       {transcript && (
