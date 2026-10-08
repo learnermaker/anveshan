@@ -26,7 +26,7 @@
 
 ## Recording rules
 
-- Use the deployed Cloud Run URL. Sample attempts replay committed recordings, so they are instant and identical every take. Only the composer step (0:15) calls Gemini live: record it until one take is clean.
+- Use the deployed Cloud Run URL. Sample attempts replay committed recordings, so they are instant and identical every take. The composer examples open a finished proposal (no key, no wait); the frames and steps are what Gemini produced from that video.
 - 1080p desktop. Optionally one phone shot (390 px) of the crane result.
 - Say only what is on screen. Make no claims about learner studies or expert reviews unless `docs/validation/` records them.
 - Avoid dashboards, agent counts, chatbot screens and long architecture narration.

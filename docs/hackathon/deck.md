@@ -132,7 +132,7 @@
 **Bullets:**
 - Recorded runs: identical uploads are answered from stored golden runs at zero model cost
 - Media resolution matching: video frames sent at the right resolution level (70 tokens/frame at low)
-- Daily call budget on the shared key; bring-your-own-key calls are exempt
+- No server key: samples and examples replay committed results; a visitor's own uploads run on their own Gemini key
 - Kolam and Tabla scoring: zero model calls (deterministic geometry and onset detection)
 
 **Speaker note:** Cite `docs/architecture/token-economy.md` for detail. The key point for judges: the architecture limits cost by design, not by accident. Scoring is the most frequent operation and it costs nothing.

@@ -99,9 +99,9 @@ See [`docs/plans/evaluation-core.md`](docs/plans/evaluation-core.md) and [`docs/
 | Wording coaching advice | gemini-3.5-flash-lite | Guard rejects new numbers or verdict words; template fallback |
 | Scoring, pass/fail, permissions, insights | **no model** | Deterministic bands and rules |
 
-**Cost control.** Identical calls are answered from stored runs, the shared key has a daily call budget, Kolam and Tabla scoring use no model, images are downsized and sent to Gemini 3 at a matching media resolution, and output is capped. Token use is recorded per run (`tools/token_report.py`). Details: [`docs/architecture/token-economy.md`](docs/architecture/token-economy.md).
+**Cost control.** Identical calls are answered from stored runs, every sample and composer example replays committed results, Kolam and Tabla scoring use no model, images are downsized and sent to Gemini 3 at a matching media resolution, and output is capped. Token use is recorded per run (`tools/token_report.py`). Details: [`docs/architecture/token-economy.md`](docs/architecture/token-economy.md).
 
-**Your own key.** Visitors can add their own Gemini API key in the app (key button in the header, or the prompt next to any upload that needs AI). It stays in their browser, is sent only to this service in a request header, and their calls skip the shared budget.
+**Your own key.** The service has no Gemini key of its own. Samples and the composer examples need no key; to analyse their own upload, visitors add their Gemini API key in the app (key button in the header, or the prompt that appears when an upload needs it). It stays in their browser and is sent only to this service in a request header.
 
 ---
 
@@ -120,7 +120,7 @@ All evidence to date is engineering and capability evidence on internet-licensed
 
 ## Limits
 
-- **Recorded runs first, live for new uploads.** On Cloud Run the service runs in live mode: anything already recorded (all sample attempts) is replayed from committed golden runs, so it is free and gives the same result every time; new uploads call Gemini within a daily budget and may vary slightly between runs (see E6, E7). Locally the default is recorded mode, which needs no key.
+- **Recorded runs first, live for new uploads.** On Cloud Run the service runs in live mode: anything already recorded (all sample attempts) is replayed from committed golden runs, so it is free and gives the same result every time; new uploads call Gemini with the visitor's own key and may vary slightly between runs (see E6, E7). Locally the default is recorded mode, which needs no key.
 - **Demo storage is temporary.** Uploaded media and composed skills are kept in memory; data is retained for about 6 hours; published skills persist until the service restarts.
 - **No accounts.** Ownership is tracked per browser session.
 - **Internet sources are not verified experts.** Hero case media comes from Wikimedia Commons under open licences. It is labelled INTERNET REFERENCE in the UI; the photographer or uploader is not an Anveshan expert.
