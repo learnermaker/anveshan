@@ -69,6 +69,25 @@ export function maskKey(key: string): string {
   return key.length > 8 ? `${key.slice(0, 4)}…${key.slice(-4)}` : '••••';
 }
 
+const PROMPTED_KEY = 'anveshan.key_prompted';
+
+/** True once the first-visit key prompt was shown on this device, so it never nags again. */
+export function wasPrompted(): boolean {
+  try {
+    return window.localStorage.getItem(PROMPTED_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+export function markPrompted(): void {
+  try {
+    window.localStorage.setItem(PROMPTED_KEY, '1');
+  } catch {
+    /* storage blocked: the prompt may show again next visit */
+  }
+}
+
 /** Ask the app to open the key dialog (used by error messages). */
 export function requestKeyDialog(): void {
   window.dispatchEvent(new CustomEvent('anveshan:open-key-dialog'));

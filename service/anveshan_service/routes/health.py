@@ -29,6 +29,7 @@ def health(settings: Settings = Depends(get_settings)) -> dict:
             "video_frames": registry.model_id("video_frames"),
             "vision_fast": registry.model_id("vision_fast"),
             "embedding": registry.model_id("embedding"),
+            "audio": registry.model_id("audio") or None,
             "audio_enabled": registry.enabled("audio"),
         },
     }

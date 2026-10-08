@@ -49,6 +49,7 @@ export interface HealthResponse {
     video_frames: string;
     vision_fast?: string | null;
     embedding?: string | null;
+    audio?: string | null;
     audio_enabled: boolean;
   };
 }

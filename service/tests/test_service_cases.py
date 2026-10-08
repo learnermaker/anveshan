@@ -26,7 +26,7 @@ def test_health_shape_and_no_secrets(client, monkeypatch):
                     "own_key_supported": True,
                     "steward_enabled": False, "steward_open": False, "data_ttl_hours": 0.0,
                     "models": {"text_image": m["text_image"], "video_frames": m["video_frames"],
-                               "vision_fast": m["vision_fast"], "embedding": m["embedding"], "audio_enabled": False}}
+                               "vision_fast": m["vision_fast"], "embedding": m["embedding"], "audio": None, "audio_enabled": False}}
     assert "AIzaTESTSECRETVALUE123" not in r.text
 
 
