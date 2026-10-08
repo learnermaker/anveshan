@@ -53,4 +53,6 @@ def source_media(case_id: str, source_id: str, settings: Settings = Depends(get_
         raise not_found(f"media for {source_id} is not cached on this server", source_id=source_id) from None
     if not (within(path, cdir) or within(path, settings.data_dir)) or not path.is_file():
         raise missing
+    if path.suffix == ".ogv" and path.with_suffix(".mp4").is_file():  # browsers can't play Theora (tools/fetch_media.py)
+        return _file(path.with_suffix(".mp4"), "video/mp4")
     return _file(path, content_type(path, record.mime_type))

@@ -1,0 +1,113 @@
+name: k10-review
+description: >
+  K10 observe-only review of the whole Anveshan app as a hackathon jury and first-time users would see it:
+  setup a production-like server, then 7 sequential Playwright browser walks in parallel with 3 static checks,
+  then a jury step and a compiled REPORT.md for Claude Code. No product code changes.
+  Spec: docs/kiro/specs/K10-REVIEW.md.
+inputs: {}
+steps:
+  - type: step
+    id: setup
+    agent: wf-coder
+    prompt: >
+      You are the K10 setup step. Read docs/kiro/specs/K10-REVIEW.md sections 1 to 5, then do section 3 exactly:
+      create .kiro/k10-run, run fetch_media and the app build, write and start start-svc.ps1, wait for health,
+      check the crane video returns 200 video/mp4, record baseline numbers in STATUS.md (status table in 5.1 with
+      every step listed as TODO). Change no tracked file. Call send_message with severity success and a one-line
+      summary, or severity error with the exact failing command.
+
+  - type: parallel
+    id: review
+    joinPolicy: allSettled
+    branches:
+      - type: sequence
+        id: browser
+        steps:
+          - type: step
+            id: w1
+            agent: wf-coder
+            prompt: >
+              You are K10 walk W1. Follow docs/kiro/specs/K10-REVIEW.md sections 2, 4 and 6.1 (first-time learner,
+              desktop, Kolam) with the Playwright MCP against http://localhost:8080/. Observe only. Write
+              .kiro/k10-run/obs/W1.md and screenshots in .kiro/k10-run/shots/, and keep STATUS.md current.
+          - type: step
+            id: w2
+            agent: wf-coder
+            prompt: >
+              You are K10 walk W2. Follow docs/kiro/specs/K10-REVIEW.md sections 2, 4 and 6.2 (first-time learner,
+              phone 375x812, paper crane video). Observe only. Write .kiro/k10-run/obs/W2.md, screenshots and
+              live-calls.md entries; keep STATUS.md current.
+          - type: step
+            id: w3
+            agent: wf-coder
+            prompt: >
+              You are K10 walk W3. Follow docs/kiro/specs/K10-REVIEW.md sections 2, 4 and 6.3 (learner, Tabla audio).
+              Observe only. Write .kiro/k10-run/obs/W3.md and screenshots; keep STATUS.md current.
+          - type: step
+            id: w4
+            agent: wf-coder
+            prompt: >
+              You are K10 walk W4. Follow docs/kiro/specs/K10-REVIEW.md sections 2, 4 and 6.4 (creator shares a skill
+              through the composer, My skills, send for review). Observe only. Write .kiro/k10-run/obs/W4.md,
+              screenshots and live-calls.md entries; keep STATUS.md current.
+          - type: step
+            id: w5
+            agent: wf-coder
+            prompt: >
+              You are K10 walk W5. Follow docs/kiro/specs/K10-REVIEW.md sections 2, 4 and 6.5 (steward console,
+              review and publish W4's skill, usage, then learner check). Observe only. Write .kiro/k10-run/obs/W5.md
+              and screenshots; keep STATUS.md current.
+          - type: step
+            id: w6
+            agent: wf-coder
+            prompt: >
+              You are K10 walk W6. Follow docs/kiro/specs/K10-REVIEW.md sections 2, 4 and 6.7 (navigation, How we
+              check page, settings and key dialog without entering a key, deep links, edge cases, slow network,
+              synthetic showcase cases). Observe only. Write .kiro/k10-run/obs/W6.md and screenshots.
+          - type: step
+            id: w7
+            agent: wf-coder
+            prompt: >
+              You are K10 walk W7. Follow docs/kiro/specs/K10-REVIEW.md sections 2, 4 and 6.8 (keyboard-only walk,
+              375 px sweep of every view, small text and contrast, visual coherence). Observe only. Write
+              .kiro/k10-run/obs/W7.md and screenshots; keep STATUS.md current.
+
+      - type: sequence
+        id: static
+        steps:
+          - type: step
+            id: s1
+            agent: wf-coder
+            prompt: >
+              You are K10 static check S1. Follow docs/kiro/specs/K10-REVIEW.md sections 2, 4.1 and 7 "S1" (copy and
+              content inventory, check:plain, check:roles). No browser MCP. Observe only. Write
+              .kiro/k10-run/obs/S1.md and obs/S1-strings.md; keep STATUS.md current.
+          - type: step
+            id: s2
+            agent: wf-coder
+            prompt: >
+              You are K10 static check S2. Follow docs/kiro/specs/K10-REVIEW.md sections 2, 4.1 and 7 "S2" (claims
+              versus reality, README quick start). No browser MCP. Observe only. Write .kiro/k10-run/obs/S2.md.
+          - type: step
+            id: s3
+            agent: wf-coder
+            prompt: >
+              You are K10 static check S3. Follow docs/kiro/specs/K10-REVIEW.md sections 2, 4.1 and 7 "S3" (tests,
+              smoke test, timings, bundle size, service log). No browser MCP. Observe only. Write
+              .kiro/k10-run/obs/S3.md; keep STATUS.md current.
+
+  - type: step
+    id: jury
+    agent: wf-coder
+    prompt: >
+      You are the K10 jury step. Follow docs/kiro/specs/K10-REVIEW.md section 8.1. Read every file in
+      .kiro/k10-run/obs/, look at the screenshots behind S0 and S1 observations, fill in any remaining
+      "pending W<n>" verdicts in obs/S2.md, and write .kiro/k10-run/JURY.md. Cite observation IDs only; no new claims.
+
+  - type: step
+    id: compile
+    agent: wf-coder
+    prompt: >
+      You are the K10 compile step. Follow docs/kiro/specs/K10-REVIEW.md section 8.2: write .kiro/k10-run/REPORT.md
+      from obs/*.md and JURY.md, set STATUS.md to DONE, and call send_message with severity success and the
+      observation counts by severity.

@@ -26,6 +26,12 @@ def test_ogg_content_types_and_range(client, source_id, ctype):
     assert r.headers["content-range"].startswith("bytes 0-3/")
 
 
+def test_ogv_served_as_mp4_copy_when_present(client, settings):
+    (settings.cases_root / "origami" / "media" / "cache" / "src.demo.v1.mp4").write_bytes(b"\x00\x00\x00\x18ftypmp42")
+    r = client.get("/api/media/origami/src.demo.v1")
+    assert r.status_code == 200 and r.headers["content-type"] == "video/mp4" and r.content.startswith(b"\x00\x00\x00\x18ftyp")
+
+
 @pytest.mark.parametrize("source_id", ["src.held.v1", "src.learner.v1", "src.research.v1", "src.missing.v1"])
 def test_never_serves_held_out_or_unknown(client, source_id):
     r = client.get(f"/api/media/kolam/{source_id}")

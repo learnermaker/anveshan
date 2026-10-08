@@ -3,6 +3,8 @@
 **Written:** 2026-10-06 (updated 2026-10-07) by the Claude Code session (Opus 5.5) that did planning, foundation, integration and orchestration.
 **Read this first in any new session**, then `CLAUDE.md` → `AGENTS.md` → the docs it points to. The repo is the durable record; this file summarises everything that was only in chat.
 
+> **2026-10-08, K10 review:** Kiro runs an observe-only jury and first-time-user review (`docs/kiro/specs/K10-REVIEW.md`, workflow `.kiro/workflows/k10-review.workflow.yaml`), output in `.kiro/k10-run/REPORT.md` (gitignored); Claude Code analyses it and specs the fixes (K11). Crane video fixed: browsers dropped Theora, so `tools/fetch_media.py` writes an .mp4 copy that the media route serves.
+>
 > **2026-10-07, K9 product roles: merged to `main` (b5ea925; includes finalize 7137604).** Later on main: token economy (`docs/architecture/token-economy.md`), single-copy rule for files and text (`AGENTS.md`), physical-world positioning (`docs/product/novelty-boundary.md`), own-key prompt next to AI uploads.
 >
 > **What shipped:** three product roles (learner plain-language, creator "My Skills", steward console with review queue + insights + usage), sample attempts for Kolam/Origami-crane/Tabla, Origami rebuilt via the universal pipeline, plain-language scan (`check:plain`), role walk (`check:roles`), smoke test (`tools/smoke_deployed.py`), accessibility sweep, evidence page, stability numbers (E10), Apache-2.0 LICENSE, README rewrite.

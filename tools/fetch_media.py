@@ -67,6 +67,37 @@ def download(url: str, dest: Path, attempts: int = 6) -> None:
     raise RuntimeError(f"failed to download {url}")
 
 
+def playable_copy(src: Path) -> Path:
+    """Chrome and Safari no longer play Ogg Theora: write an H.264/AAC .mp4 next to an .ogv (the media route serves it)."""
+    dst = src.with_suffix(".mp4")
+    if dst.exists():
+        return dst
+    import av
+
+    tmp = dst.with_name(dst.stem + ".part.mp4")
+    with av.open(str(src)) as inp, av.open(str(tmp), "w", options={"movflags": "faststart"}) as out:
+        vin = inp.streams.video[0]
+        vout = out.add_stream("libx264", rate=vin.average_rate)
+        vout.width, vout.height = vin.width // 2 * 2, vin.height // 2 * 2
+        vout.pix_fmt = "yuv420p"
+        vout.options = {"crf": "26", "preset": "fast"}
+        ain = inp.streams.audio[0] if inp.streams.audio else None
+        aout = out.add_stream("aac", rate=ain.rate) if ain else None
+        for packet in inp.demux([s for s in (vin, ain) if s]):
+            for frame in packet.decode():
+                if packet.stream is vin:
+                    frame = frame.reformat(width=vout.width, height=vout.height, format="yuv420p")
+                    frame.pts = round(frame.time * vin.average_rate) if frame.time is not None else None
+                else:
+                    frame.pts = None
+                out.mux((vout if packet.stream is vin else aout).encode(frame))
+        out.mux(vout.encode(None))
+        if aout:
+            out.mux(aout.encode(None))
+    tmp.replace(dst)
+    return dst
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("cases", nargs="*")
@@ -83,6 +114,8 @@ def main() -> int:
             dest = target_path(case_dir, rec)
             if dest.exists() and sha256(dest) == rec.sha256:
                 print(f"{case_dir.name}/{rec.source_id}: ok")
+                if dest.suffix == ".ogv":
+                    playable_copy(dest)
                 continue
             local = find_local(args.from_dir, rec.sha256) if args.from_dir else None
             if local:
@@ -101,6 +134,8 @@ def main() -> int:
                 failures += 1
             else:
                 print(f"{case_dir.name}/{rec.source_id}: fetched")
+                if dest.suffix == ".ogv":
+                    playable_copy(dest)
     return 1 if failures else 0
 
 

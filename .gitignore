@@ -126,6 +126,7 @@ tracks/track-b/data/runs/
 # K9 Kiro run: task worktrees and live run status (see docs/kiro/specs/K9-ORCHESTRATOR.md)
 .worktrees/
 .kiro/k9-run/
+.kiro/k10-run/
 
 # Generated copy of the graphify skill (regenerate: graphify kiro install)
 .kiro/skills/graphify/
