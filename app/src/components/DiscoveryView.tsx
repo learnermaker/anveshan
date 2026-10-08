@@ -134,13 +134,13 @@ export function DiscoveryView({ heroCases, heroError, heroLoading, onRefreshHero
         </div>
       </section>
 
-      {/* Shared by the community */}
+      {/* Shared by the community: shown once someone has shared a skill (the section below invites sharing) */}
+      {community.length > 0 && (
       <section className="space-y-4">
         <div className="border-b border-outline pb-3">
           <div className="text-xs font-mono uppercase tracking-widest text-caliper-cyan font-bold">Shared by the community</div>
           <h2 className="text-xl font-semibold font-serif">Skills shared by other learners</h2>
         </div>
-        {community.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {community.map((c) => (
               <div key={c.case_id} className="p-5 rounded-xl border border-outline bg-surface-container-low flex flex-col gap-3">
@@ -160,18 +160,8 @@ export function DiscoveryView({ heroCases, heroError, heroLoading, onRefreshHero
               </div>
             ))}
           </div>
-        ) : (
-          <div className="p-5 rounded-xl border border-dashed border-outline bg-surface-container-low text-center space-y-3">
-            <p className="text-sm text-on-surface-variant">No community skills yet. Share one you know.</p>
-            <button
-              onClick={() => onSelect({ kind: 'composer' })}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-cadmium-amber hover:bg-cadmium-amber/90 text-background font-semibold text-sm"
-            >
-              Share a skill you know
-            </button>
-          </div>
-        )}
       </section>
+      )}
 
       {/* Your skills + composer teaser */}
       <section className="space-y-4">
