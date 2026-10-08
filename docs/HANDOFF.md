@@ -3,7 +3,7 @@
 **Written:** 2026-10-06 (updated 2026-10-07) by the Claude Code session (Opus 5.5) that did planning, foundation, integration and orchestration.
 **Read this first in any new session**, then `CLAUDE.md` → `AGENTS.md` → the docs it points to. The repo is the durable record; this file summarises everything that was only in chat.
 
-> **2026-10-08, K10 review:** Kiro runs an observe-only jury and first-time-user review (`docs/kiro/specs/K10-REVIEW.md`, workflow `.kiro/workflows/k10-review.workflow.yaml`), output in `.kiro/k10-run/REPORT.md` (gitignored); Claude Code analyses it and specs the fixes (K11). Crane video fixed: browsers dropped Theora, so `tools/fetch_media.py` writes an .mp4 copy that the media route serves.
+> **2026-10-08, K10 sprint (6 h to freeze, aiming for first prize):** `docs/kiro/specs/K10-SPRINT.md` + `.kiro/workflows/k10-sprint.workflow.yaml` run review, submission docs and a fix loop in parallel; Claude steers via `.kiro/k10-run/INBOX.md` (`to: FIX`), watches `HOT.md`, merges `kiro/k10-*` hourly and writes `freeze.json`. Base review: Kiro runs an observe-only jury and first-time-user review (`docs/kiro/specs/K10-REVIEW.md`, workflow `.kiro/workflows/k10-review.workflow.yaml`), output in `.kiro/k10-run/REPORT.md` (gitignored); Claude Code analyses it and specs the fixes (K11). Crane video fixed: browsers dropped Theora, so `tools/fetch_media.py` writes an .mp4 copy that the media route serves.
 >
 > **2026-10-07, K9 product roles: merged to `main` (b5ea925; includes finalize 7137604).** Later on main: token economy (`docs/architecture/token-economy.md`), single-copy rule for files and text (`AGENTS.md`), physical-world positioning (`docs/product/novelty-boundary.md`), own-key prompt next to AI uploads.
 >

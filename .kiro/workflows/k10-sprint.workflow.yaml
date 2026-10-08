@@ -1,0 +1,105 @@
+name: k10-sprint
+description: >
+  K10 sprint, 6 hours to the development freeze, aiming for first prize. Setup, then three parallel tracks:
+  A review (Playwright, observe only), B submission materials (docs branch), C fixes (code branch, loops on INBOX
+  instructions from Claude Code until freeze.json says FREEZE). Then a final gate. Spec: docs/kiro/specs/K10-SPRINT.md.
+inputs: {}
+steps:
+  - type: step
+    id: setup
+    agent: wf-coder
+    prompt: >
+      You are the K10 sprint setup step. Read docs/kiro/specs/K10-SPRINT.md fully and docs/kiro/specs/K10-REVIEW.md
+      sections 2 to 4, then do K10-SPRINT.md section 2 (which includes K10-REVIEW.md section 3). Change no tracked
+      file in the main folder. Call send_message with severity success and a one-line summary, or severity error with
+      the exact failing command.
+
+  - type: parallel
+    id: tracks
+    joinPolicy: allSettled
+    branches:
+      - type: sequence
+        id: track-a
+        steps:
+          - type: step
+            id: a-w8
+            agent: wf-coder
+            prompt: >
+              K10 sprint track A, item W8 (50 min box). Follow K10-SPRINT.md sections 1 and 3 and K10-REVIEW.md
+              sections 2, 4 and 6.9 with the Playwright MCP against http://localhost:8080/. Observe only. Stream
+              S0/S1 to .kiro/k10-run/HOT.md. Write obs/W8.md and obs/W8-storyboard.md.
+          - type: step
+            id: a-w1
+            agent: wf-coder
+            prompt: >
+              K10 sprint track A, item W1 (30 min box). Follow K10-SPRINT.md sections 1 and 3 and K10-REVIEW.md
+              sections 2, 4 and 6.1 (skip step 7). Observe only. Stream S0/S1 to HOT.md. Write obs/W1.md.
+          - type: step
+            id: a-w2
+            agent: wf-coder
+            prompt: >
+              K10 sprint track A, item W2 (35 min box). Follow K10-SPRINT.md sections 1 and 3 and K10-REVIEW.md
+              sections 2, 4 and 6.2 (phone 375x812, paper crane video). Observe only. Stream S0/S1 to HOT.md.
+              Write obs/W2.md.
+          - type: step
+            id: a-w45
+            agent: wf-coder
+            prompt: >
+              K10 sprint track A, item W4+W5 (50 min box). Follow K10-SPRINT.md section 3 row 4 and K10-REVIEW.md
+              sections 2, 4, 6.4 and 6.5 (the listed steps only). Observe only. Stream S0/S1 to HOT.md. Write
+              obs/W4.md and obs/W5.md.
+          - type: step
+            id: a-w7
+            agent: wf-coder
+            prompt: >
+              K10 sprint track A, item W7-lite (25 min box). Follow K10-SPRINT.md section 3 row 5. Observe only.
+              Stream S0/S1 to HOT.md. Write obs/W7.md and obs/W3-skipped.md.
+          - type: step
+            id: a-compile
+            agent: wf-coder
+            prompt: >
+              K10 sprint track A, compile (20 min box). Follow K10-SPRINT.md section 3 row 6 and K10-REVIEW.md
+              section 8 (jury content inside REPORT.md sections 6 and 7). Write .kiro/k10-run/REPORT.md and update
+              STATUS.md.
+
+      - type: sequence
+        id: track-b
+        steps:
+          - type: step
+            id: b-materials
+            agent: wf-coder
+            prompt: >
+              K10 sprint track B. Follow K10-SPRINT.md sections 1 and 4: items B1 to B7 in order, each in its time
+              box, in the worktree .worktrees/k10-submission on branch kiro/k10-submission. Merge origin/main before
+              each item, commit and push after each item, update STATUS.md. Docs only; write only the files listed
+              in section 1 rule 3.
+
+      - type: sequence
+        id: track-c
+        steps:
+          - type: step
+            id: c-checks
+            agent: wf-coder
+            prompt: >
+              K10 sprint track C, item C0 (45 min box). Follow K10-SPRINT.md section 5 "C0". Stream S0/S1 to
+              HOT.md. Write obs/S3.md and obs/S1.md.
+          - type: repeat
+            id: c-loop
+            maxIterations: 60
+            onMaxIterations: continue
+            stopCondition:
+              fileCheck: { path: ".kiro/k10-run/freeze.json", jsonPath: state, value: FREEZE }
+            steps:
+              - type: step
+                id: c-fix
+                agent: wf-coder
+                prompt: >
+                  K10 sprint track C, one fix-loop iteration. Follow K10-SPRINT.md section 5 "C-loop" exactly, in
+                  .worktrees/k10-fixes on branch kiro/k10-fixes. Apply only INBOX entries addressed to FIX that
+                  obs/FIX.md has not acknowledged yet. If there are none, wait 240 seconds and end.
+
+  - type: step
+    id: final-gate
+    agent: wf-coder
+    prompt: >
+      K10 sprint final gate. Follow K10-SPRINT.md section 6 exactly. Call send_message with the gate result.
