@@ -6,6 +6,7 @@ function Have($cmd) { [bool](Get-Command $cmd -ErrorAction SilentlyContinue) }
 
 # Graphify: code graph (Claude hooks are already in .claude/settings.json)
 if (-not (Have graphify)) { uv tool install graphifyy }
+graphify install --platform claude   # ~/.claude/skills/graphify (the /graphify skill)
 graphify kiro install          # .kiro/skills/graphify/ (git-ignored) + steering
 graphify antigravity install   # .agents/rules, .agents/workflows
 

@@ -29,5 +29,6 @@ Check: `graphify --version`, `rtk --version`, `rtk gain` (savings so far). In Cl
 
 - Project rules win. [AGENTS.md](../../AGENTS.md), the issue/PR contract, tests and doc updates are never skipped because Ponytail prefers short diffs; Ponytail itself keeps validation, security and accessibility.
 - RTK only rewrites commands sent through the **Bash** tool. Claude Code's Read/Grep/Glob and its PowerShell tool are not compressed. When the full output matters (a failing test's traceback), run the command without `rtk`.
+- In git: everything under `.claude/`, `.kiro/steering/`, `.kiro/workflows/`, `.agents/`, plus `AGENTS.md`, `CLAUDE.md` and `docs/kiro/specs/`. Per machine, written by the setup script: `~/.claude/` (RTK hook, `/graphify` skill, Ponytail plugin), `~/.kiro/steering/ponytail.md`, the Ponytail Antigravity extension. Not in git on purpose: `.kiro/k9-run/` (run logs and status) and `graphify-out/`.
 - Generated copies stay out of git: `graphify kiro install` writes the full skill to `.kiro/skills/graphify/` (git-ignored; the script regenerates it). Only the short steering, rule and workflow files are committed.
 - Nothing here calls Gemini or sends repository content anywhere: Graphify's code graph is AST-only, RTK runs locally, Ponytail is a prompt.
