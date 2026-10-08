@@ -73,7 +73,7 @@ export function friendlyError(error: unknown): FriendlyError {
       if (Array.isArray(blockers) && blockers.length > 0) {
         return { title: 'Not ready to publish yet', message: (blockers as string[]).join(' '), technical };
       }
-      if (raw.startsWith('Google rejected this key')) {
+      if (raw.startsWith('Google rejected this key') || raw.startsWith('No API key was sent')) {
         return { title: 'That key did not work', message: raw, technical, suggestKey: false };
       }
       return { title: 'This file or input cannot be used', message: raw, technical };
