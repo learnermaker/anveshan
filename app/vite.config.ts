@@ -12,7 +12,11 @@ export default defineConfig(({ mode }) => ({
   define: mode === 'mock' ? { 'import.meta.env.VITE_API_BASE': JSON.stringify('mock') } : {},
   resolve: mode !== 'mock' ? {
     alias: {
-      // Exclude mock backend from production chunk — alias to a stub that throws
+      // Exclude mock backend from production chunk — alias to a stub that throws.
+      // Both the bare specifier form (resolved to dir) and the fully-resolved .ts form are
+      // listed so the alias fires regardless of whether Vite canonicalises the path before
+      // or after extension resolution (behaviour changed across Vite 5.x minor versions).
+      [path.resolve(__dirname, 'src/api/mock.ts')]: path.resolve(__dirname, 'src/api/mock-empty.ts'),
       [path.resolve(__dirname, 'src/api/mock')]: path.resolve(__dirname, 'src/api/mock-empty.ts'),
     },
   } : {},

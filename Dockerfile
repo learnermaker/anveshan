@@ -14,6 +14,7 @@ RUN npm ci --no-audit --no-fund
 COPY app/ ./
 # Canonical files the app imports from ../tracks (single-copy rule; see app/vite.config.ts).
 COPY tracks/common/tests/fixtures/transmission_case_001/ /src/tracks/common/tests/fixtures/transmission_case_001/
+COPY tracks/cases/kolam/source/ithayakkamalam_target.jpg /src/tracks/cases/kolam/source/ithayakkamalam_target.jpg
 RUN npm run build
 
 # ---------------------------------------------------------------------------
